@@ -1,0 +1,25 @@
+﻿{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Background",
+        "asset": "Assets/ui/LoadingIcon.DDS",
+        "width": 150,
+        "height": 150,
+        "position": [650, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [255, 255, 255, 255]
+      },
+      {
+        "type": "UIText",
+        "name": "TextA",
+        "text": "こんにちわ！",
+        "position": [450, 0, 0],
+        "scale": [1, 1, 1],
+        "color": [255, 255, 255, 255]
+      }
+    ]
+  }
+}

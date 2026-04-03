@@ -1,0 +1,12 @@
+[
+    {
+        "comment": "バトルカメラパラメーター",
+        "distance": -200.0,
+        "height": 60.0,
+        "fov": 60,
+        "nearClip": 0.1,
+        "farClip": 10000.0,
+        "rotationX": 0.01,
+        "rotationY": 0.01
+    }
+]

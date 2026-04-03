@@ -1,0 +1,259 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Background",
+        "asset": "Assets/ui/white.DDS",
+        "width": 942,
+        "height": 585,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Cursol",
+        "asset": "Assets/ui/pause/volume/volume_listCursol.DDS",
+        "width": 350,
+        "height": 62,
+        "position": [-300, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseLeft_MASTER",
+        "asset": "Assets/ui/white.DDS",
+        "width": 5,
+        "height": 40,
+        "position": [-75, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseRight_MASTER",
+        "asset": "Assets/ui/white.DDS",
+        "width": 5,
+        "height": 40,
+        "position": [375, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseCenter_MASTER",
+        "asset": "Assets/ui/white.DDS",
+        "width": 450,
+        "height": 5,
+        "position": [150, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "VolumeBar_MASTER",
+        "asset": "Assets/ui/pause/volume/volume_bar.DDS",
+        "width": 445,
+        "height": 20,
+        "position": [-73, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Knob_MASTER",
+        "asset": "Assets/ui/pause/volume/volume_knob.DDS",
+        "width": 30,
+        "height": 36,
+        "position": [375, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Text_MASTER",
+        "asset": "Assets/ui/pause/volume/text_MASTER.DDS",
+        "width": 166,
+        "height": 35,
+        "position": [-300, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseLeft_BGM",
+        "asset": "Assets/ui/white.DDS",
+        "width": 5,
+        "height": 40,
+        "position": [-75, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseRight_BGM",
+        "asset": "Assets/ui/white.DDS",
+        "width": 5,
+        "height": 40,
+        "position": [375, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseCenter_BGM",
+        "asset": "Assets/ui/white.DDS",
+        "width": 450,
+        "height": 5,
+        "position": [150, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "VolumeBar_BGM",
+        "asset": "Assets/ui/pause/volume/volume_bar.DDS",
+        "width": 445,
+        "height": 20,
+        "position": [-73, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Knob_BGM",
+        "asset": "Assets/ui/pause/volume/volume_knob.DDS",
+        "width": 30,
+        "height": 36,
+        "position": [375, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Text_BGM",
+        "asset": "Assets/ui/pause/volume/text_BGM.DDS",
+        "width": 80,
+        "height": 31,
+        "position": [-300, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseLeft_SE",
+        "asset": "Assets/ui/white.DDS",
+        "width": 5,
+        "height": 40,
+        "position": [-75, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseRight_SE",
+        "asset": "Assets/ui/white.DDS",
+        "width": 5,
+        "height": 40,
+        "position": [375, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseCenter_SE",
+        "asset": "Assets/ui/white.DDS",
+        "width": 450,
+        "height": 5,
+        "position": [150, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "VolumeBar_SE",
+        "asset": "Assets/ui/pause/volume/volume_bar.DDS",
+        "width": 445,
+        "height": 20,
+        "position": [-73.0, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Knob_SE",
+        "asset": "Assets/ui/pause/volume/volume_knob.DDS",
+        "width": 30,
+        "height": 36,
+        "position": [375, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Text_SE",
+        "asset": "Assets/ui/pause/volume/text_SE.DDS",
+        "width": 48,
+        "height": 35,
+        "position": [-300, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIDigit",
+        "name": "VolumeDigit_MASTER",
+        "asset": "Assets/ui/numbers",
+        "digit":2,
+        "width": 32.0,
+        "height": 32.0,
+        "position": [-150.0, 140.0, 0.0],
+        "scale": [1, 1, 1],
+        "rotation": 0
+      },
+      {
+        "type": "UIDigit",
+        "name": "VolumeDigit_BGM",
+        "asset": "Assets/ui/numbers",
+        "digit":2,
+        "width": 32.0,
+        "height": 32.0,
+        "position": [-150.0, -20.0, 0.0],
+        "scale": [1, 1, 1],
+        "rotation": 0
+      },
+      {
+        "type": "UIDigit",
+        "name": "VolumeDigit_SE",
+        "asset": "Assets/ui/numbers",
+        "digit":2,
+        "width": 32.0,
+        "height": 32.0,
+        "position": [-150.0, -180.0, 0.0],
+        "scale": [1, 1, 1],
+        "rotation": 0
+      }
+    ]
+  }
+}

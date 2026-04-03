@@ -1,0 +1,688 @@
+﻿  stdafx.cpp
+C:\Users\s_i30\stkBario\Game\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\core\TaskSchedulerSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\BoundingVolume.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\GhostBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\GhostPrimitive.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\math\Transform.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\memory\Memory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\memory\Allocator.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\util\util.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\util\Curve.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+  Actor.cpp
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/Actor.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.cpp(19,4): warning C4150: 'app::actor::CharacterStatus' 型を削除するため delete 演算子が呼び出されましたが、定義がありません。
+  (ソース ファイル '/actor/Actor.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+  ActorState.cpp
+C:\Users\s_i30\stkBario\Game\actor\ActorState.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+  ActorStateMachine.cpp
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'class' として使われていましたが 'struct' として使われています。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(44,10): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'class' として使われていましたが 'struct' として使われています。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(44,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+  ActorStatus.cpp
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStatus.cpp' をコンパイルしています)
+  
+  BattleCharacter.cpp
+C:\Users\s_i30\stkBario\Game\actor\BattleCharacter.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\BattleCharacter.cpp(80,84): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+  CharacterSteering.cpp
+C:\Users\s_i30\stkBario\Game\actor\CharacterSteering.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+  EventCharacter.cpp
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.cpp(82,82): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+  Gimmick.cpp
+C:\Users\s_i30\stkBario\Game\actor\Gimmick.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/Gimmick.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/Gimmick.cpp' をコンパイルしています)
+  
+  Application.cpp
+C:\Users\s_i30\stkBario\Game\Application.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\Application.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\SceneManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\Scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+  BattleSequence.cpp
+C:\Users\s_i30\stkBario\Game\ui\BattleSequence.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimationFactory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+  PauseManager.cpp
+C:\Users\s_i30\stkBario\Game\core\PauseManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+  PauseManagerObject.cpp
+C:\Users\s_i30\stkBario\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManagerObject.cpp' をコンパイルしています)
+  
+  BattleScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+  BattleManager.cpp
+C:\Users\s_i30\stkBario\Game\battle\BattleManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\gimmick\WarpSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\CollisionHitManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+  CameraCommon.cpp
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraCommon.cpp' をコンパイルしています)
+  
+  CameraController.cpp
+C:\Users\s_i30\stkBario\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraController.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraController.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraController.cpp' をコンパイルしています)
+  
+  CameraManager.cpp
+C:\Users\s_i30\stkBario\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraManager.cpp' をコンパイルしています)
+  
+  CameraSteering.cpp
+C:\Users\s_i30\stkBario\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraSteering.cpp' をコンパイルしています)
+  
+  BoundingVolume.cpp
+  BroadphaseImpl.cpp
+  コンパイル中...
+  BroadphaseInterface.cpp
+C:\Users\s_i30\stkBario\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/BroadphaseInterface.cpp' をコンパイルしています)
+  
+  CollisionHitManager.cpp
+C:\Users\s_i30\stkBario\Game\collision\CollisionHitManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+      C:\Users\s_i30\stkBario\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+  GhostBody.cpp
+C:\Users\s_i30\stkBario\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBody.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBody.cpp' をコンパイルしています)
+  
+  GhostBodyManager.cpp
+C:\Users\s_i30\stkBario\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBodyManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBodyManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\BroadphaseImpl.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBodyManager.cpp' をコンパイルしています)
+  
+  GhostPrimitive.cpp
+  PhysicalBody.cpp
+C:\Users\s_i30\stkBario\Game\collision\PhysicalBody.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/PhysicalBody.cpp' をコンパイルしています)
+  
+  Fade.cpp
+  ParameterManager.cpp
+  TaskSchedulerSystem.cpp
+  EffectManager.cpp
+  GameClearScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\GameClearScene.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameClearScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameClearScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameClearScene.cpp' をコンパイルしています)
+  
+  GameOverScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\GameOverScene.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameOverScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameOverScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameOverScene.cpp' をコンパイルしています)
+  
+  WarpSystem.cpp
+C:\Users\s_i30\stkBario\Game\gimmick\WarpSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/gimmick/WarpSystem.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/gimmick/WarpSystem.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/gimmick/WarpSystem.cpp' をコンパイルしています)
+  
+  SoundOptionMenu.cpp
+C:\Users\s_i30\stkBario\Game\ui\SoundOptionMenu.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimationFactory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+  SoundManager.cpp
+C:\Users\s_i30\stkBario\Game\sound\SoundManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/sound/SoundManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/sound/SoundManager.cpp' をコンパイルしています)
+  
+  main.cpp
+C:\Users\s_i30\stkBario\Game\Application.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/main.cpp' をコンパイルしています)
+  
+  Transform.cpp
+C:\Users\s_i30\stkBario\Game\math\Transform.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  Allocator.cpp
+C:\Users\s_i30\stkBario\Game\memory\Allocator.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  Memory.cpp
+C:\Users\s_i30\stkBario\Game\memory\Memory.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  BootScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\BootScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+  コンパイル中...
+  DebugScene.cpp
+  IScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/IScene.cpp' をコンパイルしています)
+  
+  SceneManager.cpp
+C:\Users\s_i30\stkBario\Game\scene\SceneManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\scene\SceneManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\Scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\StartupScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\BootScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+  StartupScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\StartupScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+  TitleScene.cpp
+C:\Users\s_i30\stkBario\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/TitleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/TitleScene.cpp' をコンパイルしています)
+  
+  system.cpp
+  Layout.cpp
+C:\Users\s_i30\stkBario\Game\ui\Layout.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+  Menu.cpp
+C:\Users\s_i30\stkBario\Game\ui\Menu.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Menu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Menu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Menu.cpp' をコンパイルしています)
+  
+  UIAnimation.cpp
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIAnimation.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIAnimation.cpp' をコンパイルしています)
+  
+  UIParts.cpp
+C:\Users\s_i30\stkBario\Game\ui\UIParts.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\stkBario\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.cpp(252,9): warning C4244: '=': 'const float' から 'int' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.cpp(253,9): warning C4244: '=': 'const float' から 'int' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.cpp(293,45): warning C4244: '引数': 'int' から 'const float' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\stkBario\Game\ui\UIParts.cpp(293,41): warning C4244: '引数': 'int' から 'const float' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+  Curve.cpp
+C:\Users\s_i30\stkBario\Game\util\Curve.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  util.cpp
+  コード生成しています。
+  Previous IPDB not found, fall back to full compilation.
+  All 13699 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  コード生成が終了しました。
+  Game.vcxproj -> C:\Users\s_i30\stkBario\Game\x64\Release\Game.exe

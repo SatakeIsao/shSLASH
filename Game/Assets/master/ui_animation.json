@@ -1,0 +1,103 @@
+{
+    "animations": [
+        {
+            "key": "FadeIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 0.6,
+            "easing": "EaseOut",
+            "loop": "PingPong"
+        },
+        {
+            "key": "FadeOut",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleUp",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleDown",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 0.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleBounce",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 1.2, "y": 1.2, "z": 1.2 },
+            "duration": 0.15,
+            "easing": "EaseInOut",
+            "loop": "PingPong"
+        },
+        {
+            "key": "SlideInFromLeft",
+            "valueType": "Vector3",
+            "startValue": { "x": -500.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0,    "y": 0.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "RotateLoop",
+            "valueType": "Float",
+            "startValue": 0.0,
+            "endValue": 360.0,
+            "duration": 2.0,
+            "easing": "Linear",
+            "loop": "Loop"
+        },
+        {
+            "key": "FadeInPauseMenu",
+            "valueType": "Vector4",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0 },
+            "endValue":   { "x": 0.3, "y": 0.3, "z": 0.3, "w": 1.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "FadeOutPauseMenu",
+            "valueType": "Vector4",
+            "startValue": { "x": 0.3, "y": 0.3, "z": 0.3, "w": 1.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0, "w": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleUp_Ready",
+            "valueType": "Vector3",
+            "startValue": { "x": 2.0, "y": 2.0, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 1.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleUp_Go",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.8, "y": 0.8, "z": 1.0 },
+            "endValue":   { "x": 2.5, "y": 2.5, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        }
+    ]
+}

@@ -1,0 +1,44 @@
+[
+    {
+        "comment": "サウンドオプションメニューのパラメータ",
+        "knobXA":-75.0,
+        "knobXB":-17.5,
+        "knobXC":40.0,
+        "knobXD":80.0,
+        "knobXE":120.0,
+        "knobXF":162.0,
+        "knobXG":195.0,
+        "knobXH":240.0,
+        "knobXI":285.0,
+        "knobXJ":330.0,
+        "knobXK":375.0,
+
+        "gaugeBarXA": -75.0,
+        "gaugeBarXB": -95.0,
+        "gaugeBarXC": -129.0,
+        "gaugeBarXD": -142.0,
+        "gaugeBarXE": -175.0,
+        "gaugeBarXF": -193.0,
+        "gaugeBarXG": -206.0,
+        "gaugeBarXH": -224.0,
+        "gaugeBarXI": -247.0,
+        "gaugeBarXJ": -278.0,
+        "gaugeBarXK": -525.0,
+
+        "gaugeBarYA": 140.0,
+        "gaugeBarYB": -20.0,
+        "gaugeBarYC": -180.0,
+
+        "gaugeBarScaleXA": 0.0,
+        "gaugeBarScaleXB": 0.1,
+        "gaugeBarScaleXC": 0.25,
+        "gaugeBarScaleXD": 0.31,
+        "gaugeBarScaleXE": 0.46,
+        "gaugeBarScaleXF": 0.54,
+        "gaugeBarScaleXG": 0.60,
+        "gaugeBarScaleXH": 0.68,
+        "gaugeBarScaleXI": 0.78,
+        "gaugeBarScaleXJ": 0.92,
+        "gaugeBarScaleXK": 1.00
+    }
+]
