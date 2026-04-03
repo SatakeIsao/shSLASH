@@ -1,0 +1,11 @@
+[
+    {
+        "comment": "共通ステージパラメーター",
+        "gravity": -98.0,
+        "fallLimitY": -10.0,
+        "friction": 0.7,
+        "warpStartScale": 1.0,
+        "warpEndScale": 0.3,
+        "warpTime": 1.0
+    }
+]

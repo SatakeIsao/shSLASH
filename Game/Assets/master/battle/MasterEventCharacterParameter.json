@@ -1,0 +1,10 @@
+[
+    {
+        "comment": "敵キャラクター共通パラメーター",
+        "moveSpeed": 100,
+        "jumpMoveSpeed": 20,
+        "jumpPower":30,
+        "radius": 15,
+        "height": 1
+    }
+]

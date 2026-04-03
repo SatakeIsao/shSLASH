@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="system">
+      <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="actor">
+      <UniqueIdentifier>{ac3c620a-aa51-4c8c-a1a8-c21904d8f724}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{a0fdf1eb-e4c5-4c5d-a621-21d657f754b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{c7f8c877-8640-423f-ac6a-f73ed7150bce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{dadf44e3-5f18-4671-8760-9aceb018c239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{f5e1a2b7-7ca9-45fc-83a1-1f7e16d9f0bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound">
+      <UniqueIdentifier>{5da1be6b-aa97-45aa-b8e9-3ba78500c43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="effect">
+      <UniqueIdentifier>{53711676-78e3-4714-9620-e487e78c975b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="battle">
+      <UniqueIdentifier>{35583838-ebc8-4a83-9184-2e8e25cd5d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{e3249197-1978-4575-ae9c-0c283c7c9727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision">
+      <UniqueIdentifier>{9b507665-3499-4e06-a281-a1b16001cd87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{5115d9c9-8484-4b84-989a-8384282eca99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{54048856-1add-4ebf-b8da-650d1e392936}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gimmick">
+      <UniqueIdentifier>{6a6cd1f8-88de-425d-a11b-63e605bc9ab8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{6b5d0c9e-a322-4748-b8fc-3b39e9594a46}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="system\system.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\Actor.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="util\util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\BattleCharacter.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\EventCharacter.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\ActorStateMachine.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\ActorState.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\CharacterSteering.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ParameterManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\SceneManager.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\IScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Fade.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\BootScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\StartupScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\DebugScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="effect\EffectManager.cpp">
+      <Filter>effect</Filter>
+    </ClCompile>
+    <ClCompile Include="battle\BattleManager.cpp">
+      <Filter>battle</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\ActorStatus.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\Memory.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\TitleScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\PhysicalBody.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\Gimmick.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\BoundingVolume.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ui\Layout.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Menu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIParts.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Curve.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIAnimation.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Transform.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\GhostPrimitive.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\BroadphaseInterface.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\GhostBody.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\GhostBodyManager.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\BroadphaseImpl.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\CollisionHitManager.cpp">
+      <Filter>collision</Filter>
+    </ClCompile>
+    <ClCompile Include="core\TaskSchedulerSystem.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="gimmick\WarpSystem.cpp">
+      <Filter>gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="camera\CameraCommon.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="camera\CameraManager.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="camera\CameraController.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="camera\CameraSteering.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\Allocator.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\GameOverScene.cpp" />
+    <ClCompile Include="scene\GameClearScene.cpp" />
+    <ClCompile Include="scene\BattleScene.cpp" />
+    <ClCompile Include="sound\SoundManager.cpp" />
+    <ClCompile Include="ui\SoundOptionMenu.cpp" />
+    <ClCompile Include="core\PauseManager.cpp" />
+    <ClCompile Include="core\PauseManagerObject.cpp" />
+    <ClCompile Include="ui\BattleSequence.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="system\system.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\Actor.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\CRC32.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\util.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\BattleCharacter.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\EventCharacter.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\ActorStateMachine.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\ActorState.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="actor\CharacterSteering.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ParameterManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json.hpp">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="util\ParallelFor.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\ThreadPool.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\IScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\SceneManager.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Fade.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\BootScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\StartupScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\DebugScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\Types.h">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\EffectManager.h">
+      <Filter>effect</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\Types.h">
+      <Filter>effect</Filter>
+    </ClInclude>
+    <ClInclude Include="battle\BattleManager.h">
+      <Filter>battle</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\ActorStatus.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\Memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\Types.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="scene\TitleScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\PhysicalBody.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\Types.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\Gimmick.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\BoundingVolume.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="ui\Menu.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\Layout.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIParts.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Curve.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIAnimation.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Transform.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\GhostPrimitive.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\BroadphaseInterface.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\GhostBody.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\GhostBodyManager.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\BroadphaseImpl.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\CollisionHitManager.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="core\TaskSchedulerSystem.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="gimmick\WarpSystem.h">
+      <Filter>gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="camera\CameraCommon.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="camera\CameraManager.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="camera\CameraController.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="camera\CameraSteering.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\Allocator.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="util\JobSystem.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\t-sugahara\Desktop\ParallelFor\ParallelFor\GameTask.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\GameOverScene.h" />
+    <ClInclude Include="scene\GameClearScene.h" />
+    <ClInclude Include="scene\BattleScene.h" />
+    <ClInclude Include="sound\SoundManager.h" />
+    <ClInclude Include="ui\SoundOptionMenu.h" />
+    <ClInclude Include="ui\UIAnimationParameter.h" />
+    <ClInclude Include="ui\UIAnimationFactory.h" />
+    <ClInclude Include="core\PauseManager.h" />
+    <ClInclude Include="core\PauseManagerObject.h" />
+    <ClInclude Include="ui\BattleSequence.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\ui\icon.ico" />
+  </ItemGroup>
+</Project>

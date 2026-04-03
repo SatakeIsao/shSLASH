@@ -1,0 +1,29 @@
+﻿{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Go",
+        "asset": "Assets/ui/seq/go.DDS",
+        "width": 300,
+        "height": 150,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.0]
+
+      },
+      {
+        "type": "UIIcon",
+        "name": "Ready",
+        "asset": "Assets/ui/seq/ready.DDS",
+        "width": 500,
+        "height": 150,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.0]
+      }
+    ]
+  }
+}

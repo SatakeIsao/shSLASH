@@ -1,0 +1,838 @@
+﻿  stdafx.cpp
+C:\Users\s_i30\shSLASH\Game\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\core\TaskSchedulerSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BoundingVolume.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\GhostBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\GhostPrimitive.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\math\Transform.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\memory\Memory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\memory\Allocator.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\util\util.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\util\Curve.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル 'stdafx.cpp' をコンパイルしています)
+  
+  Actor.cpp
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/Actor.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.cpp(19,4): warning C4150: 'app::actor::CharacterStatus' 型を削除するため delete 演算子が呼び出されましたが、定義がありません。
+  (ソース ファイル '/actor/Actor.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+  ActorState.cpp
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
+  
+  ActorStateMachine.cpp
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'class' として使われていましたが 'struct' として使われています。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(44,10): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'class' として使われていましたが 'struct' として使われています。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(44,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+  ActorStatus.cpp
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStatus.cpp' をコンパイルしています)
+  
+  BattleCharacter.cpp
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.cpp(80,84): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+  CharacterSteering.cpp
+C:\Users\s_i30\shSLASH\Game\actor\CharacterSteering.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+  EventCharacter.cpp
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.cpp(82,82): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+  Gimmick.cpp
+C:\Users\s_i30\shSLASH\Game\actor\Gimmick.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/Gimmick.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/Gimmick.cpp' をコンパイルしています)
+  
+  Application.cpp
+C:\Users\s_i30\shSLASH\Game\Application.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\Application.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\SceneManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\Scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/Application.cpp' をコンパイルしています)
+  
+  BattleSequence.cpp
+C:\Users\s_i30\shSLASH\Game\ui\BattleSequence.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationFactory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/BattleSequence.cpp' をコンパイルしています)
+  
+  PauseManager.cpp
+C:\Users\s_i30\shSLASH\Game\core\PauseManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManager.cpp' をコンパイルしています)
+  
+  PauseManagerObject.cpp
+C:\Users\s_i30\shSLASH\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/core/PauseManagerObject.cpp' をコンパイルしています)
+  
+  BattleScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+  BattleManager.cpp
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\gimmick\WarpSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\CollisionHitManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+  CameraCommon.cpp
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraCommon.cpp' をコンパイルしています)
+  
+  CameraController.cpp
+C:\Users\s_i30\shSLASH\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraController.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraController.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraController.cpp' をコンパイルしています)
+  
+  CameraManager.cpp
+C:\Users\s_i30\shSLASH\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraManager.cpp' をコンパイルしています)
+  
+  CameraSteering.cpp
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/camera/CameraSteering.cpp' をコンパイルしています)
+  
+  BoundingVolume.cpp
+  BroadphaseImpl.cpp
+  コードを生成中...
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+  コンパイル中...
+  BroadphaseInterface.cpp
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/BroadphaseInterface.cpp' をコンパイルしています)
+  
+  CollisionHitManager.cpp
+C:\Users\s_i30\shSLASH\Game\collision\CollisionHitManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+  GhostBody.cpp
+C:\Users\s_i30\shSLASH\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBody.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBody.cpp' をコンパイルしています)
+  
+  GhostBodyManager.cpp
+C:\Users\s_i30\shSLASH\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBodyManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBodyManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseImpl.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/GhostBodyManager.cpp' をコンパイルしています)
+  
+  GhostPrimitive.cpp
+  PhysicalBody.cpp
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/PhysicalBody.cpp' をコンパイルしています)
+  
+  Fade.cpp
+  ParameterManager.cpp
+  TaskSchedulerSystem.cpp
+  EffectManager.cpp
+  GameClearScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameClearScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameClearScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameClearScene.cpp' をコンパイルしています)
+  
+  GameOverScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameOverScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameOverScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/GameOverScene.cpp' をコンパイルしています)
+  
+  WarpSystem.cpp
+C:\Users\s_i30\shSLASH\Game\gimmick\WarpSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/gimmick/WarpSystem.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/gimmick/WarpSystem.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/gimmick/WarpSystem.cpp' をコンパイルしています)
+  
+  SoundOptionMenu.cpp
+C:\Users\s_i30\shSLASH\Game\ui\SoundOptionMenu.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationFactory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+  SoundManager.cpp
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/sound/SoundManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/sound/SoundManager.cpp' をコンパイルしています)
+  
+  main.cpp
+C:\Users\s_i30\shSLASH\Game\Application.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/main.cpp' をコンパイルしています)
+  
+  Transform.cpp
+C:\Users\s_i30\shSLASH\Game\math\Transform.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  Allocator.cpp
+C:\Users\s_i30\shSLASH\Game\memory\Allocator.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  Memory.cpp
+C:\Users\s_i30\shSLASH\Game\memory\Memory.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  BootScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\BootScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\StartupScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\DebugScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BootScene.cpp' をコンパイルしています)
+  
+  コードを生成中...
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+  コンパイル中...
+  DebugScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\DebugScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+  IScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/IScene.cpp' をコンパイルしています)
+  
+  SceneManager.cpp
+C:\Users\s_i30\shSLASH\Game\scene\SceneManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\scene\SceneManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\Scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\StartupScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\BootScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/SceneManager.cpp' をコンパイルしています)
+  
+  StartupScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\StartupScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/StartupScene.cpp' をコンパイルしています)
+  
+  TitleScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/TitleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/TitleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\DebugScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/TitleScene.cpp' をコンパイルしています)
+  
+  system.cpp
+  Layout.cpp
+C:\Users\s_i30\shSLASH\Game\ui\Layout.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Layout.cpp' をコンパイルしています)
+  
+  Menu.cpp
+C:\Users\s_i30\shSLASH\Game\ui\Menu.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Menu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Menu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/Menu.cpp' をコンパイルしています)
+  
+  UIAnimation.cpp
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIAnimation.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIAnimation.cpp' をコンパイルしています)
+  
+  UIParts.cpp
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.cpp(252,9): warning C4244: '=': 'const float' から 'int' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.cpp(253,9): warning C4244: '=': 'const float' から 'int' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.cpp(293,45): warning C4244: '引数': 'int' から 'const float' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.cpp(293,41): warning C4244: '引数': 'int' から 'const float' への変換です。データが失われる可能性があります。
+  (ソース ファイル '/ui/UIParts.cpp' をコンパイルしています)
+  
+  Curve.cpp
+C:\Users\s_i30\shSLASH\Game\util\Curve.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  util.cpp
+  コードを生成中...
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+k2EngineLow.lib(Effekseer.Effect.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Effect.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Manager.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Manager.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.CurveLoader.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.CurveLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererDX12.Renderer.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererDX12.Renderer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Common.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(Common.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.CustomAllocator.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.CustomAllocator.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Vector3D.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Vector3D.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.DefaultEffectLoader.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.DefaultEffectLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.InternalScript.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.InternalScript.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EffectNode.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EffectNode.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.ResourceManager.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.ResourceManager.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Setting.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Setting.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.Vector3DF.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.Vector3DF.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.Matrix44.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.Matrix44.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.WorldInternal.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.WorldInternal.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.ObjectInternal.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.ObjectInternal.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Utils.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Utils.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Mat43f.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Mat43f.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Random.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Random.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Matrix44.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Matrix44.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Instance.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Instance.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.InstanceChunk.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.InstanceChunk.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.WorkerThread.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.WorkerThread.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.InstanceContainer.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.InstanceContainer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.InstanceGlobal.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.InstanceGlobal.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.InstanceGroup.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.InstanceGroup.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.DefaultFile.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.DefaultFile.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.BaseDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.BaseDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.GraphicsDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.GraphicsDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.CommandListDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.CommandListDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerMaterialCompilerDX12.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerMaterialCompilerDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(GraphicsDevice.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(GraphicsDevice.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.Renderer.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.Renderer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Color.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Color.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.FCurves.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.FCurves.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.RectF.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.RectF.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(ForceFields.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(ForceFields.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Easing.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Easing.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EffectNodeModel.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EffectNodeModel.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EffectNodeRibbon.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EffectNodeRibbon.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EffectNodeRing.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EffectNodeRing.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EffectNodeSprite.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EffectNodeSprite.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EffectNodeTrack.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EffectNodeTrack.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(ProceduralModelGenerator.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(ProceduralModelGenerator.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.EfkEfcFactory.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.EfkEfcFactory.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.ReferenceObject.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.ReferenceObject.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.Grid.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.Grid.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Culling3D.Layer.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Culling3D.Layer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Parameters.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Parameters.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Model.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Model.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.Graphics.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.Graphics.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.RenderPassDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.RenderPassDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.BufferDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.BufferDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.CommandList.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.CommandList.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.PipelineStateDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.PipelineStateDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.ConstantBufferDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.ConstantBufferDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.IndexBufferDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.IndexBufferDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.TextureDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.TextureDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.ShaderDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.ShaderDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.SingleFrameMemoryPoolDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.SingleFrameMemoryPoolDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.VertexBufferDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.VertexBufferDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.DescriptorHeapDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.DescriptorHeapDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.CompilerDX12.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.CompilerDX12.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Mat44f.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Mat44f.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.Renderer.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.Renderer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.RenderStateBase.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.RenderStateBase.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.Renderer_Impl.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.Renderer_Impl.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(SplineGenerator.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(SplineGenerator.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.CommonUtils.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.CommonUtils.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.RenderState.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.RenderState.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.IndexBufferBase.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.IndexBufferBase.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.IndexBuffer.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.IndexBuffer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.MaterialLoader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.MaterialLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.ModelRenderer.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.ModelRenderer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.Shader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.Shader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.VertexBuffer.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.VertexBuffer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(ModelLoader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(ModelLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(TextureLoader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(TextureLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.Vector2D.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.Vector2D.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(CurlNoise.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(CurlNoise.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.PipelineState.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.PipelineState.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.ConstantBuffer.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.ConstantBuffer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.IndexBuffer.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.IndexBuffer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.Texture.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.Texture.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.VertexBuffer.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.VertexBuffer.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(LLGI.Compiler.obj) : warning LNK4099: PDB 'LLGI.pdb' が 'k2EngineLow.lib(LLGI.Compiler.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\LLGI.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRendererLLGI.DeviceObject.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRendererLLGI.DeviceObject.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.MaterialFile.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.MaterialFile.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(Effekseer.CompiledMaterial.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(Effekseer.CompiledMaterial.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.VertexBufferBase.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.VertexBufferBase.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(ModelLoader.obj) : warning LNK4099: PDB 'Effekseer.pdb' が 'k2EngineLow.lib(ModelLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\Effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.DDSTextureLoader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.DDSTextureLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.PngTextureLoader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.PngTextureLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+k2EngineLow.lib(EffekseerRenderer.TGATextureLoader.obj) : warning LNK4099: PDB 'EffekseerRendererDX12.pdb' が 'k2EngineLow.lib(EffekseerRenderer.TGATextureLoader.obj)' で、または 'C:\Users\s_i30\shSLASH\Game\x64\Debug\EffekseerRendererDX12.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+  Game.vcxproj -> C:\Users\s_i30\shSLASH\Game\x64\Debug\Game.exe

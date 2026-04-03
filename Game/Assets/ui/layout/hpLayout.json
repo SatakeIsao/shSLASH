@@ -1,0 +1,116 @@
+﻿{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Background",
+        "asset": "Assets/ui/test/HPBar_Frame.DDS",
+        "width": 157,
+        "height": 134,
+        "position": [0, 300, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.894 ,0.8, 0.671, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Background1",
+        "asset": "Assets/ui/test/HPBar_CircleBase.DDS",
+        "width": 103,
+        "height": 107,
+        "position": [0, 300, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0, 0.0, 0.0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_1",
+        "asset": "Assets/ui/test/HPBar_1.DDS",
+        "width": 29,
+        "height": 46,
+        "position": [16, 325, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_2",
+        "asset": "Assets/ui/test/HPBar_2.DDS",
+        "width": 40,
+        "height": 32,
+        "position": [24, 316, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_3",
+        "asset": "Assets/ui/test/HPBar_3.DDS",
+        "width": 40,
+        "height": 32,
+        "position": [25, 283, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_4",
+        "asset": "Assets/ui/test/HPBar_4.DDS",
+        "width": 29,
+        "height": 46,
+        "position": [16, 275, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_5",
+        "asset": "Assets/ui/test/HPBar_5.DDS",
+        "width": 30,
+        "height": 46,
+        "position": [-16, 275, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_6",
+        "asset": "Assets/ui/test/HPBar_6.DDS",
+        "width": 41,
+        "height": 32,
+        "position": [-25, 283, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_7",
+        "asset": "Assets/ui/test/HPBar_7.DDS",
+        "width": 41,
+        "height": 32,
+        "position": [-25, 316, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      },
+      {
+        "type": "UIIcon",
+        "name": "HPBar_8",
+        "asset": "Assets/ui/test/HPBar_8.DDS",
+        "width": 30,
+        "height": 46,
+        "position": [-16, 325, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0, 1, 0, 0.1]
+      }
+    ]
+  }
+}
