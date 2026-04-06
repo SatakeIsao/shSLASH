@@ -27,6 +27,8 @@ namespace app
 			jumpPower_ = parameter->jumpPower;
 			radius_ = parameter->radius;
 			height_ = parameter->height;
+			hp_ = parameter->hp;
+			attackPower_ = parameter->attackPower;
 		}
 
 
@@ -51,5 +53,52 @@ namespace app
 			height_ = parameter->height;
 		}
 
+
+
+
+		/**********************************/
+
+
+		void MushroomEventCharacterStatus::LoadParameter(const char* path)
+		{
+			// 無し
+		}
+
+		void MushroomEventCharacterStatus::Setup()
+		{
+			auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterMushroomEventCharacterParameter>();
+
+			moveSpeed_ = parameter->moveSpeed;
+			jumpMoveSpeed_ = parameter->jumpMoveSpeed;
+			jumpPower_ = parameter->jumpPower;
+			radius_ = parameter->radius;
+			height_ = parameter->height;
+			hp_ = parameter->hp;
+			attackPower_ = parameter->attackPower;
+		}
+
+
+
+
+		/**********************************/
+
+
+		void StoneEventCharacterStatus::LoadParameter(const char* path)
+		{
+			// 無し
+		}
+
+		void StoneEventCharacterStatus::Setup()
+		{
+			auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>();
+
+			moveSpeed_ = parameter->moveSpeed;
+			jumpMoveSpeed_ = parameter->jumpMoveSpeed;
+			jumpPower_ = parameter->jumpPower;
+			radius_ = parameter->radius;
+			height_ = parameter->height;
+			hp_ = parameter->hp;
+			attackPower_ = parameter->attackPower;
+		}
 	}
 }

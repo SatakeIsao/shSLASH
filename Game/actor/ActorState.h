@@ -267,5 +267,26 @@ namespace app
 
 			virtual bool CanChangeState() const;
 		};
+
+
+
+
+		class GuardCharacterState : public ICharacterState
+		{
+			appState(GuardCharacterState);
+
+
+		private:
+			float timer_ = 0.0f;
+
+		public:
+			GuardCharacterState(IStateMachine* owner);
+			~GuardCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
 	}
 }

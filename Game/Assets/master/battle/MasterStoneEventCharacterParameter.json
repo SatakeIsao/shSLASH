@@ -1,0 +1,12 @@
+[
+    {
+        "comment": "ストーン敵キャラクター共通パラメーター",
+        "moveSpeed": 100,
+        "jumpMoveSpeed": 20,
+        "jumpPower":30,
+        "radius": 15,
+        "height": 1,
+        "hp": 50,
+        "attackPower": 5
+    }
+]

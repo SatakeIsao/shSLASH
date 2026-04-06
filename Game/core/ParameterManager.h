@@ -75,6 +75,8 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float jumpPower;			// ジャンプ力
 			float radius;				// 半径
 			float height;				// 高さ
+			float hp;					// HP
+			float attackPower;			// 攻撃力
 		};
 
 
@@ -88,6 +90,36 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float jumpPower;			// ジャンプ力
 			float radius;				// 半径
 			float height;				// 高さ
+		};
+
+
+		/** きのこイベントキャラクター */
+		struct MasterMushroomEventCharacterParameter : public IParameter
+		{
+			appParameter(MasterMushroomEventCharacterParameter);
+
+			float moveSpeed;			// 移動速度
+			float jumpMoveSpeed;		// ジャンプ中の移動速度
+			float jumpPower;			// ジャンプ力
+			float radius;				// 半径
+			float height;				// 高さ
+			float hp;					// HP
+			float attackPower;			// 攻撃力
+		};
+
+
+		/** ストーンイベントキャラクター */
+		struct MasterStoneEventCharacterParameter : public IParameter
+		{
+			appParameter(MasterStoneEventCharacterParameter);
+
+			float moveSpeed;			// 移動速度
+			float jumpMoveSpeed;		// ジャンプ中の移動速度
+			float jumpPower;			// ジャンプ力
+			float radius;				// 半径
+			float height;				// 高さ
+			float hp;					// HP
+			float attackPower;			// 攻撃力
 		};
 
 

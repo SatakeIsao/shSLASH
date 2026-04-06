@@ -5,6 +5,8 @@
         "jumpMoveSpeed": 200,
         "jumpPower":150,
         "radius": 15,
-        "height": 30
+        "height": 30,
+        "hp": 100,
+        "attackPower": 10
     }
 ]
