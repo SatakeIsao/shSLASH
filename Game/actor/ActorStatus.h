@@ -51,6 +51,8 @@ namespace app
 			float gravity_ = 0.98f;
 			float radius_ = 0.0f;
 			float height_ = 0.0f;
+			float hp_ = 0.0f;
+			float attackPower_ = 0.0f;
 
 			float warpStartScale_ = 1.0f;
 			float warpEndScale_ = 0.3f;
@@ -73,6 +75,8 @@ namespace app
 
 			inline void SetRadius(const float radius) { radius_ = radius; }
 			inline void SetHeight(const float height) { height_ = height; }
+			inline void SetHp(const float hp) { hp_ = hp; }
+			inline void SetAttackPower(const float attackPower) { attackPower_ = attackPower; }
 
 			inline float GetFriction() const { return friction_; }
 			inline void SetFriction(const float friction) { friction_ = friction; }
@@ -118,6 +122,36 @@ namespace app
 
 		public:
 			virtual ~EventCharacterStatus() {}
+			virtual void LoadParameter(const char* path) override;
+			virtual void Setup() override;
+		};
+
+
+
+
+		/** きのこ敵キャラクター用 */
+		struct MushroomEventCharacterStatus :public CharacterStatus
+		{
+		protected:
+
+
+		public:
+			virtual ~MushroomEventCharacterStatus() {}
+			virtual void LoadParameter(const char* path) override;
+			virtual void Setup() override;
+		};
+
+
+
+
+		/** ストーンモンスター用 */
+		struct StoneEventCharacterStatus : public CharacterStatus
+		{
+		protected:
+
+
+		public:
+			virtual ~StoneEventCharacterStatus() {}
 			virtual void LoadParameter(const char* path) override;
 			virtual void Setup() override;
 		};

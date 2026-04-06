@@ -173,7 +173,6 @@ namespace app
 		void BattleCharacterStateMachine::Initialize()
 		{
 			SuperClass::Initialize();
-
 			isUseCameraDirection_ = true;
 		}
 

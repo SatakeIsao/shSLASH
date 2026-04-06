@@ -142,6 +142,10 @@ namespace app
 			virtual void OnEnterDead() {}
 			/** 死んだステートから抜ける時の固有処理 */
 			virtual void OnExitDead() {}
+			/** 防御ステートに入った時の固有処理 */
+			virtual void OnEnterGuard() {}
+			/** 防御ステートから抜ける時の固有処理 */
+			virtual void OnExitGuard() {}
 
 			void Move(const float deltaTime, const float moveSpeed);
 			void Jump(const float jumoPower);
@@ -226,6 +230,9 @@ namespace app
 
 			virtual void OnEnterDead() override;
 			virtual void OnExitDead() override;
+
+			virtual void OnEnterGuard() override;
+			virtual void OnExitGuard() override;
 
 		private:
 			void UpdateState();

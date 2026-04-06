@@ -107,7 +107,7 @@ namespace app
 			attackScheduler_->AddTimer(0.1f, [&]()
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-					//characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::SlimeAnimationKind::Attack));
+					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::SlimeAnimationKind::Attack));
 					attackBody_ = new app::collision::GhostBody();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
@@ -221,7 +221,7 @@ namespace app
 
 			characterStateMachine->Jump(characterStatus->GetJumpPower());
 
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpAscend));
+			//characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpAscend));
 
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(2.5f);
 		}
@@ -237,7 +237,7 @@ namespace app
 			{
 				// 上昇が終わったら落下フェーズへ
 				if (characterStateMachine->GetCharacterController()->GetVerticalVelocity() < 0.0f) {
-					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling));
+					//characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling));
 					jumpPhase_ = JumpPhase::Falling;
 				}
 				break;
@@ -246,7 +246,7 @@ namespace app
 			{
 				// 地面に着地したら着地フェーズへ
 				if (characterStateMachine->GetCharacterController()->IsOnGround()) {
-					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpLand));
+					//characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpLand));
 					jumpPhase_ = JumpPhase::Land;
 				}
 				break;
@@ -305,7 +305,7 @@ namespace app
 		void FallingCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling));
+			//characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling));
 		}
 
 
@@ -404,7 +404,7 @@ namespace app
 		void WarpInCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling));
+			//characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling));
 			characterStateMachine->SetInputPower(0.0f);
 			characterStateMachine->ClearMomveSpeedVector();
 			auto* characterStatus = characterStateMachine->GetStatus();

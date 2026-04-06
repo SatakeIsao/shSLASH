@@ -24,6 +24,7 @@ namespace app
 			std::unique_ptr<BattleCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 
+			/** TODO: jsonで管理 */
 			int currentHP_ = 8;
 			bool isPause_ = false;
 
