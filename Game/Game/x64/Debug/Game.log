@@ -20,4 +20,359 @@ C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイ�
 C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
   (ソース ファイル '/actor/ActorState.cpp' をコンパイルしています)
   
+  ActorStateMachine.cpp
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'class' として使われていましたが 'struct' として使われています。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(44,10): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'class' として使われていましたが 'struct' として使われています。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(44,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/ActorStateMachine.cpp' をコンパイルしています)
+  
+  BattleCharacter.cpp
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.cpp(80,84): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  (ソース ファイル '/actor/BattleCharacter.cpp' をコンパイルしています)
+  
+  CharacterSteering.cpp
+C:\Users\s_i30\shSLASH\Game\actor\CharacterSteering.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/CharacterSteering.cpp' をコンパイルしています)
+  
+  EventCharacter.cpp
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.cpp(82,82): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  (ソース ファイル '/actor/EventCharacter.cpp' をコンパイルしています)
+  
+  BattleManager.cpp
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStatus.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\gimmick\WarpSystem.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraController.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\GhostBodyManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\BroadphaseInterface.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\CollisionHitManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\core\PauseManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/battle/BattleManager.cpp' をコンパイルしています)
+  
+  CollisionHitManager.cpp
+C:\Users\s_i30\shSLASH\Game\collision\CollisionHitManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorState.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\BattleCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\Actor.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\ActorStateMachine.h(13,9): warning C4099: 'app::actor::CharacterStatus': タイプ名は最初 'struct' として使われていましたが 'class' として使われています。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+      C:\Users\s_i30\shSLASH\Game\actor\Actor.h(11,10):
+      'app::actor::CharacterStatus' の宣言を確認してください
+  
+C:\Users\s_i30\shSLASH\Game\actor\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\collision\PhysicalBody.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/collision/CollisionHitManager.cpp' をコンパイルしています)
+  
+  EffectManager.cpp
+  BattleScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\TitleScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/BattleScene.cpp' をコンパイルしています)
+  
+  DebugScene.cpp
+C:\Users\s_i30\shSLASH\Game\scene\DebugScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\IScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameOverScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\scene\GameClearScene.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/scene/DebugScene.cpp' をコンパイルしています)
+  
+  SoundOptionMenu.cpp
+C:\Users\s_i30\shSLASH\Game\ui\SoundOptionMenu.cpp(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\s_i30\shSLASH\Game\ui\Menu.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIParts.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimation.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\battle\BattleManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraCommon.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\camera\CameraSteering.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\Layout.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\SoundManager.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\sound\Types.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationFactory.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+C:\Users\s_i30\shSLASH\Game\ui\UIAnimationParameter.h(1,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+  (ソース ファイル '/ui/SoundOptionMenu.cpp' をコンパイルしています)
+  
+  コードを生成中...
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
+C:\Users\s_i30\shSLASH\k2EngineLow\dbg\MyAssert.h(18,1): warning C5082: 'va_start' の 2 番目の引数が、最後の名前付きパラメーターではありません
   Game.vcxproj -> C:\Users\s_i30\shSLASH\Game\x64\Debug\Game.exe

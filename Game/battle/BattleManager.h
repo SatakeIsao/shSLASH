@@ -98,6 +98,10 @@ namespace app
             /** あとで書き換える */
             //Test currentDown = Test::Compleate;
             float countDownTimer_ = 3.0f;
+            float effectDelayTimer_ = 0.0f; //遅延時間をカウント
+            bool isWaitEffectPlay_ = false;
+            Vector3 reservedEffectPos_;     //再生予定の位置を保持
+            Quaternion reservedEffectRot_;
             std::unique_ptr<app::ui::Layout> layout_;
 
 
