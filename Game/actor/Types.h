@@ -22,8 +22,16 @@ namespace app
 			//JumpFalling,	// 落下
 			//JumpLand,		// 着地
 			Punch,
+			ChargedAttackStart,
+			ChargedAttackLooping,
+			ChargedAttackEnd,
 			KnockBack,
 			Dead,
+			Guard,
+			Avoidance,
+			InjuredIdle,
+			InjuredRun,
+			KipUp,
 			Max
 		};
 		enum class SlimeAnimationKind : uint8_t

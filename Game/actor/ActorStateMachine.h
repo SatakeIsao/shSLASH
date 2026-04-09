@@ -119,8 +119,12 @@ namespace app
 
 			/** ボタンを押したか */
 			bool isActionA_ = false;
+			bool isPressA_ = false;
 			bool isActionB_ = false;
 			bool isActionDown_ = false;
+			bool isActionRB1_ = false;
+			bool isActionLB1_ = false;
+			bool isTriggerY_ = false;
 
 
 		public:
@@ -146,6 +150,10 @@ namespace app
 			virtual void OnEnterGuard() {}
 			/** 防御ステートから抜ける時の固有処理 */
 			virtual void OnExitGuard() {}
+			/** 回避ステートに入った時の固有処理 */
+			virtual void OnEnterAvoidance() {}
+			/** 回避ステートから抜ける時の固有処理 */
+			virtual void OnExitAvoidance() {}
 
 			void Move(const float deltaTime, const float moveSpeed);
 			void Jump(const float jumoPower);
@@ -190,13 +198,22 @@ namespace app
 
 
 			/** 入力周り */
+			// TODO: PressとTriggerを分かるように分けたい。
 		public:
 			void SetActionA(const bool isAction) { isActionA_ = isAction; }
 			bool IsActionA() const { return isActionA_; }
+			void SetPressA(const bool isAction) { isPressA_ = isAction; }
+			bool IsPressA() const { return isPressA_; }
 			void SetActionB(const bool isAction) { isActionB_ = isAction; }
 			bool IsActionB() const { return isActionB_; }
 			void SetActionDown(const bool isAction) { isActionDown_ = isAction; }
 			bool IsActionDown() const { return isActionDown_; }
+			void SetActionRB1(const bool isAction) { isActionRB1_ = isAction; }
+			bool IsActionRB1() const { return isActionRB1_; }
+			void SetActionLB1(const bool isAction) { isActionLB1_ = isAction; }
+			bool IsActionLB1() const { return isActionLB1_; }
+			void SetTriggerY(const bool isAction) { isTriggerY_ = isAction; }
+			bool IsTriggerY() const { return isTriggerY_; }
 		};
 
 
@@ -233,6 +250,9 @@ namespace app
 
 			virtual void OnEnterGuard() override;
 			virtual void OnExitGuard() override;
+
+			virtual void OnEnterAvoidance() override;
+			virtual void OnExitAvoidance() override;
 
 		private:
 			void UpdateState();
