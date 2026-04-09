@@ -213,14 +213,61 @@ namespace app
 		}
 
 
+		void BattleCharacterStateMachine::OnEnterGuard()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard));
+		}
+
+
+		void BattleCharacterStateMachine::OnExitGuard()
+		{
+		}
+
+
+		void BattleCharacterStateMachine::OnEnterAvoidance()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance));
+		}
+
+
+		void BattleCharacterStateMachine::OnExitAvoidance()
+		{
+		}
+
+
 		void BattleCharacterStateMachine::UpdateState()
 		{
-			//死亡
+			// このフレームで既に遷移リクエストを送ったかどうかのフラグ
+			bool isStateRequested = false;
+
+			// 死亡・起き上がり判定
 			{
-				if (isDead_) {
-					RequestChangeState(DeadCharacterState::ID());
-					return;
+				bool isRB2Trigger = g_pad[0]->IsTrigger(enButtonRB2);
+				bool isXTrigger = g_pad[0]->IsPress(enButtonX);
+
+				if (IsEqualCurrentState(DeadCharacterState::ID()))
+				{
+					if (isXTrigger)
+					{
+						RequestChangeState(KipUpCharacterState::ID());
+						isStateRequested = true; // 遷移決定
+					}
+					if (!isStateRequested) return; // 遷移しないならDead維持。遷移するなら下へ。
 				}
+				else if (isRB2Trigger)
+				{
+					RequestChangeState(DeadCharacterState::ID());
+					isStateRequested = true;
+				}
+			}
+
+			// 既に遷移が決まっているなら、以下の他のステート判定（移動など）をすべてスキップする
+			if (isStateRequested) return;
+
+			// --- KipUp中の待機 ---
+			if (IsEqualCurrentState(KipUpCharacterState::ID()))
+			{
+				if (!CanChangeState()) return;
 			}
 			//ノックバック
 			{
@@ -266,12 +313,12 @@ namespace app
 			// ジャンプ
 			{
 				if (IsActionA()) {
-					RequestChangeState(JumpCharacterState::ID());
-					isActionA_ = false;
+					RequestChangeState(ChargeAttackCharacterState::ID());
+					//isPressA_ = false;
 					return;
 				}
 				// パンチ中は他の状態に遷移しない
-				if (IsEqualCurrentState(JumpCharacterState::ID())) {
+				if (IsEqualCurrentState(ChargeAttackCharacterState::ID())) {
 					if (!CanChangeState()) {
 						return;
 					}
@@ -306,12 +353,63 @@ namespace app
 					return;
 				}
 			}
+			// 防御
+			{
+				if (IsActionLB1()
+					|| IsActionRB1())
+				{
+					RequestChangeState(GuardCharacterState::ID());					
+					return;
+				}
+			}
+			// 回避
+			{
+				if(IsTriggerY())
+				{
+					RequestChangeState(AvoidanceCharacterState::ID());
+					return;
+				}
+				// パンチ中は他の状態に遷移しない
+				if (IsEqualCurrentState(AvoidanceCharacterState::ID())) {
+					if (!CanChangeState()) {
+						return;
+					}
+				}
+			}
+			// 体力ない時
+			{
+				///** デバッグテスト */
+				//if (g_pad[0]->IsPress(enButtonLB2))
+				//{
+				//	RequestChangeState(InjuredIdleCharacterState::ID());
+				//	return;
+				//}
+			}
 
+			bool isLB2Pressed = g_pad[0]->IsPress(enButtonLB2);
 			const Vector3 direction = moveSpeedVector_;
 			if (direction.LengthSq() >= MOVE_MIN_FLOAT || inputPower_ >= MOVE_MIN_FLOAT)
 			{
-				RequestChangeState(RunCharacterState::ID());
+				if (isLB2Pressed)
+				{
+					// LB2を押しながら移動入力がある場合：負傷走りへ
+					RequestChangeState(InjuredRunCharacterState::ID());
+				}
+				else
+				{
+					// 通常の移動入力がある場合：走りへ
+					RequestChangeState(RunCharacterState::ID());
+				}
 				return;
+			}
+			else
+			{
+				if (isLB2Pressed)
+				{
+					// 移動入力がなく、LB2だけ押されている場合：負傷待機へ
+					RequestChangeState(InjuredIdleCharacterState::ID());
+					return;
+				}
 			}
 
 			RequestChangeState(IdleCharacterState::ID());

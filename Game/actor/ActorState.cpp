@@ -29,6 +29,7 @@ namespace app
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Idle));
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 		}
 
 
@@ -64,6 +65,7 @@ namespace app
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run));
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 		}
 
 
@@ -108,6 +110,7 @@ namespace app
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::SlimeAnimationKind::Attack));
+					characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 					attackBody_ = new app::collision::GhostBody();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
@@ -346,6 +349,7 @@ namespace app
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch));
+					characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 					attackBody_ = new app::collision::GhostBody();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
 					// @todo for test
@@ -520,6 +524,7 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			//キャラクター固有の死亡処理を実行
 			characterStateMachine->OnEnterDead();
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 
 			timer_ = 0.0f;
 		}
@@ -565,6 +570,7 @@ namespace app
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->OnEnterKnockBack();
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 		}
 		
 
@@ -615,6 +621,356 @@ namespace app
 			}
 
 			return ((isAnimFinished && isLanded) || timer_ > 2.0f);
+		}
+		
+
+
+
+		/*************************************/
+
+
+		GuardCharacterState::GuardCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{}
+
+
+		GuardCharacterState::~GuardCharacterState()
+		{}
+
+
+		void GuardCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->OnEnterGuard();
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		void GuardCharacterState::Update()
+		{
+			timer_ += g_gameTime->GetFrameDeltaTime();
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			bool isLanded = false;
+
+			if (timer_ > 0.1f)
+			{
+				isLanded = characterStateMachine->GetCharacterController()->IsOnGround();
+			}
+
+			if (!isLanded)
+			{
+				//時間経過で徐々に減衰させる
+				float deceleration = 1.0f - timer_;
+				if (deceleration < 0.0f) {
+					deceleration = 0.0f;
+				}
+				//スピード調整
+				float currentSpeed = 500.0f * deceleration;
+
+				characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
+			}
+		}
+
+
+		void GuardCharacterState::Exit()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->OnExitGuard();
+		}
+
+
+		bool GuardCharacterState::CanChangeState() const
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			bool isAnimFinished = !characterStateMachine->GetModelRender()->IsPlayingAnimation();
+			bool isLanded = false;
+
+			if (timer_ > 0.1f)
+			{
+				isLanded = characterStateMachine->GetCharacterController()->IsOnGround();
+			}
+
+			return ((isAnimFinished && isLanded) || timer_ > 2.0f);
+		}
+
+
+		
+
+		/*************************************/
+
+
+		ChargeAttackCharacterState::ChargeAttackCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{}
+
+
+		ChargeAttackCharacterState::~ChargeAttackCharacterState()
+		{}
+
+
+		void ChargeAttackCharacterState::Enter()
+		{
+			chargeAttackPhase_ = ChargeAttackPhase::Start;
+
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			auto* characterStatus = characterStateMachine->GetStatus();
+
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart));
+
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		void ChargeAttackCharacterState::Update()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			switch (chargeAttackPhase_)
+			{
+			case ChargeAttackPhase::Start:
+			{
+				// 上昇が終わったら落下フェーズへ
+				//if (characterStateMachine->GetCharacterController()->GetVerticalVelocity() < 0.0f) {
+				if (!characterStateMachine->GetModelRender()->IsPlayingAnimation()) {
+					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping));
+					chargeAttackPhase_ = ChargeAttackPhase::Looping;
+				}
+					
+				//}
+				break;
+			}
+			case ChargeAttackPhase::Looping:
+			{
+				// 地面に着地したら着地フェーズへ
+				if (!characterStateMachine->IsPressA()) {
+					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd));
+					chargeAttackPhase_ = ChargeAttackPhase::End;
+				}
+				break;
+			}
+			case ChargeAttackPhase::End:
+			{
+				break;
+			}
+			}
+
+			auto* characterStatus = characterStateMachine->GetStatus();
+			//characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetJumpMoveSpeed());
+			//characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
+		}
+
+
+		void ChargeAttackCharacterState::Exit()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		bool ChargeAttackCharacterState::CanChangeState() const
+		{
+			if (chargeAttackPhase_ != ChargeAttackPhase::End) {
+				return false;
+			}
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			//if (!characterStateMachine->GetCharacterController()->IsOnGround()) {
+			//	return false;
+			//}
+			if (characterStateMachine->GetModelRender()->IsPlayingAnimation()) {
+				return false;
+			}
+			return true;
+		}
+
+
+
+
+		/*************************************/
+
+
+		AvoidanceCharacterState::AvoidanceCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{}
+
+
+		AvoidanceCharacterState::~AvoidanceCharacterState()
+		{}
+
+
+		void AvoidanceCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->OnEnterAvoidance();
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.5f);
+
+			// 回避開始時のスティックの入力を保存
+			avoidanceDirection_ = characterStateMachine->GetMoveDirection();
+
+			timer_ = 0.0f;
+		}
+
+
+		void AvoidanceCharacterState::Update()
+		{
+			timer_ += g_gameTime->GetFrameDeltaTime();
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			// 回避の強さと持続時間
+			const float duration = 1.0f;
+			const float speed = 500.0f;
+
+			if (timer_ < duration)
+			{
+				// 徐々に減速させる計算
+				float deceleration = 1.0f - (timer_ / duration);
+				float currentSpeed = speed * deceleration;
+
+				// 保存した入力をセットし、移動を実行
+				characterStateMachine->SetMoveDirection(avoidanceDirection_);
+				characterStateMachine->SetInputPower(1.0f);
+				characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
+
+				// Move内で計算された「実際の移動ベクトル」を取得
+				auto speedVec = characterStateMachine->GetMoveSpeedVector();
+
+				// その移動方向へ振り向かせる
+				if (speedVec.LengthSq() > 0.01f)
+				{
+					characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(speedVec);
+				}
+			}
+		}
+
+
+		void AvoidanceCharacterState::Exit()
+		{
+		}
+
+		bool AvoidanceCharacterState::CanChangeState() const
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			auto* modelRender = characterStateMachine->GetModelRender();
+			return !modelRender->IsPlayingAnimation();
+		}
+
+
+
+
+		/*************************************/
+
+
+		InjuredIdleCharacterState::InjuredIdleCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{
+		}
+
+
+		InjuredIdleCharacterState::~InjuredIdleCharacterState()
+		{
+		}
+
+
+		void InjuredIdleCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredIdle));
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		void InjuredIdleCharacterState::Update()
+		{
+		}
+
+
+		void InjuredIdleCharacterState::Exit()
+		{
+		}
+
+		bool InjuredIdleCharacterState::CanChangeState() const
+		{
+			return true;
+		}
+
+
+
+
+		/*************************************/
+
+
+		InjuredRunCharacterState::InjuredRunCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{}
+
+
+		InjuredRunCharacterState::~InjuredRunCharacterState()
+		{}
+
+
+		void InjuredRunCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredRun));
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		void InjuredRunCharacterState::Update()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			auto* characterStatus = characterStateMachine->GetStatus();
+			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed()* 0.5f);
+
+			characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
+		}
+
+
+		void InjuredRunCharacterState::Exit()
+		{}
+
+		bool InjuredRunCharacterState::CanChangeState() const
+		{
+			return true;
+		}
+
+
+
+
+		/*************************************/
+
+
+		KipUpCharacterState::KipUpCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{}
+
+
+		KipUpCharacterState::~KipUpCharacterState()
+		{}
+
+
+		void KipUpCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp));
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		void KipUpCharacterState::Update()
+		{
+		}
+
+
+		void KipUpCharacterState::Exit()
+		{}
+
+		bool KipUpCharacterState::CanChangeState() const
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			// アニメーションが再生中なら遷移させない
+			return !characterStateMachine->GetModelRender()->IsPlayingAnimation();
 		}
 	}
 }

@@ -58,12 +58,36 @@ namespace
 			//
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch)].filename = "Assets/animData/player/playerSmallAttack.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart)].filename = "Assets/animData/player/playerChargedAttack_Start.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping)].filename = "Assets/animData/player/PlayerChargedAttack_Loop.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd)].filename = "Assets/animData/player/PlayerChargedAttack_End.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd)].loop = false;
 			
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack)].filename = "Assets/animData/player/playerKnockBack.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack)].loop = false;
 			
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead)].filename = "Assets/animData/player/playerDead.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard)].filename = "Assets/animData/player/playerGuard.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard)].loop = true;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance)].filename = "Assets/animData/player/playerAvoidance.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredIdle)].filename = "Assets/animData/player/playerInjuredIdle.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredIdle)].loop = true;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredRun)].filename = "Assets/animData/player/playerInjuredRun.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredRun)].loop = true;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp)].filename = "Assets/animData/player/playerKipUp.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp)].loop = false;
 		});
 	// Enemy用
 	static app::actor::CharacterInitializeParameter sEnemyInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
@@ -156,13 +180,18 @@ namespace app
 					{
 						battleCharacter_->AddState<app::actor::IdleCharacterState>();
 						battleCharacter_->AddState<app::actor::RunCharacterState>();
-						battleCharacter_->AddState<app::actor::JumpCharacterState>();
-						battleCharacter_->AddState<app::actor::FallingCharacterState>();
+						battleCharacter_->AddState<app::actor::ChargeAttackCharacterState>();
+						//battleCharacter_->AddState<app::actor::FallingCharacterState>();
 						battleCharacter_->AddState<app::actor::PunchCharacterState>();
 						battleCharacter_->AddState<app::actor::WarpInCharacterState>();
 						battleCharacter_->AddState<app::actor::WarpOutCharacterState>();
 						battleCharacter_->AddState<app::actor::KnockBackCharacterState>();
 						battleCharacter_->AddState<app::actor::DeadCharacterState>();
+						battleCharacter_->AddState<app::actor::GuardCharacterState>();
+						battleCharacter_->AddState<app::actor::AvoidanceCharacterState>();
+						battleCharacter_->AddState<app::actor::InjuredIdleCharacterState>();
+						battleCharacter_->AddState<app::actor::InjuredRunCharacterState>();
+						battleCharacter_->AddState<app::actor::KipUpCharacterState>();
 					}
 					// TODO: ステージによって変えたいので、ステージクラスが作られたら委嘱する
 					{
@@ -189,6 +218,7 @@ namespace app
 					eventCharacter_->AddState <app::actor::KnockBackCharacterState>();
 				}
 				/** 敵に重力付与のテスト */
+				//TODO: いま、ステージなので敵のパラメータに変更させたい
 				{
 					auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
 					eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
@@ -251,7 +281,7 @@ namespace app
 				}
 				//BGM再生
 				{
-					app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
+					//app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
 				}
 			}
 		}
@@ -277,43 +307,11 @@ namespace app
 
 			// シーケンス中は手動ポーズ（メニュー表示）を禁止する
 			app::core::PauseManager::Get().SetCanPause(!isSequence);
-
-			//if (isPause_ != currentPause)
-			//{
-			//	SetPause(currentPause);
-			//}
 			
 			if(currentPause)
 			{
 				return;
 			}
-
-			/** いらないので消す */
-			//if (currentDown == Test::CountDown)
-			//{
-			//	countDownTimer_ -= g_gameTime->GetFrameDeltaTime();
-			//
-			//	if (countDownTimer_ <= 0.0f) {
-			//		currentDown = Test::Compleate;
-			//	}
-			//}
-
-			// 上記が問題なかったら、消す
-			//if (app::core::PauseManager::Get().IsPauseTrigger()) {
-			//	if (app::core::PauseManager::Get().IsPause()) {
-			//		// ここでGameObject止める
-			//		SetPause(true);
-			//	} else {
-			//		// ここでGameObject動かす
-			//		SetPause(false);
-			//	}
-			//}
-			//
-			//
-			//if (app::core::PauseManager::Get().IsPause()) {
-			//	return;
-			//}
-
 
 			if (!isSequence)
 			{

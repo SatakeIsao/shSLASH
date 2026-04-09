@@ -184,6 +184,38 @@ namespace app
 
 
 
+		class ChargeAttackCharacterState : public ICharacterState
+		{
+			appState(ChargeAttackCharacterState);
+
+
+		private:
+			enum class ChargeAttackPhase
+			{
+				Start,		// 開始
+				Looping,	// チャージ中
+				End			// 終了
+			};
+
+		private:
+			ChargeAttackPhase chargeAttackPhase_ = ChargeAttackPhase::Start;
+			app::collision::GhostBody* attackBody_ = nullptr;
+			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+
+
+		public:
+			ChargeAttackCharacterState(IStateMachine* owner);
+			~ChargeAttackCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
+
+
+
+
 		class WarpInCharacterState : public ICharacterState
 		{
 			appState(WarpCharacterState);
@@ -282,6 +314,91 @@ namespace app
 		public:
 			GuardCharacterState(IStateMachine* owner);
 			~GuardCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
+
+
+
+
+		class AvoidanceCharacterState : public ICharacterState
+		{
+			appState(AvoidanceCharacterState);
+
+
+		private:
+			float timer_ = 0.0f;
+			Vector3 avoidanceDirection_; // 回避方向
+
+		public:
+			AvoidanceCharacterState(IStateMachine* owner);
+			~AvoidanceCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
+
+
+
+
+		class InjuredIdleCharacterState : public ICharacterState
+		{
+			appState(InjuredIdleCharacterState);
+
+
+		private:
+			float timer_ = 0.0f;
+
+		public:
+			InjuredIdleCharacterState(IStateMachine* owner);
+			~InjuredIdleCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
+
+
+
+
+		class InjuredRunCharacterState : public ICharacterState
+		{
+			appState(InjuredRunCharacterState);
+
+
+		private:
+			float timer_ = 0.0f;
+
+		public:
+			InjuredRunCharacterState(IStateMachine* owner);
+			~InjuredRunCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
+
+
+
+
+		class KipUpCharacterState : public ICharacterState
+		{
+			appState(KipUpCharacterState);
+
+
+		private:
+			float timer_ = 0.0f;
+
+		public:
+			KipUpCharacterState(IStateMachine* owner);
+			~KipUpCharacterState();
 			void Enter() override;
 			void Update() override;
 			void Exit() override;

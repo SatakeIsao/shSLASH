@@ -34,18 +34,27 @@ namespace app
 			auto inputVector = Vector3(GetPad()->GetLStickXF(), 0.0f, GetPad()->GetLStickYF());
 			inputVector.Normalize();
 
-			const bool isPressA = GetPad()->IsTrigger(enButtonA);
-			const bool isPressB = GetPad()->IsTrigger(enButtonB);
-			const bool isPressDown = GetPad()->IsTrigger(enButtonDown);
+			const bool isTriggerA = GetPad()->IsTrigger(enButtonA);
+			const bool isPressA = GetPad()->IsPress(enButtonA);
+			const bool isTriggerB = GetPad()->IsTrigger(enButtonB);
+			const bool isTriggerDown = GetPad()->IsTrigger(enButtonDown);
+			const bool isPressRB1 = GetPad()->IsPress(enButtonRB1);
+			const bool isPressLB1 = GetPad()->IsPress(enButtonLB1);
+			const bool isTriggerY = GetPad()->IsTrigger(enButtonY);
 
 			// BattleCharacter
 			{
 				BattleCharacter* battleCharacter = dynamic_cast<BattleCharacter*>(target_);
 				if (battleCharacter != nullptr) {
 					auto* targetCharacterStateMachine = battleCharacter->GetStateMachine();
-					targetCharacterStateMachine->SetActionA(isPressA);
-					targetCharacterStateMachine->SetActionB(isPressB);
-					targetCharacterStateMachine->SetActionDown(isPressDown);
+					targetCharacterStateMachine->SetActionA(isTriggerA);
+					targetCharacterStateMachine->SetPressA(isPressA);
+					targetCharacterStateMachine->SetActionB(isTriggerB);
+					targetCharacterStateMachine->SetActionDown(isTriggerDown);
+					targetCharacterStateMachine->SetActionRB1(isPressRB1);
+					targetCharacterStateMachine->SetActionLB1(isPressLB1);
+					targetCharacterStateMachine->SetTriggerY(isTriggerY);
+
 					const bool isInput = inputVector.LengthSq() > MOVE_MIN_FLOAT;
 					if (isInput)
 					{
