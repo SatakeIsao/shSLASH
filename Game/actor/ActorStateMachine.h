@@ -231,8 +231,14 @@ namespace app
 			bool isDead_ = false;
 			/** ノックバックしたか */
 			bool isKnockBack_ = false;
+			/** 防御したか */
+			bool isGuard_ = false;
 			/** パンチしたか */
 			bool isPunched_ = false;
+			/** チャージエフェクト */
+			bool isChargeEffectRequested_ = false;
+			/** チャージ攻撃エフェクト */
+			bool isChargeAttackEffectRequested_ = false;
 		public:
 			BattleCharacterStateMachine();
 			virtual ~BattleCharacterStateMachine();
@@ -278,10 +284,54 @@ namespace app
 			{
 				return isKnockBack_;
 			}
+			/** チャージエフェクトの再生リクエストを出す */
+			void RequestGuardEffect()
+			{
+				isGuard_ = true;
+			}
+
+			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
+			bool OnGuaed()
+			{
+				if (isGuard_) {
+					isGuard_ = false;
+					return true;
+				}
+				return false;
+			}
 			/** パンチしたことを取得 */
 			bool IsPunched()
 			{
 				return isPunched_;
+			}
+			/** チャージエフェクトの再生リクエストを出す */
+			void RequestChargeEffect()
+			{
+				isChargeEffectRequested_ = true;
+			}
+
+			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
+			bool CheckAndConsumeChargeEffectRequest()
+			{
+				if (isChargeEffectRequested_) {
+					isChargeEffectRequested_ = false;
+					return true;
+				}
+				return false;
+			}
+			/** チャージ攻撃エフェクトの再生リクエストを出す */
+			void RequestChargeAttackEffect()
+			{
+				isChargeAttackEffectRequested_ = true;
+			}
+			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
+			bool CheckAndConsumeChargeAttackEffectRequest()
+			{
+				if (isChargeAttackEffectRequested_) {
+					isChargeAttackEffectRequested_ = false;
+					return true;
+				}
+				return false;
 			}
 		};
 

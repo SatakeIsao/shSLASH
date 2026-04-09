@@ -571,6 +571,10 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->OnEnterKnockBack();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			
+			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
+				battleMachine->GetKnockBack();
+			}
 		}
 		
 
@@ -643,6 +647,9 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->OnEnterGuard();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
+				battleMachine->RequestGuardEffect();
+			}
 		}
 
 
@@ -717,6 +724,11 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			auto* characterStatus = characterStateMachine->GetStatus();
 
+
+			// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
+			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
+				battleMachine->RequestChargeEffect();
+			}
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart));
 
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
@@ -747,6 +759,10 @@ namespace app
 				if (!characterStateMachine->IsPressA()) {
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd));
 					chargeAttackPhase_ = ChargeAttackPhase::End;
+					// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
+					if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
+						battleMachine->RequestChargeAttackEffect();
+					}
 				}
 				break;
 			}

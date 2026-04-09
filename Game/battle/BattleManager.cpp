@@ -362,13 +362,93 @@ namespace app
 				}
 
 				//プレイヤーの攻撃アクション
-				//TODO: Player攻撃エフェクトの修正
 				{
-					if (battleCharacter_->GetStateMachine()->IsPunched())
+					if (battleCharacter_->GetStateMachine()->IsPunched()
+						&& !isWaitEffectPlay_)
 					{
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
+						effectPos.y += 30.0f;
+
+						Vector3 dir = battleCharacter_->GetStateMachine()->GetMoveDirection();
+						reservedEffectRot_ = Quaternion::Identity;
+
+						// 直接再生せず、予約する
+						isWaitEffectPlay_ = true;
+						effectDelayTimer_ = 0.5f;
+						reservedEffectPos_ = effectPos;
+					}
+
+					// エフェクト再生待ち状態ならタイマーを更新
+					if (isWaitEffectPlay_)
+					{
+						float deltaTime = g_gameTime->GetFrameDeltaTime();
+
+						effectDelayTimer_ -= deltaTime;
+
+						if (effectDelayTimer_ <= 0.0f)
+						{
+							effectManagerObject_->PlayEffect(
+								enEffectKind_PlayerAttack,
+								reservedEffectPos_,
+								reservedEffectRot_,
+								Vector3::One
+							);
+
+							isWaitEffectPlay_ = false;
+						}
+					}
+
+					// チャージエフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
+					{
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
+
+						effectManagerObject_->PlayEffect(
+							enEffectKind_PlayerAttackCharge_Start,
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
+					}
+
+					// チャージエフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
+					{
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
+
+						effectManagerObject_->PlayEffect(
+							enEffectKind_PlayerAttackCharge_End,
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
+					}
+
+					// ノックバックエフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->GetKnockBack())
+					{
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
+
 						effectManagerObject_->PlayEffect(
 							enEffectKind_SlimeAttack,
-							battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f),
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
+					}
+
+					// 防御エフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->OnGuaed())
+					{
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
+
+						effectManagerObject_->PlayEffect(
+							enEffectKind_SlimeAttack,
+							effectPos,
 							Quaternion::Identity,
 							Vector3::One
 						);
@@ -409,7 +489,6 @@ namespace app
 						hasPlayedPunchEffect_ = false;
 					}
 				}
-
 
 				// 衝突後の処理
 				{

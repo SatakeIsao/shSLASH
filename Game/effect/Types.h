@@ -13,6 +13,8 @@ enum enEffectKind
 	enEffectKind_PlayerKnockBack = enEffectKind,
 	enEffectKind_SlimeKnockBack,
 	enEffectKind_PlayerAttack,
+	enEffectKind_PlayerAttackCharge_Start,
+	enEffectKind_PlayerAttackCharge_End,
 	enEffectKind_SlimeAttack,
 	enEffectKind_Max,
 	enEffectKind_None = enEffectKind_Max,
@@ -33,7 +35,9 @@ static EffectInformation effectInformation[enEffectKind_Max] =
 {
 	EffectInformation(u"Assets/effect/player_knockback.efk"),
 	EffectInformation(u"Assets/effect/slime_knockback.efk"),
-	EffectInformation(u"Assets/effect/player_attack.efk"),
+	EffectInformation(u"Assets/effect/playerAtk.efk"),
+	EffectInformation(u"Assets/effect/playerChargeAtk_Start.efk"),
+	EffectInformation(u"Assets/effect/playerChargeAtk_End.efk"),
 	EffectInformation(u"Assets/effect/slime_attack.efk"),
 
 };
