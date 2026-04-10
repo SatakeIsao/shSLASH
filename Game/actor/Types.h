@@ -43,5 +43,23 @@ namespace app
 			knockBack,
 			Max
 		};
+		enum class StoneAnimationKind : uint8_t
+		{
+			Idle,
+			Run,
+			Attack,
+			Dead,
+			KnockBack,
+			Max
+		};
+		enum class MushroomAnimationKind : uint8_t
+		{
+			Idle,
+			Run,
+			Attack,
+			Dead,
+			KnockBack,
+			Max
+		};
 	}
 }

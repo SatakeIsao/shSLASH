@@ -43,12 +43,123 @@ namespace app
 			}
 
 			template <typename TState>
-			void AddState() 
+			void AddState()
 			{
 				stateMachine_->AddState<TState>();
 			}
 
 			EventCharacterStateMachine* GetStateMachine()
+			{
+				return stateMachine_.get();
+			}
+
+			void SetPause(bool isPause)
+			{
+				isPause_ = isPause;
+			}
+		};
+
+
+
+
+		/****************************************************/
+		class StoneEventCharacter : public Character
+		{
+			appActor(StoneEventCharacter);
+
+
+		private:
+			using SuperClass = Character;
+
+
+		private:
+			std::unique_ptr<StoneEventCharacterStateMachine> stateMachine_ = nullptr;
+			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			Vector3 forward_ = g_vec3Front;
+			bool isPause_ = false;
+
+
+		public:
+			StoneEventCharacter();
+			~StoneEventCharacter();
+
+			bool Start() override;
+			void Update() override;
+			void Render(RenderContext& rc) override;
+
+
+		public:
+			void Initialize(CharacterInitializeParameter& param) override final;
+			/** 当たり判定を作り直す */
+			void ResizeCollision();
+			Vector3 GetForward()
+			{
+				return forward_;
+			}
+
+			template <typename TState>
+			void AddState()
+			{
+				stateMachine_->AddState<TState>();
+			}
+
+			StoneEventCharacterStateMachine* GetStateMachine()
+			{
+				return stateMachine_.get();
+			}
+
+			void SetPause(bool isPause)
+			{
+				isPause_ = isPause;
+			}
+		};
+
+
+
+
+		/****************************************************/
+		class MushroomEventCharacter : public Character
+		{
+			appActor(MushroomEventCharacter);
+
+
+		private:
+			using SuperClass = Character;
+
+
+		private:
+			std::unique_ptr<MushroomEventCharacterStateMachine> stateMachine_ = nullptr;
+			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			Vector3 forward_ = g_vec3Front;
+			bool isPause_ = false;
+
+
+		public:
+			MushroomEventCharacter();
+			~MushroomEventCharacter();
+
+
+			bool Start() override;
+			void Update() override;
+			void Render(RenderContext& rc) override;
+
+
+		public:
+			void Initialize(CharacterInitializeParameter& param) override final;
+			/** 当たり判定を作り直す */
+			void ResizeCollision();
+			Vector3 GetForward()
+			{
+				return forward_;
+			}
+
+			template <typename TState>
+			void AddState()
+			{
+				stateMachine_->AddState<TState>();
+			}
+
+			 MushroomEventCharacterStateMachine* GetStateMachine()
 			{
 				return stateMachine_.get();
 			}

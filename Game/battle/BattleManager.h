@@ -3,6 +3,7 @@
  * バトル管理
  */
 #pragma once
+#include "actor/EventCharacter.h"
 #include "camera/CameraCommon.h"
 #include "camera/CameraSteering.h"
 #include "ui/Layout.h"
@@ -79,6 +80,8 @@ namespace app
             // @todo for test
             app::actor::BattleCharacter* battleCharacter_ = nullptr;
             app::actor::EventCharacter* eventCharacter_ = nullptr;
+            app::actor::StoneEventCharacter* stoneEventCharacter_ = nullptr;
+            app::actor::MushroomEventCharacter* mushroomEventCharacter_ = nullptr;
 			std::vector<app::actor::StaticGimmick*> testGimmickList_;
             std::vector<app::actor::PipeGimmick*> pipeGimmickList_;
             
