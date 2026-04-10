@@ -19,6 +19,7 @@
 #include "collision/GhostBodyManager.h"
 #include "collision/CollisionHitManager.h"
 #include "ui/BattleSequence.h"
+#include "ui/InGameUI.h"
 #include "effect/EffectManager.h"
 #include "core/PauseManager.h"
 #include "core/PauseManagerObject.h"
@@ -141,6 +142,8 @@ namespace app
 		{
 			DeleteGO(battleCharacter_);
 			DeleteGO(eventCharacter_);
+			DeleteGO(timerUIObject_);
+			DeleteGO(hpUIObject_);
 			for (auto& test : testGimmickList_)
 			{
 				DeleteGO(test);
@@ -276,8 +279,15 @@ namespace app
 				}
 				//バトルシーケンスマネージャーオブジェクト
 				{
-					battleSequenceObject_ = NewGO<app::ui::BattleSequence>(static_cast<uint8_t>(ObjectPriority::Default));
-					//currentDown = Test::CountDown;
+					//battleSequenceObject_ = NewGO<app::ui::BattleSequence>(static_cast<uint8_t>(ObjectPriority::Default));
+				}
+				// タイマーUI
+				{
+					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
+				}
+				// HPUI
+				{
+					hpUIObject_ = NewGO<app::ui::HpUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				}
 				//BGM再生
 				{
@@ -503,6 +513,20 @@ namespace app
 			auto cameraData = gameCamera->GetCameraData();
 			cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
 			gameCamera->SetState(cameraData);
+
+			/** 制限時間の管理 */
+			{
+				if (!timerUIObject_) return;
+
+				if (remainTime_ > 0.0f)
+				{
+					remainTime_ -= g_gameTime->GetFrameDeltaTime();
+				}
+
+				if (timerUIObject_) {
+					timerUIObject_->SetTimer(remainTime_);
+				}
+			}
 
 			layout_->Update();
 		}

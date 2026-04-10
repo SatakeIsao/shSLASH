@@ -258,39 +258,43 @@ namespace app
 
 			for (int i = 0; i < digit; i++)
 			{
-				SpriteRender* spriteRender = new SpriteRender;
-				spriteRender->Init(assetName, widht, height);
-				spriteRender->SetPosition(position);
-				spriteRender->SetScale(scale);
-				spriteRender->SetRotation(rotation);
-				renderList_.push_back(spriteRender);
-				UpdateNumber(i + 1, number_);	// 桁なので＋１する
+				for (int i = 0; i < digit; i++)
+				{
+					UpdateNumber(i + 1, number_); // 桁なので＋１する
+					auto* spriteRender = renderList_[i];
+					spriteRender->SetPosition(position);
+					spriteRender->SetScale(scale);
+					spriteRender->SetRotation(rotation);
+				}
 			}
 		}
 
 
 		void UIDigit::UpdateNumber(const int targetDigit, const int number)
 		{
-			// NOTE: targetDigitは1以上の値になっている
-			K2_ASSERT(targetDigit >= 1, "桁指定が間違えています。\n");
-
-			// いらない
-			const int targetRenderIndex = targetDigit - 1;
-			SpriteRender* nextRender = nullptr;
-			// 次のやつをつくる
-			if (targetRenderIndex < renderList_.size()) {
-				nextRender = renderList_[targetRenderIndex];
+			{
+				// NOTE: targetDigitは1以上の値になっている
+				K2_ASSERT(targetDigit >= 1, "桁指定が間違えています。\n");
+				// いらない
+				const int targetRenderIndex = targetDigit - 1;
+				SpriteRender* nextRender = nullptr;
+				// 次のやつをつくる
+				if (targetRenderIndex < renderList_.size()) {
+					delete renderList_[targetRenderIndex];
+					renderList_[targetRenderIndex] = nullptr;
+					nextRender = new SpriteRender();
+					renderList_[targetRenderIndex] = nextRender;
+				}
+				else {
+					nextRender = new SpriteRender();
+					renderList_.push_back(nextRender);
+				}
+				// 対象の桁の数字
+				const int targetDigitNumber = GetDigit(targetDigit);
+				std::string assetNname = assetPath_ + "/0.dds";
+				assetNname[assetNname.size() - 5] = '0' + targetDigitNumber;
+				nextRender->Init(assetNname.c_str(), w_, h_);
 			}
-			else {
-				nextRender = new SpriteRender();
-				renderList_.push_back(nextRender);
-			}
-
-			// 対象の桁の数字
-			const int targetDigitNumber = GetDigit(targetDigit);
-			std::string assetNname = assetPath_ + "/0.dds";
-			assetNname[assetNname.size() - 5] = '0' + targetDigitNumber;
-			nextRender->Init(assetNname.c_str(), w_, h_);
 		}
 
 
@@ -352,7 +356,6 @@ namespace app
 
 			for (auto& ui : uiList_) {
 				/** デバッグテスト */
-				//こいつ入れるとHPバー反映されない
 				//ui.get()->color.w = this->color.w;
 
 				ui.get()->Update();

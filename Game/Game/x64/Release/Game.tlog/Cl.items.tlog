@@ -7,6 +7,7 @@ C:\Users\s_i30\shSLASH\Game\actor\CharacterSteering.cpp;C:\Users\s_i30\shSLASH\G
 C:\Users\s_i30\shSLASH\Game\actor\EventCharacter.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\EventCharacter.obj
 C:\Users\s_i30\shSLASH\Game\actor\Gimmick.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\Gimmick.obj
 C:\Users\s_i30\shSLASH\Game\Application.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\Application.obj
+C:\Users\s_i30\shSLASH\Game\ui\InGameUI.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\InGameUI.obj
 C:\Users\s_i30\shSLASH\Game\ui\BattleSequence.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\BattleSequence.obj
 C:\Users\s_i30\shSLASH\Game\core\PauseManager.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\PauseManager.obj
 C:\Users\s_i30\shSLASH\Game\core\PauseManagerObject.cpp;C:\Users\s_i30\shSLASH\Game\Game\x64\Release\PauseManagerObject.obj
