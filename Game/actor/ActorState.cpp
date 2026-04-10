@@ -195,8 +195,8 @@ namespace app
 			 */
 
 
-			return stateTimer_ >3.0f;
-			
+			return stateTimer_ >1.3f;
+
 			//auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			//auto* modelRender = characterStateMachine->GetModelRender();
 			//return !modelRender->IsPlayingAnimation();

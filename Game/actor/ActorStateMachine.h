@@ -22,7 +22,7 @@ namespace app
 
 			/** 触らせない */
 		private:
-			std::map<uint32_t, std::function<ICharacterState*()>> stateFuncList_;
+			std::map<uint32_t, std::function<ICharacterState* ()>> stateFuncList_;
 			std::unique_ptr<ICharacterState> currentState_ = nullptr;
 			/** ステート関連 */
 			uint32_t currentStateId_ = INVALID_STATE_ID;
@@ -272,7 +272,7 @@ namespace app
 			/** ノックバックしたことを教える */
 			void OnKnockBack()
 			{
-				if (IsEqualCurrentState(KnockBackCharacterState::ID())){
+				if (IsEqualCurrentState(KnockBackCharacterState::ID())) {
 					return;
 				}
 				isKnockBack_ = true;
@@ -384,8 +384,8 @@ namespace app
 
 		public:
 			/** 外から踏まれたことを教える */
-			void OnSquashed() 
-			{ 
+			void OnSquashed()
+			{
 				isSquashed_ = true;
 				aiTimer_ = 0.0f;
 			}
@@ -397,10 +397,215 @@ namespace app
 				targetPosition_ = targetPos;
 			}
 
-			bool IsViewAngle() const {return isViewAngle_;}
+			bool IsViewAngle() const { return isViewAngle_; }
 
 			/** 追跡開始を教える */
-			void OnChase(const Vector3& direction,const Vector3& targetPos) {
+			void OnChase(const Vector3& direction, const Vector3& targetPos) {
+				isChasing_ = true;
+				chaseDirection_ = direction;
+				targetPosition_ = targetPos;
+			}
+
+			/**
+			 * DEBUG: 書く場所変更予定だが一旦ここで実装
+			 * パンチ食らったことを教える⇒ノックバックに変更したい
+			 */
+			void OnKnockBack(const Vector3& direction)
+			{
+				isKnockBack_ = true;
+				knockBackDirection_ = direction;
+			}
+			bool IsKnockBack()
+			{
+				return isKnockBack_;
+			}
+
+			//ゴーストが生成されたことを通知
+			void NontifyAttackGhostCreated()
+			{
+				isAttackGhostCreated_ = true;
+			}
+
+
+			bool CheckAndConsumeAttackGhostCreated()
+			{
+				if (isAttackGhostCreated_) {
+					isAttackGhostCreated_ = false;
+					return true;
+				}
+				return false;
+			}
+		};
+
+
+
+		/******************************************/
+		class StoneEventCharacterStateMachine : public CharacterStateMachine
+		{
+		private:
+			using SuperClass = CharacterStateMachine;
+			app::collision::GhostBody* attackBody_ = nullptr;
+			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+
+			Vector3 targetPosition_ = Vector3::Zero;
+			Vector3 chaseDirection_ = Vector3::Zero;
+			Vector3 knockBackDirection_ = Vector3::Zero;
+			/** AI用のタイマー */
+			float aiTimer_ = 0.0f;
+			/** 最初の待機時間 */
+			const float WAIT_TIME = 1.0f;
+			/** 踏まれたか */
+			bool isSquashed_ = false;
+			/** 視野角に入ったか */
+			bool isViewAngle_ = false;
+			/** 追いかけているか */
+			bool isChasing_ = false;
+			/** パンチされたか */
+			bool isKnockBack_ = false;
+
+			bool isAttackGhostCreated_ = false;
+
+		public:
+			StoneEventCharacterStateMachine();
+			virtual ~StoneEventCharacterStateMachine();
+
+			virtual void Initialize() override final;
+			virtual void Update() override final;
+
+			virtual uint32_t GetCharacterID() const override;
+
+			virtual void OnEnterAttack() override;
+			virtual void OnExitAttack() override;
+			virtual void OnEnterDead() override;
+			virtual void OnExitDead() override;
+			virtual void OnEnterKnockBack() override;
+			virtual void OnExitKnockBack() override;
+
+		private:
+			void UpdateState();
+
+		public:
+			/** 外から踏まれたことを教える */
+			void OnSquashed()
+			{
+				isSquashed_ = true;
+				aiTimer_ = 0.0f;
+			}
+			bool IsSquashed() const { return isSquashed_; }
+
+			/** 視野角に入ったことを教える */
+			void OnViewAngle(const Vector3& targetPos) {
+				isViewAngle_ = true;
+				targetPosition_ = targetPos;
+			}
+
+			bool IsViewAngle() const { return isViewAngle_; }
+
+			/** 追跡開始を教える */
+			void OnChase(const Vector3& direction, const Vector3& targetPos) {
+				isChasing_ = true;
+				chaseDirection_ = direction;
+				targetPosition_ = targetPos;
+			}
+
+			/**
+			 * DEBUG: 書く場所変更予定だが一旦ここで実装
+			 * パンチ食らったことを教える⇒ノックバックに変更したい
+			 */
+			void OnKnockBack(const Vector3& direction)
+			{
+				isKnockBack_ = true;
+				knockBackDirection_ = direction;
+			}
+			bool IsKnockBack()
+			{
+				return isKnockBack_;
+			}
+
+			//ゴーストが生成されたことを通知
+			void NontifyAttackGhostCreated()
+			{
+				isAttackGhostCreated_ = true;
+			}
+
+
+			bool CheckAndConsumeAttackGhostCreated()
+			{
+				if (isAttackGhostCreated_) {
+					isAttackGhostCreated_ = false;
+					return true;
+				}
+				return false;
+			}
+		};
+
+
+
+
+		/******************************************/
+		class MushroomEventCharacterStateMachine : public CharacterStateMachine
+		{
+		private:
+			using SuperClass = CharacterStateMachine;
+			app::collision::GhostBody* attackBody_ = nullptr;
+			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+
+			Vector3 targetPosition_ = Vector3::Zero;
+			Vector3 chaseDirection_ = Vector3::Zero;
+			Vector3 knockBackDirection_ = Vector3::Zero;
+			/** AI用のタイマー */
+			float aiTimer_ = 0.0f;
+			/** 最初の待機時間 */
+			const float WAIT_TIME = 1.0f;
+			/** 踏まれたか */
+			bool isSquashed_ = false;
+			/** 視野角に入ったか */
+			bool isViewAngle_ = false;
+			/** 追いかけているか */
+			bool isChasing_ = false;
+			/** パンチされたか */
+			bool isKnockBack_ = false;
+
+			bool isAttackGhostCreated_ = false;
+
+		public:
+			MushroomEventCharacterStateMachine();
+			virtual ~MushroomEventCharacterStateMachine();
+
+			virtual void Initialize() override final;
+			virtual void Update() override final;
+
+			virtual uint32_t GetCharacterID() const override;
+
+			virtual void OnEnterAttack() override;
+			virtual void OnExitAttack() override;
+			virtual void OnEnterDead() override;
+			virtual void OnExitDead() override;
+			virtual void OnEnterKnockBack() override;
+			virtual void OnExitKnockBack() override;
+
+		private:
+			void UpdateState();
+
+		public:
+			/** 外から踏まれたことを教える */
+			void OnSquashed()
+			{
+				isSquashed_ = true;
+				aiTimer_ = 0.0f;
+			}
+			bool IsSquashed() const { return isSquashed_; }
+
+			/** 視野角に入ったことを教える */
+			void OnViewAngle(const Vector3& targetPos) {
+				isViewAngle_ = true;
+				targetPosition_ = targetPos;
+			}
+
+			bool IsViewAngle() const { return isViewAngle_; }
+
+			/** 追跡開始を教える */
+			void OnChase(const Vector3& direction, const Vector3& targetPos) {
 				isChasing_ = true;
 				chaseDirection_ = direction;
 				targetPosition_ = targetPos;

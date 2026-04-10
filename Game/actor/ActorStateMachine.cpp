@@ -358,13 +358,13 @@ namespace app
 				if (IsActionLB1()
 					|| IsActionRB1())
 				{
-					RequestChangeState(GuardCharacterState::ID());					
+					RequestChangeState(GuardCharacterState::ID());
 					return;
 				}
 			}
 			// 回避
 			{
-				if(IsTriggerY())
+				if (IsTriggerY())
 				{
 					RequestChangeState(AvoidanceCharacterState::ID());
 					return;
@@ -441,7 +441,7 @@ namespace app
 		}
 
 
-		void EventCharacterStateMachine::Update() 
+		void EventCharacterStateMachine::Update()
 		{
 			UpdateState();
 			SuperClass::Update();
@@ -525,7 +525,7 @@ namespace app
 				}
 				return;
 			}
-			
+
 			if (IsEqualCurrentState(AttackCharacterState::ID()))
 			{
 				if (CanChangeState()) {
@@ -541,7 +541,7 @@ namespace app
 				isChasing_ = false;
 
 				if (IsEqualCurrentState(IdleCharacterState::ID())
-					&&aiTimer_> 5.0f)
+					&& aiTimer_ > 5.0f)
 				{
 
 				}
@@ -569,9 +569,9 @@ namespace app
 				}
 
 				//TODO: もとの下の流れに戻したい
-				
-				
-				
+
+
+
 				//aiTimer_ = 5.0f;
 				//isChasing_ = false;
 				//return;
@@ -591,7 +591,392 @@ namespace app
 				return;
 			}
 
-			if (IsEqualCurrentState(RunCharacterState::ID())) 
+			if (IsEqualCurrentState(RunCharacterState::ID()))
+			{
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+
+				if (aiTimer_ <= 2.0f)
+				{
+					SetMoveDirection(Vector3::Left);
+				}
+				else if (aiTimer_ <= 4.0f)
+				{
+					SetMoveDirection(Vector3::Right);
+				}
+				else {
+					SetMoveDirection(Vector3::Zero);
+					RequestChangeState(IdleCharacterState::ID());
+					aiTimer_ = 0.0f;
+				}
+				return;
+			}
+
+			RequestChangeState(IdleCharacterState::ID());
+		}
+
+
+
+
+		/************************************/
+
+		StoneEventCharacterStateMachine::StoneEventCharacterStateMachine()
+		{
+		}
+
+
+		StoneEventCharacterStateMachine::~StoneEventCharacterStateMachine()
+		{
+		}
+
+
+		void StoneEventCharacterStateMachine::Initialize()
+		{
+			SuperClass::Initialize();
+			SetCurrentState(INVALID_STATE_ID);
+			RequestChangeState(IdleCharacterState::ID());
+
+			isUseCameraDirection_ = false;
+		}
+
+
+		void StoneEventCharacterStateMachine::Update()
+		{
+			UpdateState();
+			SuperClass::Update();
+		}
+
+
+		void StoneEventCharacterStateMachine::OnEnterDead()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead));
+		}
+
+
+		void StoneEventCharacterStateMachine::OnExitDead()
+		{
+		}
+
+
+		void StoneEventCharacterStateMachine::OnEnterKnockBack()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
+			Jump(80.0f);
+		}
+
+
+		void StoneEventCharacterStateMachine::OnExitKnockBack()
+		{
+		}
+
+
+		uint32_t StoneEventCharacterStateMachine::GetCharacterID() const
+		{
+			return StoneEventCharacter::ID();
+		}
+
+		void StoneEventCharacterStateMachine::OnEnterAttack()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack));
+		}
+
+		void StoneEventCharacterStateMachine::OnExitAttack()
+		{
+		}
+
+
+		void StoneEventCharacterStateMachine::UpdateState()
+		{
+			if (IsSquashed())
+			{
+				RequestChangeState(DeadCharacterState::ID());
+
+				// Deadステート側で2秒経過して「遷移可能」になったらIdleに戻す
+				if (IsEqualCurrentState(DeadCharacterState::ID())
+					&& CanChangeState())
+				{
+					isSquashed_ = false;
+					RequestChangeState(IdleCharacterState::ID());
+				}
+				return;
+			}
+
+
+			if (isKnockBack_)
+			{
+				//ノックバックする方向を設定
+				SetMoveDirection(knockBackDirection_);
+				RequestChangeState(KnockBackCharacterState::ID());
+
+				if (IsEqualCurrentState(KnockBackCharacterState::ID())
+					&& CanChangeState())
+				{
+					aiTimer_ = 0.0f;
+					isKnockBack_ = false;
+					RequestChangeState(IdleCharacterState::ID());
+				}
+				return;
+			}
+
+			if (IsEqualCurrentState(AttackCharacterState::ID()))
+			{
+				if (CanChangeState()) {
+					aiTimer_ = 0.0f;
+					RequestChangeState(RunCharacterState::ID());
+				}
+				return;
+			}
+
+			/** TODO: 敵の視野角にPlayerが入ったら追従して */
+			if (isChasing_)
+			{
+				isChasing_ = false;
+
+				if (IsEqualCurrentState(IdleCharacterState::ID())
+					&& aiTimer_ > 5.0f)
+				{
+
+				}
+				else {
+					Vector3 toPlayer = targetPosition_ - transform.position;
+					toPlayer.y = 0.0f;
+					float distance = toPlayer.Length();
+
+					if (distance <= 40.0f) {
+						SetMoveDirection(chaseDirection_);
+						RequestChangeState(AttackCharacterState::ID());
+					}
+					else if (distance <= 200.0f) {
+						SetMoveDirection(chaseDirection_);
+						RequestChangeState(RunCharacterState::ID());
+						aiTimer_ = 5.0f;
+					}
+					/** DEBUG: いらないかも */
+					else
+					{
+						RequestChangeState(RunCharacterState::ID());
+						aiTimer_ = 0.0f;
+					}
+					return;
+				}
+
+				//TODO: もとの下の流れに戻したい
+
+
+
+				//aiTimer_ = 5.0f;
+				//isChasing_ = false;
+				//return;
+			}
+
+			app::actor::BattleCharacter* player = nullptr;
+
+			/** デバッグテスト: 待機⇒左に走る⇒右に走る⇒待機のモーション */
+			if (IsEqualCurrentState(IdleCharacterState::ID()))
+			{
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (aiTimer_ > WAIT_TIME)
+				{
+					RequestChangeState(RunCharacterState::ID());
+					aiTimer_ = 0.0f;
+				}
+				return;
+			}
+
+			if (IsEqualCurrentState(RunCharacterState::ID()))
+			{
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+
+				if (aiTimer_ <= 2.0f)
+				{
+					SetMoveDirection(Vector3::Left);
+				}
+				else if (aiTimer_ <= 4.0f)
+				{
+					SetMoveDirection(Vector3::Right);
+				}
+				else {
+					SetMoveDirection(Vector3::Zero);
+					RequestChangeState(IdleCharacterState::ID());
+					aiTimer_ = 0.0f;
+				}
+				return;
+			}
+
+			RequestChangeState(IdleCharacterState::ID());
+		}
+
+
+
+
+		/************************************/
+
+		MushroomEventCharacterStateMachine::MushroomEventCharacterStateMachine()
+		{
+		}
+
+
+		MushroomEventCharacterStateMachine::~MushroomEventCharacterStateMachine()
+		{
+		}
+
+
+		void MushroomEventCharacterStateMachine::Initialize()
+		{
+			SuperClass::Initialize();
+			SetCurrentState(INVALID_STATE_ID);
+			RequestChangeState(IdleCharacterState::ID());
+			isUseCameraDirection_ = false;
+		}
+
+
+		void MushroomEventCharacterStateMachine::Update()
+		{
+			UpdateState();
+			SuperClass::Update();
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnEnterDead()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead));
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnExitDead()
+		{
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnEnterKnockBack()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
+			Jump(80.0f);
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnExitKnockBack()
+		{
+		}
+
+
+
+		void MushroomEventCharacterStateMachine::OnEnterAttack()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Attack));
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnExitAttack()
+		{
+		}
+
+
+		uint32_t MushroomEventCharacterStateMachine::GetCharacterID() const
+		{
+			return MushroomEventCharacter::ID();
+		}
+
+
+		void MushroomEventCharacterStateMachine::UpdateState()
+		{
+			if (IsSquashed())
+			{
+				RequestChangeState(DeadCharacterState::ID());
+
+				// Deadステート側で2秒経過して「遷移可能」になったらIdleに戻す
+				if (IsEqualCurrentState(DeadCharacterState::ID())
+					&& CanChangeState())
+				{
+					isSquashed_ = false;
+					RequestChangeState(IdleCharacterState::ID());
+				}
+				return;
+			}
+
+
+			if (isKnockBack_)
+			{
+				//ノックバックする方向を設定
+				SetMoveDirection(knockBackDirection_);
+				RequestChangeState(KnockBackCharacterState::ID());
+
+				if (IsEqualCurrentState(KnockBackCharacterState::ID())
+					&& CanChangeState())
+				{
+					aiTimer_ = 0.0f;
+					isKnockBack_ = false;
+					RequestChangeState(IdleCharacterState::ID());
+				}
+				return;
+			}
+
+
+			if (IsEqualCurrentState(AttackCharacterState::ID()))
+			{
+				if (CanChangeState()) {
+					aiTimer_ = 0.0f;
+					RequestChangeState(RunCharacterState::ID());
+				}
+				return;
+			}
+
+			/** TODO: 敵の視野角にPlayerが入ったら追従して */
+			if (isChasing_)
+			{
+				isChasing_ = false;
+
+				if (IsEqualCurrentState(IdleCharacterState::ID())
+					&& aiTimer_ > 5.0f)
+				{
+
+				}
+				else {
+					Vector3 toPlayer = targetPosition_ - transform.position;
+					toPlayer.y = 0.0f;
+					float distance = toPlayer.Length();
+
+					if (distance <= 40.0f) {
+						SetMoveDirection(chaseDirection_);
+						RequestChangeState(AttackCharacterState::ID());
+					}
+					else if (distance <= 200.0f) {
+						SetMoveDirection(chaseDirection_);
+						RequestChangeState(RunCharacterState::ID());
+						aiTimer_ = 5.0f;
+					}
+					/** DEBUG: いらないかも */
+					else
+					{
+						RequestChangeState(RunCharacterState::ID());
+						aiTimer_ = 0.0f;
+					}
+					return;
+				}
+
+				//TODO: もとの下の流れに戻したい
+
+
+
+				//aiTimer_ = 5.0f;
+				//isChasing_ = false;
+				//return;
+			}
+
+			app::actor::BattleCharacter* player = nullptr;
+
+			/** デバッグテスト: 待機⇒左に走る⇒右に走る⇒待機のモーション */
+			if (IsEqualCurrentState(IdleCharacterState::ID()))
+			{
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (aiTimer_ > WAIT_TIME)
+				{
+					RequestChangeState(RunCharacterState::ID());
+					aiTimer_ = 0.0f;
+				}
+				return;
+			}
+
+			if (IsEqualCurrentState(RunCharacterState::ID()))
 			{
 				aiTimer_ += g_gameTime->GetFrameDeltaTime();
 

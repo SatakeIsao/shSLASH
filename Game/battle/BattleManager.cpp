@@ -6,7 +6,6 @@
 #include "BattleManager.h"
 
 #include "actor/BattleCharacter.h"
-#include "actor/EventCharacter.h"
 #include "actor/ActorState.h"
 #include "actor/CharacterSteering.h"
 #include "actor/ActorStatus.h"
@@ -33,6 +32,8 @@ namespace
 	constexpr const char* MASTER_BATTLE_CAMERA_PARAM_PATH = "Assets/master/battle/MasterBattleCameraParameter.json";
 	constexpr const char* MASTER_BATTLE_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterBattleCharacterParameter.json";
 	constexpr const char* MASTER_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterEventCharacterParameter.json";
+	constexpr const char* MASTER_STONE_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterStoneEventCharacterParameter.json";
+	constexpr const char* MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterMushroomEventCharacterParameter.json";
 
 	static const int MAX_HP = 8;
 
@@ -112,7 +113,36 @@ namespace
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::SlimeAnimationKind::knockBack)].loop = false;
 
 		});
-
+	static app::actor::CharacterInitializeParameter sStoneEnemyInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
+		{
+			parameter->modelName = "Assets/ModelData/enemy/stone/StoneMonster.tkm";
+			parameter->animationDataList.Create(static_cast<uint8_t>(app::actor::StoneAnimationKind::Max));
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Idle)].filename = "Assets/animData/enemy/stone/StoneMonstorIdle.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Idle)].loop = true;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Run)].filename = "Assets/animData/enemy/stone/StoneMonstorRun.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Run)].loop = true;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack)].filename = "Assets/animData/enemy/stone/StoneMonstorAttack.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack)].loop = false;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead)].filename = "Assets/animData/enemy/stone/StoneMonstorDeath.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead)].loop = false;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack)].filename = "Assets/animData/enemy/stone/StoneMonstorDamage.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack)].loop = false;
+		});
+	static::app::actor::CharacterInitializeParameter sMushroomEnemyInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
+		{
+			parameter->modelName = "Assets/ModelData/enemy/mushroom/Mushroom.tkm";
+			parameter->animationDataList.Create(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Max));
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Idle)].filename = "Assets/animData/enemy/mushroom/Mushroom_Idle.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Idle)].loop = true;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Run)].filename = "Assets/animData/enemy/mushroom/Mushroom_Move.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Run)].loop = true;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Attack)].filename = "Assets/animData/enemy/mushroom/Mushroom_Attack.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Attack)].loop = false;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead)].filename = "Assets/animData/enemy/mushroom/Mushroom_Death.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead)].loop = false;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack)].filename = "Assets/animData/enemy/mushroom/Mushroom_Damage.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack)].loop = false;
+		});
 }
 
 
@@ -220,12 +250,47 @@ namespace app
 					eventCharacter_->AddState<app::actor::DeadCharacterState>();
 					eventCharacter_->AddState <app::actor::KnockBackCharacterState>();
 				}
+
+				//ストーンイベントキャラクター
+				stoneEventCharacter_ = NewGO<app::actor::StoneEventCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "stone");
+				stoneEventCharacter_->Initialize(sStoneEnemyInitializeParameter);
+				{
+					stoneEventCharacter_->AddState <app::actor::IdleCharacterState>();
+					stoneEventCharacter_->AddState<app::actor::RunCharacterState>();
+					stoneEventCharacter_->AddState<app::actor::AttackCharacterState>();
+					stoneEventCharacter_->AddState<app::actor::PunchCharacterState>();
+					stoneEventCharacter_->AddState<app::actor::DeadCharacterState>();
+					stoneEventCharacter_->AddState <app::actor::KnockBackCharacterState>();
+
+					stoneEventCharacter_->transform.position = Vector3(-200.0f, 0.0f, 0.0f);
+				}
+
+				//マッシュルームイベントキャラクター
+				mushroomEventCharacter_ = NewGO<app::actor::MushroomEventCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "mushroom");
+				mushroomEventCharacter_->Initialize(sMushroomEnemyInitializeParameter);
+				{
+					mushroomEventCharacter_->AddState <app::actor::IdleCharacterState>();
+					mushroomEventCharacter_->AddState<app::actor::RunCharacterState>();
+					mushroomEventCharacter_->AddState<app::actor::AttackCharacterState>();
+					mushroomEventCharacter_->AddState<app::actor::PunchCharacterState>();
+					mushroomEventCharacter_->AddState<app::actor::DeadCharacterState>();
+					mushroomEventCharacter_->AddState <app::actor::KnockBackCharacterState>();
+
+					mushroomEventCharacter_->transform.position = Vector3(200.0f, 0.0f, 0.0f);
+				}
 				/** 敵に重力付与のテスト */
 				//TODO: いま、ステージなので敵のパラメータに変更させたい
 				{
 					auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
 					eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
 					eventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
+
+					stoneEventCharacter_->GetStatus()->SetFriction(stageParam->friction);
+					stoneEventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
+
+					mushroomEventCharacter_->GetStatus()->SetFriction(stageParam->friction);
+					mushroomEventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
+
 				}
 
 				// ギミック設置（テスト用）
@@ -235,9 +300,10 @@ namespace app
 					const int gimmickColNum = 10;
 					testGimmickList_.resize(gimmickNum);
 
-					for (int i = 0; i < testGimmickList_.size(); ++i) {
+					for (int i = 0; i < testGimmickList_.size(); ++i) 
+					{
 						testGimmickList_[i] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
-						// 配置
+						//配置
 						int row = i / gimmickColNum;
 						int col = i % gimmickColNum;
 						float x = (static_cast<float>(col) - (gimmickColNum / 2.0f)) * 100.0f;
@@ -337,13 +403,20 @@ namespace app
 				// デバッグテスト: 追従の処理
 				Vector3 playerPosition = battleCharacter_->transform.position;
 				Vector3 slimePosition = eventCharacter_->transform.position;
+				Vector3 stonePosition = stoneEventCharacter_->transform.position;
+				Vector3 mushroomPosition = mushroomEventCharacter_->transform.position;
 				//XとZのベクトルを長さに変換
-				Vector3 diffXZ(playerPosition.x - slimePosition.x, 0.0f, playerPosition.z - slimePosition.z);
-				float diff = diffXZ.Length();
+				Vector3 diffXZ_Slime(playerPosition.x - slimePosition.x, 0.0f, playerPosition.z - slimePosition.z);
+				float diff = diffXZ_Slime.Length();
+				Vector3 diffXZ_Stone(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
+				float diffStone = diffXZ_Stone.Length();
+				Vector3 diffXZ_Mushroom(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
+				float diffMushroom = diffXZ_Mushroom.Length();
+
 
 				if (diff < 200.0f) {
 					//向きだけのベクトル
-					Vector3 DirectionToPlayer = diffXZ;
+					Vector3 DirectionToPlayer = diffXZ_Slime;
 					DirectionToPlayer.Normalize();
 
 					Vector3 slimeForward = Vector3(0.0f, 0.0f, 1.0f);
@@ -368,6 +441,65 @@ namespace app
 					{
 						// 視野角内に入った
 						eventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
+					}
+				}
+
+				/** ストーンの追従処理 */
+				if(diffStone < 800.0f) {
+					Vector3 DirectionToPlayer = diffXZ_Stone;
+					DirectionToPlayer.Normalize();
+
+					Vector3 stoneForward = Vector3(0.0f, 0.0f, 1.0f);
+					stoneEventCharacter_->transform.localRotation.Apply(stoneForward);
+
+					//ストーンの前方向
+					Vector3 forwardXZ(stoneForward.x, 0.0f, stoneForward.z);
+					forwardXZ.Normalize();
+
+					//向きだけのベクトルとストーンの前方向で内積
+					float dot = forwardXZ.Dot(DirectionToPlayer);
+
+					//角度のしきい値と計算
+					float halfFovDegree = 60.0f;
+
+					float halfFovRadians = halfFovDegree * (Math::PI / 180);
+
+					//判定用のしきい値となるコサイン値
+					float threshold = std::cos(halfFovRadians);
+
+					if (dot > threshold)
+					{
+						stoneEventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
+					}
+				}
+
+
+				/** マッシュルームの追従処理 */
+				if(diffMushroom < 200.0f) {
+					Vector3 DirectionToPlayer = diffXZ_Mushroom;
+					DirectionToPlayer.Normalize();
+
+					Vector3 mushroomForward = Vector3(0.0f, 0.0f, 1.0f);
+					mushroomEventCharacter_->transform.localRotation.Apply(mushroomForward);
+
+					//マッシュルームの前方向
+					Vector3 forwardXZ(mushroomForward.x, 0.0f, mushroomForward.z);
+					forwardXZ.Normalize();
+
+					//向きだけのベクトルとマッシュルームの前方向で内積
+					float dot = forwardXZ.Dot(DirectionToPlayer);
+
+					//角度のしきい値と計算
+					float halfFovDegree = 60.0f;
+
+					float halfFovRadians = halfFovDegree * (Math::PI / 180);
+
+					//判定用のしきい値となるコサイン値
+					float threshold = std::cos(halfFovRadians);
+
+					if (dot > threshold)
+					{
+						mushroomEventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
 					}
 				}
 
@@ -579,6 +711,22 @@ namespace app
 				});
 			// イベントキャラクターパラメーター読み込み
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
+				{
+					p.moveSpeed = json["moveSpeed"].get<float>();
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+					p.jumpPower = json["jumpPower"].get<float>();
+					p.radius = json["radius"].get<float>();
+					p.height = json["height"].get<float>();
+				});
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
+				{
+					p.moveSpeed = json["moveSpeed"].get<float>();
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+					p.jumpPower = json["jumpPower"].get<float>();
+					p.radius = json["radius"].get<float>();
+					p.height = json["height"].get<float>();
+				});
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
 				{
 					p.moveSpeed = json["moveSpeed"].get<float>();
 					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();

@@ -63,7 +63,7 @@ namespace app
 
 		void EventCharacter::Render(RenderContext& rc)
 		{
-			SuperClass::Render(rc);
+			//SuperClass::Render(rc);
 		}
 
 
@@ -79,7 +79,7 @@ namespace app
 			}
 
 			modelRender_ = std::make_unique<ModelRender>();
-			modelRender_->Init(param.modelName,animationClips_.data(),animationClips_.size());
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
 
 			transform.position = Vector3::Zero;
 			transform.scale = Vector3::One;
@@ -88,6 +88,167 @@ namespace app
 
 
 		void EventCharacter::ResizeCollision()
+		{
+			//古いデータを破棄してリセット
+			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
+		}
+
+
+
+
+		/****************************************************/
+
+		StoneEventCharacter::StoneEventCharacter()
+		{
+			characterController_ = std::make_unique<CharacterController>();
+			stateMachine_ = std::make_unique<StoneEventCharacterStateMachine>();
+			status_ = new app::actor::StoneEventCharacterStatus();
+			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+		}
+
+
+		StoneEventCharacter::~StoneEventCharacter()
+		{
+		}
+
+
+		bool StoneEventCharacter::Start()
+		{
+			stateMachine_->Initialize();
+			stateMachine_->Setup(this);
+			status_->Setup();
+			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
+			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
+			characterController_->SetGravity(status_->GetGravity());
+			return true;
+		}
+
+		void StoneEventCharacter::Update()
+		{
+			if (isPause_) { return; }
+
+			const float deltaTime = g_gameTime->GetFrameDeltaTime();
+			stateMachine_->Update();
+			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
+
+			transform.localPosition = nextPosition;
+			transform.localScale = stateMachine_->transform.scale;
+			transform.localRotation = stateMachine_	->transform.rotation;
+			transform.UpdateTransform();
+			stateMachine_->transform.position = nextPosition;
+
+			// ゴーストボディ
+			Vector3 centerPos = transform.position;
+			centerPos.y += status_->GetRadius() * 2.0f;
+			ghostBody_->SetPosition(centerPos);
+
+			SuperClass::Update();
+		}
+
+		void StoneEventCharacter::Render(RenderContext& rc)
+		{
+			SuperClass::Render(rc);
+		}
+
+
+		void StoneEventCharacter::Initialize(CharacterInitializeParameter& param)
+		{
+			param.Load();
+			const uint32_t animationCount = static_cast<uint32_t>(param.animationDataList.size());
+			animationClips_.Create(animationCount);
+			for (uint32_t i = 0; i < animationCount; ++i)
+			{
+				animationClips_[i].Load(param.animationDataList[i].filename);
+				animationClips_[i].SetLoopFlag(param.animationDataList[i].loop);
+			}
+
+			modelRender_ = std::make_unique<ModelRender>();
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
+
+			transform.position = Vector3::Zero;
+			transform.scale = Vector3::One;
+			transform.rotation = Quaternion::Identity;
+		}
+
+
+		void StoneEventCharacter::ResizeCollision()
+		{
+			//古いデータを破棄してリセット
+			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
+		}
+
+
+
+
+		/****************************************************/
+
+
+		MushroomEventCharacter::MushroomEventCharacter()
+		{
+			characterController_ = std::make_unique<CharacterController>();
+			stateMachine_ = std::make_unique<MushroomEventCharacterStateMachine>();
+			status_ = new app::actor::MushroomEventCharacterStatus();
+			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+		}
+
+		MushroomEventCharacter::~MushroomEventCharacter()
+		{
+		}
+
+		bool MushroomEventCharacter::Start()
+		{
+			stateMachine_->Initialize();
+			stateMachine_->Setup(this);
+			status_->Setup();
+			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
+			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
+			characterController_->SetGravity(status_->GetGravity());
+			return true;
+		}
+
+		void MushroomEventCharacter::Update()
+		{
+			if (isPause_) { return; }
+			const float deltaTime = g_gameTime->GetFrameDeltaTime();
+			stateMachine_->Update();
+			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
+			transform.localPosition = nextPosition;
+			transform.localScale = stateMachine_->transform.scale;
+			transform.localRotation = stateMachine_->transform.rotation;
+			transform.UpdateTransform();
+			stateMachine_->transform.position = nextPosition;
+			// ゴーストボディ
+			Vector3 centerPos = transform.position;
+			centerPos.y += status_->GetRadius() * 2.0f;
+			ghostBody_->SetPosition(centerPos);
+			SuperClass::Update();
+		}
+
+		void MushroomEventCharacter::Render(RenderContext& rc)
+		{
+			SuperClass::Render(rc);
+		}
+
+		void MushroomEventCharacter::Initialize(CharacterInitializeParameter& param)
+		{
+			param.Load();
+			const uint32_t animationCount = static_cast<uint32_t>(param.animationDataList.size());
+			animationClips_.Create(animationCount);
+			for (uint32_t i = 0; i < animationCount; ++i)
+			{
+				animationClips_[i].Load(param.animationDataList[i].filename);
+				animationClips_[i].SetLoopFlag(param.animationDataList[i].loop);
+			}
+			modelRender_ = std::make_unique<ModelRender>();
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
+			transform.position = Vector3::Zero;
+			transform.scale = Vector3::One;
+			transform.rotation = Quaternion::Identity;
+		}
+
+		void MushroomEventCharacter::ResizeCollision()
 		{
 			//古いデータを破棄してリセット
 			ghostBody_ = std::make_unique<app::collision::GhostBody>();
