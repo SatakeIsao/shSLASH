@@ -37,6 +37,8 @@ namespace app
     namespace ui
     {
         class BattleSequence;
+        class TimerUIObject;
+        class HpUIObject;
     }
 }
 
@@ -87,6 +89,9 @@ namespace app
             EffectManagerObject* effectManagerObject_ = nullptr;
             app::core::PauseManagerObject* pauseManagerObject_ = nullptr;
             app::ui::BattleSequence* battleSequenceObject_ = nullptr;
+            app::ui::TimerUIObject* timerUIObject_ = nullptr;
+            app::ui::HpUIObject* hpUIObject_ = nullptr;
+
             nsK2EngineLow::SkyCube* skyCube_ = nullptr;									//スカイキューブのオブジェクト
             /** 通知リスト */
 			std::vector<std::unique_ptr<INotify>> notifyList_;
@@ -95,10 +100,11 @@ namespace app
             bool deadTest_ = false;
             bool isPause_ = false;
 
-            /** あとで書き換える */
-            //Test currentDown = Test::Compleate;
             float countDownTimer_ = 3.0f;
             float effectDelayTimer_ = 0.0f; //遅延時間をカウント
+            /** 残り時間 */
+            float remainTime_ = 120.0f;
+
             bool isWaitEffectPlay_ = false;
             Vector3 reservedEffectPos_;     //再生予定の位置を保持
             Quaternion reservedEffectRot_;

@@ -119,7 +119,7 @@ namespace app
 			UIAnimationBase* FindAnimation(const uint32_t key)
 			{
 				auto it = uiAnimationMap_.find(key);
-				if(it!= uiAnimationMap_.end()) {
+				if (it != uiAnimationMap_.end()) {
 					return it->second.get();
 				}
 				return nullptr;
@@ -307,7 +307,6 @@ namespace app
 			void SetNumber(const int number) { requestNumber_ = number; }
 			/** ゼロ埋めフラグの設定 */
 			void SetZeroPadding(bool isPadding) { isZeroPadding_ = isPadding; }
-
 			std::vector<SpriteRender*>& GetSpriteRenderList() { return renderList_; }
 
 			void ForEach(const std::function<void(SpriteRender*)>& func)

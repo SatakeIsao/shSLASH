@@ -1,0 +1,29 @@
+﻿{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "timerUI",
+        "asset": "Assets/ui/timer/timerUI.DDS",
+        "width": 70,
+        "height": 70,
+        "position": [-740, 355, 0],
+        "scale": [1.0, 1.0, 1.0],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.1]
+      },
+      {
+        "type": "UIDigit",
+        "name": "timerNumbers",
+        "asset": "Assets/ui/numbers",
+        "digit":3,
+        "width": 70,
+        "height": 100,
+        "position": [730, 355, 0],
+        "scale": [1.0, 1.0, 1.0],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.1]
+      }
+    ]
+  }
+}
