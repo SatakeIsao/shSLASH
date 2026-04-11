@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#include <random>
+
 
 /**
  * 当初はenumで管理しようと思ったが、
@@ -402,6 +404,35 @@ namespace app
 			void Enter() override;
 			void Update() override;
 			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
+
+
+
+
+		class PatrolCharacterState : public ICharacterState
+		{
+			appState(PatrolCharacterState);
+
+
+		private:
+			float timer_ = 0.0f;
+			float patrolTimer_ = 0.0f;
+			Vector3 patrolDirection_;
+
+			std::mt19937 randomEngine_;
+
+
+		public:
+			PatrolCharacterState(IStateMachine* owner);
+			~PatrolCharacterState();
+
+
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
 
 			virtual bool CanChangeState() const;
 		};

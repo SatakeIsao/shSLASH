@@ -256,6 +256,7 @@ namespace app
 				stoneEventCharacter_->Initialize(sStoneEnemyInitializeParameter);
 				{
 					stoneEventCharacter_->AddState <app::actor::IdleCharacterState>();
+					stoneEventCharacter_->AddState<app::actor::PatrolCharacterState>();
 					stoneEventCharacter_->AddState<app::actor::RunCharacterState>();
 					stoneEventCharacter_->AddState<app::actor::AttackCharacterState>();
 					stoneEventCharacter_->AddState<app::actor::PunchCharacterState>();
@@ -270,6 +271,7 @@ namespace app
 				mushroomEventCharacter_->Initialize(sMushroomEnemyInitializeParameter);
 				{
 					mushroomEventCharacter_->AddState <app::actor::IdleCharacterState>();
+					mushroomEventCharacter_->AddState<app::actor::PatrolCharacterState>();
 					mushroomEventCharacter_->AddState<app::actor::RunCharacterState>();
 					mushroomEventCharacter_->AddState<app::actor::AttackCharacterState>();
 					mushroomEventCharacter_->AddState<app::actor::PunchCharacterState>();
