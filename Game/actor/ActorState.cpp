@@ -988,5 +988,76 @@ namespace app
 			// アニメーションが再生中なら遷移させない
 			return !characterStateMachine->GetModelRender()->IsPlayingAnimation();
 		}
-	}
+
+
+
+
+		/*************************************/
+
+		PatrolCharacterState::PatrolCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{
+			auto seed = static_cast<unsigned int>(reinterpret_cast<uintptr_t>(this)) ^ time(nullptr);
+			randomEngine_.seed(seed);
+		}
+
+
+		PatrolCharacterState::~PatrolCharacterState()
+		{
+		}
+
+
+		void PatrolCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+
+			/** uniform_real_distribution：確率に偏りをなくすために使用 */
+			std::uniform_real_distribution<float> timeDist(1.0f, 3.0f);
+			patrolTimer_ = timeDist(randomEngine_);
+
+			std::uniform_real_distribution<float> angleDist(0.0f, 360.0f);
+			float angle = angleDist(randomEngine_);
+
+			float rad = angle * (3.14159265f / 180.0f);
+			patrolDirection_ = Vector3(std::sinf(rad), 0.0f, std::cosf(rad));
+			patrolDirection_.Normalize();
+
+			characterStateMachine->SetMoveDirection(patrolDirection_);
+
+			timer_ = 0.0f;
+
+		}
+
+
+		void PatrolCharacterState::Update()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			auto* characterStatus = characterStateMachine->GetStatus();
+
+			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed());
+
+			auto speedVec = characterStateMachine->GetMoveSpeedVector();
+			if(speedVec.Length() > 0.01f)
+			{
+				characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(speedVec);
+			}
+
+			timer_ += g_gameTime->GetFrameDeltaTime();
+		}
+
+
+		void PatrolCharacterState::Exit()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->SetMoveDirection(Vector3::Zero);
+		}
+
+
+		bool PatrolCharacterState::CanChangeState() const
+		{
+			return timer_ >= patrolTimer_;
+		}
+}
 }

@@ -776,8 +776,18 @@ namespace app
 				aiTimer_ += g_gameTime->GetFrameDeltaTime();
 				if (aiTimer_ > WAIT_TIME)
 				{
-					RequestChangeState(RunCharacterState::ID());
+					RequestChangeState(PatrolCharacterState::ID());
 					aiTimer_ = 0.0f;
+				}
+				return;
+			}
+
+			if (IsEqualCurrentState(PatrolCharacterState::ID()))
+			{
+				if(CanChangeState())
+				{
+					SetMoveDirection(Vector3::Zero);
+					RequestChangeState(IdleCharacterState::ID());
 				}
 				return;
 			}
@@ -968,10 +978,19 @@ namespace app
 			if (IsEqualCurrentState(IdleCharacterState::ID()))
 			{
 				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (aiTimer_ > WAIT_TIME)
+				if (aiTimer_ > 2.0f)
 				{
-					RequestChangeState(RunCharacterState::ID());
+					RequestChangeState(PatrolCharacterState::ID());
 					aiTimer_ = 0.0f;
+				}
+				return;
+			}
+
+			if (IsEqualCurrentState(PatrolCharacterState::ID()))
+			{
+				if (CanChangeState())
+				{
+					RequestChangeState(IdleCharacterState::ID());
 				}
 				return;
 			}
