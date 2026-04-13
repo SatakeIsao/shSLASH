@@ -55,7 +55,8 @@ namespace app
 				{
 					Player			= CollisionAttribute::Enemy | CollisionAttribute::Pipe,
 					Enemy			= 1 << 1,
-					StaticGimmick	= 1 << 2,
+					StaticGimmick = CollisionAttribute::Player | CollisionAttribute::Enemy,
+					//StaticGimmick	= 1 << 2,
 					Pipe			= CollisionAttribute::Player,
 					All				= 0xFFFFFFFF,
 				};
