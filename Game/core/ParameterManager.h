@@ -152,7 +152,6 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		};
 
 
-
 		struct MasterSoundOptionMenuParameter : public IParameter
 		{
 			appParameter(MasterSoundOptionMenuParameter);
@@ -164,6 +163,21 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float gaugeBarScaleX[11];
 
 			float knobX[11];
+		};
+
+
+		struct MasterHpUIParameter : public IParameter
+		{
+			appParameter(MasterHpUIParameter);
+
+			// HPバーの座標X
+			float hpBarPositionX[11];
+			// HPバーのスケールX
+			float hpBarScaleX[11];
+			// レベルバーの座標X
+			float levelBarPositionX[11];
+			// レベルバーのスケールX
+			float levelBarScaleX[11];
 		};
 
 

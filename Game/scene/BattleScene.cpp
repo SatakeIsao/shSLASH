@@ -55,12 +55,12 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 		waitTime = 3.0f;
 		return true;
 	}
-	if (g_pad[0]->IsTrigger(enButtonRight))
-	{
-		id = GameClearScene::ID();
-		waitTime = 3.0f;
-		return true;
-	}
+	// if (g_pad[0]->IsTrigger(enButtonRight))
+	// {
+	// 	id = GameClearScene::ID();
+	// 	waitTime = 3.0f;
+	// 	return true;
+	// }
 	/*if (sound->IsTitle())
 	{
 		id = TitleScene::ID();

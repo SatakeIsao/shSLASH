@@ -4,13 +4,125 @@
       {
         "type": "UIIcon",
         "name": "Background",
-        "asset": "Assets/ui/white.DDS",
-        "width": 157,
-        "height": 134,
-        "position": [0, 300, 0],
+        "asset": "Assets/ui/hp/whiteBackGround.DDS",
+        "width": 450,
+        "height": 56,
+        "position": [-520, 340, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [0.0, 0.0, 0.0, 1.0]
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Background_level",
+        "asset": "Assets/ui/hp/whiteBackGround.DDS",
+        "width": 286,
+        "height": 36,
+        "position": [-590, 380, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "backGroundHP",
+        "asset": "Assets/ui/hp/backGroundHP.DDS",
+        "width": 404,
+        "height": 34,
+        "position": [-516, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0, 0.0, 0.0, 0.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "backGroundHP_Level",
+        "asset": "Assets/ui/hp/backGroundHP.DDS",
+        "width": 270,
+        "height": 22,
+        "position": [-594, 380, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0, 0.0, 0.0, 0.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "damageHP",
+        "asset": "Assets/ui/hp/damageHP.DDS",
+        "width": 400,
+        "height": 30,
+        "position": [-516, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "currentHP",
+        "asset": "Assets/ui/hp/currentHP.DDS",
+        "width": 400,
+        "height": 30,
+        "position": [-516, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0, 1.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "currentLevel",
+        "asset": "Assets/ui/LevelUp/currentLevel.DDS",
+        "width": 268,
+        "height": 20,
+        "position": [-594, 380, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "icon",
+        "asset": "Assets/ui/hp/playerIcon.DDS",
+        "width": 100,
+        "height": 100,
+        "position": [-740, 360, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "levelIcon",
+        "asset": "Assets/ui/LevelUp/LvIcon.DDS",
+        "width": 73,
+        "height": 42,
+        "position": [-390, 394, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIDigit",
+        "name": "levelNumbers",
+        "asset": "Assets/ui/numbers",
+        "digit":2,
+        "width": 26,
+        "height": 47,
+        "position": [-310, 394, 0],
+        "scale": [1.0, 1.0, 1.0],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.1]
+      },
+      {
+        "type": "UIDigit",
+        "name": "11levelNumbers",
+        "asset": "Assets/ui/numbers",
+        "digit":2,
+        "width": 30,
+        "height": 54,
+        "position": [-310, 390, 0],
+        "scale": [0, 0, 0],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.1]
       }
     ]
   }

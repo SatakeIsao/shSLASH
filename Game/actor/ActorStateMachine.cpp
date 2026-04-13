@@ -346,12 +346,12 @@ namespace app
 			}
 			// 落下
 			{
-				if (!GetCharacterController()->IsOnGround()) {
-					if (!IsEqualCurrentState(FallingCharacterState::ID())) {
-						RequestChangeState(FallingCharacterState::ID());
-					}
-					return;
-				}
+				//if (!GetCharacterController()->IsOnGround()) {
+				//	if (!IsEqualCurrentState(FallingCharacterState::ID())) {
+				//		RequestChangeState(FallingCharacterState::ID());
+				//	}
+				//	return;
+				//}
 			}
 			// 防御
 			{

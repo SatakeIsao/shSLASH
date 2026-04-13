@@ -77,8 +77,11 @@ namespace app
 
         private:
             // @todo for test
+            LevelRender levelRender_;
+
             app::actor::BattleCharacter* battleCharacter_ = nullptr;
             app::actor::EventCharacter* eventCharacter_ = nullptr;
+            app::actor::StaticGimmick* testGimmick_ = nullptr;
 			std::vector<app::actor::StaticGimmick*> testGimmickList_;
             std::vector<app::actor::PipeGimmick*> pipeGimmickList_;
             
