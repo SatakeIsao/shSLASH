@@ -78,6 +78,8 @@ namespace app
 
         private:
             // @todo for test
+            LevelRender levelRender_;
+
             app::actor::BattleCharacter* battleCharacter_ = nullptr;
             app::actor::EventCharacter* eventCharacter_ = nullptr;
             app::actor::StoneEventCharacter* stoneEventCharacter_ = nullptr;
