@@ -186,6 +186,7 @@
     <ClCompile Include="core\PauseManagerObject.cpp" />
     <ClCompile Include="ui\BattleSequence.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
+    <ClCompile Include="actor\EventCharacterSpawnManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -359,6 +360,7 @@
     <ClInclude Include="core\PauseManagerObject.h" />
     <ClInclude Include="ui\BattleSequence.h" />
     <ClInclude Include="ui\InGameUI.h" />
+    <ClInclude Include="actor\EventCharacterSpawnManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

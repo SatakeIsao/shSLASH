@@ -230,6 +230,7 @@
     <ClCompile Include="actor\BattleCharacter.cpp" />
     <ClCompile Include="actor\CharacterSteering.cpp" />
     <ClCompile Include="actor\EventCharacter.cpp" />
+    <ClCompile Include="actor\EventCharacterSpawnManager.cpp" />
     <ClCompile Include="actor\Gimmick.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="actor\BattleCharacter.h" />
     <ClInclude Include="actor\CharacterSteering.h" />
     <ClInclude Include="actor\EventCharacter.h" />
+    <ClInclude Include="actor\EventCharacterSpawnManager.h" />
     <ClInclude Include="actor\Gimmick.h" />
     <ClInclude Include="actor\Types.h" />
     <ClInclude Include="Application.h" />
