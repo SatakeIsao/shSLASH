@@ -202,7 +202,7 @@ namespace app
 				skyCube_->SetScale(300.0f);
 				skyCube_->SetPosition({ 1000.0f,0.0f,1000.0f });
 				//スカイキューブの種類を設定
-				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_NightToon_2);
+				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_Day);
 			}
 			{
 				characterSteering_ = std::make_unique<app::actor::CharacterSteering>();
@@ -297,30 +297,13 @@ namespace app
 
 				// ギミック設置（テスト用）
 				{
-					////レベルの初期化
-					//levelRender_.Init("Assets/stage/Stage2.tkl",
-					//	[&](LevelObjectData_Render& objData) {
-					//		/** ステージ */
-					//		if (objData.ForwardMatchName(L"Stage") == true) {
-					//			testGimmick_ = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "Stage");
-					//			float y = -50.0f;
-					//			testGimmick_->transform.position = (objData.position);
-					//			testGimmick_->transform.position.y += y;
-					//			testGimmick_->transform.rotation = (objData.rotation);
-					//			testGimmick_->transform.scale = (objData.scale);
-					//			testGimmick_->Initialize("Assets/stage/Stage2.tkm");
-					//			//testGimmick_.push_back(stage);
-					//			//pysicalBo
-					//		}
-					//		return false;
-					//	});
-
 					const int gimmickNum = 100;
 					const int gimmickRowNum = 10;
 					const int gimmickColNum = 10;
 					testGimmickList_.resize(gimmickNum);
-					
-					for (int i = 0; i < testGimmickList_.size(); ++i) {
+
+					for (int i = 0; i < testGimmickList_.size(); ++i) 
+					{
 						testGimmickList_[i] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
 						//配置
 						int row = i / gimmickColNum;
