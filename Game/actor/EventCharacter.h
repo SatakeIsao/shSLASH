@@ -75,6 +75,7 @@ namespace app
 		private:
 			std::unique_ptr<StoneEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = false;
 
@@ -89,19 +90,29 @@ namespace app
 
 
 		public:
+			/** 初期化処理 */
 			void Initialize(CharacterInitializeParameter& param) override final;
+
+
 			/** 当たり判定を作り直す */
 			void ResizeCollision();
+
+
 			Vector3 GetForward()
 			{
 				return forward_;
 			}
+
+
+			static int GetNum() {return instanceCount_;}
+
 
 			template <typename TState>
 			void AddState()
 			{
 				stateMachine_->AddState<TState>();
 			}
+
 
 			StoneEventCharacterStateMachine* GetStateMachine()
 			{
@@ -130,6 +141,7 @@ namespace app
 		private:
 			std::unique_ptr<MushroomEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = false;
 
@@ -145,13 +157,23 @@ namespace app
 
 
 		public:
+			/** 初期化処理 */
 			void Initialize(CharacterInitializeParameter& param) override final;
+
+
 			/** 当たり判定を作り直す */
 			void ResizeCollision();
+
+
 			Vector3 GetForward()
 			{
 				return forward_;
 			}
+
+
+			static int GetNum() { return instanceCount_; }
+
+
 
 			template <typename TState>
 			void AddState()
@@ -159,10 +181,12 @@ namespace app
 				stateMachine_->AddState<TState>();
 			}
 
-			 MushroomEventCharacterStateMachine* GetStateMachine()
+
+			MushroomEventCharacterStateMachine* GetStateMachine()
 			{
 				return stateMachine_.get();
 			}
+
 
 			void SetPause(bool isPause)
 			{

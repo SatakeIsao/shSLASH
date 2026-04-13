@@ -9,6 +9,9 @@ namespace app
 {
 	namespace actor
 	{
+        int StoneEventCharacter::instanceCount_ = 0;
+		int MushroomEventCharacter::instanceCount_ = 0;
+
 		EventCharacter::EventCharacter()
 		{
 			characterController_ = std::make_unique<CharacterController>();
@@ -105,11 +108,18 @@ namespace app
 			stateMachine_ = std::make_unique<StoneEventCharacterStateMachine>();
 			status_ = new app::actor::StoneEventCharacterStatus();
 			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+
+			instanceCount_++;
 		}
 
 
 		StoneEventCharacter::~StoneEventCharacter()
 		{
+			instanceCount_--;
+			if (instanceCount_ < 0) 
+			{
+				instanceCount_ = 0;
+			}
 		}
 
 
@@ -166,7 +176,6 @@ namespace app
 			modelRender_ = std::make_unique<ModelRender>();
 			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
 
-			transform.position = Vector3::Zero;
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
 		}
@@ -191,10 +200,17 @@ namespace app
 			stateMachine_ = std::make_unique<MushroomEventCharacterStateMachine>();
 			status_ = new app::actor::MushroomEventCharacterStatus();
 			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+
+			instanceCount_++;
 		}
 
 		MushroomEventCharacter::~MushroomEventCharacter()
 		{
+			instanceCount_--;
+			if (instanceCount_ < 0)
+			{
+				instanceCount_ = 0;
+			}
 		}
 
 		bool MushroomEventCharacter::Start()
@@ -243,7 +259,6 @@ namespace app
 			}
 			modelRender_ = std::make_unique<ModelRender>();
 			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
-			transform.position = Vector3::Zero;
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
 		}

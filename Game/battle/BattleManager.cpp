@@ -45,7 +45,7 @@ namespace
 
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Idle)].filename = "Assets/animData/player/playerIdle.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Idle)].loop = true;
-			
+
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run)].filename = "Assets/animData/player/playerRun.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run)].loop = true;
 			//
@@ -69,10 +69,10 @@ namespace
 
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd)].filename = "Assets/animData/player/PlayerChargedAttack_End.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd)].loop = false;
-			
+
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack)].filename = "Assets/animData/player/playerKnockBack.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack)].loop = false;
-			
+
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead)].filename = "Assets/animData/player/playerDead.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead)].loop = false;
 
@@ -164,7 +164,7 @@ namespace app
 				});
 
 			layout_ = std::make_unique<app::ui::Layout>();
-			layout_ ->Initialize<app::ui::MenuBase>("Assets/ui/layout/BattleSequenceMenuLayout.json");
+			layout_->Initialize<app::ui::MenuBase>("Assets/ui/layout/BattleSequenceMenuLayout.json");
 		}
 
 
@@ -239,6 +239,57 @@ namespace app
 				}
 				characterSteering_->Initialize(battleCharacter_, 0);
 
+				eventCharacterSpawnManager_ = std::make_unique<app::actor::EventCharacterSpawnManager>();
+
+
+				eventCharacterSpawnManager_->SetOnSpawned([this](const app::actor::SpawnResult& result)
+					{
+						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
+
+
+						switch (result.type)
+						{
+						case app::actor::EnemyType::STONE:
+						{
+							auto* stone = result.stoneCharacter;
+							stoneEventCharacters_.push_back(stone);
+							stone->Initialize(sStoneEnemyInitializeParameter);
+							stone->AddState <app::actor::IdleCharacterState>();
+							stone->AddState<app::actor::PatrolCharacterState>();
+							stone->AddState<app::actor::RunCharacterState>();
+							stone->AddState<app::actor::AttackCharacterState>();
+							stone->AddState<app::actor::DeadCharacterState>();
+							stone->AddState <app::actor::KnockBackCharacterState>();
+							stone->GetStatus()->SetFriction(stageParam->friction);
+							stone->GetStatus()->SetGravity(stageParam->gravity);
+							break;
+						}
+
+						case app::actor::EnemyType::MUSHROOM:
+						{
+							auto* mushroom = result.mushroomCharacter;
+							mushroomEventCharacters_.push_back(mushroom);
+							mushroom->Initialize(sMushroomEnemyInitializeParameter);
+							mushroom->AddState <app::actor::IdleCharacterState>();
+							mushroom->AddState<app::actor::PatrolCharacterState>();
+							mushroom->AddState<app::actor::RunCharacterState>();
+							mushroom->AddState<app::actor::AttackCharacterState>();
+							mushroom->AddState<app::actor::DeadCharacterState>();
+							mushroom->AddState <app::actor::KnockBackCharacterState>();
+							mushroom->GetStatus()->SetFriction(stageParam->friction);
+							mushroom->GetStatus()->SetGravity(stageParam->gravity);
+							break;
+						}
+
+						default:
+							break;
+						}
+
+					});
+
+
+				eventCharacterSpawnManager_->Start(battleCharacter_);
+
 				// 敵キャラクター
 				eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "nokonoko");
 				eventCharacter_->Initialize(sEnemyInitializeParameter);
@@ -251,47 +302,13 @@ namespace app
 					eventCharacter_->AddState <app::actor::KnockBackCharacterState>();
 				}
 
-				//ストーンイベントキャラクター
-				stoneEventCharacter_ = NewGO<app::actor::StoneEventCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "stone");
-				stoneEventCharacter_->Initialize(sStoneEnemyInitializeParameter);
-				{
-					stoneEventCharacter_->AddState <app::actor::IdleCharacterState>();
-					stoneEventCharacter_->AddState<app::actor::PatrolCharacterState>();
-					stoneEventCharacter_->AddState<app::actor::RunCharacterState>();
-					stoneEventCharacter_->AddState<app::actor::AttackCharacterState>();
-					stoneEventCharacter_->AddState<app::actor::PunchCharacterState>();
-					stoneEventCharacter_->AddState<app::actor::DeadCharacterState>();
-					stoneEventCharacter_->AddState <app::actor::KnockBackCharacterState>();
 
-					stoneEventCharacter_->transform.position = Vector3(-200.0f, 0.0f, 0.0f);
-				}
-
-				//マッシュルームイベントキャラクター
-				mushroomEventCharacter_ = NewGO<app::actor::MushroomEventCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "mushroom");
-				mushroomEventCharacter_->Initialize(sMushroomEnemyInitializeParameter);
-				{
-					mushroomEventCharacter_->AddState <app::actor::IdleCharacterState>();
-					mushroomEventCharacter_->AddState<app::actor::PatrolCharacterState>();
-					mushroomEventCharacter_->AddState<app::actor::RunCharacterState>();
-					mushroomEventCharacter_->AddState<app::actor::AttackCharacterState>();
-					mushroomEventCharacter_->AddState<app::actor::PunchCharacterState>();
-					mushroomEventCharacter_->AddState<app::actor::DeadCharacterState>();
-					mushroomEventCharacter_->AddState <app::actor::KnockBackCharacterState>();
-
-					mushroomEventCharacter_->transform.position = Vector3(200.0f, 0.0f, 0.0f);
-				}
 				/** 敵に重力付与のテスト */
 				//TODO: いま、ステージなので敵のパラメータに変更させたい
 				{
 					auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
 					eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
 					eventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
-
-					stoneEventCharacter_->GetStatus()->SetFriction(stageParam->friction);
-					stoneEventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
-
-					mushroomEventCharacter_->GetStatus()->SetFriction(stageParam->friction);
-					mushroomEventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
 
 				}
 
@@ -302,7 +319,7 @@ namespace app
 					const int gimmickColNum = 10;
 					testGimmickList_.resize(gimmickNum);
 
-					for (int i = 0; i < testGimmickList_.size(); ++i) 
+					for (int i = 0; i < testGimmickList_.size(); ++i)
 					{
 						testGimmickList_[i] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
 						//配置
@@ -385,14 +402,18 @@ namespace app
 
 			// シーケンス中は手動ポーズ（メニュー表示）を禁止する
 			app::core::PauseManager::Get().SetCanPause(!isSequence);
-			
-			if(currentPause)
+
+			if (currentPause)
 			{
 				return;
 			}
 
 			if (!isSequence)
 			{
+				if (eventCharacterSpawnManager_) {
+					eventCharacterSpawnManager_->Update();
+				}
+
 				characterSteering_->Update();
 
 				// 衝突判定更新
@@ -405,15 +426,20 @@ namespace app
 				// デバッグテスト: 追従の処理
 				Vector3 playerPosition = battleCharacter_->transform.position;
 				Vector3 slimePosition = eventCharacter_->transform.position;
-				Vector3 stonePosition = stoneEventCharacter_->transform.position;
-				Vector3 mushroomPosition = mushroomEventCharacter_->transform.position;
+				Vector3 stonePosition = playerPosition;
+				Vector3 mushroomPosition = playerPosition;
 				//XとZのベクトルを長さに変換
 				Vector3 diffXZ_Slime(playerPosition.x - slimePosition.x, 0.0f, playerPosition.z - slimePosition.z);
 				float diff = diffXZ_Slime.Length();
-				Vector3 diffXZ_Stone(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
-				float diffStone = diffXZ_Stone.Length();
-				Vector3 diffXZ_Mushroom(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
-				float diffMushroom = diffXZ_Mushroom.Length();
+				Vector3 diffXZ_Stone = Vector3::Zero;
+				float diffStone = 999999.0f;
+				diffXZ_Stone = Vector3(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
+				diffStone = diffXZ_Stone.Length();
+
+				Vector3 diffXZ_Mushroom = Vector3::Zero;
+				float diffMushroom = 999999.0f;
+				diffXZ_Mushroom = Vector3(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
+				diffMushroom = diffXZ_Mushroom.Length();
 
 
 				if (diff < 200.0f) {
@@ -447,295 +473,320 @@ namespace app
 				}
 
 				/** ストーンの追従処理 */
-				if(diffStone < 800.0f) {
-					Vector3 DirectionToPlayer = diffXZ_Stone;
-					DirectionToPlayer.Normalize();
+				for (auto* stone : stoneEventCharacters_)
+				{
+					if (!stone) { continue; }
+					Vector3 stonePosition = stone->transform.position;
+					Vector3 diffXZ_Stone(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
+					float diffStone = diffXZ_Stone.Length();
 
-					Vector3 stoneForward = Vector3(0.0f, 0.0f, 1.0f);
-					stoneEventCharacter_->transform.localRotation.Apply(stoneForward);
-
-					//ストーンの前方向
-					Vector3 forwardXZ(stoneForward.x, 0.0f, stoneForward.z);
-					forwardXZ.Normalize();
-
-					//向きだけのベクトルとストーンの前方向で内積
-					float dot = forwardXZ.Dot(DirectionToPlayer);
-
-					//角度のしきい値と計算
-					float halfFovDegree = 60.0f;
-
-					float halfFovRadians = halfFovDegree * (Math::PI / 180);
-
-					//判定用のしきい値となるコサイン値
-					float threshold = std::cos(halfFovRadians);
-
-					if (dot > threshold)
+					if (diffStone < 800.0f)
 					{
-						stoneEventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
+						Vector3 DirectionToPlayer = diffXZ_Stone;
+						DirectionToPlayer.Normalize();
+
+						Vector3 stoneForward = Vector3(0.0f, 0.0f, 1.0f);
+						stone->transform.localRotation.Apply(stoneForward);
+
+						//ストーンの前方向
+						Vector3 forwardXZ(stoneForward.x, 0.0f, stoneForward.z);
+						forwardXZ.Normalize();
+
+						//向きだけのベクトルとストーンの前方向で内積
+						float dot = forwardXZ.Dot(DirectionToPlayer);
+
+						//角度のしきい値と計算
+						float halfFovDegree = 60.0f;
+						float halfFovRadians = halfFovDegree * (Math::PI / 180);
+						//判定用のしきい値となるコサイン値
+						float threshold = std::cos(halfFovRadians);
+
+						if (dot > threshold)
+						{
+							stone->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
+						}
 					}
 				}
-
 
 				/** マッシュルームの追従処理 */
-				if(diffMushroom < 200.0f) {
-					Vector3 DirectionToPlayer = diffXZ_Mushroom;
-					DirectionToPlayer.Normalize();
-
-					Vector3 mushroomForward = Vector3(0.0f, 0.0f, 1.0f);
-					mushroomEventCharacter_->transform.localRotation.Apply(mushroomForward);
-
-					//マッシュルームの前方向
-					Vector3 forwardXZ(mushroomForward.x, 0.0f, mushroomForward.z);
-					forwardXZ.Normalize();
-
-					//向きだけのベクトルとマッシュルームの前方向で内積
-					float dot = forwardXZ.Dot(DirectionToPlayer);
-
-					//角度のしきい値と計算
-					float halfFovDegree = 60.0f;
-
-					float halfFovRadians = halfFovDegree * (Math::PI / 180);
-
-					//判定用のしきい値となるコサイン値
-					float threshold = std::cos(halfFovRadians);
-
-					if (dot > threshold)
-					{
-						mushroomEventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
-					}
-				}
-
-				//プレイヤーの攻撃アクション
+				for (auto* mushroom : mushroomEventCharacters_)
 				{
-					if (battleCharacter_->GetStateMachine()->IsPunched()
-						&& !isWaitEffectPlay_)
+					if (!mushroom) { continue; }
+
+					Vector3 mushroomPosition = mushroom->transform.position;
+					Vector3 diffXZ_Mushroom(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
+					float diffMushroom = diffXZ_Mushroom.Length();
+
+					if (diffMushroom < 200.0f)
 					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
-						effectPos.y += 30.0f;
+						Vector3 DirectionToPlayer = diffXZ_Mushroom;
+						DirectionToPlayer.Normalize();
 
-						Vector3 dir = battleCharacter_->GetStateMachine()->GetMoveDirection();
-						reservedEffectRot_ = Quaternion::Identity;
+						Vector3 mushroomForward = Vector3(0.0f, 0.0f, 1.0f);
+						mushroom->transform.localRotation.Apply(mushroomForward);
 
-						// 直接再生せず、予約する
-						isWaitEffectPlay_ = true;
-						effectDelayTimer_ = 0.5f;
-						reservedEffectPos_ = effectPos;
-					}
+						//マッシュルームの前方向
+						Vector3 forwardXZ(mushroomForward.x, 0.0f, mushroomForward.z);
+						forwardXZ.Normalize();
 
-					// エフェクト再生待ち状態ならタイマーを更新
-					if (isWaitEffectPlay_)
-					{
-						float deltaTime = g_gameTime->GetFrameDeltaTime();
+						//向きだけのベクトルとマッシュルームの前方向で内積
+						float dot = forwardXZ.Dot(DirectionToPlayer);
 
-						effectDelayTimer_ -= deltaTime;
+						//角度のしきい値と計算
+						float halfFovDegree = 60.0f;
+						float halfFovRadians = halfFovDegree * (Math::PI / 180);
 
-						if (effectDelayTimer_ <= 0.0f)
+						//判定用のしきい値となるコサイン値
+						float threshold = std::cos(halfFovRadians);
+
+						if (dot > threshold)
 						{
-							effectManagerObject_->PlayEffect(
-								enEffectKind_PlayerAttack,
-								reservedEffectPos_,
-								reservedEffectRot_,
-								Vector3::One
-							);
-
-							isWaitEffectPlay_ = false;
+							mushroom->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
 						}
 					}
 
-					// チャージエフェクトの再生判定
-					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
+
+					//プレイヤーの攻撃アクション
 					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-						effectPos.y += 30.0f;
-
-						effectManagerObject_->PlayEffect(
-							enEffectKind_PlayerAttackCharge_Start,
-							effectPos,
-							Quaternion::Identity,
-							Vector3::One
-						);
-					}
-
-					// チャージエフェクトの再生判定
-					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
-					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-						effectPos.y += 30.0f;
-
-						effectManagerObject_->PlayEffect(
-							enEffectKind_PlayerAttackCharge_End,
-							effectPos,
-							Quaternion::Identity,
-							Vector3::One
-						);
-					}
-
-					// ノックバックエフェクトの再生判定
-					if (battleCharacter_->GetStateMachine()->GetKnockBack())
-					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-						effectPos.y += 30.0f;
-
-						effectManagerObject_->PlayEffect(
-							enEffectKind_SlimeAttack,
-							effectPos,
-							Quaternion::Identity,
-							Vector3::One
-						);
-					}
-
-					// 防御エフェクトの再生判定
-					if (battleCharacter_->GetStateMachine()->OnGuaed())
-					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-						effectPos.y += 30.0f;
-
-						effectManagerObject_->PlayEffect(
-							enEffectKind_SlimeAttack,
-							effectPos,
-							Quaternion::Identity,
-							Vector3::One
-						);
-					}
-				}
-
-				//スライムの攻撃アクション
-				{
-					if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
-						&& battleCharacter_->GetCurrentHP() > 0)
-					{
-						effectManagerObject_->PlayEffect(
-							enEffectKind_SlimeAttack,
-							eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
-							Quaternion::Identity,
-							Vector3(3.0f, 3.0f, 3.0f)
-						);
-					}
-				}
-
-				//スライムのノックバック
-				{
-					if (eventCharacter_->GetStateMachine()->IsKnockBack()
-						|| eventCharacter_->GetStateMachine()->IsSquashed())
-					{
-						if (!hasPlayedPunchEffect_)
+						if (battleCharacter_->GetStateMachine()->IsPunched()
+							&& !isWaitEffectPlay_)
 						{
+							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
+							effectPos.y += 30.0f;
+
+							Vector3 dir = battleCharacter_->GetStateMachine()->GetMoveDirection();
+							reservedEffectRot_ = Quaternion::Identity;
+
+							// 直接再生せず、予約する
+							isWaitEffectPlay_ = true;
+							effectDelayTimer_ = 0.5f;
+							reservedEffectPos_ = effectPos;
+						}
+
+						// エフェクト再生待ち状態ならタイマーを更新
+						if (isWaitEffectPlay_)
+						{
+							float deltaTime = g_gameTime->GetFrameDeltaTime();
+
+							effectDelayTimer_ -= deltaTime;
+
+							if (effectDelayTimer_ <= 0.0f)
+							{
+								effectManagerObject_->PlayEffect(
+									enEffectKind_PlayerAttack,
+									reservedEffectPos_,
+									reservedEffectRot_,
+									Vector3::One
+								);
+
+								isWaitEffectPlay_ = false;
+							}
+						}
+
+						// チャージエフェクトの再生判定
+						if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
+						{
+							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+							effectPos.y += 30.0f;
+
 							effectManagerObject_->PlayEffect(
-								enEffectKind_SlimeKnockBack,
-								eventCharacter_->transform.position,
+								enEffectKind_PlayerAttackCharge_Start,
+								effectPos,
 								Quaternion::Identity,
 								Vector3::One
 							);
-							hasPlayedPunchEffect_ = true;
+						}
+
+						// チャージエフェクトの再生判定
+						if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
+						{
+							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+							effectPos.y += 30.0f;
+
+							effectManagerObject_->PlayEffect(
+								enEffectKind_PlayerAttackCharge_End,
+								effectPos,
+								Quaternion::Identity,
+								Vector3::One
+							);
+						}
+
+						// ノックバックエフェクトの再生判定
+						if (battleCharacter_->GetStateMachine()->GetKnockBack())
+						{
+							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+							effectPos.y += 30.0f;
+
+							effectManagerObject_->PlayEffect(
+								enEffectKind_SlimeAttack,
+								effectPos,
+								Quaternion::Identity,
+								Vector3::One
+							);
+						}
+
+						// 防御エフェクトの再生判定
+						if (battleCharacter_->GetStateMachine()->OnGuaed())
+						{
+							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+							effectPos.y += 30.0f;
+
+							effectManagerObject_->PlayEffect(
+								enEffectKind_SlimeAttack,
+								effectPos,
+								Quaternion::Identity,
+								Vector3::One
+							);
 						}
 					}
-					else {
-						hasPlayedPunchEffect_ = false;
+
+					//スライムの攻撃アクション
+					{
+						if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
+							&& battleCharacter_->GetCurrentHP() > 0)
+						{
+							effectManagerObject_->PlayEffect(
+								enEffectKind_SlimeAttack,
+								eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
+								Quaternion::Identity,
+								Vector3(3.0f, 3.0f, 3.0f)
+							);
+						}
+					}
+
+					//スライムのノックバック
+					{
+						if (eventCharacter_->GetStateMachine()->IsKnockBack()
+							|| eventCharacter_->GetStateMachine()->IsSquashed())
+						{
+							if (!hasPlayedPunchEffect_)
+							{
+								effectManagerObject_->PlayEffect(
+									enEffectKind_SlimeKnockBack,
+									eventCharacter_->transform.position,
+									Quaternion::Identity,
+									Vector3::One
+								);
+								hasPlayedPunchEffect_ = true;
+							}
+						}
+						else {
+							hasPlayedPunchEffect_ = false;
+						}
+					}
+
+					// 衝突後の処理
+					{
+						for (auto& notify : notifyList_) {
+
+						}
+						notifyList_.clear();
 					}
 				}
 
-				// 衝突後の処理
+				auto gameCamera = gameCameraController_->As<app::camera::GameCamera>();
+				auto cameraData = gameCamera->GetCameraData();
+				cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
+				gameCamera->SetState(cameraData);
+
+				/** 制限時間の管理 */
 				{
-					for (auto& notify : notifyList_) {
+					if (!timerUIObject_) return;
 
+					if (remainTime_ > 0.0f)
+					{
+						remainTime_ -= g_gameTime->GetFrameDeltaTime();
 					}
-					notifyList_.clear();
+
+					if (timerUIObject_) {
+						timerUIObject_->SetTimer(remainTime_);
+					}
 				}
+
+				layout_->Update();
 			}
+		}
 
-			auto gameCamera = gameCameraController_->As<app::camera::GameCamera>();
-			auto cameraData = gameCamera->GetCameraData();
-			cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
-			gameCamera->SetState(cameraData);
 
-			/** 制限時間の管理 */
+			void BattleManager::SetPause(bool isPause)
 			{
-				if (!timerUIObject_) return;
-
-				if (remainTime_ > 0.0f)
+				isPause_ = isPause;
+				if (battleCharacter_) battleCharacter_->SetPouse(isPause_);
+				if (eventCharacter_)eventCharacter_->SetPause(isPause_);
+				for (auto* stone : stoneEventCharacters_)
 				{
-					remainTime_ -= g_gameTime->GetFrameDeltaTime();
+					if (stone) { stone->SetPause(isPause_); }
 				}
 
-				if (timerUIObject_) {
-					timerUIObject_->SetTimer(remainTime_);
+				for (auto* mushroom : mushroomEventCharacters_)
+				{
+					if (mushroom) { mushroom->SetPause(isPause_); }
 				}
 			}
 
-			layout_->Update();
-		}
 
-
-		void BattleManager::SetPause(bool isPause)
-		{
-			isPause_ = isPause;
-			if (battleCharacter_) battleCharacter_->SetPouse(isPause_);
-			if (eventCharacter_)eventCharacter_->SetPause(isPause_);
-		}
-
-
-		void BattleManager::LoadParameter()
-		{
-			// バトル共通パラメーター読み込み
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleParameter>(MASTER_BATTLE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleParameter& p)
-				{
-					p.battleTime = json["battleTime"].get<float>();
-				});
-			// ステージ共通パラメーター読み込み
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStageParameter>(MASTER_STAGE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStageParameter& p)
-				{
-					p.gravity = json["gravity"].get<float>();
-					p.fallLimitY = json["fallLimitY"].get<float>();
-					p.friction = json["friction"].get<float>();
-					p.warpStartScale = json["warpStartScale"].get<float>();
-					p.warpEndScale = json["warpEndScale"].get<float>();
-					p.warpTime = json["warpTime"].get<float>();
-				});
-			// バトルカメラパラメーター読み込み
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCameraParameter>(MASTER_BATTLE_CAMERA_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCameraParameter& p)
-				{
-					p.distance = json["distance"].get<float>();
-					p.height = json["height"].get<float>();
-					p.fov = json["fov"].get<float>();
-					p.nearClip = json["nearClip"].get<float>();
-					p.farClip = json["farClip"].get<float>();
-					p.rotationX = json["rotationX"].get<float>();
-					p.rotationY = json["rotationY"].get<float>();
-				});
-			// バトルキャラクターパラメーター読み込み
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCharacterParameter>(MASTER_BATTLE_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCharacterParameter& p)
-				{
-					p.moveSpeed = json["moveSpeed"].get<float>();
-					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-					p.jumpPower = json["jumpPower"].get<float>();
-					p.radius = json["radius"].get<float>();
-					p.height = json["height"].get<float>();
-				});
-			// イベントキャラクターパラメーター読み込み
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
-				{
-					p.moveSpeed = json["moveSpeed"].get<float>();
-					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-					p.jumpPower = json["jumpPower"].get<float>();
-					p.radius = json["radius"].get<float>();
-					p.height = json["height"].get<float>();
-				});
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
-				{
-					p.moveSpeed = json["moveSpeed"].get<float>();
-					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-					p.jumpPower = json["jumpPower"].get<float>();
-					p.radius = json["radius"].get<float>();
-					p.height = json["height"].get<float>();
-				});
-			app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
-				{
-					p.moveSpeed = json["moveSpeed"].get<float>();
-					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-					p.jumpPower = json["jumpPower"].get<float>();
-					p.radius = json["radius"].get<float>();
-					p.height = json["height"].get<float>();
-				});
+			void BattleManager::LoadParameter()
+			{
+				// バトル共通パラメーター読み込み
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleParameter>(MASTER_BATTLE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleParameter& p)
+					{
+						p.battleTime = json["battleTime"].get<float>();
+					});
+				// ステージ共通パラメーター読み込み
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterStageParameter>(MASTER_STAGE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStageParameter& p)
+					{
+						p.gravity = json["gravity"].get<float>();
+						p.fallLimitY = json["fallLimitY"].get<float>();
+						p.friction = json["friction"].get<float>();
+						p.warpStartScale = json["warpStartScale"].get<float>();
+						p.warpEndScale = json["warpEndScale"].get<float>();
+						p.warpTime = json["warpTime"].get<float>();
+					});
+				// バトルカメラパラメーター読み込み
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCameraParameter>(MASTER_BATTLE_CAMERA_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCameraParameter& p)
+					{
+						p.distance = json["distance"].get<float>();
+						p.height = json["height"].get<float>();
+						p.fov = json["fov"].get<float>();
+						p.nearClip = json["nearClip"].get<float>();
+						p.farClip = json["farClip"].get<float>();
+						p.rotationX = json["rotationX"].get<float>();
+						p.rotationY = json["rotationY"].get<float>();
+					});
+				// バトルキャラクターパラメーター読み込み
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCharacterParameter>(MASTER_BATTLE_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCharacterParameter& p)
+					{
+						p.moveSpeed = json["moveSpeed"].get<float>();
+						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+						p.jumpPower = json["jumpPower"].get<float>();
+						p.radius = json["radius"].get<float>();
+						p.height = json["height"].get<float>();
+					});
+				// イベントキャラクターパラメーター読み込み
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
+					{
+						p.moveSpeed = json["moveSpeed"].get<float>();
+						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+						p.jumpPower = json["jumpPower"].get<float>();
+						p.radius = json["radius"].get<float>();
+						p.height = json["height"].get<float>();
+					});
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
+					{
+						p.moveSpeed = json["moveSpeed"].get<float>();
+						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+						p.jumpPower = json["jumpPower"].get<float>();
+						p.radius = json["radius"].get<float>();
+						p.height = json["height"].get<float>();
+					});
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
+					{
+						p.moveSpeed = json["moveSpeed"].get<float>();
+						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+						p.jumpPower = json["jumpPower"].get<float>();
+						p.radius = json["radius"].get<float>();
+						p.height = json["height"].get<float>();
+					});
+			}
 		}
 	}
-}
