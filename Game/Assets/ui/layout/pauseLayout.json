@@ -1,0 +1,83 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Background",
+        "asset": "Assets/ui/pause/volume/baseAll.DDS",
+        "width": 1660,
+        "height": 985,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Cursol",
+        "asset": "Assets/ui/pause/volume/cursol.DDS",
+        "width": 127,
+        "height": 84,
+        "position": [-545, 50, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_Sound",
+        "asset": "Assets/ui/pause/main/text_Pause.DDS",
+        "width": 550,
+        "height": 150,
+        "position": [0, 370, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_ChangeTheSound",
+        "asset": "Assets/ui/pause/volume/text_Sound.DDS",
+        "width": 614,
+        "height": 131,
+        "position": [0, 50, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_ReturnToTitle",
+        "asset": "Assets/ui/pause/main/text_ReturnToTitle.DDS",
+        "width": 728,
+        "height": 118,
+        "position": [0, -200, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_ReturnToGame",
+        "asset": "Assets/ui/pause/main/text_ReturnToGame.DDS",
+        "width": 443,
+        "height": 85,
+        "position": [570, -400, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "buttonStart",
+        "asset": "Assets/ui/pause/main/buttonStart.DDS",
+        "width": 131,
+        "height": 85,
+        "position": [280, -400, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

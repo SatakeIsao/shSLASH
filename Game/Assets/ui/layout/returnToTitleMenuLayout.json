@@ -1,0 +1,61 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Background2",
+        "asset": "Assets/ui/pause/volume/baseAll.DDS",
+        "width": 1660,
+        "height": 985,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Cursol",
+        "asset": "Assets/ui/pause/volume/cursol.DDS",
+        "width": 127,
+        "height": 84,
+        "position": [-505, -50, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_ReturnTitle",
+        "asset": "Assets/ui/pause/returnTitle/text_ReturnTitle.DDS",
+        "width": 844,
+        "height": 151,
+        "position": [0, 370, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_Yes",
+        "asset": "Assets/ui/pause/returnTitle/text_Yes.DDS",
+        "width": 244,
+        "height": 131,
+        "position": [0, 50, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_No",
+        "asset": "Assets/ui/pause/returnTitle/text_No.DDS",
+        "width": 304,
+        "height": 131,
+        "position": [0, -200, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

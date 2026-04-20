@@ -14,24 +14,51 @@
             "valueType": "Vector4",
             "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
             "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
-            "duration": 1.0,
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "FadeOut2",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 2.0,
             "easing": "EaseIn",
             "loop": "Once"
         },
         {
             "key": "ScaleUp",
             "valueType": "Vector3",
-            "startValue": { "x": 1.0, "y": 0.0, "z": 1.0 },
-            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 0.3, "y": 0.3, "z": 1.0 },
             "duration": 0.5,
-            "easing": "EaseOut",
+            "easing": "EaseIn",
             "loop": "Once"
         },
         {
             "key": "ScaleDown",
             "valueType": "Vector3",
+            "startValue": { "x": 0.3, "y": 0.3, "z": 1.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleUp_SoundMenu",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleDown_SoundMenu",
+            "valueType": "Vector3",
             "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
-            "endValue":   { "x": 1.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 1.0 },
             "duration": 0.5,
             "easing": "EaseOut",
             "loop": "Once"
@@ -96,6 +123,330 @@
             "startValue": { "x": 0.8, "y": 0.8, "z": 1.0 },
             "endValue":   { "x": 2.5, "y": 2.5, "z": 1.0 },
             "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleUp_Go2",
+            "valueType": "Vector3",
+            "startValue": { "x": 2.5, "y": 2.5, "z": 1.0 },
+            "endValue":   { "x": 10.5, "y": 10.5, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "CoinBounceUpY",
+            "valueType": "Vector3",
+            "startValue": { "x": 750.0, "y": 355.0, "z": 0.0 },
+            "endValue":   { "x": 750.0, "y": 395.0, "z": 0.0 }, 
+            "duration": 0.15,
+            "easing": "EaseInOut",
+            "loop": "Once"
+        },
+        {
+            "key": "CoinBounceDownY",
+            "valueType": "Vector3",
+            "startValue": { "x": 750.0, "y": 395.0, "z": 0.0 },
+            "endValue":   { "x": 750.0, "y": 355.0, "z": 0.0 }, 
+            "duration": 0.15,
+            "easing": "EaseInOut",
+            "loop": "Once"
+        },
+        {
+            "key": "TextColorChange",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 0.0, "w": 1.0 },
+            "duration": 0.01,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "GameOverBounceDownY",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 600.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0 }, 
+            "duration": 0.30,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "key": "GameOverBounceUpY",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 250.0, "z": 0.0 }, 
+            "duration": 0.20,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "GameOverBounceSecondDownY",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 250.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0 }, 
+            "duration": 0.20,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "key": "GameOverBounceSecondUpY",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 80.0, "z": 0.0 }, 
+            "duration": 0.15,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "GameOverBounceThirdDownY",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 80.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0 }, 
+            "duration": 0.15,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "ゲームクリアの拡大スケールアニメーション",
+            "key": "GameClearScalePopUp",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 1.2, "y": 1.2, "z": 1.0 }, 
+            "duration": 1.20,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "ゲームクリアの縮小スケールアニメーション",
+            "key": "GameClearScaleShrink",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.2, "y": 1.2, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 }, 
+            "duration": 0.85,
+            "easing": "EaseInOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleUp_digits",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 1.3, "y": 1.3, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleDown_digits",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.3, "y": 1.3, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.10,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイマー赤点滅アニメーション",
+            "key": "timerRedFlash",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "PingPong"
+        },
+        {
+            "comment": "タイムアップ：右から中央を少し通り過ぎるまで高速スライド",
+            "key": "TimeUpSlideIn",
+            "valueType": "Vector3",
+            "startValue": { "x": 1000.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": -50.0, "y": 0.0, "z": 0.0 }, 
+            "duration": 0.20,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ：通り過ぎた位置から中央に戻ってピタッと止まる",
+            "key": "TimeUpSlideBack",
+            "valueType": "Vector3",
+            "startValue": { "x": -50.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0 }, 
+            "duration": 0.15,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "timerPulseScaleUp",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 1.3, "y": 1.3, "z": 1.3 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "timerPulseScaleDown",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.3, "y": 1.3, "z": 1.3 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "拡大中の高速チカチカ点滅アニメーション",
+            "key": "timerFastBlink",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 0.2,
+            "easing": "Linear",
+            "loop": "PingPong"
+        },
+        {
+            "comment": "タイトル：メニューを開くときの移動",
+            "key": "TitleMoveToMenu",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 50.0, "z": 0.0 },
+            "endValue":   { "x": 600.0, "y": 360.0, "z": 0.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトル：メニューを開くときの縮小",
+            "key": "TitleScaleToMenu",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 0.3, "y": 0.3, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトル：メニューを閉じるときの移動(元の位置へ)",
+            "key": "TitleMoveToCenter",
+            "valueType": "Vector3",
+            "startValue": { "x": 600.0, "y": 360.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 50.0, "z": 0.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトル：メニューを閉じるときの拡大(元のサイズへ)",
+            "key": "TitleScaleToCenter",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.3, "y": 0.3, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "スタート：右からスライドイン",
+            "key": "SlideIn_Start",
+            "valueType": "Vector3",
+            "startValue": { "x": 1000.0, "y": 180.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 180.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "スタート：右へスライドアウト",
+            "key": "SlideOut_Start",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 180.0, "z": 0.0 },
+            "endValue":   { "x": 1000.0, "y": 180.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "あそびかた：右からスライドイン",
+            "key": "SlideIn_HowToPlay",
+            "valueType": "Vector3",
+            "startValue": { "x": 1000.0, "y": 20.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 20.0, "z": 0.0 },
+            "duration": 0.6,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "あそびかた：右へスライドアウト",
+            "key": "SlideOut_HowToPlay",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 20.0, "z": 0.0 },
+            "endValue":   { "x": 1000.0, "y": 20.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "じっせき：右からスライドイン",
+            "key": "SlideIn_Award",
+            "valueType": "Vector3",
+            "startValue": { "x": 1000.0, "y": -140.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": -140.0, "z": 0.0 },
+            "duration": 0.8,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "じっせき：右へスライドアウト",
+            "key": "SlideOut_Award",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": -140.0, "z": 0.0 },
+            "endValue":   { "x": 1000.0, "y": -140.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "おわる：右からスライドイン",
+            "key": "SlideIn_Exit",
+            "valueType": "Vector3",
+            "startValue": { "x": 1000.0, "y": -300.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": -300.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "おわる：右へスライドアウト",
+            "key": "SlideOut_Exit",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": -300.0, "z": 0.0 },
+            "endValue":   { "x": 1000.0, "y": -300.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "key": "FadeIn_NumberBackground",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.8 },
+            "duration": 0.6,
+            "easing": "EaseInOut",
+            "loop": "PingPong"
+        },
+        {
+            "key": "ScaleUp_BackgroundDigits",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 2.0, "y": 2.0, "z": 2.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "key": "ScaleDown_BackgroundDigits",
+            "valueType": "Vector3",
+            "startValue": { "x": 2.0, "y": 2.0, "z": 2.0 },
+            "endValue":   { "x": 2.0, "y": 2.0, "z": 1.0 },
+            "duration": 0.10,
             "easing": "EaseOut",
             "loop": "Once"
         }

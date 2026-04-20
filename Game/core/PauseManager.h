@@ -8,6 +8,7 @@ namespace app
     namespace ui
     {
         class Layout;
+        class ReturnToTitleMenu;
     }
 }
 
@@ -15,15 +16,37 @@ namespace app
 {
     namespace core
     {
+        enum class PauseState
+        {
+            enClosed,
+            enPause,
+            enSound,
+            enTitle,
+        };
+
         class PauseManager
         {
         private:
             // ここにレイアウトをもって
             app::ui::Layout* layout_ = nullptr;
+            app::ui::Layout* pauseLayout_ = nullptr;
+            app::ui::Layout* returnToTitleLayout_ = nullptr;
 
+            app::ui::ReturnToTitleMenu* title_ = nullptr;
+
+            PauseState currentState_ = PauseState::enClosed;
+            /** 遷移先のステートを予約 */
+            PauseState nextState_ = PauseState::enClosed;
+
+            /** アニメーション再生中か */
+            bool isPlayingAnimation_ = false;
+            /** タイトル */
+            bool isTest_ = false;
+
+            /** 下記三つのフラグは消去 */
             bool isPause_ = false;
-            /** Pauseフラグが切り替わった１フレームだけtrueになる */
-            bool isPauseTrigger = false;
+            bool isTitle_ = false;
+            bool isVolume_ = false;
             /** ポーズメニューを開くことができるか */
             bool canPause_ = true;
 
@@ -39,14 +62,18 @@ namespace app
 
         private:
             void CreateMenu();
-            
+
         public:
             bool IsPause() const { return isPause_; }
-            bool IsPauseTrigger() const { return isPauseTrigger; }
+            bool IsTitle() const { return isTitle_; }
+            bool IsValume() const { return isVolume_; }
+            //bool IsPauseTrigger() const { return isPauseTrigger; }
 
             /** 外部からポーズの許可/禁止を設定 */
             void SetCanPause(bool canPause) { canPause_ = canPause; }
             bool CanPause() const { return canPause_; }
+
+            bool IsReturnToTitleRequested() const;
 
             /**
              * シングルトン用
@@ -100,4 +127,3 @@ namespace app
         };
     }
 }
-
