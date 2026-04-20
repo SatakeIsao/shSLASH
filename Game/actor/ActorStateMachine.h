@@ -454,6 +454,8 @@ namespace app
 			float aiTimer_ = 0.0f;
 			/** 最初の待機時間 */
 			const float WAIT_TIME = 1.0f;
+			/** 死んだか */
+			bool isDead_ = false;
 			/** 踏まれたか */
 			bool isSquashed_ = false;
 			/** 視野角に入ったか */
@@ -485,6 +487,11 @@ namespace app
 			void UpdateState();
 
 		public:
+			/** 死んだことを教える */
+			void OnDead()
+			{
+				isDead_ = true;
+			}
 			/** 外から踏まれたことを教える */
 			void OnSquashed()
 			{
@@ -557,6 +564,7 @@ namespace app
 			float aiTimer_ = 0.0f;
 			/** 最初の待機時間 */
 			const float WAIT_TIME = 1.0f;
+			bool isDead_ = false;
 			/** 踏まれたか */
 			bool isSquashed_ = false;
 			/** 視野角に入ったか */
@@ -588,6 +596,11 @@ namespace app
 			void UpdateState();
 
 		public:
+			/** 死んだことを教える */
+			void OnDead()
+			{
+				isDead_ = true;
+			}
 			/** 外から踏まれたことを教える */
 			void OnSquashed()
 			{

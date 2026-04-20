@@ -2,6 +2,7 @@
 #include "EventCharacterSpawnManager.h"
 #include "actor/EventCharacter.h"
 #include "actor/BattleCharacter.h"
+#include "ui/InGameUI.h"
 #include <functional>
 
 
@@ -120,9 +121,6 @@ namespace app
 			default:
 				return playerPosition;
 			}
-
-
-			//return Vector3();
 		}
 
 		int EventCharacterSpawnManager::GetCurrentEnemyCount() const
@@ -143,46 +141,59 @@ namespace app
 			const Vector3 spawnPosition = CalcSpawnPosition(direction);
 			const EnemyType type = SelectEnemyType();
 
-
 			SpawnResult result;
 			result.type = type;
-
 
 			switch (type)
 			{
 			case EnemyType::STONE:
-           {
+			{
 				auto* stone = NewGO<StoneEventCharacter>(
-					static_cast<uint8_t>(ObjectPriority::Default), "StoneEventCharacter");
+					static_cast<uint8_t>(ObjectPriority::Character), "StoneEventCharacter");
 				stone->transform.position = spawnPosition;
+
+				auto* hpUI = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::EnemyUI));
+				hpUI->SetTargetEnemy(stone);
+				hpUI->SetPlayer(battleCharacter_);
+
+				stone->SetOnDead([this, stone, hpUI]()
+					{
+						DeleteGO(hpUI);
+						DeleteGO(stone);
+						SpawnEventCharacter();
+					});
 				result.stoneCharacter = stone;
 				break;
 			}
-
 			case EnemyType::MUSHROOM:
-         {
+			{
 				auto* mushroom = NewGO<MushroomEventCharacter>(
-					static_cast<uint8_t>(ObjectPriority::Default), "MushroomEventCharacter");
+					static_cast<uint8_t>(ObjectPriority::Character), "MushroomEventCharacter");
 				mushroom->transform.position = spawnPosition;
+
+				auto* hpUI = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::EnemyUI));
+				hpUI->SetTargetEnemy(mushroom);
+				hpUI->SetPlayer(battleCharacter_);
+
+				mushroom->SetOnDead([this, mushroom, hpUI]()
+					{
+						DeleteGO(hpUI);
+						DeleteGO(mushroom);
+						SpawnEventCharacter();
+					});
 				result.mushroomCharacter = mushroom;
 				break;
 			}
-
-
 			case EnemyType::SKELETON:
 				// SkeletonEventCharacterの生成処理
 				break;
 
-
 			default:
 				break;
-
-
 			}
 
 
-			if (onSpawned_ && result.IsValid())
-			{
+			if (onSpawned_ && result.IsValid()){
 				onSpawned_(result);
 			}
 		}

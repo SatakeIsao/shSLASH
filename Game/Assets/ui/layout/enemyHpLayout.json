@@ -1,0 +1,72 @@
+﻿{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "enemyBackground",
+        "asset": "Assets/ui/hp/whiteBackGround.DDS",
+        "width": 112,
+        "height": 28,
+        "position": [-520, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "enemyBackGroundHP",
+        "asset": "Assets/ui/hp/backGroundHP.DDS",
+        "width": 101,
+        "height": 17,
+        "position": [-516, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0, 0.0, 0.0, 0.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "enemyDamageHP",
+        "asset": "Assets/ui/hp/damageHP.DDS",
+        "width": 100,
+        "height": 15,
+        "position": [-516, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "enemyCurrentHP",
+        "asset": "Assets/ui/hp/currentHP.DDS",
+        "width": 100,
+        "height": 15,
+        "position": [-516, 340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0, 1.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "stoneIcon",
+        "asset": "Assets/ui/hp/enemyStoneIcon.DDS",
+        "width": 50,
+        "height": 50,
+        "position": [-740, 360, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "mushroomIcon",
+        "asset": "Assets/ui/hp/enemyMushroomIcon.DDS",
+        "width": 50,
+        "height": 50,
+        "position": [-740, 360, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

@@ -6,7 +6,6 @@
 #include "ActorStateMachine.h"
 #include "actor/Types.h"
 
-
 namespace app
 {
 	namespace actor
@@ -17,8 +16,10 @@ namespace app
 
 		private:
 			using SuperClass = Character;
+			using DeadCallback = std::function<void()>;
 
 		private:
+			DeadCallback onDead_ = nullptr;
 			std::unique_ptr<EventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			Vector3 forward_ = g_vec3Front;
@@ -57,12 +58,18 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
+			void SetOnDead(DeadCallback callback)
+			{
+				onDead_ = std::move(callback);
+			}
 		};
 
 
 
 
 		/****************************************************/
+		
+		
 		class StoneEventCharacter : public Character
 		{
 			appActor(StoneEventCharacter);
@@ -70,9 +77,10 @@ namespace app
 
 		private:
 			using SuperClass = Character;
-
+			using DeadCallback = std::function<void()>;
 
 		private:
+			DeadCallback onDead_ = nullptr;
 			std::unique_ptr<StoneEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			static int instanceCount_;
@@ -103,6 +111,15 @@ namespace app
 				return forward_;
 			}
 
+			void TakeDamage(int damegeHP)
+			{
+				currentHP_ -= damegeHP;
+				if (currentHP_ < 0)
+				{
+					currentHP_ = 0;
+				}
+			}
+
 
 			static int GetNum() {return instanceCount_;}
 
@@ -123,12 +140,22 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
+			void SetOnDead(DeadCallback callback)
+			{
+				onDead_ = std::move(callback);
+			}
+			void NotifyDead()
+			{
+				if (onDead_) { onDead_(); }
+			}
 		};
 
 
 
 
 		/****************************************************/
+		
+		
 		class MushroomEventCharacter : public Character
 		{
 			appActor(MushroomEventCharacter);
@@ -136,9 +163,10 @@ namespace app
 
 		private:
 			using SuperClass = Character;
-
+			using DeadCallback = std::function<void()>;
 
 		private:
+			DeadCallback onDead_ = nullptr;
 			std::unique_ptr<MushroomEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			static int instanceCount_;
@@ -191,6 +219,14 @@ namespace app
 			void SetPause(bool isPause)
 			{
 				isPause_ = isPause;
+			}
+			void SetOnDead(DeadCallback callback)
+			{
+				onDead_ = std::move(callback);
+			}
+			void NotifyDead()
+			{
+				if (onDead_) { onDead_(); }
 			}
 		};
 	}

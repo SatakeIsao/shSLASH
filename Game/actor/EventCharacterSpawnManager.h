@@ -94,6 +94,8 @@ namespace app
 			void SetSpawnInterval(float interval) { spawnInterval_ = interval; }
 
 
+			/** イベントキャラクターをスポーンする */
+			void SpawnEventCharacter();
 		private:
 			/** スケルトンの出現確率を計算する (Lv1～Lv5 : 0% , Lv6以降:段階的に上昇) */
 			float GetSkeletonProbability() const;
@@ -113,12 +115,6 @@ namespace app
 
 			/** 現在スポーンしているイベントキャラクターの数を取得する */
 			int GetCurrentEnemyCount() const;
-
-
-			/** イベントキャラクターをスポーンする */
-			void SpawnEventCharacter();
-
-
 		};
 	}
 }

@@ -41,7 +41,8 @@ namespace app
     {
         class BattleSequence;
         class TimerUIObject;
-        class HpUIObject;
+        class PlayerHpUIObject;
+        class EnemyHpUIObject;
     }
 }
 
@@ -72,7 +73,11 @@ namespace app
 
             struct DamageNotify : public INotify
             {
-				virtual uint32_t ID() const override { return 1; }
+                // 比較用（クラス名から呼ぶ用）
+                static uint32_t StaticID() { return 1; }
+
+                // 仮想関数版（インスタンス経由で呼ぶ用）
+                virtual uint32_t ID() const override { return StaticID(); }
             };
 
 
@@ -96,7 +101,8 @@ namespace app
             app::core::PauseManagerObject* pauseManagerObject_ = nullptr;
             app::ui::BattleSequence* battleSequenceObject_ = nullptr;
             app::ui::TimerUIObject* timerUIObject_ = nullptr;
-            app::ui::HpUIObject* hpUIObject_ = nullptr;
+            app::ui::PlayerHpUIObject* playerHpUIObject_ = nullptr;
+            app::ui::EnemyHpUIObject* enemyHpUIObject_ = nullptr;
 
             nsK2EngineLow::SkyCube* skyCube_ = nullptr;									//スカイキューブのオブジェクト
             /** 通知リスト */

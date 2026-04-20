@@ -131,12 +131,19 @@ namespace app
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
 			characterController_->SetGravity(status_->GetGravity());
+			currentHP_ = static_cast<int>(status_->GetMaxHp());
+
 			return true;
 		}
 
 		void StoneEventCharacter::Update()
 		{
 			if (isPause_) { return; }
+
+			if (transform.position.y < -200.0f)
+			{
+				stateMachine_->OnDead();
+			}
 
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
@@ -221,12 +228,20 @@ namespace app
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
 			characterController_->SetGravity(status_->GetGravity());
+			currentHP_ = static_cast<int>(status_->GetMaxHp());
+
 			return true;
 		}
 
 		void MushroomEventCharacter::Update()
 		{
 			if (isPause_) { return; }
+
+			if (transform.position.y < -200.0f)
+			{
+				stateMachine_->OnDead();
+			}
+
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
 			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
