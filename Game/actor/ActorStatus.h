@@ -83,7 +83,7 @@ namespace app
 
 			inline float GetGravity() const { return gravity_; }
 			inline void SetGravity(const float gravity) { gravity_ = gravity; }
-
+			inline float GetAttackPower() const { return attackPower_; }
 
 			inline float GetWarpStartScale() const { return warpStartScale_; }
 			inline float GetWarpEndScale() const { return warpEndScale_; }
@@ -94,6 +94,8 @@ namespace app
 				warpEndScale_ = endScale;
 				warpTimeSeconds_ = timeSeconds;
 			}
+
+			inline float GetMaxHp() const { return hp_; }
 		};
 
 

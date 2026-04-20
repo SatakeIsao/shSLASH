@@ -12,6 +12,9 @@ constexpr uint32_t INVALID_STATE_ID = 0xFFFFFFFF;
 enum class ObjectPriority : uint8_t
 {
 	Default = 0,
+	Character = 10,
+	EnemyUI = 90,
+	PlayerUI = 100,
 	Pause = 200,
 	Fade = 250,
 };

@@ -31,11 +31,11 @@ namespace
 	constexpr const char* MASTER_STAGE_PARAM_PATH = "Assets/master/battle/MasterStageParameter.json";
 	constexpr const char* MASTER_BATTLE_CAMERA_PARAM_PATH = "Assets/master/battle/MasterBattleCameraParameter.json";
 	constexpr const char* MASTER_BATTLE_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterBattleCharacterParameter.json";
+	constexpr const char* MASTER_WEAPON_PARAM_PATH = "Assets/master/battle/MasterWeaponParameter.json";
 	constexpr const char* MASTER_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterEventCharacterParameter.json";
 	constexpr const char* MASTER_STONE_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterStoneEventCharacterParameter.json";
 	constexpr const char* MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterMushroomEventCharacterParameter.json";
 
-	static const int MAX_HP = 8;
 
 	// Player用
 	static app::actor::CharacterInitializeParameter sPlayerInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
@@ -173,7 +173,8 @@ namespace app
 			DeleteGO(battleCharacter_);
 			DeleteGO(eventCharacter_);
 			DeleteGO(timerUIObject_);
-			DeleteGO(hpUIObject_);
+			DeleteGO(playerHpUIObject_);
+			DeleteGO(enemyHpUIObject_);
 			for (auto& test : testGimmickList_)
 			{
 				DeleteGO(test);
@@ -204,11 +205,68 @@ namespace app
 				//スカイキューブの種類を設定
 				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_Day);
 			}
+			/** イベントキャラクタースポーンマネージャー */
+			{ 
+				eventCharacterSpawnManager_ = std::make_unique<app::actor::EventCharacterSpawnManager>();
+				eventCharacterSpawnManager_->SetOnSpawned([this](const app::actor::SpawnResult& result)
+					{
+						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
+						switch (result.type)
+						{
+						case app::actor::EnemyType::STONE:
+						{
+							auto* stone = result.stoneCharacter;
+							stoneEventCharacters_.push_back(stone);
+							stone->Initialize(sStoneEnemyInitializeParameter);
+							stone->AddState <app::actor::IdleCharacterState>();
+							stone->AddState<app::actor::PatrolCharacterState>();
+							stone->AddState<app::actor::RunCharacterState>();
+							stone->AddState<app::actor::AttackCharacterState>();
+							stone->AddState<app::actor::DeadCharacterState>();
+							stone->AddState <app::actor::KnockBackCharacterState>();
+							stone->GetStatus()->SetFriction(stageParam->friction);
+							stone->GetStatus()->SetGravity(stageParam->gravity);
+
+							// ↓ ここに追加：死亡時のコールバックをセット
+							stone->SetOnDead([this, stone]()
+								{
+									// リストから削除
+									stoneEventCharacters_.erase(
+										std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
+										stoneEventCharacters_.end()
+									);
+									// GOを削除
+									DeleteGO(stone);
+									// 新たに1体スポーン
+									eventCharacterSpawnManager_->SpawnEventCharacter();
+								});						
+							break;
+						}
+						case app::actor::EnemyType::MUSHROOM:
+						{
+							auto* mushroom = result.mushroomCharacter;
+							mushroomEventCharacters_.push_back(mushroom);
+							mushroom->Initialize(sMushroomEnemyInitializeParameter);
+							mushroom->AddState <app::actor::IdleCharacterState>();
+							mushroom->AddState<app::actor::PatrolCharacterState>();
+							mushroom->AddState<app::actor::RunCharacterState>();
+							mushroom->AddState<app::actor::AttackCharacterState>();
+							mushroom->AddState<app::actor::DeadCharacterState>();
+							mushroom->AddState <app::actor::KnockBackCharacterState>();
+							mushroom->GetStatus()->SetFriction(stageParam->friction);
+							mushroom->GetStatus()->SetGravity(stageParam->gravity);
+							break;
+						}
+						default:
+							break;
+						}
+					});
+			}
 			{
 				characterSteering_ = std::make_unique<app::actor::CharacterSteering>();
 				// マリオにしてみた
 				{
-					battleCharacter_ = NewGO<app::actor::BattleCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "mario");
+					battleCharacter_ = NewGO<app::actor::BattleCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "mario");
 					battleCharacter_->Initialize(sPlayerInitializeParameter);
 					{
 						battleCharacter_->AddState<app::actor::IdleCharacterState>();
@@ -239,59 +297,11 @@ namespace app
 				}
 				characterSteering_->Initialize(battleCharacter_, 0);
 
-				eventCharacterSpawnManager_ = std::make_unique<app::actor::EventCharacterSpawnManager>();
-
-
-				eventCharacterSpawnManager_->SetOnSpawned([this](const app::actor::SpawnResult& result)
-					{
-						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
-
-
-						switch (result.type)
-						{
-						case app::actor::EnemyType::STONE:
-						{
-							auto* stone = result.stoneCharacter;
-							stoneEventCharacters_.push_back(stone);
-							stone->Initialize(sStoneEnemyInitializeParameter);
-							stone->AddState <app::actor::IdleCharacterState>();
-							stone->AddState<app::actor::PatrolCharacterState>();
-							stone->AddState<app::actor::RunCharacterState>();
-							stone->AddState<app::actor::AttackCharacterState>();
-							stone->AddState<app::actor::DeadCharacterState>();
-							stone->AddState <app::actor::KnockBackCharacterState>();
-							stone->GetStatus()->SetFriction(stageParam->friction);
-							stone->GetStatus()->SetGravity(stageParam->gravity);
-							break;
-						}
-
-						case app::actor::EnemyType::MUSHROOM:
-						{
-							auto* mushroom = result.mushroomCharacter;
-							mushroomEventCharacters_.push_back(mushroom);
-							mushroom->Initialize(sMushroomEnemyInitializeParameter);
-							mushroom->AddState <app::actor::IdleCharacterState>();
-							mushroom->AddState<app::actor::PatrolCharacterState>();
-							mushroom->AddState<app::actor::RunCharacterState>();
-							mushroom->AddState<app::actor::AttackCharacterState>();
-							mushroom->AddState<app::actor::DeadCharacterState>();
-							mushroom->AddState <app::actor::KnockBackCharacterState>();
-							mushroom->GetStatus()->SetFriction(stageParam->friction);
-							mushroom->GetStatus()->SetGravity(stageParam->gravity);
-							break;
-						}
-
-						default:
-							break;
-						}
-
-					});
-
 
 				eventCharacterSpawnManager_->Start(battleCharacter_);
 
 				// 敵キャラクター
-				eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Default), "nokonoko");
+				eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
 				eventCharacter_->Initialize(sEnemyInitializeParameter);
 				{
 					eventCharacter_->AddState <app::actor::IdleCharacterState>();
@@ -372,7 +382,8 @@ namespace app
 				}
 				// HPUI
 				{
-					hpUIObject_ = NewGO<app::ui::HpUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
+					playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
+					//enemyHpUIObject_ = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				}
 				//BGM再生
 				{
@@ -391,7 +402,6 @@ namespace app
 			if (battleSequenceObject_) {
 				isSequence = battleSequenceObject_->IsPlaying();
 			}
-
 			// キャラクターたちに適用するポーズ状態（手動ポーズ中、またはシーケンス中ならポーズさせる）
 			bool targetPauseState = currentPause || isSequence;
 
@@ -703,6 +713,34 @@ namespace app
 					}
 				}
 
+				/** レベル */
+				{
+					if (g_pad[0]->IsTrigger(enButtonRight))
+					{
+						if (playerHpUIObject_) {
+							//playerHpUIObject_->AddLevelUpGauge();  // ← ゲージを進めるだけ
+						}
+						//// 本物のキャラクターのレベルを上げる
+						//if (battleCharacter_) {
+						//	battleCharacter_->LevelUp();
+						//}
+					}
+
+					// ゲージ折り返しを検知したらキャラのLv.を上げる
+					if (playerHpUIObject_ && playerHpUIObject_->IsLevelUp())
+					{
+						if (battleCharacter_) {
+							battleCharacter_->LevelUp();
+						}
+						playerHpUIObject_->ClearLevelUp();  // フラグをリセット
+					}
+
+					//if (battleCharacter_ && playerHpUIObject_)
+					//{
+					//	playerHpUIObject_->SetLevel(battleCharacter_->GetLevel());
+					//}
+				}
+
 				layout_->Update();
 			}
 		}
@@ -762,6 +800,11 @@ namespace app
 						p.radius = json["radius"].get<float>();
 						p.height = json["height"].get<float>();
 					});
+				// 武器パラメーター読み込み
+				app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
+					{
+						p.attackPower = json["attackPower"].get<float>();
+					});
 				// イベントキャラクターパラメーター読み込み
 				app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
 					{
@@ -771,14 +814,18 @@ namespace app
 						p.radius = json["radius"].get<float>();
 						p.height = json["height"].get<float>();
 					});
+				// ストーンイベントキャラクターパラメータ読み込み
 				app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
 					{
 						p.moveSpeed = json["moveSpeed"].get<float>();
-						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();                                                                                                                   
 						p.jumpPower = json["jumpPower"].get<float>();
 						p.radius = json["radius"].get<float>();
 						p.height = json["height"].get<float>();
+						p.hp = json["hp"].get<float>();
+						p.attackPower = json["attackPower"].get<float>();
 					});
+				// マッシュルイベントキャラクターパラメータ読み込み
 				app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
 					{
 						p.moveSpeed = json["moveSpeed"].get<float>();
@@ -786,6 +833,8 @@ namespace app
 						p.jumpPower = json["jumpPower"].get<float>();
 						p.radius = json["radius"].get<float>();
 						p.height = json["height"].get<float>();
+						p.hp = json["hp"].get<float>();
+						p.attackPower = json["attackPower"].get<float>();
 					});
 			}
 		}

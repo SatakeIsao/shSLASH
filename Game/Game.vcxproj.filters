@@ -187,6 +187,11 @@
     <ClCompile Include="ui\BattleSequence.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
     <ClCompile Include="actor\EventCharacterSpawnManager.cpp" />
+    <ClCompile Include="ui\PauseMenu.cpp" />
+    <ClCompile Include="ui\ReturnToTitleMenu.cpp" />
+    <ClCompile Include="actor\Equipment.cpp" />
+    <ClCompile Include="actor\EquipmentSlot.cpp" />
+    <ClCompile Include="actor\EquipmentSlotManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -361,6 +366,11 @@
     <ClInclude Include="ui\BattleSequence.h" />
     <ClInclude Include="ui\InGameUI.h" />
     <ClInclude Include="actor\EventCharacterSpawnManager.h" />
+    <ClInclude Include="ui\PauseMenu.h" />
+    <ClInclude Include="ui\ReturnToTitleMenu.h" />
+    <ClInclude Include="actor\Equipment.h" />
+    <ClInclude Include="actor\EquipmentSlot.h" />
+    <ClInclude Include="actor\EquipmentSlotManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

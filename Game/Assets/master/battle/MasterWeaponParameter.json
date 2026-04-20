@@ -1,0 +1,22 @@
+[
+    {
+        "comment": "等倍の攻撃力",
+        "attackPower": 10.0
+    },
+    {
+        "comment": "1.1倍の攻撃力",
+        "attackPower": 11.0
+    },
+    {
+        "comment": "1.2倍の攻撃力",
+        "attackPower": 12.0
+    },
+    {
+        "comment": "1.4倍の攻撃力",
+        "attackPower": 14.0
+    },
+    {
+        "comment": "1.8倍の攻撃力",
+        "attackPower": 18.0
+    }
+]

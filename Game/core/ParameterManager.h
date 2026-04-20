@@ -80,6 +80,15 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		};
 
 
+		/** 武器 */
+		struct MasterWeaponParameter : public IParameter
+		{
+			appParameter(MasterWeaponParameter);
+
+			float attackPower;			// 攻撃力
+		};
+
+
 		/** イベントキャラクター */
 		struct MasterEventCharacterParameter : public IParameter
 		{
@@ -152,6 +161,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		};
 
 
+		/** 音量設定メニュー */
 		struct MasterSoundOptionMenuParameter : public IParameter
 		{
 			appParameter(MasterSoundOptionMenuParameter);
@@ -166,6 +176,27 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		};
 
 
+		/** ポーズメニュー */
+		struct MasterPauseMenuParameter : public IParameter
+		{
+			appParameter(MasterPauseMenuParameter);
+
+			float cursolPositionX[2]; //
+			float cursolPositionY[2]; //
+		};
+
+
+		/** タイトルにもどるメニュー */
+		struct ReturnToTitleMenuParameter : public IParameter
+		{
+			appParameter(ReturnToTitleMenuParameter);
+
+			float cursolPositionX[2]; //
+			float cursolPositionY[2]; //
+		};
+
+
+		/** PlayerのHPUI */
 		struct MasterHpUIParameter : public IParameter
 		{
 			appParameter(MasterHpUIParameter);
@@ -178,6 +209,18 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float levelBarPositionX[11];
 			// レベルバーのスケールX
 			float levelBarScaleX[11];
+		};
+
+
+		/** EnemyのHPUI */
+		struct MasterEnemyHpUIParameter : public IParameter
+		{
+			appParameter(MasterEnemyHpUIParameter);
+
+			// HPバーの座標X
+			float enemyHpBarPositionX[11];
+			// HPバーのスケールX
+			float enemyHpBarScaleX[11];
 		};
 
 

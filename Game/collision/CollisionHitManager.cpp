@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CollisionHitManager.h"
 #include "actor/ActorState.h"
+#include "actor/ActorStateMachine.h"
 #include "actor/BattleCharacter.h"
 #include "actor/EventCharacter.h"
 #include "actor/Gimmick.h"
@@ -92,7 +93,7 @@ namespace app
 
 		bool CollisionHitManager::ContainsEventCharacterPair(const Pair& hitPair)
 		{
-			if (!IsHitObject<app::actor::EventCharacter>(hitPair)) {
+			if (!IsHitObject<app::actor::StoneEventCharacter>(hitPair)) {
 				return false;
 			}
 			if (!IsHitObject<app::actor::BattleCharacter>(hitPair)) {
@@ -105,7 +106,7 @@ namespace app
 		void CollisionHitManager::UpdateEventCharacterPair(Pair& hitPair)
 		{
 			auto* battleCharacter = GetHitObject<app::actor::BattleCharacter>(hitPair);
-			auto* eventCharacter = GetHitObject <app::actor::EventCharacter>(hitPair);
+			auto* eventCharacter = GetHitObject <app::actor::StoneEventCharacter>(hitPair);
 
 			Vector3 playerPos = battleCharacter->transform.position;
 			Vector3 slimePos = eventCharacter->transform.position;
@@ -131,6 +132,14 @@ namespace app
 				knockBackDirection.Normalize();
 				//スライムがノックバックした
 				eventCharacter->GetStateMachine()->OnKnockBack(knockBackDirection);
+
+				float attack = battleCharacter->GetTotalAttack();
+				eventCharacter->TakeDamage(static_cast<int>(attack));
+				// HPが0になったら、Dead ステートへ
+				if (eventCharacter->GetCurrentHP() <= 0)
+				{
+					eventCharacter->GetStateMachine()->OnDead();
+				}
 			}
 			/** プレイヤー本体のゴーストと衝突した時 */
 			else
