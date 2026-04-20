@@ -1,0 +1,11 @@
+[
+    {
+        "comment": "ゲームオーバーメニューのパラメータ",
+        
+        "cursolPositionXA": -325.0,
+        "cursolPositionXB": -430.0,
+
+        "cursolPositionYA": 50.0,
+        "cursolPositionYB": -200.0
+    }
+]

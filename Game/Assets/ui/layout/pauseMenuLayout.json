@@ -3,25 +3,69 @@
     "elements": [
       {
         "type": "UIIcon",
-        "name": "Background",
-        "asset": "Assets/ui/white.DDS",
-        "width": 942,
-        "height": 585,
+        "name": "Background2",
+        "asset": "Assets/ui/pause/volume/baseAll.DDS",
+        "width": 1660,
+        "height": 985,
         "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Cursol",
+        "asset": "Assets/ui/pause/volume/cursol.DDS",
+        "width": 127,
+        "height": 84,
+        "position": [-505, 185, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "VolumeBarBackground_MASTER",
+        "asset":"Assets/ui/white.DDS",
+        "width": 445,
+        "height": 36,
+        "position": [150, 140, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
-        "name": "Cursol",
-        "asset": "Assets/ui/pause/volume/volume_listCursol.DDS",
-        "width": 350,
-        "height": 62,
-        "position": [-300, 140, 0],
+        "name": "VolumeBarBackground_BGM",
+        "asset":"Assets/ui/white.DDS",
+        "width": 445,
+        "height": 36,
+        "position": [150, -20, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [0.0 ,0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "VolumeBarBackground_SE",
+        "asset":"Assets/ui/white.DDS",
+        "width": 445,
+        "height": 36,
+        "position": [150, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseLeftBackground_MASTER",
+        "asset": "Assets/ui/white.DDS",
+        "width": 20,
+        "height": 60,
+        "position": [-75, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -33,6 +77,17 @@
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseRightBackground_MASTER",
+        "asset": "Assets/ui/white.DDS",
+        "width": 20,
+        "height": 60,
+        "position": [375, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -69,6 +124,17 @@
       },
       {
         "type": "UIIcon",
+        "name": "KnobBackground_MASTER",
+        "asset": "Assets/ui/white.DDS",
+        "width": 36,
+        "height": 46,
+        "position": [375, 140, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
         "name": "Knob_MASTER",
         "asset": "Assets/ui/pause/volume/volume_knob.DDS",
         "width": 30,
@@ -82,12 +148,23 @@
         "type": "UIIcon",
         "name": "Text_MASTER",
         "asset": "Assets/ui/pause/volume/text_MASTER.DDS",
-        "width": 166,
-        "height": 35,
-        "position": [-300, 140, 0],
+        "width": 165,
+        "height": 66,
+        "position": [-330, 140, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseLeftBackground_BGM",
+        "asset": "Assets/ui/white.DDS",
+        "width": 20,
+        "height": 60,
+        "position": [-75, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -99,6 +176,17 @@
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseRightBackground_BGM",
+        "asset": "Assets/ui/white.DDS",
+        "width": 20,
+        "height": 60,
+        "position": [375, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -135,6 +223,17 @@
       },
       {
         "type": "UIIcon",
+        "name": "KnobBackground_BGM",
+        "asset": "Assets/ui/white.DDS",
+        "width": 36,
+        "height": 46,
+        "position": [375, -20, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
         "name": "Knob_BGM",
         "asset": "Assets/ui/pause/volume/volume_knob.DDS",
         "width": 30,
@@ -147,13 +246,79 @@
       {
         "type": "UIIcon",
         "name": "Text_BGM",
-        "asset": "Assets/ui/pause/volume/text_BGM.DDS",
-        "width": 80,
-        "height": 31,
-        "position": [-300, -20, 0],
+        "asset": "Assets/ui/pause/volume/text_BGM2.DDS",
+        "width": 110,
+        "height": 50,
+        "position": [-330, -20, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_Sound",
+        "asset": "Assets/ui/pause/volume/text_Sound.DDS",
+        "width": 496,
+        "height": 116,
+        "position": [0, 350, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_default",
+        "asset": "Assets/ui/pause/volume/text_default.DDS",
+        "width": 255,
+        "height": 58,
+        "position": [30, -300, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_Return",
+        "asset": "Assets/ui/pause/returnTitle/text_Return.DDS",
+        "width": 124,
+        "height": 50,
+        "position": [700, -400, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "buttonY",
+        "asset": "Assets/ui/pause/volume/buttonY.DDS",
+        "width": 64,
+        "height": 64,
+        "position": [-150, -300, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "buttonB",
+        "asset": "Assets/ui/pause/volume/buttonB.DDS",
+        "width": 64,
+        "height": 64,
+        "position": [600, -400, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseLeftBackground_SE",
+        "asset": "Assets/ui/white.DDS",
+        "width": 20,
+        "height": 60,
+        "position": [-75, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -165,6 +330,17 @@
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BaseRightBackground_SE",
+        "asset": "Assets/ui/white.DDS",
+        "width": 20,
+        "height": 60,
+        "position": [375, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -201,6 +377,17 @@
       },
       {
         "type": "UIIcon",
+        "name": "KnobBackground_SE",
+        "asset": "Assets/ui/white.DDS",
+        "width": 36,
+        "height": 46,
+        "position": [375, -180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [0.0 ,0.0, 0.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
         "name": "Knob_SE",
         "asset": "Assets/ui/pause/volume/volume_knob.DDS",
         "width": 30,
@@ -213,10 +400,10 @@
       {
         "type": "UIIcon",
         "name": "Text_SE",
-        "asset": "Assets/ui/pause/volume/text_SE.DDS",
-        "width": 48,
-        "height": 35,
-        "position": [-300, -180, 0],
+        "asset": "Assets/ui/pause/volume/text_SE2.DDS",
+        "width": 60,
+        "height": 51,
+        "position": [-330, -180, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
