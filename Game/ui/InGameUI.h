@@ -1,5 +1,7 @@
 #pragma once
 #include "Layout.h"
+#include "actor/BattleCharacter.h"
+#include "actor/EventCharacter.h"
 
 namespace app
 {
@@ -38,27 +40,95 @@ namespace app
 
 		class HpUIObject : public IGameObject
 		{
-		private:
-			std::unique_ptr<app::ui::Layout> layout_;
-			static constexpr float kDamageDelayTime = 0.5f;
+		protected:
 			float damageDelayTimer_ = 0.0f;
 			//ディレイHPバーがHPバーに線形補間で追従する時用
 			float lerpVal_ = 0.5f;
 			float damagePosX_ = 0.0f;
 			float damageScaleX_ = 0.0f;
 			int index_ = 0;
+			int previousLevel_ = 0;
 			int levelUpIndex_ = 0;
 			int level_ = 0;
 
 			bool isCounting_ = true;
+			bool isLevelUpPending_ = false; // レベルアップ演出待ちフラグ
 
 
 		public:
-			HpUIObject();
-			~HpUIObject();
+			HpUIObject() {};
+			virtual ~HpUIObject() = default;
 		public:
-			void Update();
-			void Render(RenderContext& rc);
+			virtual void Update() = 0;
+			virtual void Render(RenderContext& rc) = 0;
+		};
+
+
+
+
+		/*************************************************/
+
+
+		class PlayerHpUIObject : public HpUIObject
+		{
+		private:
+			std::unique_ptr<app::ui::Layout> layout_;
+			/** 表示用のコピー */
+			//int level_ = 0;
+
+		public:
+			PlayerHpUIObject();
+			~PlayerHpUIObject();
+		public:
+			void Update() override;
+			void Render(RenderContext& rc) override;
+
+			// BattleCharacterから level を受け取って表示
+			void SetLevel(int level) { level_ = min(level, 10);}
+			void AddLevelUpGauge() { levelUpIndex_; }
+
+			bool IsLevelUp() const { return isLevelUpPending_; }
+			void ClearLevelUp() { isLevelUpPending_ = false; }
+		};
+
+
+
+
+		/*************************************************/
+
+
+		class EnemyHpUIObject : public HpUIObject
+		{
+		private:
+			std::unique_ptr<app::ui::Layout> layout_;
+
+			app::actor::BattleCharacter* player_ = nullptr;
+			app::actor::StoneEventCharacter* stoneTarget_ = nullptr;
+			app::actor::MushroomEventCharacter* mushroomTarget_ = nullptr;
+
+			int hpIndex_ = 0;
+			/** 表示フラグ */
+			bool isVisible_ = false;
+		public:
+			EnemyHpUIObject();
+			~EnemyHpUIObject();
+		public:
+			void Update() override;
+			void Render(RenderContext& rc) override;
+
+			void SetPlayer(app::actor::BattleCharacter* player)
+			{
+				player_ = player;
+			}
+			// どのEnemyに追従するか設定
+			void SetTargetEnemy(app::actor::StoneEventCharacter* enemy)
+			{
+				stoneTarget_ = enemy;
+			}
+			void SetTargetEnemy(app::actor::MushroomEventCharacter* enemy)
+			{
+				mushroomTarget_ = enemy;
+			}
 		};
 	}
 }

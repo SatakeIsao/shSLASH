@@ -686,6 +686,21 @@ namespace app
 
 		void StoneEventCharacterStateMachine::UpdateState()
 		{
+			if (isDead_)
+			{
+				RequestChangeState(DeadCharacterState::ID());
+
+				// Dead アニメーション終了後に削除通知
+				if (IsEqualCurrentState(DeadCharacterState::ID())
+					&& CanChangeState())
+				{
+					isDead_ = false;
+					auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+					if (stone) { stone->NotifyDead(); }
+				}
+				return;
+			}
+
 			if (IsSquashed())
 			{
 				RequestChangeState(DeadCharacterState::ID());
@@ -889,6 +904,21 @@ namespace app
 
 		void MushroomEventCharacterStateMachine::UpdateState()
 		{
+			if (isDead_)
+			{
+				RequestChangeState(DeadCharacterState::ID());
+
+				// Dead アニメーション終了後に削除通知
+				if (IsEqualCurrentState(DeadCharacterState::ID())
+					&& CanChangeState())
+				{
+					isDead_ = false;
+					auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+					if (mushroom) { mushroom->NotifyDead(); }
+				}
+				return;
+			}
+
 			if (IsSquashed())
 			{
 				RequestChangeState(DeadCharacterState::ID());

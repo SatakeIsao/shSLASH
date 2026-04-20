@@ -1,0 +1,29 @@
+[
+    {
+        "comment": "HPバーのパラメータ",
+
+         "hpBarPositionXA": -50.0,
+        "hpBarPositionXB": -45.0,
+        "hpBarPositionXC": -40.0,
+        "hpBarPositionXD": -35.0,
+        "hpBarPositionXE": -30.0,
+        "hpBarPositionXF": -25.0,
+        "hpBarPositionXG": -20.0,
+        "hpBarPositionXH": -15.0,
+        "hpBarPositionXI": -10.0,
+        "hpBarPositionXJ": -5.0,
+        "hpBarPositionXK": -0.0,
+
+        "hpBarScaleXA": 0.0,
+        "hpBarScaleXB": 0.10,
+        "hpBarScaleXC": 0.20,
+        "hpBarScaleXD": 0.30,
+        "hpBarScaleXE": 0.40,
+        "hpBarScaleXF": 0.50,
+        "hpBarScaleXG": 0.60,
+        "hpBarScaleXH": 0.70,
+        "hpBarScaleXI": 0.80,
+        "hpBarScaleXJ": 0.90,
+        "hpBarScaleXK": 1.00
+    }
+]
