@@ -16,6 +16,9 @@ namespace app
 			stateMachine_ = std::make_unique<BattleCharacterStateMachine>();
 			status_ = new app::actor::BattleCharacterStatus();
 			ghostBody_ = std::make_unique<app::collision::GhostBody>();
+			equipmentSlots_.Equip(
+				EquipmentSlotType::Weapon, std::make_unique<Weapon>()
+			);
 		}
 
 
@@ -86,6 +89,26 @@ namespace app
 			transform.rotation = Quaternion::Identity;
 
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
+		}
+
+
+		float BattleCharacter::GetTotalAttack() const
+		{
+			// ベースの攻撃力（マスターデータ由来）
+			float base = status_ ? status_->GetAttackPower() : 0.0f;
+
+			// 武器スロットの攻撃力を加算
+			float weaponPower = equipmentSlots_.GetTotalAttackPower();
+
+			return base + weaponPower;
+			//// 武器を持っていない場合
+			//if (weapon_ == nullptr)
+			//{
+			//	return attackPower_;
+			//}
+
+			// 武器の攻撃力
+			//return weapon_->GetAttackPower();
 		}
 	}
 }

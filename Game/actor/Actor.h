@@ -2,6 +2,7 @@
  * Actorファイル
  */
 #pragma once
+#include "EquipmentSlotManager.h"
 
 
 namespace app
@@ -51,9 +52,11 @@ namespace app
 			std::unique_ptr<ModelRender> modelRender_ = nullptr;
 			std::unique_ptr<CharacterController> characterController_ = nullptr;
 			app::memory::Array<AnimationClip> animationClips_;
+			EquipmentSlotManager equipmentSlots_;
 
 			app::actor::CharacterStatus* status_ = nullptr;
 
+			int currentHP_ = 0;
 
 		public:
 			Character();
@@ -68,6 +71,17 @@ namespace app
 			app::actor::CharacterStatus* GetStatus() { return status_; }
 			ModelRender* GetModelRender() { return modelRender_.get(); }
 			CharacterController* GetCharacterController() { return characterController_.get(); }
+
+			int GetCurrentHP() const { return currentHP_; }
+
+			void TakeDamage(int damage)
+			{
+				currentHP_ -= damage;
+				if (currentHP_ < 0)
+				{
+					currentHP_ = 0;
+				}
+			}
 		};
 	}
 }
