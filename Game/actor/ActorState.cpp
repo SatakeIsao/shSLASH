@@ -744,13 +744,11 @@ namespace app
 			case ChargeAttackPhase::Start:
 			{
 				// 上昇が終わったら落下フェーズへ
-				//if (characterStateMachine->GetCharacterController()->GetVerticalVelocity() < 0.0f) {
 				if (!characterStateMachine->GetModelRender()->IsPlayingAnimation()) {
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping));
 					chargeAttackPhase_ = ChargeAttackPhase::Looping;
 				}
 					
-				//}
 				break;
 			}
 			case ChargeAttackPhase::Looping:
@@ -763,23 +761,57 @@ namespace app
 					if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 						battleMachine->RequestChargeAttackEffect();
 					}
+
+					// フェーズ遷移の瞬間に一度だけ生成
+					attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
+					attackScheduler_->AddTimer(0.1f, [&]()
+						{
+							auto* csm = owner_->As<CharacterStateMachine>();
+							attackBody_ = new app::collision::GhostBody();
+							attackBody_->CreateSphere(
+								csm->GetCharacter(),
+								csm->GetCharacterID(),
+								20.0f,
+								app::collision::ghost::CollisionAttribute::Player,
+								app::collision::ghost::CollisionAttributeMask::All);
+							const float radius = csm->GetStatus()->GetRadius();
+							attackBody_->SetPosition(
+								csm->transform.position
+								+ csm->GetMoveDirection() * (radius + radius)
+								+ Vector3(0.0f, radius, 0.0f));
+						}, false);
+					attackScheduler_->AddTimer(0.1f, [&]()
+						{
+							delete attackBody_;
+							attackBody_ = nullptr;
+						}, true);
 				}
 				break;
 			}
 			case ChargeAttackPhase::End:
 			{
+				// スケジューラーの更新だけ行う（生成は Looping → End の遷移時に済んでいる）
+				if (attackScheduler_) {
+					attackScheduler_->Update(g_gameTime->GetFrameDeltaTime());
+				}
 				break;
 			}
-			}
+		}
 
 			auto* characterStatus = characterStateMachine->GetStatus();
-			//characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetJumpMoveSpeed());
-			//characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
 		}
 
 
 		void ChargeAttackCharacterState::Exit()
 		{
+			attackScheduler_.reset(nullptr);  // スケジューラーを破棄
+
+			// ゴーストボディが残っていたら確実に削除
+			if (attackBody_ != nullptr) {
+				delete attackBody_;
+				attackBody_ = nullptr;
+			}
+
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 		}
