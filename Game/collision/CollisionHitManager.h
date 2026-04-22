@@ -51,6 +51,9 @@ namespace app
 			/** スライムを含むペアか */
 			bool ContainsEventCharacterPair(const Pair& hitPair);
 			void UpdateEventCharacterPair(Pair& hitPair);
+			/** マッシュルエネミーを含むペアか */
+			bool ContainsMushroomEventCharacterPair(const Pair& hitPair);
+			void UpdateMushroomEventCharacterPair(Pair& hitPair);
 
 
 

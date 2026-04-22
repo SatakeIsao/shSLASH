@@ -100,6 +100,8 @@ namespace app
 		class EnemyHpUIObject : public HpUIObject
 		{
 		private:
+			bool isDead_ = false;
+
 			std::unique_ptr<app::ui::Layout> layout_;
 
 			app::actor::BattleCharacter* player_ = nullptr;
@@ -128,6 +130,12 @@ namespace app
 			void SetTargetEnemy(app::actor::MushroomEventCharacter* enemy)
 			{
 				mushroomTarget_ = enemy;
+			}
+			void ClearTarget()
+			{
+				stoneTarget_ = nullptr;
+				mushroomTarget_ = nullptr;
+				isDead_ = true;
 			}
 		};
 	}

@@ -58,7 +58,7 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
-			void SetOnDead(DeadCallback callback)
+			void AddOnDead(DeadCallback callback)
 			{
 				onDead_ = std::move(callback);
 			}
@@ -83,6 +83,7 @@ namespace app
 			DeadCallback onDead_ = nullptr;
 			std::unique_ptr<StoneEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			std::vector<std::function<void()>> onDeadCallbacks_;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = false;
@@ -140,13 +141,17 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
-			void SetOnDead(DeadCallback callback)
+			void AddOnDead(std::function<void()> callback)
 			{
-				onDead_ = std::move(callback);
+				onDeadCallbacks_.push_back(std::move(callback));
 			}
 			void NotifyDead()
 			{
-				if (onDead_) { onDead_(); }
+				for (auto& cb : onDeadCallbacks_)
+				{
+					if (cb)cb();
+				}
+				onDeadCallbacks_.clear();
 			}
 		};
 
@@ -169,6 +174,7 @@ namespace app
 			DeadCallback onDead_ = nullptr;
 			std::unique_ptr<MushroomEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			std::vector<std::function<void()>> onDeadCallbacks_;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = false;
@@ -198,6 +204,14 @@ namespace app
 				return forward_;
 			}
 
+			void TakeDamage(int damegeHP)
+			{
+				currentHP_ -= damegeHP;
+				if (currentHP_ < 0)
+				{
+					currentHP_ = 0;
+				}
+			}
 
 			static int GetNum() { return instanceCount_; }
 
@@ -220,13 +234,17 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
-			void SetOnDead(DeadCallback callback)
+			void AddOnDead(std::function<void()> callback)
 			{
-				onDead_ = std::move(callback);
+				onDeadCallbacks_.push_back(std::move(callback));
 			}
 			void NotifyDead()
 			{
-				if (onDead_) { onDead_(); }
+				for (auto& cb : onDeadCallbacks_)
+				{
+					if (cb)cb();
+				}
+				onDeadCallbacks_.clear();
 			}
 		};
 	}

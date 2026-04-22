@@ -67,17 +67,28 @@ namespace app
 			{
 				app::memory::StackAllocatorMarker marker;
 				app::memory::StackVector<Pair*>  eventCharacterPairList(marker);
+				app::memory::StackVector<Pair*> mushroomPairList(marker);
 				for (auto& hitPair : hitPairList_) {
-					char idBuf[256];
-					sprintf_s(idBuf, "Collision! A_ID: %u, B_ID: %u\n", hitPair.a->GetOwnerId(), hitPair.b->GetOwnerId());
-					OutputDebugStringA(idBuf);
+					// デバッグテスト
+					//char idBuf[256];
+					//sprintf_s(idBuf, "Collision! A_ID: %u, B_ID: %u\n", hitPair.a->GetOwnerId(), hitPair.b->GetOwnerId());
+					//OutputDebugStringA(idBuf);
+					
 					// イベントキャラクターのペアか
 					if (ContainsEventCharacterPair(hitPair)) {
 						eventCharacterPairList.push_back(&hitPair);
 					}
+					// マッシュルイベントキャラクターのペアか
+					else if (ContainsMushroomEventCharacterPair(hitPair))
+						mushroomPairList.push_back(&hitPair);
 				}
+				// イベントキャラクター
 				for (auto* pair : eventCharacterPairList) {
 					UpdateEventCharacterPair(*pair);
+				}
+				// マッシュル
+				for (auto* pair : mushroomPairList) {
+					UpdateMushroomEventCharacterPair(*pair);
 				}
 			}
 			hitPairList_.clear();
@@ -109,7 +120,12 @@ namespace app
 			auto* eventCharacter = GetHitObject <app::actor::StoneEventCharacter>(hitPair);
 
 			Vector3 playerPos = battleCharacter->transform.position;
-			Vector3 slimePos = eventCharacter->transform.position;
+			Vector3 enemyPos = eventCharacter->transform.position;
+
+			// ノックバック方向を計算
+			Vector3 knockBackDirection = enemyPos - playerPos;
+			knockBackDirection.y = 0.0f;
+			knockBackDirection.Normalize();
 
 			//パンチされたかのチェック
 			app::collision::GhostBody* colliedPlayerBody = nullptr;
@@ -122,33 +138,110 @@ namespace app
 				colliedPlayerBody = hitPair.b;
 			}
 
-			//パンチの当たり判定の時
+			//パンチの当たり判定
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
 			{
-				//プレイヤーからスライムへのベクトルを計算
-				Vector3 knockBackDirection = slimePos - playerPos;
-				knockBackDirection.y = 0.0f;
-				knockBackDirection.Normalize();
-				//スライムがノックバックした
-				eventCharacter->GetStateMachine()->OnKnockBack(knockBackDirection);
+				// パンチが当たったら通知
+				auto* notify = new app::battle::BattleManager::DamageNotify();
+				notify->attacker = battleCharacter;
+				notify->defender = eventCharacter;
+				notify->knockBackDirection = knockBackDirection;
+				notify->enemyType = app::battle::BattleManager::DamageNotify::EnemyType::Stone;
+				app::battle::BattleManager::Get().AddNotify(notify);
 
-				float attack = battleCharacter->GetTotalAttack();
-				eventCharacter->TakeDamage(static_cast<int>(attack));
-				// HPが0になったら、Dead ステートへ
-				if (eventCharacter->GetCurrentHP() <= 0)
-				{
-					eventCharacter->GetStateMachine()->OnDead();
-				}
+				////プレイヤーからスライムへのベクトルを計算
+				//Vector3 knockBackDirection = enemyPos - playerPos;
+				//knockBackDirection.y = 0.0f;
+				//knockBackDirection.Normalize();
+				////スライムがノックバックした
+				//eventCharacter->GetStateMachine()->OnKnockBack(knockBackDirection);
+				//
+				//float attack = battleCharacter->GetTotalAttack();
+				//eventCharacter->TakeDamage(static_cast<int>(attack));
+				//// HPが0になったら、Dead ステートへ
+				//if (eventCharacter->GetCurrentHP() <= 0)
+				//{
+				//	eventCharacter->GetStateMachine()->OnDead();
+				//}
 			}
 			/** プレイヤー本体のゴーストと衝突した時 */
 			else
 			{
 				/** スライムからプレイヤーに向かうベクトル */
-				Vector3 toPlayer = playerPos - slimePos;
+				Vector3 toPlayer = playerPos - enemyPos;
 				toPlayer.Normalize();
 				float dot = toPlayer.y;
+				bool isAbove = (dot > 0.1f);
 
+				// Playerが上空にいるなら
+				if (isAbove)
+				{
+					eventCharacter->GetStateMachine()->OnSquashed();
+				}
+				else
+				{
+					battleCharacter->GetStateMachine()->OnKnockBack();
+				}
+			}
+		}
+
+
+		bool CollisionHitManager::ContainsMushroomEventCharacterPair(const Pair& hitPair)
+		{
+			if (!IsHitObject<app::actor::MushroomEventCharacter>(hitPair)) {
+				return false;
+			}
+			if (!IsHitObject<app::actor::BattleCharacter>(hitPair)) {
+				return false;
+			}
+			return true;
+		}
+
+
+		void CollisionHitManager::UpdateMushroomEventCharacterPair(Pair& hitPair)
+		{
+			auto* battleCharacter = GetHitObject<app::actor::BattleCharacter>(hitPair);
+			auto* eventCharacter = GetHitObject <app::actor::MushroomEventCharacter>(hitPair);
+
+			Vector3 playerPos = battleCharacter->transform.position;
+			Vector3 enemyPos = eventCharacter->transform.position;
+
+			// ノックバック方向を計算
+			Vector3 knockBackDirection = enemyPos - playerPos;
+			knockBackDirection.y = 0.0f;
+			knockBackDirection.Normalize();
+
+			//パンチされたかのチェック
+			app::collision::GhostBody* colliedPlayerBody = nullptr;
+			if (hitPair.a->GetOwnerId() == app::actor::BattleCharacter::ID())
+			{
+				colliedPlayerBody = hitPair.a;
+			}
+			else if (hitPair.b->GetOwnerId() == app::actor::BattleCharacter::ID())
+			{
+				colliedPlayerBody = hitPair.b;
+			}
+
+			//パンチの当たり判定
+			if (colliedPlayerBody != nullptr
+				&& colliedPlayerBody != battleCharacter->GetGhostBody())
+			{
+				// パンチが当たったら通知
+				auto* notify = new app::battle::BattleManager::DamageNotify();
+				notify->attacker = battleCharacter;
+				notify->defender = eventCharacter;
+				notify->knockBackDirection = knockBackDirection;
+				notify->enemyType = app::battle::BattleManager::DamageNotify::EnemyType::Mushroom;
+				app::battle::BattleManager::Get().AddNotify(notify);
+			}
+			/** プレイヤー本体のゴーストと衝突した時 */
+			else
+			{
+				/** スライムからプレイヤーに向かうベクトル */
+				Vector3 toPlayer = playerPos - enemyPos;
+				toPlayer.Normalize();
+				float dot = toPlayer.y;
 				bool isAbove = (dot > 0.1f);
 
 				// Playerが上空にいるなら

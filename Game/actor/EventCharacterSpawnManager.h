@@ -76,6 +76,7 @@ namespace app
 			int playerLevel_ = 1;
 			float spawnInterval_ = 5.0f; // スポーン間隔（秒）
 			float spawnTimer_ = 0.0f; // スポーンタイマー
+			bool pendingSpawn_ = false; // 次フレームでスポーンするフラグ
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr; // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr; // スポーン時のコールバック

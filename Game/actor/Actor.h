@@ -3,6 +3,7 @@
  */
 #pragma once
 #include "EquipmentSlotManager.h"
+#include "ActorStatus.h"
 
 
 namespace app
@@ -74,6 +75,14 @@ namespace app
 
 			int GetCurrentHP() const { return currentHP_; }
 
+			float GetTotalAttackPower() const
+			{
+				return status_->GetAttackPower() + equipmentSlots_.GetTotalAttackPower();
+			}
+			float GetTotalDefensePower() const
+			{
+				return equipmentSlots_.GetTotalDefensePower();
+			}
 			void TakeDamage(int damage)
 			{
 				currentHP_ -= damage;

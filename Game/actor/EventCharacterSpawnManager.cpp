@@ -48,6 +48,13 @@ namespace app
 
 		void EventCharacterSpawnManager::Update()
 		{
+			// 次フレームでスポーン
+			if (pendingSpawn_)
+			{
+				pendingSpawn_ = false;
+				SpawnEventCharacter();
+				return;
+			}
 			if (GetCurrentEnemyCount() >= MAX_EVENT_CHARACTER)
 			{
 				spawnTimer_ = 0.0f; // タイマーをリセットして次のスポーンを待つ
@@ -101,7 +108,7 @@ namespace app
 
 		Vector3 EventCharacterSpawnManager::CalcSpawnPosition(const SpawnDirection& direction) const
 		{
-			const Vector3 playerPosition = Vector3::Zero; // プレイヤーの現在位置 (仮)
+			const Vector3 playerPosition = battleCharacter_->transform.position; // プレイヤーの現在位置 (仮)
 
 
 			switch (direction)
@@ -156,11 +163,12 @@ namespace app
 				hpUI->SetTargetEnemy(stone);
 				hpUI->SetPlayer(battleCharacter_);
 
-				stone->SetOnDead([this, stone, hpUI]()
+				stone->AddOnDead([this, stone, hpUI]()
 					{
+						hpUI->ClearTarget();
 						DeleteGO(hpUI);
 						DeleteGO(stone);
-						SpawnEventCharacter();
+						pendingSpawn_ = true;
 					});
 				result.stoneCharacter = stone;
 				break;
@@ -175,11 +183,12 @@ namespace app
 				hpUI->SetTargetEnemy(mushroom);
 				hpUI->SetPlayer(battleCharacter_);
 
-				mushroom->SetOnDead([this, mushroom, hpUI]()
+				mushroom->AddOnDead([this, mushroom, hpUI]()
 					{
+						hpUI->ClearTarget();
 						DeleteGO(hpUI);
 						DeleteGO(mushroom);
-						SpawnEventCharacter();
+						pendingSpawn_ = true;
 					});
 				result.mushroomCharacter = mushroom;
 				break;
@@ -197,7 +206,5 @@ namespace app
 				onSpawned_(result);
 			}
 		}
-
-
 	}
 }
