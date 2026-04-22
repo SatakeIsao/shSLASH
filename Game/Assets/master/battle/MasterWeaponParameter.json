@@ -5,18 +5,18 @@
     },
     {
         "comment": "1.1倍の攻撃力",
-        "attackPower": 11.0
+        "attackPower": 20.0
     },
     {
         "comment": "1.2倍の攻撃力",
-        "attackPower": 12.0
+        "attackPower": 30.0
     },
     {
         "comment": "1.4倍の攻撃力",
-        "attackPower": 14.0
+        "attackPower": 40.0
     },
     {
         "comment": "1.8倍の攻撃力",
-        "attackPower": 18.0
+        "attackPower": 50.0
     }
 ]

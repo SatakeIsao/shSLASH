@@ -71,11 +71,26 @@ namespace app
             };
 
 
+            /** ダメージ通知処理 */
             struct DamageNotify : public INotify
             {
+                enum class EnemyType
+                {
+                    Stone,
+                    Mushroom,
+                };
+
+                // 攻撃者
+                app::actor::BattleCharacter* attacker = nullptr;
+                // 被攻撃者
+                app::actor::Character* defender = nullptr;
+                // ノックバック方向
+                Vector3 knockBackDirection;
+                
+                EnemyType enemyType = EnemyType::Stone;
+
                 // 比較用（クラス名から呼ぶ用）
                 static uint32_t StaticID() { return 1; }
-
                 // 仮想関数版（インスタンス経由で呼ぶ用）
                 virtual uint32_t ID() const override { return StaticID(); }
             };
@@ -148,6 +163,10 @@ namespace app
 
 
             void SetPause(bool isPause);
+
+        private:
+            int CalcDamage(const app::actor::BattleCharacter* attacker,
+                const app::actor::Character* defender) const;
 
         private:
             void LoadParameter();

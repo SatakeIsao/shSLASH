@@ -227,19 +227,15 @@ namespace app
 							stone->GetStatus()->SetFriction(stageParam->friction);
 							stone->GetStatus()->SetGravity(stageParam->gravity);
 
-							// ↓ ここに追加：死亡時のコールバックをセット
-							stone->SetOnDead([this, stone]()
-								{
-									// リストから削除
-									stoneEventCharacters_.erase(
-										std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
-										stoneEventCharacters_.end()
-									);
-									// GOを削除
-									DeleteGO(stone);
-									// 新たに1体スポーン
-									eventCharacterSpawnManager_->SpawnEventCharacter();
-								});						
+							// 死亡時のコールバックをセット
+							stone->AddOnDead([this, stone]()
+							{
+								// リストから削除
+								stoneEventCharacters_.erase(
+									std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
+									stoneEventCharacters_.end()
+								);
+							});						
 							break;
 						}
 						case app::actor::EnemyType::MUSHROOM:
@@ -255,6 +251,16 @@ namespace app
 							mushroom->AddState <app::actor::KnockBackCharacterState>();
 							mushroom->GetStatus()->SetFriction(stageParam->friction);
 							mushroom->GetStatus()->SetGravity(stageParam->gravity);
+
+							//死亡時のコールバックをセット
+							mushroom->AddOnDead([this, mushroom]()
+							{
+								// リストから削除
+								mushroomEventCharacters_.erase(
+									std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
+									mushroomEventCharacters_.end()
+								);
+							});
 							break;
 						}
 						default:
@@ -688,7 +694,41 @@ namespace app
 					// 衝突後の処理
 					{
 						for (auto& notify : notifyList_) {
+							if (notify->ID() == DamageNotify::StaticID())
+							{
+								/** コメントアウトすると正常に動く */
+								//int damage = CalcDamage(battleCharacter_, eventCharacter_);
+								//eventCharacter_->TakeDamage(damage);
 
+								auto* dmg = static_cast<DamageNotify*>(notify.get());
+
+								// ダメージ計算・適用
+								int damage = CalcDamage(dmg->attacker, dmg->defender);
+								dmg->defender->TakeDamage(damage);
+
+								if (dmg->enemyType == DamageNotify::EnemyType::Stone)
+								{
+									// ノックバック
+									auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
+									enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
+									// 死亡判定
+									if (dmg->defender->GetCurrentHP() <= 0)
+									{
+										enemy->GetStateMachine()->OnDead();
+									}
+								}
+								else if (dmg->enemyType == DamageNotify::EnemyType::Mushroom)
+								{
+									// ノックバック
+									auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
+									enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
+									// 死亡判定
+									if (dmg->defender->GetCurrentHP() <= 0)
+									{
+										enemy->GetStateMachine()->OnDead();
+									}
+								}
+							}
 						}
 						notifyList_.clear();
 					}
@@ -746,96 +786,105 @@ namespace app
 		}
 
 
-			void BattleManager::SetPause(bool isPause)
+		void BattleManager::SetPause(bool isPause)
+		{
+			isPause_ = isPause;
+			if (battleCharacter_) battleCharacter_->SetPouse(isPause_);
+			if (eventCharacter_)eventCharacter_->SetPause(isPause_);
+			for (auto* stone : stoneEventCharacters_)
 			{
-				isPause_ = isPause;
-				if (battleCharacter_) battleCharacter_->SetPouse(isPause_);
-				if (eventCharacter_)eventCharacter_->SetPause(isPause_);
-				for (auto* stone : stoneEventCharacters_)
-				{
-					if (stone) { stone->SetPause(isPause_); }
-				}
-
-				for (auto* mushroom : mushroomEventCharacters_)
-				{
-					if (mushroom) { mushroom->SetPause(isPause_); }
-				}
+				if (stone) { stone->SetPause(isPause_); }
 			}
 
-
-			void BattleManager::LoadParameter()
+			for (auto* mushroom : mushroomEventCharacters_)
 			{
-				// バトル共通パラメーター読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleParameter>(MASTER_BATTLE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleParameter& p)
-					{
-						p.battleTime = json["battleTime"].get<float>();
-					});
-				// ステージ共通パラメーター読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterStageParameter>(MASTER_STAGE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStageParameter& p)
-					{
-						p.gravity = json["gravity"].get<float>();
-						p.fallLimitY = json["fallLimitY"].get<float>();
-						p.friction = json["friction"].get<float>();
-						p.warpStartScale = json["warpStartScale"].get<float>();
-						p.warpEndScale = json["warpEndScale"].get<float>();
-						p.warpTime = json["warpTime"].get<float>();
-					});
-				// バトルカメラパラメーター読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCameraParameter>(MASTER_BATTLE_CAMERA_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCameraParameter& p)
-					{
-						p.distance = json["distance"].get<float>();
-						p.height = json["height"].get<float>();
-						p.fov = json["fov"].get<float>();
-						p.nearClip = json["nearClip"].get<float>();
-						p.farClip = json["farClip"].get<float>();
-						p.rotationX = json["rotationX"].get<float>();
-						p.rotationY = json["rotationY"].get<float>();
-					});
-				// バトルキャラクターパラメーター読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCharacterParameter>(MASTER_BATTLE_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCharacterParameter& p)
-					{
-						p.moveSpeed = json["moveSpeed"].get<float>();
-						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-						p.jumpPower = json["jumpPower"].get<float>();
-						p.radius = json["radius"].get<float>();
-						p.height = json["height"].get<float>();
-					});
-				// 武器パラメーター読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
-					{
-						p.attackPower = json["attackPower"].get<float>();
-					});
-				// イベントキャラクターパラメーター読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
-					{
-						p.moveSpeed = json["moveSpeed"].get<float>();
-						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-						p.jumpPower = json["jumpPower"].get<float>();
-						p.radius = json["radius"].get<float>();
-						p.height = json["height"].get<float>();
-					});
-				// ストーンイベントキャラクターパラメータ読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
-					{
-						p.moveSpeed = json["moveSpeed"].get<float>();
-						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();                                                                                                                   
-						p.jumpPower = json["jumpPower"].get<float>();
-						p.radius = json["radius"].get<float>();
-						p.height = json["height"].get<float>();
-						p.hp = json["hp"].get<float>();
-						p.attackPower = json["attackPower"].get<float>();
-					});
-				// マッシュルイベントキャラクターパラメータ読み込み
-				app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
-					{
-						p.moveSpeed = json["moveSpeed"].get<float>();
-						p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
-						p.jumpPower = json["jumpPower"].get<float>();
-						p.radius = json["radius"].get<float>();
-						p.height = json["height"].get<float>();
-						p.hp = json["hp"].get<float>();
-						p.attackPower = json["attackPower"].get<float>();
-					});
+				if (mushroom) { mushroom->SetPause(isPause_); }
 			}
 		}
+
+		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender) const
+		{
+			float atk = attacker->GetTotalAttack();
+			float def = defender->GetTotalDefensePower();
+
+			float damage = atk - def;
+			return static_cast<int>(damage > 0.0f ? damage : 0.0f);
+		}
+
+
+		void BattleManager::LoadParameter()
+		{
+			// バトル共通パラメーター読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleParameter>(MASTER_BATTLE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleParameter& p)
+				{
+					p.battleTime = json["battleTime"].get<float>();
+				});
+			// ステージ共通パラメーター読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStageParameter>(MASTER_STAGE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStageParameter& p)
+				{
+					p.gravity = json["gravity"].get<float>();
+					p.fallLimitY = json["fallLimitY"].get<float>();
+					p.friction = json["friction"].get<float>();
+					p.warpStartScale = json["warpStartScale"].get<float>();
+					p.warpEndScale = json["warpEndScale"].get<float>();
+					p.warpTime = json["warpTime"].get<float>();
+				});
+			// バトルカメラパラメーター読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCameraParameter>(MASTER_BATTLE_CAMERA_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCameraParameter& p)
+				{
+					p.distance = json["distance"].get<float>();
+					p.height = json["height"].get<float>();
+					p.fov = json["fov"].get<float>();
+					p.nearClip = json["nearClip"].get<float>();
+					p.farClip = json["farClip"].get<float>();
+					p.rotationX = json["rotationX"].get<float>();
+					p.rotationY = json["rotationY"].get<float>();
+				});
+			// バトルキャラクターパラメーター読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCharacterParameter>(MASTER_BATTLE_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCharacterParameter& p)
+				{
+					p.moveSpeed = json["moveSpeed"].get<float>();
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+					p.jumpPower = json["jumpPower"].get<float>();
+					p.radius = json["radius"].get<float>();
+					p.height = json["height"].get<float>();
+				});
+			// 武器パラメーター読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
+				{
+					p.attackPower = json["attackPower"].get<float>();
+				});
+			// イベントキャラクターパラメーター読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
+				{
+					p.moveSpeed = json["moveSpeed"].get<float>();
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+					p.jumpPower = json["jumpPower"].get<float>();
+					p.radius = json["radius"].get<float>();
+					p.height = json["height"].get<float>();
+				});
+			// ストーンイベントキャラクターパラメータ読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
+				{
+					p.moveSpeed = json["moveSpeed"].get<float>();
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();                                                                                                                   
+					p.jumpPower = json["jumpPower"].get<float>();
+					p.radius = json["radius"].get<float>();
+					p.height = json["height"].get<float>();
+					p.hp = json["hp"].get<float>();
+					p.attackPower = json["attackPower"].get<float>();
+				});
+			// マッシュルイベントキャラクターパラメータ読み込み
+			app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
+				{
+					p.moveSpeed = json["moveSpeed"].get<float>();
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
+					p.jumpPower = json["jumpPower"].get<float>();
+					p.radius = json["radius"].get<float>();
+					p.height = json["height"].get<float>();
+					p.hp = json["hp"].get<float>();
+					p.attackPower = json["attackPower"].get<float>();
+				});
+		}
 	}
+}

@@ -6,6 +6,9 @@
 namespace {
 	static constexpr int MAX_TIME = 10;
 	static constexpr int MAX_LEVEL = 10;
+	/** 獲得した経験値 */
+	// 一旦、すぐレベルアップする感じで。Lv.10に近づくにつれて、もらう経験値少なくしたい
+	static constexpr int GOIN_EXP = 10;
 
 	static constexpr float DRAW_DISTANCE = 400.0f;
 	static constexpr float DAMAGE_DELAY_TIME = 0.5f;
@@ -179,7 +182,7 @@ namespace app
 				{
 					if (level_ < MAX_LEVEL)
 					{
-						levelUpIndex_ = min(MAX_LEVEL, levelUpIndex_ + 1); // ← ++は1回だけ
+						levelUpIndex_ = min(MAX_LEVEL, levelUpIndex_ + GOIN_EXP);
 						currentLevel->transform.localPosition.x = parameter->levelBarPositionX[levelUpIndex_];
 						currentLevel->transform.localScale.x = parameter->levelBarScaleX[levelUpIndex_];
 					}
@@ -271,6 +274,8 @@ namespace app
 
 		void EnemyHpUIObject::Update()
 		{
+			// 削除予約済みなら何もしない
+			if (isDead_) return;
 			if (!player_) return;
 
 			Vector3 worldPos = Vector3::Zero;
@@ -342,6 +347,8 @@ namespace app
 					else if (mushroomTarget_)
 					{
 						currentHP = mushroomTarget_->GetCurrentHP();
+						auto* status = mushroomTarget_->GetStatus();
+						if (status == nullptr) { DeleteGO(this); return; }
 						maxHP = static_cast<int>(mushroomTarget_->GetStatus()->GetMaxHp());
 					}
 
@@ -383,7 +390,7 @@ namespace app
 					damagePosX_ = enemyDmgHP->transform.localPosition.x - screenPos.x;
 					damageScaleX_ = enemyDmgHP->transform.localScale.x;
 				}
-				// 【重要】スクリーン座標に、パラメータのオフセット値（PosX）を足し算する
+				// スクリーン座標に、パラメータのオフセット値（PosX）を足し算する
 				float targetOffsetX = parameter->enemyHpBarPositionX[hpIndex_];
 				float targetScaleX = parameter->enemyHpBarScaleX[hpIndex_];
 				enemyCurHP->transform.localPosition.x = screenPos.x + targetOffsetX;

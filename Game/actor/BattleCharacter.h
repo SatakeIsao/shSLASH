@@ -26,7 +26,6 @@ namespace app
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 
 			/** TODO: jsonで管理 */
-			int currentHP_ = 8;
 			int level_ = 0;
 			bool isPause_ = false;
 
@@ -86,15 +85,6 @@ namespace app
 				return currentHP_;
 			}
 
-
-			void TakeDamage(int damegeHP)
-			{
-				currentHP_ -= damegeHP;
-				if (currentHP_ < 0)
-				{
-					currentHP_ = 0;
-				}
-			}
 
 
 			void SetPouse(bool isPause)

@@ -12,6 +12,7 @@ namespace app
 	{
 		BattleCharacter::BattleCharacter()
 		{
+			currentHP_ = 8;
 			characterController_ = std::make_unique<CharacterController>();
 			stateMachine_ = std::make_unique<BattleCharacterStateMachine>();
 			status_ = new app::actor::BattleCharacterStatus();
