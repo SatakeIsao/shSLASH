@@ -12,6 +12,11 @@ namespace {
 
 	static constexpr float DRAW_DISTANCE = 400.0f;
 	static constexpr float DAMAGE_DELAY_TIME = 0.5f;
+
+	// HPバーシェーダー用
+	// テクスチャの斜め部分の幅をUV空間で指定する
+	static constexpr float HP_BAR_LEFT_W = 0.06f;  // 左は斜めなし
+	static constexpr float HP_BAR_RIGHT_W = 0.0f;  // 右斜めの幅 (実測して調整)
 }
 
 namespace app
@@ -104,11 +109,8 @@ namespace app
 
 			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterHpUIParameter>();
 
-			if (parameter)
-			{
-				damagePosX_ = parameter->hpBarPositionX[0];
-				damageScaleX_ = parameter->hpBarScaleX[0];
-			}
+			index_ = MAX_LEVEL;
+			damagePosX_ = 1.0f;
 
 			layout_ = std::make_unique<app::ui::Layout>();
 			layout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/hpLayout.json");
@@ -119,6 +121,9 @@ namespace app
 				currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
 				currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
 			}
+
+			index_ = MAX_LEVEL;
+			damagePosX_ = 1.0f;
 		}
 
 		PlayerHpUIObject::~PlayerHpUIObject()
@@ -131,7 +136,6 @@ namespace app
 
 			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterHpUIParameter>();
 
-			/** HPバー座標X */
 			{
 				auto currentHP = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentHP"));
 				auto damageHP = layout_->GetMenu()->GetUI<UIIcon>(Hash32("damageHP"));
@@ -139,22 +143,56 @@ namespace app
 
 				if (!currentHP || !damageHP || !currentLevel) return;
 
-				// 即時反映
+				// デバッグ: 左ボタンでHP減少
 				if (g_pad[0]->IsTrigger(enButtonLeft))
 				{
 					index_ = max(0, index_ - 1);
-					// タイマーリセット
 					damageDelayTimer_ = DAMAGE_DELAY_TIME;
 					lerpVal_ = 0.0f;
-					// 現在地を保存
-					damagePosX_ = damageHP->transform.localPosition.x;
-					damageScaleX_ = damageHP->transform.localScale.x;
-
-					currentHP->transform.localPosition.x = parameter->hpBarPositionX[index_];
-					currentHP->transform.localScale.x = parameter->hpBarScaleX[index_];
+					
+					damagePosX_ = damageHP->color.x;
 				}
 
-				// levelUpIndex_ が MAX_LEVEL に達したら折り返してレベルアップ
+				// HP割合を毎フレーム計算してセット
+				float currentRatio = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
+				currentHP->color.x = currentRatio;
+				currentHP->color.y = HP_BAR_LEFT_W;
+				currentHP->color.z = 0.0f;
+				currentHP->color.w = 1.0f;
+
+				char buf[128];
+				sprintf_s(buf, "currentRatio: %f\n", currentRatio);
+				OutputDebugStringA(buf);
+
+				// ダメージバーのLerp更新（毎フレーム）
+				if (lerpVal_ < 1.0f && damageDelayTimer_ < 0.0f)
+				{
+					lerpVal_ += 1.0f * g_gameTime->GetFrameDeltaTime();
+					lerpVal_ = min(lerpVal_, 1.0f);
+
+					float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
+					damageHP->color.x = dmgRatio;
+					damageHP->color.y = HP_BAR_LEFT_W;
+					damageHP->color.z = 0.0;
+					damageHP->color.w = 1.0f;
+				}
+				else if (damageDelayTimer_ >= 0.0f)
+				{
+					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
+					damageHP->color.x = damagePosX_;
+					damageHP->color.y = HP_BAR_LEFT_W;
+					damageHP->color.z = 0.0f;
+					damageHP->color.w = 1.0f;
+				}
+				else
+				{
+					damageHP->color.x = currentRatio;
+					damageHP->color.y = HP_BAR_LEFT_W;
+					damageHP->color.z = 0.0f;
+					damageHP->color.w = 1.0f;
+				}
+
+				// レベルゲージ (変更なし)
 				if (levelUpIndex_ >= MAX_LEVEL)
 				{
 					if (level_ < MAX_LEVEL)
@@ -162,22 +200,18 @@ namespace app
 						level_++;
 						isLevelUpPending_ = true;
 					}
-						levelUpIndex_ = 0; // ゲージを0に戻す
-
-						// ゲージのUIを0の位置に即時反映
-						currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
-						currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
+					levelUpIndex_ = 0;
+					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
+					currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
 				}
 				if (level_ >= MAX_LEVEL)
 				{
-					// Lv.10になった瞬間にゲージをMAXに固定
 					levelUpIndex_ = MAX_LEVEL;
 					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[MAX_LEVEL];
 					currentLevel->transform.localScale.x = parameter->levelBarScaleX[MAX_LEVEL];
 				}
-				
 
-				/** デバッグテスト： 右ボタン */
+				// デバッグ: 右ボタンでレベルアップ
 				if (g_pad[0]->IsTrigger(enButtonRight))
 				{
 					if (level_ < MAX_LEVEL)
@@ -187,27 +221,6 @@ namespace app
 						currentLevel->transform.localScale.x = parameter->levelBarScaleX[levelUpIndex_];
 					}
 				}
-
-				// ディレイとLerp更新
-				if (lerpVal_ < 1.0f && damageDelayTimer_ < 0.0f)
-				{
-					lerpVal_ += 1.0f * g_gameTime->GetFrameDeltaTime();
-					lerpVal_ = min(lerpVal_, 1.0f);
-
-					const float targetPosX = parameter->hpBarPositionX[index_];
-					const float targetScaleX = parameter->hpBarScaleX[index_];
-
-					// 開始地点と目標地点を補間
-					float currentPosX = (targetPosX * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
-					float currentScaleX = (targetScaleX * lerpVal_) + (damageScaleX_ * (1.0f - lerpVal_));
-
-					damageHP->transform.localPosition.x = currentPosX;
-					damageHP->transform.localScale.x = currentScaleX;
-				}
-				else if (damageDelayTimer_ >= 0.0f)
-				{
-					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
-				}
 			}
 
 			/** レベル数値の表示 */
@@ -215,7 +228,6 @@ namespace app
 				auto levelDigit = layout_->GetMenu()->GetUI<app::ui::UIDigit>(Hash32("levelNumbers"));
 				if (levelDigit)
 				{
-					//levelDigit->SetZeroPadding(true);
 					levelDigit->SetNumber(level_);
 				}
 			}
@@ -258,14 +270,19 @@ namespace app
 
 			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterEnemyHpUIParameter>();
 
-			if (parameter)
-			{
-				damagePosX_ = parameter->enemyHpBarPositionX[0];
-				damageScaleX_ = parameter->enemyHpBarScaleX[0];
-			}
-
 			layout_ = std::make_unique<app::ui::Layout>();
 			layout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/enemyHpLayout.json");
+
+			// JSONのpositionをオフセットとして保存
+			auto menu = layout_->GetMenu();
+			auto enemyCurHP = menu->GetUI<UIIcon>(Hash32("enemyCurrentHP"));
+			auto enemyDmgHP = menu->GetUI<UIIcon>(Hash32("enemyDamageHP"));
+
+			if (enemyCurHP) curHpOffsetX_ = enemyCurHP->transform.localPosition.x;
+			if (enemyDmgHP) dmgHpOffsetX_ = enemyDmgHP->transform.localPosition.x;
+
+			hpIndex_ = MAX_LEVEL;
+			damagePosX_ = 1.0f;
 		}
 
 		EnemyHpUIObject::~EnemyHpUIObject()
@@ -328,8 +345,6 @@ namespace app
 					};
 				moveToScreen(enemyBg);
 				moveToScreen(enemyBgHP);
-				//moveToScreen(enemyDmgHP);
-				//moveToScreen(enemyCurHP);
 
 				auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterEnemyHpUIParameter>();
 
@@ -362,75 +377,61 @@ namespace app
 					{
 						damageDelayTimer_ = 0.3f;
 						lerpVal_ = 0.0f;
-						damagePosX_ = enemyDmgHP->transform.localPosition.x - screenPos.x;
-						damageScaleX_ = enemyDmgHP->transform.localScale.x;
+						damagePosX_ = enemyDmgHP->color.x; // 現在の表示割合を保存
 					}
 					hpIndex_ = newIndex;
 				}
 				// 即時反映
 				if (g_pad[0]->IsTrigger(enButtonUp))
 				{
-					hpIndex_ = max(0, hpIndex_ - 1);
-					// タイマーリセット
-					damageDelayTimer_ = 0.3;
+					damageDelayTimer_ = 0.3f;
 					lerpVal_ = 0.0f;
-
-					// 現在地を保存
-					damagePosX_ = enemyDmgHP->transform.localPosition.x - screenPos.x;
-					damageScaleX_ = enemyDmgHP->transform.localScale.x;
+					damagePosX_ = enemyDmgHP->color.x;
+					hpIndex_ = max(0, hpIndex_ - 1);
 				}
 				// 即時反映
 				if (g_pad[0]->IsTrigger(enButtonDown))
 				{
 					hpIndex_ = min(MAX_LEVEL, hpIndex_ + 1);
-					// タイマーリセット
-					damageDelayTimer_ = 0.3;
-					lerpVal_ = 0.0f;
-					// 現在地を保存
-					damagePosX_ = enemyDmgHP->transform.localPosition.x - screenPos.x;
-					damageScaleX_ = enemyDmgHP->transform.localScale.x;
 				}
-				// スクリーン座標に、パラメータのオフセット値（PosX）を足し算する
-				float targetOffsetX = parameter->enemyHpBarPositionX[hpIndex_];
-				float targetScaleX = parameter->enemyHpBarScaleX[hpIndex_];
-				enemyCurHP->transform.localPosition.x = screenPos.x + targetOffsetX;
+
+				float currentRatio = static_cast<float>(hpIndex_) / static_cast<float>(MAX_LEVEL);
+
+				// currentHP即時反映
+				enemyCurHP->color.x = currentRatio;
+				enemyCurHP->color.y = HP_BAR_LEFT_W;
+				enemyCurHP->color.z = 0.0f;
+				enemyCurHP->color.w = 1.0f;
+				enemyCurHP->transform.localPosition.x = screenPos.x + 5.0f;
 				enemyCurHP->transform.localPosition.y = screenPos.y;
-				enemyCurHP->transform.localScale.x = targetScaleX;
 
-
-
-				// --- ダメージバー(Lerp)の更新処理 ---
-				// ディレイタイマーとLerp値の更新
+				// damageHPのLerp
 				if (lerpVal_ < 1.0f && damageDelayTimer_ < 0.0f)
 				{
-					// Lerpのスピード
 					lerpVal_ += 1.0f * g_gameTime->GetFrameDeltaTime();
 					lerpVal_ = min(lerpVal_, 1.0f);
-
-					// 開始地点（保存した値）と目標地点（現在のHPパラメータ）を補間
-					float currentDmgOffsetX = (targetOffsetX * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
-					float currentDmgScaleX = (targetScaleX * lerpVal_) + (damageScaleX_ * (1.0f - lerpVal_));
-
-					// ダメージバーに適用（スクリーン座標 ＋ 補間したオフセット）
-					enemyDmgHP->transform.localPosition.x = screenPos.x + currentDmgOffsetX;
-					enemyDmgHP->transform.localScale.x = currentDmgScaleX;
+					float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
+					enemyDmgHP->color.x = dmgRatio;
+					enemyDmgHP->color.y = HP_BAR_LEFT_W;
+					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.w = 1.0f;
 				}
 				else if (damageDelayTimer_ >= 0.0f)
 				{
-					// ディレイ中はタイマーを減らす
 					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
-
-					// タイマー消化中も敵は動くので、位置はスクリーン座標＋保存したオフセットで追従させる
-					enemyDmgHP->transform.localPosition.x = screenPos.x + damagePosX_;
-					enemyDmgHP->transform.localScale.x = damageScaleX_;
+					enemyDmgHP->color.x = damagePosX_;
+					enemyDmgHP->color.y = HP_BAR_LEFT_W;
+					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.w = 1.0f;
 				}
 				else
 				{
-					// Lerp完了後、何もない平時
-					enemyDmgHP->transform.localPosition.x = screenPos.x + targetOffsetX;
-					enemyDmgHP->transform.localScale.x = targetScaleX;
+					enemyDmgHP->color.x = currentRatio;
+					enemyDmgHP->color.y = HP_BAR_LEFT_W;
+					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.w = 1.0f;
 				}
-				// 赤バーのY座標も忘れずに追従させる
+				enemyDmgHP->transform.localPosition.x = screenPos.x + 5.0f;
 				enemyDmgHP->transform.localPosition.y = screenPos.y;
 
 				// アイコンの切り替えと追従 

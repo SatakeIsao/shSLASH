@@ -49,9 +49,10 @@
         "type": "UIIcon",
         "name": "damageHP",
         "asset": "Assets/ui/hp/damageHP.DDS",
+        "shader": "Assets/Shader/hpBar.fx",
         "width": 400,
         "height": 30,
-        "position": [-516, 340, 0],
+        "position": [-506, 340, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0, 0.0, 0.0, 1.0]
@@ -60,9 +61,10 @@
         "type": "UIIcon",
         "name": "currentHP",
         "asset": "Assets/ui/hp/currentHP.DDS",
+        "shader": "Assets/Shader/hpBar.fx",
         "width": 400,
         "height": 30,
-        "position": [-516, 340, 0],
+        "position": [-506, 340, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [0.0, 1.0, 0.0, 1.0]

@@ -108,6 +108,9 @@ namespace app
 			app::actor::StoneEventCharacter* stoneTarget_ = nullptr;
 			app::actor::MushroomEventCharacter* mushroomTarget_ = nullptr;
 
+			float curHpOffsetX_ = 0.0f;
+			float dmgHpOffsetX_ = 0.0f;
+
 			int hpIndex_ = 0;
 			/** 表示フラグ */
 			bool isVisible_ = false;
