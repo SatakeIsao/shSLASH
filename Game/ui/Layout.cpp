@@ -91,7 +91,24 @@ namespace
 		const Quaternion rotation = ParseRotation(item["rotation"].get<float>());
         const Vector4 color = ParseVector3(item["color"]);
 
-        image->Initialize(assetName.c_str(), w, h);
+        // shaderフィールドがあればカスタムシェーダーで初期化
+        if (item.contains("shader"))
+        {
+            const std::string shaderPath = item["shader"].get<std::string>();
+            SpriteInitData initData;
+            initData.m_ddsFilePath[0] = assetName.c_str();
+            initData.m_fxFilePath = shaderPath.c_str();
+            initData.m_width = static_cast<UINT>(w);
+            initData.m_height = static_cast<UINT>(h);
+            initData.m_alphaBlendMode = AlphaBlendMode_Trans;
+            image->Initialize(initData);
+        }
+        else
+        {
+            image->Initialize(assetName.c_str(), w, h);
+        }
+
+        //image->Initialize(assetName.c_str(), w, h);
         image->transform.localPosition = position;
 		image->transform.localScale = scale;
 		image->transform.localRotation = rotation;

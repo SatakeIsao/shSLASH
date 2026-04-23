@@ -193,6 +193,17 @@ namespace app
 
 		public:
 			void Initialize(const char* assetName, const float width, const float height);
+		
+			// カスタムシェーダー用
+			void Initialize(SpriteInitData& initData)
+			{
+				spriteRender_.Init(initData);
+			}
+
+			void SetMulColor(const Vector4& color)
+			{
+				spriteRender_.SetMulColor(color);
+			}
 		};
 
 
