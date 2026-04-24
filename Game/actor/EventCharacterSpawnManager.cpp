@@ -15,7 +15,8 @@ namespace
 	const float SKELETON_BASE_PROBABILITY = 0.1f;         // スケルトンの基本出現確率 (Lv6で10%)
 	const float SKELETON_PROBABILITY_INCREMENT = 0.1f;    // プレイヤーレベルが1上がるごとにスケルトンの出現確率が上昇する量
 	const float MAX_SKELETON_PROBABILITY = 0.6f;          // スケルトンの最大出現確率 (60%)
-	const float INITIAL_SPAWN_INTERVAL = 5.0f;            // 初期スポーン間隔（秒）
+	const float PENDING_SPAWN_INTERVAL = 1.0f;            // 初期・追加スポーンの間隔（秒）
+	const float INITIAL_SPAWN_INTERVAL = 5.0f;            // 通常スポーン間隔（秒）
 }
 
 
@@ -48,13 +49,20 @@ namespace app
 
 		void EventCharacterSpawnManager::Update()
 		{
-			// 初期スポーン・敵死亡後の追加スポーンを1体ずつ処理
+			// 初期スポーン・敵死亡後の追加スポーンを1秒おきに1体ずつ処理
 			if (pendingSpawnCount_ > 0)
 			{
-				if (GetCurrentEnemyCount() < MAX_EVENT_CHARACTER)
+				const float deltaTime = g_gameTime->GetFrameDeltaTime();
+				pendingSpawnTimer_ += deltaTime;
+
+				if (pendingSpawnTimer_ >= PENDING_SPAWN_INTERVAL)
 				{
-					--pendingSpawnCount_;
-					SpawnEventCharacter();
+					if (GetCurrentEnemyCount() < MAX_EVENT_CHARACTER)
+					{
+						pendingSpawnTimer_ = 0.0f;
+						--pendingSpawnCount_;
+						SpawnEventCharacter();
+					}
 				}
 				return;
 			}
@@ -101,25 +109,23 @@ namespace app
 
 		Vector3 EventCharacterSpawnManager::CalcSpawnPosition(const SpawnDirection& direction) const
 		{
-			// プレイヤー位置を基準に直接距離を指定
-			const Vector3 playerPosition = battleCharacter_->transform.position;
-
+			// 原点（プレイヤー初期位置）を基準にした固定ワールド座標でスポーン
 			switch (direction)
 			{
 			case SpawnDirection::NORTH_WEST:
-				return playerPosition + Vector3(-fieldEdge_, 0, -fieldEdge_);
+				return Vector3(-fieldEdge_, 0.0f, -fieldEdge_);
 
 			case SpawnDirection::NORTH_EAST:
-				return playerPosition + Vector3(fieldEdge_*10, 0, -fieldEdge_*10);
+				return Vector3(fieldEdge_, 0.0f, -fieldEdge_);
 
 			case SpawnDirection::SOUTH_WEST:
-				return playerPosition + Vector3(-fieldEdge_ * 10, 0, fieldEdge_ * 10);
+				return Vector3(-fieldEdge_, 0.0f, fieldEdge_);
 
 			case SpawnDirection::SOUTH_EAST:
-				return playerPosition + Vector3(fieldEdge_ * 10, 0, fieldEdge_ * 10);
+				return Vector3(fieldEdge_, 0.0f, fieldEdge_);
 
 			default:
-				return playerPosition;
+				return Vector3::Zero;
 			}
 		}
 
@@ -158,6 +164,7 @@ namespace app
 				auto* stone = NewGO<StoneEventCharacter>(
 					static_cast<uint8_t>(ObjectPriority::Character), "StoneEventCharacter");
 				stone->transform.position = spawnPosition;
+				stone->GetStateMachine()->transform.position = spawnPosition;
 
 				auto* hpUI = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::EnemyUI));
 				hpUI->SetTargetEnemy(stone);
@@ -179,6 +186,7 @@ namespace app
 				auto* mushroom = NewGO<MushroomEventCharacter>(
 					static_cast<uint8_t>(ObjectPriority::Character), "MushroomEventCharacter");
 				mushroom->transform.position = spawnPosition;
+				mushroom->GetStateMachine()->transform.position = spawnPosition;
 
 				auto* hpUI = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::EnemyUI));
 				hpUI->SetTargetEnemy(mushroom);
