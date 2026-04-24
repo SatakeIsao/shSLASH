@@ -8,7 +8,7 @@ namespace {
 	static constexpr int MAX_LEVEL = 10;
 	/** 獲得した経験値 */
 	// 一旦、すぐレベルアップする感じで。Lv.10に近づくにつれて、もらう経験値少なくしたい
-	static constexpr int GOIN_EXP = 10;
+	static constexpr int GOIN_EXP = 1;
 
 	static constexpr float DRAW_DISTANCE = 400.0f;
 	static constexpr float DAMAGE_DELAY_TIME = 0.5f;
@@ -124,6 +124,31 @@ namespace app
 
 			index_ = MAX_LEVEL;
 			damagePosX_ = 1.0f;
+
+			// Circleの背景
+			{
+				bgCircle_.Init(nullptr, 200.0f, 200.0f);
+				bgCircle_.SetPosition({ -740, 360, 0 });
+				bgCircle_.SetScale(0.55f);
+				bgCircle_.SetInnerRadius(0.0f);        // 穴なし（塗りつぶし円）
+				bgCircle_.SetFillColor({ 0,0,0,1 });   // 黒
+				bgCircle_.SetEmptyColor({ 0,0,0,1 });  // 黒（空エリアも黒）
+			}
+			// HPゲージ
+			{
+				hpGauge_.Init(nullptr, 200.0f, 200.0f);
+				hpGauge_.SetPosition({ -740, 360, 0 });
+				// リングの中心半径と幅を指定する例
+				hpGauge_.SetInnerRadius(0.32);  // 0.62
+				hpGauge_.SetOuterRadius(1.0);  // 0.78
+				hpGauge_.SetScale(0.5f);
+			}
+			// アイコン
+			{
+				icon_.Init("Assets/ui/hp/playerIcon.DDS", 90.0f, 90.0f);
+				icon_.SetPosition({ -740, 360, 0 });
+				icon_.SetScale({ 1,1,1 });
+			}
 		}
 
 		PlayerHpUIObject::~PlayerHpUIObject()
@@ -213,6 +238,7 @@ namespace app
 
 				// デバッグ: 右ボタンでレベルアップ
 				if (g_pad[0]->IsTrigger(enButtonRight))
+
 				{
 					if (level_ < MAX_LEVEL)
 					{
@@ -232,12 +258,29 @@ namespace app
 				}
 			}
 			layout_->Update();
+
+			bgCircle_.Update();
+
+			float levelRatio = static_cast<float>(levelUpIndex_) / static_cast<float>(MAX_LEVEL);
+			hpGauge_.SetFillAmount(levelRatio);
+			hpGauge_.Update();
+
+			icon_.Update();
+
+			//hpGaugeBg_.SetFillAmount(levelRatio);
+			//hpGaugeBg_, Update();
+
 		}
 
 		void PlayerHpUIObject::Render(RenderContext& rc)
 		{
 			if (layout_) {
 				layout_->Render(rc);
+				bgCircle_.Draw(rc);
+
+				hpGauge_.Draw(rc);
+				icon_.Draw(rc);
+				//hpGaugeBg_.Draw(rc);
 			}
 		}
 

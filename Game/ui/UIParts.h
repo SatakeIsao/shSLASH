@@ -138,6 +138,7 @@ namespace app
 		{
 		protected:
 			SpriteRender spriteRender_;
+			//CircularGaugeRender circularGaugeRender_;
 
 
 		public:
@@ -153,6 +154,7 @@ namespace app
 			{
 				this->pivot = pivot;
 				spriteRender_.SetPivot(pivot);
+				//circularGaugeRender_.SetPivot(pivot);
 			}
 		};
 

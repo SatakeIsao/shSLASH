@@ -57,12 +57,18 @@ namespace app
 			spriteRender_.SetScale(transform.scale);
 			spriteRender_.SetRotation(transform.rotation);
 			spriteRender_.Update();
+
+			//circularGaugeRender_.SetPosition(transform.position);
+			//circularGaugeRender_.SetScale(transform.scale);
+			//circularGaugeRender_.SetRotation(transform.rotation);
+			//circularGaugeRender_.Update();
 		}
 
 
 		void UIGauge::Render(RenderContext& rc)
 		{
 			spriteRender_.Draw(rc);
+			//circularGaugeRender_.Draw(rc);
 		}
 
 
@@ -77,6 +83,12 @@ namespace app
 			spriteRender_.SetScale(scale);
 			spriteRender_.SetRotation(rotation);
 			spriteRender_.Update();
+
+			//circularGaugeRender_.Init(assetName, width, height);
+			//circularGaugeRender_.SetPosition(position);
+			//circularGaugeRender_.SetScale(scale);
+			//circularGaugeRender_.SetRotation(rotation);
+			//circularGaugeRender_.Update();
 		}
 
 
