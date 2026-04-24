@@ -235,6 +235,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="actor\EquipmentSlot.cpp" />
     <ClCompile Include="actor\EquipmentSlotManager.cpp" />
+    <ClCompile Include="actor\QuadrantManager.cpp" />
     <ClCompile Include="ui\ReturnToTitleMenu.cpp" />
     <ClCompile Include="ui\PauseMenu.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="actor\EquipmentSlot.h" />
     <ClInclude Include="actor\EquipmentSlotManager.h" />
+    <ClInclude Include="actor\QuadrantManager.h" />
     <ClInclude Include="ui\ReturnToTitleMenu.h" />
     <ClInclude Include="ui\PauseMenu.h" />
     <ClInclude Include="ui\InGameUI.h" />

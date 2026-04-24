@@ -8,39 +8,39 @@
 
 namespace
 {
-	const int MAX_EVENT_CHARACTER = 4; // 同時に存在できるイベントキャラクターの最大数
-	const int INITIAL_SPAWN_COUNT = 2; // 初期スポーン数
-	const int MAX_PLAYER_LEVEL = 10; // プレイヤーレベルの最大値
-	const int SKELETON_SPAWN_LEVEL = 6; // スケルトンがスポーンし始めるプレイヤーレベル
-	const float SKELETON_BASE_PROBABILITY = 0.1f; // スケルトンの基本出現確率 (Lv6で10%)
-	const float SKELETON_PROBABILITY_INCREMENT = 0.1f; // プレイヤーレベルが1上がるごとにスケルトンの出現確率が上昇する量
-	const float MAX_SKELETON_PROBABILITY = 0.6f; // スケルトンの最大出現確率 (60%)
-	const float SPAWN_OFFSET_DISTANCE = 5000.0f; // プレイヤーからイベントキャラクターがスポーンする距離
-	const float INITIAL_SPAWN_INTERVAL = 5.0f; // 初期スポーン間隔（秒）
-
+	const int MAX_EVENT_CHARACTER = 4;                    // 同時に存在できるイベントキャラクターの最大数
+	const int INITIAL_SPAWN_COUNT = 4;                    // 初期スポーン数
+	const int MAX_PLAYER_LEVEL = 10;                      // プレイヤーレベルの最大値
+	const int SKELETON_SPAWN_LEVEL = 6;                   // スケルトンがスポーンし始めるプレイヤーレベル
+	const float SKELETON_BASE_PROBABILITY = 0.1f;         // スケルトンの基本出現確率 (Lv6で10%)
+	const float SKELETON_PROBABILITY_INCREMENT = 0.1f;    // プレイヤーレベルが1上がるごとにスケルトンの出現確率が上昇する量
+	const float MAX_SKELETON_PROBABILITY = 0.6f;          // スケルトンの最大出現確率 (60%)
+	const float INITIAL_SPAWN_INTERVAL = 5.0f;            // 初期スポーン間隔（秒）
 }
 
 
 namespace app
 {
-
 	namespace actor
 	{
 
 		EventCharacterSpawnManager::EventCharacterSpawnManager()
-		{
-		}
+		{}
 
 
 		EventCharacterSpawnManager::~EventCharacterSpawnManager()
-		{
-		}
+		{}
 
 
 		bool EventCharacterSpawnManager::Start(app::actor::BattleCharacter* battleCharacter)
 		{
 			battleCharacter_ = battleCharacter;
 
+			// 象限管理を初期化（4象限をシャッフルしてキューに積む）
+			quadrantManager_.Initialize();
+
+			// 初期スポーンを予約
+			pendingSpawnCount_ = INITIAL_SPAWN_COUNT;
 
 			return true;
 		}
@@ -48,17 +48,20 @@ namespace app
 
 		void EventCharacterSpawnManager::Update()
 		{
-			// 次フレームでスポーン
-			if (pendingSpawn_)
+			// 初期スポーン・敵死亡後の追加スポーンを1体ずつ処理
+			if (pendingSpawnCount_ > 0)
 			{
-				pendingSpawn_ = false;
-				SpawnEventCharacter();
+				if (GetCurrentEnemyCount() < MAX_EVENT_CHARACTER)
+				{
+					--pendingSpawnCount_;
+					SpawnEventCharacter();
+				}
 				return;
 			}
+
 			if (GetCurrentEnemyCount() >= MAX_EVENT_CHARACTER)
 			{
-				spawnTimer_ = 0.0f; // タイマーをリセットして次のスポーンを待つ
-
+				spawnTimer_ = 0.0f;
 				return;
 			}
 
@@ -67,16 +70,14 @@ namespace app
 
 			if (spawnTimer_ < spawnInterval_) { return; }
 
-			spawnTimer_ = 0.0f; // タイマーをリセット
+			spawnTimer_ = 0.0f;
 			SpawnEventCharacter();
-
 		}
 
 
 		float EventCharacterSpawnManager::GetSkeletonProbability() const
 		{
 			if (playerLevel_ < SKELETON_SPAWN_LEVEL) { return 0.0f; }
-
 
 			const int stage = playerLevel_ - SKELETON_SPAWN_LEVEL;
 			const float prob = SKELETON_BASE_PROBABILITY + SKELETON_PROBABILITY_INCREMENT * stage;
@@ -87,66 +88,66 @@ namespace app
 		EnemyType EventCharacterSpawnManager::SelectEnemyType() const
 		{
 			const float skeletonProb = GetSkeletonProbability();
-			const float roll = static_cast<float>(rand()) / RAND_MAX; // 0.0f～1.0fの乱数
-
+			const float roll = static_cast<float>(rand()) / RAND_MAX;
 
 			if (roll < skeletonProb)
 			{
 				return EnemyType::SKELETON;
 			}
 
-
 			return (rand() % 2 == 0) ? EnemyType::STONE : EnemyType::MUSHROOM;
-		}
-
-
-		SpawnDirection EventCharacterSpawnManager::GetRandomSpawnDirection() const
-		{
-			return static_cast<SpawnDirection>(rand() % 4);
 		}
 
 
 		Vector3 EventCharacterSpawnManager::CalcSpawnPosition(const SpawnDirection& direction) const
 		{
-			const Vector3 playerPosition = battleCharacter_->transform.position; // プレイヤーの現在位置 (仮)
-
+			// プレイヤー位置を基準に直接距離を指定
+			const Vector3 playerPosition = battleCharacter_->transform.position;
 
 			switch (direction)
 			{
-			case SpawnDirection::NORTH:
-				return playerPosition + Vector3(0, 0, -SPAWN_OFFSET_DISTANCE);
+			case SpawnDirection::NORTH_WEST:
+				return playerPosition + Vector3(-fieldEdge_, 0, -fieldEdge_);
 
-			case SpawnDirection::SOUTH:
-				return playerPosition + Vector3(0, 0, SPAWN_OFFSET_DISTANCE);
+			case SpawnDirection::NORTH_EAST:
+				return playerPosition + Vector3(fieldEdge_*10, 0, -fieldEdge_*10);
 
-			case SpawnDirection::EAST:
-				return playerPosition + Vector3(SPAWN_OFFSET_DISTANCE, 0, 0);
+			case SpawnDirection::SOUTH_WEST:
+				return playerPosition + Vector3(-fieldEdge_ * 10, 0, fieldEdge_ * 10);
 
-			case SpawnDirection::WEST:
-				return playerPosition + Vector3(-SPAWN_OFFSET_DISTANCE, 0, 0);
+			case SpawnDirection::SOUTH_EAST:
+				return playerPosition + Vector3(fieldEdge_ * 10, 0, fieldEdge_ * 10);
 
 			default:
 				return playerPosition;
 			}
 		}
 
+
 		int EventCharacterSpawnManager::GetCurrentEnemyCount() const
 		{
 			int count = 0;
-
 			count += StoneEventCharacter::GetNum();
 			count += MushroomEventCharacter::GetNum();
 			// count += SkeletonEventCharacter::GetNum(); // スケルトンのクラスが出来たら追加
-
 			return count;
 		}
 
 
 		void EventCharacterSpawnManager::SpawnEventCharacter()
 		{
-			const SpawnDirection direction = GetRandomSpawnDirection();
+			// QuadrantManagerから次の象限を取得（使用済みフラグも内部で立てる）
+			const SpawnDirection direction = quadrantManager_.GetNext();
 			const Vector3 spawnPosition = CalcSpawnPosition(direction);
 			const EnemyType type = SelectEnemyType();
+
+			//   // デバッグ用：スポーン座標を出力（確認したら消す）
+			//   OutputDebugStringA(
+			//   	("fieldSize_=" + std::to_string(fieldSize_) +
+			//   		" quadrantCenter=" + std::to_string(fieldSize_ * 0.25f) +
+			//   		" spawnPos: x=" + std::to_string(spawnPosition.x) +
+			//   		" z=" + std::to_string(spawnPosition.z) + "\n").c_str()
+			//   );
 
 			SpawnResult result;
 			result.type = type;
@@ -163,12 +164,13 @@ namespace app
 				hpUI->SetTargetEnemy(stone);
 				hpUI->SetPlayer(battleCharacter_);
 
-				stone->AddOnDead([this, stone, hpUI]()
+				stone->AddOnDead([this, stone, hpUI, direction]()
 					{
 						hpUI->ClearTarget();
 						DeleteGO(hpUI);
 						DeleteGO(stone);
-						pendingSpawn_ = true;
+						quadrantManager_.Release(direction); // 象限を解放
+						++pendingSpawnCount_;
 					});
 				result.stoneCharacter = stone;
 				break;
@@ -183,28 +185,31 @@ namespace app
 				hpUI->SetTargetEnemy(mushroom);
 				hpUI->SetPlayer(battleCharacter_);
 
-				mushroom->AddOnDead([this, mushroom, hpUI]()
+				mushroom->AddOnDead([this, mushroom, hpUI, direction]()
 					{
 						hpUI->ClearTarget();
 						DeleteGO(hpUI);
 						DeleteGO(mushroom);
-						pendingSpawn_ = true;
+						quadrantManager_.Release(direction); // 象限を解放
+						++pendingSpawnCount_;
 					});
 				result.mushroomCharacter = mushroom;
 				break;
 			}
 			case EnemyType::SKELETON:
 				// SkeletonEventCharacterの生成処理
+				// quadrantManager_.Release(direction) をAddOnDeadで呼ぶこと
 				break;
 
 			default:
 				break;
 			}
 
-
-			if (onSpawned_ && result.IsValid()){
+			if (onSpawned_ && result.IsValid())
+			{
 				onSpawned_(result);
 			}
 		}
+
 	}
 }

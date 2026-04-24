@@ -192,6 +192,7 @@
     <ClCompile Include="actor\Equipment.cpp" />
     <ClCompile Include="actor\EquipmentSlot.cpp" />
     <ClCompile Include="actor\EquipmentSlotManager.cpp" />
+    <ClCompile Include="actor\QuadrantManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -371,6 +372,7 @@
     <ClInclude Include="actor\Equipment.h" />
     <ClInclude Include="actor\EquipmentSlot.h" />
     <ClInclude Include="actor\EquipmentSlotManager.h" />
+    <ClInclude Include="actor\QuadrantManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

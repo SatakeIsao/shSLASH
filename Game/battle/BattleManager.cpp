@@ -303,10 +303,13 @@ namespace app
 				}
 				characterSteering_->Initialize(battleCharacter_, 0);
 
-
+				eventCharacterSpawnManager_->SetFieldEdge(300.0f);
+				//eventCharacterSpawnManager_->SetFieldCenter(Vector3(0.0f, 0.0f, 0.0f)); // フィールドの中心座標
+				//eventCharacterSpawnManager_->SetFieldSize(1200.0f);   // フィールドの一辺のサイズ
+				//eventCharacterSpawnManager_->SetSpawnScatter(10.0f); // 象限中心からのばらつき幅
 				eventCharacterSpawnManager_->Start(battleCharacter_);
 
-				// 敵キャラクター
+				// 敵キャラクター 
 				eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
 				eventCharacter_->Initialize(sEnemyInitializeParameter);
 				{
@@ -401,6 +404,16 @@ namespace app
 
 		void BattleManager::Update()
 		{
+			// デバッグ用：プレイヤー座標を出力（確認したら消す）
+			if (battleCharacter_)
+			{
+				const Vector3& pos = battleCharacter_->transform.position;
+				OutputDebugStringA(
+					("Player pos: x=" + std::to_string(pos.x) +
+						" z=" + std::to_string(pos.z) + "\n").c_str()
+				);
+			}
+
 			/** 現在のメニューポーズ状態 */
 			bool currentPause = app::core::PauseManager::Get().IsPause();
 			/** シーケンス中か */
@@ -560,179 +573,180 @@ namespace app
 							mushroom->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
 						}
 					}
+				}
 
 
-					//プレイヤーの攻撃アクション
+				//プレイヤーの攻撃アクション
+				{
+					if (battleCharacter_->GetStateMachine()->IsPunched()
+						&& !isWaitEffectPlay_)
 					{
-						if (battleCharacter_->GetStateMachine()->IsPunched()
-							&& !isWaitEffectPlay_)
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
+						effectPos.y += 30.0f;
+
+						Vector3 dir = battleCharacter_->GetStateMachine()->GetMoveDirection();
+						reservedEffectRot_ = Quaternion::Identity;
+
+						// 直接再生せず、予約する
+						isWaitEffectPlay_ = true;
+						effectDelayTimer_ = 0.5f;
+						reservedEffectPos_ = effectPos;
+					}
+
+					// エフェクト再生待ち状態ならタイマーを更新
+					if (isWaitEffectPlay_)
+					{
+						float deltaTime = g_gameTime->GetFrameDeltaTime();
+
+						effectDelayTimer_ -= deltaTime;
+
+						if (effectDelayTimer_ <= 0.0f)
 						{
-							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
-							effectPos.y += 30.0f;
-
-							Vector3 dir = battleCharacter_->GetStateMachine()->GetMoveDirection();
-							reservedEffectRot_ = Quaternion::Identity;
-
-							// 直接再生せず、予約する
-							isWaitEffectPlay_ = true;
-							effectDelayTimer_ = 0.5f;
-							reservedEffectPos_ = effectPos;
-						}
-
-						// エフェクト再生待ち状態ならタイマーを更新
-						if (isWaitEffectPlay_)
-						{
-							float deltaTime = g_gameTime->GetFrameDeltaTime();
-
-							effectDelayTimer_ -= deltaTime;
-
-							if (effectDelayTimer_ <= 0.0f)
-							{
-								effectManagerObject_->PlayEffect(
-									enEffectKind_PlayerAttack,
-									reservedEffectPos_,
-									reservedEffectRot_,
-									Vector3::One
-								);
-
-								isWaitEffectPlay_ = false;
-							}
-						}
-
-						// チャージエフェクトの再生判定
-						if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
-						{
-							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-							effectPos.y += 30.0f;
-
 							effectManagerObject_->PlayEffect(
-								enEffectKind_PlayerAttackCharge_Start,
-								effectPos,
-								Quaternion::Identity,
+								enEffectKind_PlayerAttack,
+								reservedEffectPos_,
+								reservedEffectRot_,
 								Vector3::One
 							);
-						}
 
-						// チャージエフェクトの再生判定
-						if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
-						{
-							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-							effectPos.y += 30.0f;
-
-							effectManagerObject_->PlayEffect(
-								enEffectKind_PlayerAttackCharge_End,
-								effectPos,
-								Quaternion::Identity,
-								Vector3::One
-							);
-						}
-
-						// ノックバックエフェクトの再生判定
-						if (battleCharacter_->GetStateMachine()->GetKnockBack())
-						{
-							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-							effectPos.y += 30.0f;
-
-							effectManagerObject_->PlayEffect(
-								enEffectKind_SlimeAttack,
-								effectPos,
-								Quaternion::Identity,
-								Vector3::One
-							);
-						}
-
-						// 防御エフェクトの再生判定
-						if (battleCharacter_->GetStateMachine()->OnGuaed())
-						{
-							Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
-							effectPos.y += 30.0f;
-
-							effectManagerObject_->PlayEffect(
-								enEffectKind_SlimeAttack,
-								effectPos,
-								Quaternion::Identity,
-								Vector3::One
-							);
+							isWaitEffectPlay_ = false;
 						}
 					}
 
-					//スライムの攻撃アクション
+					// チャージエフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
 					{
-						if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
-							&& battleCharacter_->GetCurrentHP() > 0)
-						{
-							effectManagerObject_->PlayEffect(
-								enEffectKind_SlimeAttack,
-								eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
-								Quaternion::Identity,
-								Vector3(3.0f, 3.0f, 3.0f)
-							);
-						}
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
+
+						effectManagerObject_->PlayEffect(
+							enEffectKind_PlayerAttackCharge_Start,
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
 					}
 
-					//スライムのノックバック
+					// チャージエフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
 					{
-						if (eventCharacter_->GetStateMachine()->IsKnockBack()
-							|| eventCharacter_->GetStateMachine()->IsSquashed())
-						{
-							if (!hasPlayedPunchEffect_)
-							{
-								effectManagerObject_->PlayEffect(
-									enEffectKind_SlimeKnockBack,
-									eventCharacter_->transform.position,
-									Quaternion::Identity,
-									Vector3::One
-								);
-								hasPlayedPunchEffect_ = true;
-							}
-						}
-						else {
-							hasPlayedPunchEffect_ = false;
-						}
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
+
+						effectManagerObject_->PlayEffect(
+							enEffectKind_PlayerAttackCharge_End,
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
 					}
 
-					// 衝突後の処理
+					// ノックバックエフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->GetKnockBack())
 					{
-						for (auto& notify : notifyList_) {
-							if (notify->ID() == DamageNotify::StaticID())
-							{
-								/** コメントアウトすると正常に動く */
-								//int damage = CalcDamage(battleCharacter_, eventCharacter_);
-								//eventCharacter_->TakeDamage(damage);
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
 
-								auto* dmg = static_cast<DamageNotify*>(notify.get());
+						effectManagerObject_->PlayEffect(
+							enEffectKind_SlimeAttack,
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
+					}
 
-								// ダメージ計算・適用
-								int damage = CalcDamage(dmg->attacker, dmg->defender);
-								dmg->defender->TakeDamage(damage);
+					// 防御エフェクトの再生判定
+					if (battleCharacter_->GetStateMachine()->OnGuaed())
+					{
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						effectPos.y += 30.0f;
 
-								if (dmg->enemyType == DamageNotify::EnemyType::Stone)
-								{
-									// ノックバック
-									auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
-									enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
-									// 死亡判定
-									if (dmg->defender->GetCurrentHP() <= 0)
-									{
-										enemy->GetStateMachine()->OnDead();
-									}
-								}
-								else if (dmg->enemyType == DamageNotify::EnemyType::Mushroom)
-								{
-									// ノックバック
-									auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
-									enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
-									// 死亡判定
-									if (dmg->defender->GetCurrentHP() <= 0)
-									{
-										enemy->GetStateMachine()->OnDead();
-									}
-								}
-							}
-						}
-						notifyList_.clear();
+						effectManagerObject_->PlayEffect(
+							enEffectKind_SlimeAttack,
+							effectPos,
+							Quaternion::Identity,
+							Vector3::One
+						);
+					}
+				
+
+				//スライムの攻撃アクション
+				{
+					if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
+						&& battleCharacter_->GetCurrentHP() > 0)
+					{
+						effectManagerObject_->PlayEffect(
+							enEffectKind_SlimeAttack,
+							eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
+							Quaternion::Identity,
+							Vector3(3.0f, 3.0f, 3.0f)
+						);
 					}
 				}
+
+				//スライムのノックバック
+				{
+					if (eventCharacter_->GetStateMachine()->IsKnockBack()
+						|| eventCharacter_->GetStateMachine()->IsSquashed())
+					{
+						if (!hasPlayedPunchEffect_)
+						{
+							effectManagerObject_->PlayEffect(
+								enEffectKind_SlimeKnockBack,
+								eventCharacter_->transform.position,
+								Quaternion::Identity,
+								Vector3::One
+							);
+							hasPlayedPunchEffect_ = true;
+						}
+					}
+					else {
+						hasPlayedPunchEffect_ = false;
+					}
+				}
+
+				// 衝突後の処理
+				{
+					for (auto& notify : notifyList_) {
+						if (notify->ID() == DamageNotify::StaticID())
+						{
+							/** コメントアウトすると正常に動く */
+							//int damage = CalcDamage(battleCharacter_, eventCharacter_);
+							//eventCharacter_->TakeDamage(damage);
+
+							auto* dmg = static_cast<DamageNotify*>(notify.get());
+
+							// ダメージ計算・適用
+							int damage = CalcDamage(dmg->attacker, dmg->defender);
+							dmg->defender->TakeDamage(damage);
+
+							if (dmg->enemyType == DamageNotify::EnemyType::Stone)
+							{
+								// ノックバック
+								auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
+								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
+								// 死亡判定
+								if (dmg->defender->GetCurrentHP() <= 0)
+								{
+									enemy->GetStateMachine()->OnDead();
+								}
+							}
+							else if (dmg->enemyType == DamageNotify::EnemyType::Mushroom)
+							{
+								// ノックバック
+								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
+								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
+								// 死亡判定
+								if (dmg->defender->GetCurrentHP() <= 0)
+								{
+									enemy->GetStateMachine()->OnDead();
+								}
+							}
+						}
+					}
+					notifyList_.clear();
+				}
+			}
 
 				auto gameCamera = gameCameraController_->As<app::camera::GameCamera>();
 				auto cameraData = gameCamera->GetCameraData();
