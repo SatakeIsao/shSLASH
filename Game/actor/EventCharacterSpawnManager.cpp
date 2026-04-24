@@ -141,13 +141,12 @@ namespace app
 			const Vector3 spawnPosition = CalcSpawnPosition(direction);
 			const EnemyType type = SelectEnemyType();
 
-			//   // デバッグ用：スポーン座標を出力（確認したら消す）
-			//   OutputDebugStringA(
-			//   	("fieldSize_=" + std::to_string(fieldSize_) +
-			//   		" quadrantCenter=" + std::to_string(fieldSize_ * 0.25f) +
-			//   		" spawnPos: x=" + std::to_string(spawnPosition.x) +
-			//   		" z=" + std::to_string(spawnPosition.z) + "\n").c_str()
-			//   );
+			// デバッグ用：どの象限が選ばれたか出力
+			const char* dirNames[] = { "NORTH_WEST", "NORTH_EAST", "SOUTH_WEST", "SOUTH_EAST" };
+			OutputDebugStringA(
+				(std::string("Spawn direction: ") +
+					dirNames[static_cast<int>(direction)] + "\n").c_str()
+			);
 
 			SpawnResult result;
 			result.type = type;

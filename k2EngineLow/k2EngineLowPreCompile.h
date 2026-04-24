@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NON_CONFORMING_SWPRINTFS
 #pragma comment( lib, "xinput.lib")
@@ -36,7 +36,8 @@
 
 #include "graphics/d3dx12.h"
 
-const int MAX_RENDERING_TARGET = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌÅ‘å”B
+// åŒæ™‚ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æœ€å¤§æ•°ã€‚
+const int MAX_RENDERING_TARGET = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;
 
 using namespace Microsoft::WRL;
 
@@ -74,7 +75,7 @@ using namespace Microsoft::WRL;
 #include "graphics/Sprite.h"
 #include "graphics/Model.h"
 #include "HID/GamePad.h"
-//’Ç‰Á‚µ‚½
+// è¿½åŠ åˆ†
 #include "IRenderer.h"
 #include "ModelRender.h"
 #include "SceneLight.h"
@@ -84,19 +85,23 @@ using namespace Microsoft::WRL;
 #include "Bloom.h"
 #include "FontRender.h"
 #include "SpriteRender.h"
-//#include "SkyCube.h"
+#include "CircularGaugeRender.h"
 #include "LevelRender.h"
-//#include "MyRenderer.h"
-//
 #include "graphics/GaussianBlur.h"
 
-const UINT FRAME_BUFFER_W = 1600;	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•B
-const UINT FRAME_BUFFER_H = 900;	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³B
-const UINT UI_SPACE_WIDTH = 1920;	// UI‹óŠÔ‚Ì•B
-const UINT UI_SPACE_HEIGHT = 1080;	// UI‹óŠÔ‚Ì‚‚³B
-static const int MAX_BONE = 512;	// ƒ{[ƒ“‚ÌÅ‘å”B
+// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…ã€‚
+const UINT FRAME_BUFFER_W = 1600;
+// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•ã€‚
+const UINT FRAME_BUFFER_H = 900;
+// UIç©ºé–“ã®å¹…ã€‚
+const UINT UI_SPACE_WIDTH = 1920;
+// UIç©ºé–“ã®é«˜ã•ã€‚
+const UINT UI_SPACE_HEIGHT = 1080;
+// ãƒœãƒ¼ãƒ³ã®æœ€å¤§æ•°ã€‚
+static const int MAX_BONE = 512;
 
-#define USE_FPS_LIMITTER	// —LŒø‚ÅFPS‚ÉãŒÀ‚ğİ‚¯‚éB
+// FPSãƒªãƒŸãƒƒã‚¿ãƒ¼ã‚’ä½¿ç”¨ã€‚
+#define USE_FPS_LIMITTER
 
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision\CollisionDispatch\btGhostObject.h"

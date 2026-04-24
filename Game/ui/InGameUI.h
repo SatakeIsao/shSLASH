@@ -72,6 +72,9 @@ namespace app
 		class PlayerHpUIObject : public HpUIObject
 		{
 		private:
+			CircularGaugeRender hpGauge_;
+			CircularGaugeRender bgCircle_;
+			SpriteRender icon_;
 			std::unique_ptr<app::ui::Layout> layout_;
 			/** 表示用のコピー */
 			//int level_ = 0;

@@ -19,7 +19,7 @@
         "width": 286,
         "height": 36,
         "position": [-590, 380, 0],
-        "scale": [1, 1, 1],
+        "scale": [0, 0, 0],
         "rotation": 0,
         "color": [1.0, 1.0, 1.0, 1.0]
       },
@@ -41,7 +41,7 @@
         "width": 270,
         "height": 22,
         "position": [-594, 380, 0],
-        "scale": [1, 1, 1],
+        "scale": [0,0,0],
         "rotation": 0,
         "color": [0.0, 0.0, 0.0, 0.0]
       },
@@ -76,7 +76,7 @@
         "width": 268,
         "height": 20,
         "position": [-594, 380, 0],
-        "scale": [1, 1, 1],
+        "scale": [0, 0, 0],
         "rotation": 0,
         "color": [1.0, 1.0, 1.0, 1.0]
       },

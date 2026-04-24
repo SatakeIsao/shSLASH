@@ -1,33 +1,21 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "SpriteRender.h"
 
 namespace nsK2EngineLow {
 	void SpriteRender::Init(const char* filePath, const float w, const float h, AlphaBlendMode alphaBlendMode)
 	{
 		SpriteInitData initData;
-		//DDSƒtƒ@ƒCƒ‹i‰æ‘œƒf[ƒ^j‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚é
+		// DDSãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æŒ‡å®š
 		initData.m_ddsFilePath[0] = filePath;
-		//Sprite•\¦—p‚ÌƒVƒF[ƒ_[‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚é
+		// Spriteè¡¨ç¤ºç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æŒ‡å®š
 		initData.m_fxFilePath = "Assets/Shader/sprite.fx";
-		//ƒXƒvƒ‰ƒCƒg‚Ì•‚Æ‚‚³‚ğw’è‚·‚é
+		// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®å¹…ã¨é«˜ã•ã‚’æŒ‡å®šã™ã‚‹
 		initData.m_width = static_cast<UINT>(w);
 		initData.m_height = static_cast<UINT>(h);
 		initData.m_alphaBlendMode = alphaBlendMode;
-
-		//initData.m_vsEntryPointFunc = "VSMain";
-
-		//initData.m_psEntryPoinFunc = "PSMain";
-
-		//Sprite‰Šú‰»ƒIƒuƒWƒFƒNƒg‚ğg—p‚µ‚ÄASprite‚ğ‰Šú‰»‚·‚é
+		// Spriteã®åˆæœŸåŒ–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½¿ç”¨ã—ã¦ã€Spriteã‚’åˆæœŸåŒ–
 		m_sprite.Init(initData);
 	}
-
-	/*void SpriteRender::SetTexture(const std::string& filePath)
-	{
-		if (m_texture.InitFromMemory(filePath.c_str())) {
-
-		}
-	}*/
 
 	void SpriteRender::Draw(RenderContext& rc)
 	{
