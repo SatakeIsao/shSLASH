@@ -103,12 +103,13 @@ namespace app
 			//float fieldSize_ = 20000.0f;                              // フィールドの一辺のサイズ
 			//float spawnScatter_ = 1000.0f;                            // 象限中心からのランダムばらつき幅
 
-			float fieldEdge_ = 300.0f; // プレイヤーからスポーン地点までの距離
+			float fieldEdge_ = 20000.0f; // 原点からスポーン地点までの距離（フィールド端寄り）
 
 			int playerLevel_ = 1;
 			float spawnInterval_ = 5.0f;                              // スポーン間隔（秒）
 			float spawnTimer_ = 0.0f;                                 // スポーンタイマー
 			int pendingSpawnCount_ = 0;                               // 次フレームでスポーンする残数
+			float pendingSpawnTimer_ = 1.0f;                          // 初期・追加スポーンのインターバルタイマー（初回は即スポーン）
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック
