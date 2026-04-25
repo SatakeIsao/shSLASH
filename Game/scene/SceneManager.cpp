@@ -6,7 +6,7 @@
 #include "BootScene.h"
 #include "BattleScene.h"
 #include "GameOverScene.h"
-#include "GameClearScene.h"
+#include "ResultScene.h"
 
 #include "core/Fade.h"
 
@@ -25,7 +25,7 @@ SceneManager::SceneManager()
 
 	AddSceneMap<BattleScene>();
 	AddSceneMap<GameOverScene>();
-	AddSceneMap<GameClearScene>();
+	AddSceneMap<ResultScene>();
 }
 
 
@@ -107,7 +107,7 @@ bool SceneManagerObject::Start()
 //#endif // APP_DEBUG
 
 	/** デバックテスト */
-	SceneManager::Get().CreateScene(BattleScene::ID());
+	SceneManager::Get().CreateScene(TitleScene::ID());
 
 	return true;
 }

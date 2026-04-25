@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "BattleScene.h"
 #include "GameOverScene.h"
-#include "GameClearScene.h"
+#include "ResultScene.h"
 #include "TitleScene.h"
 #include "battle/BattleManager.h"
+#include "core/PauseManager.h"
 #include "ui/SoundOptionMenu.h"
 
 
@@ -49,24 +50,39 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 	//app::ui::SoundOptionMenu* sound;
 	//sound = new app::ui::SoundOptionMenu;
 
-	if (app::battle::BattleManager::Get().GetDeadTest())
+	/** Playerのダウンモーションが再生終了したら */
+	if (g_pad[0]->IsPress(enButtonLB2)
+		&& g_pad[0]->IsTrigger(enButtonDown))
+	//if (app::battle::BattleManager::Get().GetDeadTest())
 	{
 		id = GameOverScene::ID();
 		waitTime = 3.0f;
 		return true;
 	}
-	// if (g_pad[0]->IsTrigger(enButtonRight))
-	// {
-	// 	id = GameClearScene::ID();
-	// 	waitTime = 3.0f;
-	// 	return true;
-	// }
+
+	/** タイマーが0になったら */
+	if (g_pad[0]->IsPress(enButtonLB2)
+		&& g_pad[0]->IsTrigger(enButtonRight))
+	{
+		id = ResultScene::ID();
+		waitTime = 3.0f;
+		return true;
+	}
+	
+
 	/*if (sound->IsTitle())
 	{
 		id = TitleScene::ID();
 		waitTime = 3.0f;
 		return true;
 	}*/
+
+	if (app::core::PauseManager::Get().IsReturnToTitleRequested())
+	{
+		id = TitleScene::ID();
+		waitTime = 3.0f;
+		return true;
+	}
 
 	if (requestSceneId_ != INVALID_SCENE_ID)
 	{

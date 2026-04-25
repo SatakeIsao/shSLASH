@@ -1,5 +1,5 @@
 /**
- * GameClearScene.h
+ * ResultScene.h
  * ゲームクリアシーンクラス
  */
 #pragma once
@@ -7,9 +7,9 @@
 
 
 /** ゲームクリアシーン */
-class GameClearScene : public IScene
+class ResultScene : public IScene
 {
-	appScene(GameClearScene);
+	appScene(ResultScene);
 
 
 private:
@@ -20,8 +20,8 @@ private:
 
 
 public:
-	GameClearScene();
-	virtual ~GameClearScene();
+	ResultScene();
+	virtual ~ResultScene();
 	
 	virtual bool Start() override;
 	virtual void Update() override;

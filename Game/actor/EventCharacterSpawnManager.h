@@ -9,7 +9,7 @@
 
 namespace app
 {
-
+	namespace ui { class EnemyHpUIObject; }
 	namespace actor
 	{
 		class BattleCharacter;
@@ -73,14 +73,8 @@ namespace app
 
 			void SetFieldEdge(float edge) { fieldEdge_ = edge; }
 
-			///** フィールドの中心座標を設定する */
-			//void SetFieldCenter(const Vector3& center) { fieldCenter_ = center; }
-			//
-			///** フィールドサイズを設定する */
-			//void SetFieldSize(float size) { fieldSize_ = size; }
-			//
-			///** スポーンのばらつき幅を設定する */
-			//void SetSpawnScatter(float scatter) { spawnScatter_ = scatter; }
+			/** 生存中の全敵とHPバーをDeleteGOする（シーン破棄時に呼ぶ） */
+			void CleanUp();
 
 
 		private:
@@ -98,10 +92,14 @@ namespace app
 
 
 		private:
+			struct EnemyEntry
+			{
+				IGameObject* enemy = nullptr;
+				app::ui::EnemyHpUIObject* hpUI = nullptr;
+			};
+			std::vector<EnemyEntry> activeEntries_;
+
 			QuadrantManager quadrantManager_;                          // 象限管理
-			//Vector3 fieldCenter_ = Vector3(0, 0, 0);                  // フィールドの中心座標
-			//float fieldSize_ = 20000.0f;                              // フィールドの一辺のサイズ
-			//float spawnScatter_ = 1000.0f;                            // 象限中心からのランダムばらつき幅
 
 			float fieldEdge_ = 20000.0f; // 原点からスポーン地点までの距離（フィールド端寄り）
 
@@ -113,7 +111,56 @@ namespace app
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック
-		};
 
+			/**
+			* シングルトン用
+			*/
+		public:
+			/**
+			 * インスタンスを作る
+			 */
+			static void Initialize()
+			{
+				if (instance_ == nullptr)
+				{
+					instance_ = new EventCharacterSpawnManager();
+				}
+			}
+
+
+			/**
+			 * インスタンスを取得
+			 */
+			static EventCharacterSpawnManager& Get()
+			{
+				return *instance_;
+			}
+
+
+			/**
+			 * インスタンスが有効か
+			 */
+			static bool IsAvailable()
+			{
+				return instance_ != nullptr;
+			}
+
+
+			/**
+			 * インスタンスを破棄
+			 */
+			static void Finalize()
+			{
+				if (instance_ != nullptr)
+				{
+					delete instance_;
+					instance_ = nullptr;
+				}
+			}
+
+		private:
+			/** シングルトンインスタンス */
+			static EventCharacterSpawnManager* instance_;
+		};
 	}
 }

@@ -4,28 +4,28 @@
  */
 
 #include "stdafx.h"
-#include "GameClearScene.h"
+#include "ResultScene.h"
 #include "TitleScene.h"
 
 
-GameClearScene::GameClearScene()
+ResultScene::ResultScene()
 {
 }
 
 
-GameClearScene:: ~GameClearScene()
+ResultScene:: ~ResultScene()
 {
 }
 
 
-bool GameClearScene::Start()
+bool ResultScene::Start()
 {
-	m_spriteRender.Init("Assets/ui/gameclear/gameClear.DDS", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
+	m_spriteRender.Init("Assets/ui/result/test_gameResult.DDS", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
 	return true;
 }
 
 
-void GameClearScene::Update()
+void ResultScene::Update()
 {
 	if (g_pad[0]->IsTrigger(enButtonDown))
 	{
@@ -36,12 +36,13 @@ void GameClearScene::Update()
 }
 
 
-void GameClearScene::Render(RenderContext& rc)
+void ResultScene::Render(RenderContext& rc)
 {
 	m_spriteRender.Draw(rc);
 }
 
-bool GameClearScene::RequestScene(uint32_t& id, float& waitTime)
+
+bool ResultScene::RequestScene(uint32_t& id, float& waitTime)
 {
 	if (m_requestSceneId != INVALID_SCENE_ID)
 	{

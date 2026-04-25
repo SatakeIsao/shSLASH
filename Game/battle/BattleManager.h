@@ -4,7 +4,7 @@
  */
 #pragma once
 #include "actor/EventCharacter.h"
-#include "actor/EventCharacterSpawnManager.h"
+#include "actor/EventCharacterSpawnManagerObject.h"
 #include "camera/CameraCommon.h"
 #include "camera/CameraSteering.h"
 #include "ui/Layout.h"
@@ -24,6 +24,7 @@ namespace app
         class StaticGimmick;
         class PipeGimmick;
 		class EventCharacterSpawnManager;
+		class EventCharacterSpawnManagerObject;
     }
     namespace collision
     {
@@ -109,7 +110,7 @@ namespace app
             
             std::unique_ptr<app::actor::CharacterSteering> characterSteering_ = nullptr;
 			std::unique_ptr<app::camera::CameraSteering> cameraSteering_ = nullptr;
-            std::unique_ptr <app::actor::EventCharacterSpawnManager> eventCharacterSpawnManager_ = nullptr;
+            app::actor::EventCharacterSpawnManagerObject* eventCharacterSpawnManagerObject_ = nullptr;
 			app::camera::RefCameraController gameCameraController_ = nullptr;
 
             EffectManagerObject* effectManagerObject_ = nullptr;
