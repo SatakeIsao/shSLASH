@@ -6,6 +6,7 @@
 #include "BattleManager.h"
 
 #include "actor/BattleCharacter.h"
+#include "actor/EventCharacterSpawnManagerObject.h"
 #include "actor/ActorState.h"
 #include "actor/CharacterSteering.h"
 #include "actor/ActorStatus.h"
@@ -170,7 +171,17 @@ namespace app
 
 		BattleManager::~BattleManager()
 		{
+			// スポーン済み敵とHPバーを先にクリーンアップ
+			if (eventCharacterSpawnManagerObject_)
+			{
+				eventCharacterSpawnManagerObject_->GetManager().CleanUp();
+			}
+
+			DeleteGO(skyCube_);
 			DeleteGO(battleCharacter_);
+			DeleteGO(effectManagerObject_);
+			DeleteGO(pauseManagerObject_);
+			DeleteGO(eventCharacterSpawnManagerObject_);
 			DeleteGO(eventCharacter_);
 			DeleteGO(timerUIObject_);
 			DeleteGO(playerHpUIObject_);
@@ -206,9 +217,9 @@ namespace app
 				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_Day);
 			}
 			/** イベントキャラクタースポーンマネージャー */
-			{ 
-				eventCharacterSpawnManager_ = std::make_unique<app::actor::EventCharacterSpawnManager>();
-				eventCharacterSpawnManager_->SetOnSpawned([this](const app::actor::SpawnResult& result)
+			{
+				eventCharacterSpawnManagerObject_ = NewGO<app::actor::EventCharacterSpawnManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+				eventCharacterSpawnManagerObject_->GetManager().SetOnSpawned([this](const app::actor::SpawnResult& result)
 					{
 						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
 						switch (result.type)
@@ -270,7 +281,7 @@ namespace app
 			}
 			{
 				characterSteering_ = std::make_unique<app::actor::CharacterSteering>();
-				// マリオにしてみた
+				// Player
 				{
 					battleCharacter_ = NewGO<app::actor::BattleCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "mario");
 					battleCharacter_->Initialize(sPlayerInitializeParameter);
@@ -303,11 +314,8 @@ namespace app
 				}
 				characterSteering_->Initialize(battleCharacter_, 0);
 
-				eventCharacterSpawnManager_->SetFieldEdge(300.0f);
-				//eventCharacterSpawnManager_->SetFieldCenter(Vector3(0.0f, 0.0f, 0.0f)); // フィールドの中心座標
-				//eventCharacterSpawnManager_->SetFieldSize(1200.0f);   // フィールドの一辺のサイズ
-				//eventCharacterSpawnManager_->SetSpawnScatter(10.0f); // 象限中心からのばらつき幅
-				eventCharacterSpawnManager_->Start(battleCharacter_);
+				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
+				eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
 
 				// 敵キャラクター 
 				eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
@@ -328,7 +336,6 @@ namespace app
 					auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
 					eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
 					eventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
-
 				}
 
 				// ギミック設置（テスト用）
@@ -392,7 +399,6 @@ namespace app
 				// HPUI
 				{
 					playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
-					//enemyHpUIObject_ = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				}
 				//BGM再生
 				{
@@ -439,10 +445,6 @@ namespace app
 
 			if (!isSequence)
 			{
-				if (eventCharacterSpawnManager_) {
-					eventCharacterSpawnManager_->Update();
-				}
-
 				characterSteering_->Update();
 
 				// 衝突判定更新

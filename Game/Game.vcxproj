@@ -236,6 +236,7 @@
     <ClCompile Include="actor\EquipmentSlot.cpp" />
     <ClCompile Include="actor\EquipmentSlotManager.cpp" />
     <ClCompile Include="actor\QuadrantManager.cpp" />
+    <ClCompile Include="actor\EventCharacterSpawnManagerObject.cpp" />
     <ClCompile Include="ui\ReturnToTitleMenu.cpp" />
     <ClCompile Include="ui\PauseMenu.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
@@ -260,7 +261,7 @@
     <ClCompile Include="core\ParameterManager.cpp" />
     <ClCompile Include="core\TaskSchedulerSystem.cpp" />
     <ClCompile Include="effect\EffectManager.cpp" />
-    <ClCompile Include="scene\GameClearScene.cpp" />
+    <ClCompile Include="scene\ResultScene.cpp" />
     <ClCompile Include="scene\GameOverScene.cpp" />
     <ClCompile Include="gimmick\WarpSystem.cpp" />
     <ClCompile Include="ui\SoundOptionMenu.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="actor\EquipmentSlot.h" />
     <ClInclude Include="actor\EquipmentSlotManager.h" />
     <ClInclude Include="actor\QuadrantManager.h" />
+    <ClInclude Include="actor\EventCharacterSpawnManagerObject.h" />
     <ClInclude Include="ui\ReturnToTitleMenu.h" />
     <ClInclude Include="ui\PauseMenu.h" />
     <ClInclude Include="ui\InGameUI.h" />
@@ -331,7 +333,7 @@
     <ClInclude Include="core\TaskSchedulerSystem.h" />
     <ClInclude Include="effect\EffectManager.h" />
     <ClInclude Include="effect\Types.h" />
-    <ClInclude Include="scene\GameClearScene.h" />
+    <ClInclude Include="scene\ResultScene.h" />
     <ClInclude Include="scene\GameOverScene.h" />
     <ClInclude Include="gimmick\WarpSystem.h" />
     <ClInclude Include="ui\SoundOptionMenu.h" />

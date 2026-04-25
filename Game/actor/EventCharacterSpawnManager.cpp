@@ -24,13 +24,34 @@ namespace app
 {
 	namespace actor
 	{
+		EventCharacterSpawnManager* EventCharacterSpawnManager::instance_ = nullptr;
 
 		EventCharacterSpawnManager::EventCharacterSpawnManager()
 		{}
 
 
 		EventCharacterSpawnManager::~EventCharacterSpawnManager()
-		{}
+		{
+			CleanUp();
+		}
+
+
+		void EventCharacterSpawnManager::CleanUp()
+		{
+			for (auto& entry : activeEntries_)
+			{
+				if (entry.hpUI)
+				{
+					entry.hpUI->ClearTarget();
+					DeleteGO(entry.hpUI);
+				}
+				if (entry.enemy)
+				{
+					DeleteGO(entry.enemy);
+				}
+			}
+			activeEntries_.clear();
+		}
 
 
 		bool EventCharacterSpawnManager::Start(app::actor::BattleCharacter* battleCharacter)
@@ -170,6 +191,8 @@ namespace app
 				hpUI->SetTargetEnemy(stone);
 				hpUI->SetPlayer(battleCharacter_);
 
+				activeEntries_.push_back({ stone, hpUI });
+
 				stone->AddOnDead([this, stone, hpUI, direction]()
 					{
 						hpUI->ClearTarget();
@@ -177,6 +200,10 @@ namespace app
 						DeleteGO(stone);
 						quadrantManager_.Release(direction); // 象限を解放
 						++pendingSpawnCount_;
+						activeEntries_.erase(
+							std::remove_if(activeEntries_.begin(), activeEntries_.end(),
+								[stone](const EnemyEntry& e) { return e.enemy == stone; }),
+							activeEntries_.end());
 					});
 				result.stoneCharacter = stone;
 				break;
@@ -192,6 +219,8 @@ namespace app
 				hpUI->SetTargetEnemy(mushroom);
 				hpUI->SetPlayer(battleCharacter_);
 
+				activeEntries_.push_back({ mushroom, hpUI });
+
 				mushroom->AddOnDead([this, mushroom, hpUI, direction]()
 					{
 						hpUI->ClearTarget();
@@ -199,6 +228,10 @@ namespace app
 						DeleteGO(mushroom);
 						quadrantManager_.Release(direction); // 象限を解放
 						++pendingSpawnCount_;
+						activeEntries_.erase(
+							std::remove_if(activeEntries_.begin(), activeEntries_.end(),
+								[mushroom](const EnemyEntry& e) { return e.enemy == mushroom; }),
+							activeEntries_.end());
 					});
 				result.mushroomCharacter = mushroom;
 				break;

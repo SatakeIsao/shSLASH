@@ -8,7 +8,7 @@
 
 #include "DebugScene.h"
 #include "GameOverScene.h"
-#include "GameClearScene.h"
+#include "ResultScene.h"
 #include "battle/BattleManager.h"
 #include "ui/Layout.h"
 
@@ -60,7 +60,7 @@ void DebugScene::Render(RenderContext& rc)
 bool DebugScene::RequestScene(uint32_t& id, float& waitTime)
 {
 	if (g_pad[0]->IsTrigger(enButtonRight)) {
-		id = GameClearScene::ID();
+		id = ResultScene::ID();
 		waitTime = 3.0f;
 		return true;
 	}

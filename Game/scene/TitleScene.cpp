@@ -22,7 +22,7 @@ TitleScene::~TitleScene()
 
 bool TitleScene::Start()
 {
-	backGroundRender_.Init("Assets/ui/title/background.dds", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
+	backGroundRender_.Init("Assets/ui/title/testTitle.dds", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
 	return true;
 }
 
@@ -30,9 +30,9 @@ bool TitleScene::Start()
 void TitleScene::Update()
 {
 	if (g_pad[0]->IsTrigger(enButtonA)) {
-#if defined(APP_DEBUG)
+//#if defined(APP_DEBUG)
 		m_requestSceneId = BattleScene::ID();
-#endif
+//#endif
 	}
 
 	backGroundRender_.Update();
