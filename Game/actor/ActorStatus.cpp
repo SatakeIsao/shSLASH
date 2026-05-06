@@ -28,6 +28,7 @@ namespace app
 			radius_ = parameter->radius;
 			height_ = parameter->height;
 			hp_ = parameter->hp;
+			currentHp_ = parameter->hp;
 			attackPower_ = parameter->attackPower;
 		}
 
@@ -74,6 +75,7 @@ namespace app
 			radius_ = parameter->radius;
 			height_ = parameter->height;
 			hp_ = parameter->hp;
+			currentHp_ = parameter->hp;
 			attackPower_ = parameter->attackPower;
 		}
 
@@ -98,6 +100,7 @@ namespace app
 			radius_ = parameter->radius;
 			height_ = parameter->height;
 			hp_ = parameter->hp;
+			currentHp_ = parameter->hp;
 			attackPower_ = parameter->attackPower;
 		}
 	}

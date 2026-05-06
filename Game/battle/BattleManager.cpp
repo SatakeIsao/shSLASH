@@ -37,6 +37,9 @@ namespace
 	constexpr const char* MASTER_STONE_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterStoneEventCharacterParameter.json";
 	constexpr const char* MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH = "Assets/master/battle/MasterMushroomEventCharacterParameter.json";
 
+	/** 無敵時間 */
+	static constexpr float INVINCIBLE_TIME = 2.0f;
+
 
 	// Player用
 	static app::actor::CharacterInitializeParameter sPlayerInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
@@ -186,6 +189,7 @@ namespace app
 			DeleteGO(timerUIObject_);
 			DeleteGO(playerHpUIObject_);
 			DeleteGO(enemyHpUIObject_);
+			DeleteGO(levelUpObject_);
 			for (auto& test : testGimmickList_)
 			{
 				DeleteGO(test);
@@ -237,6 +241,8 @@ namespace app
 							stone->AddState <app::actor::KnockBackCharacterState>();
 							stone->GetStatus()->SetFriction(stageParam->friction);
 							stone->GetStatus()->SetGravity(stageParam->gravity);
+							stone->GetStateMachine()->transform.position = stone->transform.position;
+
 
 							// 死亡時のコールバックをセット
 							stone->AddOnDead([this, stone]()
@@ -246,6 +252,11 @@ namespace app
 									std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
 									stoneEventCharacters_.end()
 								);
+								// レベルゲージを溜める
+								if (playerHpUIObject_)
+								{
+									playerHpUIObject_->AddLevelUpGauge(3);
+								}
 							});						
 							break;
 						}
@@ -262,6 +273,7 @@ namespace app
 							mushroom->AddState <app::actor::KnockBackCharacterState>();
 							mushroom->GetStatus()->SetFriction(stageParam->friction);
 							mushroom->GetStatus()->SetGravity(stageParam->gravity);
+							mushroom->GetStateMachine()->transform.position = mushroom->transform.position;
 
 							//死亡時のコールバックをセット
 							mushroom->AddOnDead([this, mushroom]()
@@ -271,6 +283,12 @@ namespace app
 									std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
 									mushroomEventCharacters_.end()
 								);
+							
+								// レベルゲージを溜める
+								if (playerHpUIObject_)
+								{
+									playerHpUIObject_->AddLevelUpGauge(5);
+								}
 							});
 							break;
 						}
@@ -318,24 +336,24 @@ namespace app
 				eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
 
 				// 敵キャラクター 
-				eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
-				eventCharacter_->Initialize(sEnemyInitializeParameter);
-				{
-					eventCharacter_->AddState <app::actor::IdleCharacterState>();
-					eventCharacter_->AddState<app::actor::RunCharacterState>();
-					eventCharacter_->AddState<app::actor::AttackCharacterState>();
-					eventCharacter_->AddState<app::actor::PunchCharacterState>();
-					eventCharacter_->AddState<app::actor::DeadCharacterState>();
-					eventCharacter_->AddState <app::actor::KnockBackCharacterState>();
-				}
+				//eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
+				//eventCharacter_->Initialize(sEnemyInitializeParameter);
+				//{
+				//	eventCharacter_->AddState <app::actor::IdleCharacterState>();
+				//	eventCharacter_->AddState<app::actor::RunCharacterState>();
+				//	eventCharacter_->AddState<app::actor::AttackCharacterState>();
+				//	eventCharacter_->AddState<app::actor::PunchCharacterState>();
+				//	eventCharacter_->AddState<app::actor::DeadCharacterState>();
+				//	eventCharacter_->AddState <app::actor::KnockBackCharacterState>();
+				//}
 
 
 				/** 敵に重力付与のテスト */
 				//TODO: いま、ステージなので敵のパラメータに変更させたい
 				{
 					auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
-					eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
-					eventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
+					//eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
+					//eventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
 				}
 
 				// ギミック設置（テスト用）
@@ -400,9 +418,25 @@ namespace app
 				{
 					playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
 				}
-				//BGM再生
+				// 生成後にプレイヤーを紐づけ
+				if (playerHpUIObject_ && battleCharacter_)
+				{
+					playerHpUIObject_->SetPlayer(battleCharacter_);
+				}
+				isInvincible_ = true;
+				invincibleTimer_ = 3.0f;
+				// BGM再生
 				{
 					//app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
+				}
+				// レベルアップ
+				{
+					levelUpObject_ = NewGO<app::ui::LevelUpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
+				}
+				// 生成後にポインタを渡す
+				if (playerHpUIObject_ && levelUpObject_)
+				{
+					playerHpUIObject_->SetLevelUpUIObject(levelUpObject_);
 				}
 			}
 		}
@@ -410,16 +444,6 @@ namespace app
 
 		void BattleManager::Update()
 		{
-			// デバッグ用：プレイヤー座標を出力（確認したら消す）
-			if (battleCharacter_)
-			{
-				const Vector3& pos = battleCharacter_->transform.position;
-				OutputDebugStringA(
-					("Player pos: x=" + std::to_string(pos.x) +
-						" z=" + std::to_string(pos.z) + "\n").c_str()
-				);
-			}
-
 			/** 現在のメニューポーズ状態 */
 			bool currentPause = app::core::PauseManager::Get().IsPause();
 			/** シーケンス中か */
@@ -454,54 +478,54 @@ namespace app
 				// 衝突ヒット管理更新
 				app::collision::CollisionHitManager::Get().Update();
 
-				// デバッグテスト: 追従の処理
+				//// デバッグテスト: 追従の処理
 				Vector3 playerPosition = battleCharacter_->transform.position;
-				Vector3 slimePosition = eventCharacter_->transform.position;
+				////Vector3 slimePosition = eventCharacter_->transform.position;
 				Vector3 stonePosition = playerPosition;
 				Vector3 mushroomPosition = playerPosition;
-				//XとZのベクトルを長さに変換
-				Vector3 diffXZ_Slime(playerPosition.x - slimePosition.x, 0.0f, playerPosition.z - slimePosition.z);
-				float diff = diffXZ_Slime.Length();
+				////XとZのベクトルを長さに変換
+				////Vector3 diffXZ_Slime(playerPosition.x - slimePosition.x, 0.0f, playerPosition.z - slimePosition.z);
+				////float diff = diffXZ_Slime.Length();
 				Vector3 diffXZ_Stone = Vector3::Zero;
 				float diffStone = 999999.0f;
 				diffXZ_Stone = Vector3(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
 				diffStone = diffXZ_Stone.Length();
-
+				//
 				Vector3 diffXZ_Mushroom = Vector3::Zero;
 				float diffMushroom = 999999.0f;
 				diffXZ_Mushroom = Vector3(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
 				diffMushroom = diffXZ_Mushroom.Length();
-
-
-				if (diff < 200.0f) {
-					//向きだけのベクトル
-					Vector3 DirectionToPlayer = diffXZ_Slime;
-					DirectionToPlayer.Normalize();
-
-					Vector3 slimeForward = Vector3(0.0f, 0.0f, 1.0f);
-					eventCharacter_->transform.localRotation.Apply(slimeForward);
-
-					//スライムの前方向
-					Vector3 forwardXZ(slimeForward.x, 0.0f, slimeForward.z);
-					forwardXZ.Normalize();
-
-					//向きだけのベクトルとスライムの前方向で内積
-					float dot = forwardXZ.Dot(DirectionToPlayer);
-
-					//角度のしきい値と計算
-					float halfFovDegree = 60.0f;
-
-					float halfFovRadians = halfFovDegree * (Math::PI / 180);
-
-					//判定用のしきい値となるコサイン値
-					float threshold = std::cos(halfFovRadians);
-
-					if (dot > threshold)
-					{
-						// 視野角内に入った
-						eventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
-					}
-				}
+				//
+				//
+				//if (diff < 200.0f) {
+				//	//向きだけのベクトル
+				//	Vector3 DirectionToPlayer = diffXZ_Slime;
+				//	DirectionToPlayer.Normalize();
+				//
+				//	Vector3 slimeForward = Vector3(0.0f, 0.0f, 1.0f);
+				//	eventCharacter_->transform.localRotation.Apply(slimeForward);
+				//
+				//	//スライムの前方向
+				//	Vector3 forwardXZ(slimeForward.x, 0.0f, slimeForward.z);
+				//	forwardXZ.Normalize();
+				//
+				//	//向きだけのベクトルとスライムの前方向で内積
+				//	float dot = forwardXZ.Dot(DirectionToPlayer);
+				//
+				//	//角度のしきい値と計算
+				//	float halfFovDegree = 60.0f;
+				//
+				//	float halfFovRadians = halfFovDegree * (Math::PI / 180);
+				//
+				//	//判定用のしきい値となるコサイン値
+				//	float threshold = std::cos(halfFovRadians);
+				//
+				//	if (dot > threshold)
+				//	{
+				//		// 視野角内に入った
+				//		eventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
+				//	}
+				//}
 
 				/** ストーンの追従処理 */
 				for (auto* stone : stoneEventCharacters_)
@@ -577,6 +601,16 @@ namespace app
 					}
 				}
 
+				// 無敵時間の更新
+				if (isInvincible_)
+				{
+					invincibleTimer_ -= g_gameTime->GetFrameDeltaTime();
+					if (invincibleTimer_ <= 0.0f)
+					{
+						invincibleTimer_ = 0.0f;
+						isInvincible_ = false;
+					}
+				}
 
 				//プレイヤーの攻撃アクション
 				{
@@ -644,7 +678,7 @@ namespace app
 					}
 
 					// ノックバックエフェクトの再生判定
-					if (battleCharacter_->GetStateMachine()->GetKnockBack())
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeKnockBack())
 					{
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
 						effectPos.y += 30.0f;
@@ -674,37 +708,99 @@ namespace app
 
 				//スライムの攻撃アクション
 				{
-					if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
-						&& battleCharacter_->GetCurrentHP() > 0)
+					//  if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
+					//  	&& battleCharacter_->GetCurrentHP() > 0)
+					//  {
+					//  	effectManagerObject_->PlayEffect(
+					//  		enEffectKind_SlimeAttack,
+					//  		eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
+					//  		Quaternion::Identity,
+					//  		Vector3(3.0f, 3.0f, 3.0f)
+					//  	);
+					//  
+					//  	// プレイヤーへのダメージ処理を追加
+					//  	float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f; // ダメージ量は要調整
+					//  	newHp = max(newHp, 0.0f);
+					//  	battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+					//  }
+					/** ストーンの攻撃判定 */
+					for (auto* stone : stoneEventCharacters_)
 					{
-						effectManagerObject_->PlayEffect(
-							enEffectKind_SlimeAttack,
-							eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
-							Quaternion::Identity,
-							Vector3(3.0f, 3.0f, 3.0f)
-						);
+						if (!stone) continue;
+
+						bool hit = stone->GetStateMachine()->CheckAndConsumeAttackGhostCreated();
+						if (hit)
+						{
+							/** 無敵中はダメージを受けない */
+							if (!isInvincible_)
+							{
+								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f;
+								newHp = max(newHp, 0.0f);
+								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+
+								/** 無敵時間開始 */
+								isInvincible_ = true;
+								invincibleTimer_ = INVINCIBLE_TIME;
+
+								/** UIに無敵状態を通知 */
+								if (playerHpUIObject_)
+								{
+									playerHpUIObject_->StartInvincible(INVINCIBLE_TIME);
+								}
+							}
+							
+						}
+					}
+
+					/** マッシュルームの攻撃判定 */
+					for (auto* mushroom : mushroomEventCharacters_)
+					{
+						if (!mushroom) continue;
+						// 攻撃アニメーションのヒットタイミングで通知
+						if (mushroom->GetStateMachine()->CheckAndConsumeAttackGhostCreated())
+						{
+							// 無敵中はスキップ
+							if (isInvincible_) continue;
+
+							// Stoneと同じく直接HP減算（NotifyはもうAddしない）
+							float attackPower = mushroom->GetStatus()->GetAttackPower();
+							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
+							newHp = max(newHp, 0.0f);
+							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+
+							// ノックバック
+							battleCharacter_->GetStateMachine()->OnKnockBack();
+
+							// 無敵開始
+							isInvincible_ = true;
+							invincibleTimer_ = INVINCIBLE_TIME;
+							if (playerHpUIObject_)
+							{
+								playerHpUIObject_->StartInvincible(INVINCIBLE_TIME);
+							}
+						}
 					}
 				}
 
 				//スライムのノックバック
 				{
-					if (eventCharacter_->GetStateMachine()->IsKnockBack()
-						|| eventCharacter_->GetStateMachine()->IsSquashed())
-					{
-						if (!hasPlayedPunchEffect_)
-						{
-							effectManagerObject_->PlayEffect(
-								enEffectKind_SlimeKnockBack,
-								eventCharacter_->transform.position,
-								Quaternion::Identity,
-								Vector3::One
-							);
-							hasPlayedPunchEffect_ = true;
-						}
-					}
-					else {
-						hasPlayedPunchEffect_ = false;
-					}
+					//if (eventCharacter_->GetStateMachine()->IsKnockBack()
+					//	|| eventCharacter_->GetStateMachine()->IsSquashed())
+					//{
+					//	if (!hasPlayedPunchEffect_)
+					//	{
+					//		effectManagerObject_->PlayEffect(
+					//			enEffectKind_SlimeKnockBack,
+					//			eventCharacter_->transform.position,
+					//			Quaternion::Identity,
+					//			Vector3::One
+					//		);
+					//		hasPlayedPunchEffect_ = true;
+					//	}
+					//}
+					//else {
+					//	hasPlayedPunchEffect_ = false;
+					//}
 				}
 
 				// 衝突後の処理
@@ -717,9 +813,17 @@ namespace app
 							//eventCharacter_->TakeDamage(damage);
 
 							auto* dmg = static_cast<DamageNotify*>(notify.get());
+							// defender がプレイヤー自身の場合はスキップ
+							if (dmg->defender == battleCharacter_) continue;
+
+							// 無敵中はスキップ  
+							if (isInvincible_) continue;
 
 							// ダメージ計算・適用
 							int damage = CalcDamage(dmg->attacker, dmg->defender);
+							float newHp = dmg->defender->GetStatus()->GetCurrentHp() - damage;
+							newHp = max(newHp, 0.0f);
+							dmg->defender->GetStatus()->SetCurrentHp(newHp);
 							dmg->defender->TakeDamage(damage);
 
 							if (dmg->enemyType == DamageNotify::EnemyType::Stone)
@@ -728,7 +832,7 @@ namespace app
 								auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
 								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
 								// 死亡判定
-								if (dmg->defender->GetCurrentHP() <= 0)
+								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
 									enemy->GetStateMachine()->OnDead();
 								}
@@ -739,11 +843,22 @@ namespace app
 								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
 								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
 								// 死亡判定
-								if (dmg->defender->GetCurrentHP() <= 0)
+								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
 									enemy->GetStateMachine()->OnDead();
 								}
 							}
+						}
+						// 敵→プレイヤーへのダメージ
+						else if (notify->ID() == PlayerDamageNotify::StaticID())
+						{
+							auto* dmg = static_cast<PlayerDamageNotify*>(notify.get());
+
+							float attackPower = dmg->attacker->GetStatus()->GetAttackPower();
+							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
+							newHp = max(newHp, 0.0f);
+							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							//battleCharacter_->TakeDamage(static_cast<int>(attackPower));
 						}
 					}
 					notifyList_.clear();
@@ -806,7 +921,7 @@ namespace app
 		{
 			isPause_ = isPause;
 			if (battleCharacter_) battleCharacter_->SetPouse(isPause_);
-			if (eventCharacter_)eventCharacter_->SetPause(isPause_);
+			//if (eventCharacter_)eventCharacter_->SetPause(isPause_);
 			for (auto* stone : stoneEventCharacters_)
 			{
 				if (stone) { stone->SetPause(isPause_); }
@@ -864,6 +979,8 @@ namespace app
 					p.jumpPower = json["jumpPower"].get<float>();
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
+					p.hp = json["hp"].get<float>();
+					p.attackPower = json["attackPower"].get<float>();
 				});
 			// 武器パラメーター読み込み
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
