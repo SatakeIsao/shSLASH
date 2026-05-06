@@ -449,6 +449,86 @@
             "duration": 0.10,
             "easing": "EaseOut",
             "loop": "Once"
+        },
+        {
+            "comment": "レベルアップ用_Y座標スライドイージング",
+            "key": "LevelUp_SlideY",
+            "valueType": "Vector3",
+            "startValue": { "x": -550.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": -550.0, "y": 260.0, "z": 0.0 },
+            "duration": 2.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "攻撃力アップ用_Y座標スライドイージング",
+            "key": "AtkUp_SlideY",
+            "valueType": "Vector3",
+            "startValue": { "x": -550.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": -550.0, "y": 180.0, "z": 0.0 },
+            "duration": 2.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "レベルアップ用_退場X右移動",
+            "key": "LevelUp_ExitX_Right",
+            "valueType": "Vector3",
+            "startValue": { "x": -550.0, "y": 260.0, "z": 0.0 },
+            "endValue":   { "x": -380.0, "y": 260.0, "z": 0.0 },
+            "duration": 0.25,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "レベルアップ用_退場X左移動（画面外へ）",
+            "key": "LevelUp_ExitX_Left",
+            "valueType": "Vector3",
+            "startValue": { "x": -380.0, "y": 260.0, "z": 0.0 },
+            "endValue":   { "x": -1300.0, "y": 260.0, "z": 0.0 },
+            "duration": 0.3,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "攻撃UP用_退場X右移動",
+            "key": "AtkUp_ExitX_Right",
+            "valueType": "Vector3",
+            "startValue": { "x": -550.0, "y": 180.0, "z": 0.0 },
+            "endValue":   { "x": -380.0, "y": 180.0, "z": 0.0 },
+            "duration": 0.25,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "攻撃アップ用_退場X左移動（画面外へ）",
+            "key": "AtkUp_ExitX_Left",
+            "valueType": "Vector3",
+            "startValue": { "x": -380.0,  "y": 180.0, "z": 0.0 },
+            "endValue":   { "x": -1300.0, "y": 180.0, "z": 0.0 },
+            "duration": 0.3,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "レベルアップ用_フェードイン",
+            "key": "LevelUp_FadeIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 2.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "攻撃力UP用_フェードイン",
+            "key": "AtkUp_FadeIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 2.0,
+            "easing": "EaseOut",
+            "loop": "Once"
         }
     ]
 }
