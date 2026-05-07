@@ -129,8 +129,11 @@ namespace app
 			stateMachine_->Setup(this);
 			status_->Setup();
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
+			
 			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
 			characterController_->SetGravity(status_->GetGravity());
+			stateMachine_->transform.position = transform.position;
+			
 			currentHP_ = static_cast<int>(status_->GetMaxHp());
 
 			return true;
@@ -228,6 +231,8 @@ namespace app
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
 			characterController_->SetGravity(status_->GetGravity());
+			stateMachine_->transform.position = transform.position;
+
 			currentHP_ = static_cast<int>(status_->GetMaxHp());
 
 			return true;

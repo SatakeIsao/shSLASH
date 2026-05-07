@@ -269,6 +269,17 @@ namespace app
 			{
 				isDead_ = true;
 			}
+
+			// 参照と同時にフラグをリセット
+			bool CheckAndConsumeKnockBack()
+			{
+				if (isKnockBack_) {
+					isKnockBack_ = false;
+					return true;
+				}
+				return false;
+			}
+
 			/** ノックバックしたことを教える */
 			void OnKnockBack()
 			{
@@ -278,7 +289,6 @@ namespace app
 				isKnockBack_ = true;
 			}
 
-			//TODO: Isに変更
 			/** ノックバックしたことを取得 */
 			bool GetKnockBack()
 			{

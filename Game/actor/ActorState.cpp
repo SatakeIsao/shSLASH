@@ -115,10 +115,19 @@ namespace app
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
 
-					if (auto* eventMachine = owner_->As<app::actor::EventCharacterStateMachine>())
+					//if (auto* eventMachine = owner_->As<app::actor::EventCharacterStateMachine>())
+					//{
+					//	eventMachine->NontifyAttackGhostCreated();
+					//}
+					if (auto* m = owner_->As<app::actor::StoneEventCharacterStateMachine>())
 					{
-						eventMachine->NontifyAttackGhostCreated();
+						m->NontifyAttackGhostCreated();
 					}
+					else if (auto* m = owner_->As<app::actor::MushroomEventCharacterStateMachine>())
+					{
+						m->NontifyAttackGhostCreated();
+					}
+
 
 					// @todo for test
 					const float radius = characterStateMachine->GetStatus()->GetRadius();
@@ -353,7 +362,7 @@ namespace app
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 					attackBody_ = new app::collision::GhostBody();
-					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 25.0f, app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
+					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 45.0f, app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
 					// @todo for test
 					const float radius = characterStateMachine->GetStatus()->GetRadius();
 					attackBody_->SetPosition(characterStateMachine->transform.position + characterStateMachine->GetMoveDirection() * (radius + radius) + Vector3(0.0f, radius, 0.0f));
@@ -588,8 +597,9 @@ namespace app
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 			
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
-				battleMachine->GetKnockBack();
+				battleMachine->CheckAndConsumeKnockBack();
 			}
+			timer_ = 0.0f;
 		}
 		
 

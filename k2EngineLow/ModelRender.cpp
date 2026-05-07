@@ -1,16 +1,16 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "ModelRender.h"
 
 namespace nsK2EngineLow {
 
 	ModelRender::ModelRender()
 	{
-		//ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìˆ—
+		//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å‡¦ç†
 	}
 
 	ModelRender::~ModelRender()
 	{
-		// ƒfƒXƒgƒ‰ƒNƒ^‚Ìˆ—
+		// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å‡¦ç†
 	}
 
 	void ModelRender::Init(
@@ -21,16 +21,16 @@ namespace nsK2EngineLow {
 		bool isShadowCaster,
 		bool isShadowReceiver)
 	{
-		//ƒXƒPƒ‹ƒgƒ“‚ğ‰Šú‰»
+		//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã‚’åˆæœŸåŒ–
 		InitSkeleton(tkmFilePath);
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‰Šú‰»B
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åˆæœŸåŒ–ã€‚
 		InitAnimation(animationClips, numAnimationClips, enModelUpAcxis);
-		//ƒ‚ƒfƒ‹‚Ì‰Šú‰»
+		//ãƒ¢ãƒ‡ãƒ«ã®åˆæœŸåŒ–
 		ModelInitData initData;
 		Camera lightCamera;
 
 		initData.m_tkmFilePath = tkmFilePath;
-		//ƒVƒƒƒhƒEƒŒƒV[ƒo[i‰e‚ª—‚Æ‚³‚ê‚éƒ‚ƒfƒ‹j—p‚ÌƒVƒF[ƒ_[‚ğw’è‚·‚é
+		//ã‚·ãƒ£ãƒ‰ã‚¦ãƒ¬ã‚·ãƒ¼ãƒãƒ¼ï¼ˆå½±ãŒè½ã¨ã•ã‚Œã‚‹ãƒ¢ãƒ‡ãƒ«ï¼‰ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’æŒ‡å®šã™ã‚‹
 		initData.m_fxFilePath = "Assets/Shader/model.fx";
 
 		lightCamera.SetAspectOnrFlag(true);
@@ -44,10 +44,10 @@ namespace nsK2EngineLow {
 
 		initData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
 	
-		//ƒmƒ“ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’è‚·‚é
+		//ãƒãƒ³ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æŒ‡å®šã™ã‚‹
 		initData.m_vsEntryPointFunc = "VSMain";
 	
-		//ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’èB
+		//ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æŒ‡å®šã€‚
 		initData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		
 		if (isShadowCaster == true)
@@ -69,7 +69,7 @@ namespace nsK2EngineLow {
 		if (animationClips != nullptr) {
 			initData.m_skeleton = &m_skeleton;
 		}
-		//ƒXƒPƒ‹ƒgƒ“‚ª–³‚¢ê‡AƒXƒPƒ‹ƒgƒ“‚ ‚è—p‚Ì’¸“_ƒVƒF[ƒ_[‚ğg‚í‚È‚¢‚æ‚¤‚É•ÏX‚·‚éB
+		//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãŒç„¡ã„å ´åˆã€ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã‚ã‚Šç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã‚ãªã„ã‚ˆã†ã«å¤‰æ›´ã™ã‚‹ã€‚
 		if (initData.m_skeleton == nullptr)
 		{
 			initData.m_vsSkinEntryPointFunc = "VSMain";
@@ -85,23 +85,23 @@ namespace nsK2EngineLow {
 		shadowInitData.m_fxFilePath = "Assets/Shader/drawShadowMap.fx";
 		shadowInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ª‚ ‚é‚È‚çƒXƒPƒ‹ƒgƒ“‚ğw’è‚·‚é
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚ã‚‹ãªã‚‰ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã‚’æŒ‡å®šã™ã‚‹
 		if (m_animationClips != nullptr)
 		{
 			shadowInitData.m_skeleton = &m_skeleton;
 		}
 	
-		//ƒmƒ“ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’è‚·‚é
+		//ãƒãƒ³ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æŒ‡å®šã™ã‚‹
 		shadowInitData.m_vsEntryPointFunc = "VSMain";
 		
-		//ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’èB
+		//ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æŒ‡å®šã€‚
 		shadowInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		m_shadowModel.Init(shadowInitData);
 	}
 
 	void ModelRender::InitSkeleton(const char* tkmFilePath)
 	{
-		//ƒXƒPƒ‹ƒgƒ“‚Ìƒf[ƒ^‚ğ“Ç‚İ‚İB
+		//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã¿ã€‚
 		std::string skeletonFilePath = tkmFilePath;
 		int pos = (int)skeletonFilePath.find(".tkm");
 		skeletonFilePath.replace(pos, 4, ".tks");
@@ -110,7 +110,7 @@ namespace nsK2EngineLow {
 
 	void ModelRender::InitAnimation(AnimationClip* animationClips, int numAnimationClips,EnModelUpAxis EnModelUpAxis)
 	{
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚Ìİ’è
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®è¨­å®š
 		m_animationClips = animationClips;
 		m_numAnimationClips = numAnimationClips;
 		if (m_animationClips != nullptr)
@@ -125,12 +125,12 @@ namespace nsK2EngineLow {
 
 	void ModelRender::Update()
 	{
-		//ƒ‚ƒfƒ‹‚Ìƒ[ƒ‹ƒhs—ñXV
+		//ãƒ¢ãƒ‡ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—æ›´æ–°
 		m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 		m_shadowModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 
 		m_skeleton.Update(m_model.GetWorldMatrix());
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚é
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹
 		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
 	}
 
@@ -151,7 +151,8 @@ namespace nsK2EngineLow {
 
 	void ModelRender::OnRenderModel(RenderContext& rc)
 	{
+		// éè¡¨ç¤ºãªã‚‰æç”»ã—ãªã„
+		if (!m_isVisible_) return;
 		m_model.Draw(rc);
-		
 	}
 }
