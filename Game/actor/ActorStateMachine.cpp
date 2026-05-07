@@ -282,7 +282,13 @@ namespace app
 				{
 					if (CanChangeState())
 					{
-						RequestChangeState(IdleCharacterState::ID());
+						if (GetStatus()->IsInjured())
+						{
+							RequestChangeState(InjuredIdleCharacterState::ID());
+						}
+						else{
+							RequestChangeState(IdleCharacterState::ID());
+						}
 					}
 					return;
 				}
@@ -387,10 +393,12 @@ namespace app
 			}
 
 			bool isLB2Pressed = g_pad[0]->IsPress(enButtonLB2);
+			// 負傷判定
+			const bool isInjured = GetStatus()->IsInjured();
 			const Vector3 direction = moveSpeedVector_;
 			if (direction.LengthSq() >= MOVE_MIN_FLOAT || inputPower_ >= MOVE_MIN_FLOAT)
 			{
-				if (isLB2Pressed)
+				if (isLB2Pressed || isInjured)
 				{
 					// LB2を押しながら移動入力がある場合：負傷走りへ
 					RequestChangeState(InjuredRunCharacterState::ID());
@@ -404,7 +412,7 @@ namespace app
 			}
 			else
 			{
-				if (isLB2Pressed)
+				if (isLB2Pressed || isInjured)
 				{
 					// 移動入力がなく、LB2だけ押されている場合：負傷待機へ
 					RequestChangeState(InjuredIdleCharacterState::ID());
