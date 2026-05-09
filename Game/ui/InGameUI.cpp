@@ -51,7 +51,7 @@ namespace app
 			if (!layout_) return; // layout自体がなければ何もしない
 
 			auto menu = layout_->GetMenu();
-			if (menu) 
+			if (menu)
 			{
 				// 取得に失敗（nullptr）した場合の安全策を強化
 				auto timerDigit = menu->GetUI<app::ui::UIDigit>(Hash32("timerNumbers"));
@@ -146,8 +146,8 @@ namespace app
 				hpGauge_.Init(nullptr, 200.0f, 200.0f);
 				hpGauge_.SetPosition({ -740, 360, 0 });
 				// リングの中心半径と幅を指定する例
-				hpGauge_.SetInnerRadius(0.32);  // 0.62
-				hpGauge_.SetOuterRadius(1.0);  // 0.78
+				hpGauge_.SetInnerRadius(0.32);
+				hpGauge_.SetOuterRadius(1.0);
 				hpGauge_.SetScale(0.5f);
 			}
 			// アイコン
@@ -273,10 +273,10 @@ namespace app
 				damageHP->color.w = 1.0f;
 			}
 
-			// レベルゲージ (変更なし)
-			if (levelUpIndex_ >= MAX_LEVEL)
+			/** ゲージが満タンになったら表示が追いつくまで待機 */
+			if (levelUpIndex_ >= MAX_LEVEL && level_ < MAX_LEVEL)
 			{
-				if (level_ < MAX_LEVEL)
+				if (displayLevelRatio_ >= 1.0f - 0.001f)
 				{
 					level_++;
 					isLevelUpPending_ = true;
@@ -284,11 +284,13 @@ namespace app
 					{
 						levelUpUIObject_->TriggerLevelUp(level_);
 					}
+					levelUpIndex_ = 0;
+					displayLevelRatio_ = 0.0f;
+					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
+					currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
 				}
-				levelUpIndex_ = 0;
-				currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
-				currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
 			}
+			/** Lv.MAX時はゲージを満タン固定 */
 			if (level_ >= MAX_LEVEL)
 			{
 				levelUpIndex_ = MAX_LEVEL;
@@ -307,7 +309,7 @@ namespace app
 					currentLevel->transform.localScale.x = parameter->levelBarScaleX[levelUpIndex_];
 				}
 			}
-			
+
 
 			/** レベル数値の表示 */
 			{
@@ -321,15 +323,23 @@ namespace app
 
 			bgCircle_.Update();
 
-			float levelRatio = static_cast<float>(levelUpIndex_) / static_cast<float>(MAX_LEVEL);
-			hpGauge_.SetFillAmount(levelRatio);
+			// 経験値ゲージを線形補間で滑らかに上昇させる
+			float targetLevelRatio = static_cast<float>(levelUpIndex_) / static_cast<float>(MAX_LEVEL);
+
+			// Lerpで displayLevelRatio_ を目標値に近づける
+			float dt = g_gameTime->GetFrameDeltaTime();
+			displayLevelRatio_ += (targetLevelRatio - displayLevelRatio_) * levelLerpSpeed_ * dt;
+
+			// 微小誤差でガタつかないようにスナップ
+			if (std::abs(targetLevelRatio - displayLevelRatio_) < 0.001f)
+			{
+				displayLevelRatio_ = targetLevelRatio;
+			}
+
+			hpGauge_.SetFillAmount(displayLevelRatio_);
 			hpGauge_.Update();
 
 			icon_.Update();
-
-			//hpGaugeBg_.SetFillAmount(levelRatio);
-			//hpGaugeBg_, Update();
-
 		}
 
 		void PlayerHpUIObject::Render(RenderContext& rc)
@@ -340,9 +350,9 @@ namespace app
 
 				hpGauge_.Draw(rc);
 				icon_.Draw(rc);
-				//hpGaugeBg_.Draw(rc);
 			}
 		}
+
 
 
 
@@ -361,7 +371,7 @@ namespace app
 						hpBarPositionX[14] = 'A' + i;
 						p.enemyHpBarPositionX[i] = j[hpBarPositionX];
 					}
-			
+
 					// HPバーのスケールX
 					char hpBarScaleX[] = "hpBarScaleXA";
 					const uint32_t barScaleX = ARRAYSIZE(p.enemyHpBarScaleX);
@@ -600,20 +610,7 @@ namespace app
 
 		void LevelUpUIObject::Update()
 		{
-			if (!layout_) return; // layout自体がなければ何もしない
-
-			//  if (g_pad[0]->IsTrigger(enButtonX))
-			//  {
-			//  	isLevelUpPending_ = true;
-			//  	atkAnimTimer_ = 0.0f;
-			//  	levelAnimTimer_ = 0.0f;
-			//  	exitAnimTimer_ = 0.0f;
-			//  	exitLeftTimer_ = 0.0f;
-			//  	isAtkAnimPlayed_ = false;
-			//  	isLevelAnimPlayed_ = false;
-			//  	isExitRightPlayed_ = false;
-			//  	isExitLeftPlayed_ = false;
-			//  }
+			if (!layout_) return;
 
 			// アニメーションをアタッチして再生するラムダ
 			auto playSlideAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
