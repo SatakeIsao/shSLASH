@@ -134,9 +134,14 @@ namespace app
 		se->Init(kind, is3D);
 		se->Play(isLood);
 		se->SetVolume(ComputeOutputVolume(SoundVolumeType::SE));
-		m_seList.emplace(m_soundHandleCount++, se);
 
-		return m_soundHandleCount;
+		// 登録したキーをそのまま返す
+		SoundHandle handle = m_soundHandleCount++;
+		m_seList.emplace(handle, se);
+		return handle;
+		//m_seList.emplace(m_soundHandleCount++, se);
+		//
+		//return m_soundHandleCount;
 	}
 
 

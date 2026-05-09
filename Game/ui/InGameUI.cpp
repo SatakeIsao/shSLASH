@@ -284,7 +284,6 @@ namespace app
 					{
 						levelUpUIObject_->TriggerLevelUp(level_);
 					}
-					//levelUpUIObject_->TriggerLevelUp(level_);
 				}
 				levelUpIndex_ = 0;
 				currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
@@ -659,6 +658,8 @@ namespace app
 						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_FadeIn"));
 						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_FadeIn"));
 						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_FadeIn"));
+
+						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::LevelUp), false);
 						isLevelAnimPlayed_ = true;
 					}
 
@@ -706,6 +707,8 @@ namespace app
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Right"));
+
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Slide), false);
 							isExitRightPlayed_ = true;
 						}
 
@@ -731,7 +734,7 @@ namespace app
 
 							if (exitLeftTimer_ >= 0.3f)
 							{
-								// ★ アニメーションを全削除してから座標リセット
+								// アニメーションを全削除してから座標リセット
 								auto clearAnims = [](app::ui::UIIcon* icon)
 									{
 										if (!icon) return;

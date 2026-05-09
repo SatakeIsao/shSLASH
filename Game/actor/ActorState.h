@@ -5,7 +5,7 @@
 #pragma once
 
 #include <random>
-
+#include "sound/SoundManager.h" 
 
 /**
  * 当初はenumで管理しようと思ったが、
@@ -73,6 +73,10 @@ namespace app
 		{
 			appState(RunCharacterState);
 
+
+		private:
+			float footStepTimer_ = 0.0f;  // 足音タイマー
+			app::SoundHandle footStepHandle_ = app::INVALID_SOUND_HANDLE;
 
 		public:
 			RunCharacterState(IStateMachine* owner);
@@ -355,6 +359,7 @@ namespace app
 
 		private:
 			float timer_ = 0.0f;
+			bool isInjuredIdleSEPlayed_ = false;
 
 		public:
 			InjuredIdleCharacterState(IStateMachine* owner);
@@ -397,6 +402,8 @@ namespace app
 
 		private:
 			float timer_ = 0.0f;
+			float seTimer_ = 0.0f;
+			bool sePlayed_ = false;
 
 		public:
 			KipUpCharacterState(IStateMachine* owner);

@@ -256,6 +256,7 @@ namespace app
 								if (playerHpUIObject_)
 								{
 									playerHpUIObject_->AddLevelUpGauge(3);
+									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
 								}
 							});						
 							break;
@@ -288,6 +289,7 @@ namespace app
 								if (playerHpUIObject_)
 								{
 									playerHpUIObject_->AddLevelUpGauge(5);
+									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
 								}
 							});
 							break;
@@ -732,23 +734,40 @@ namespace app
 						if (hit)
 						{
 							/** 無敵中はダメージを受けない */
-							if (!isInvincible_)
+							if (isInvincible_)
 							{
-								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f;
-								newHp = max(newHp, 0.0f);
-								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
-
-								/** 無敵時間開始 */
-								isInvincible_ = true;
-								invincibleTimer_ = INVINCIBLE_TIME;
-
-								/** UIに無敵状態を通知 */
-								if (playerHpUIObject_)
-								{
-									playerHpUIObject_->StartInvincible(INVINCIBLE_TIME);
-								}
+								continue;
 							}
-							
+
+							/** ガード中はダメージを受けない */
+							if (battleCharacter_->GetStateMachine()->IsGuarding())
+							{
+								continue;
+							}
+
+							/** 回避中はダメージを受けない */
+							if (battleCharacter_->GetStateMachine()->IsAvoiding())
+							{
+								continue;
+							}
+
+							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f;
+							newHp = max(newHp, 0.0f);
+							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+
+							/** ノックバック */
+							battleCharacter_->GetStateMachine()->OnKnockBack();
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Damage));
+
+							/** 無敵時間開始 */
+							isInvincible_ = true;
+							invincibleTimer_ = INVINCIBLE_TIME;
+
+							/** UIに無敵状態を通知 */
+							if (playerHpUIObject_)
+							{
+								playerHpUIObject_->StartInvincible(INVINCIBLE_TIME);
+							}
 						}
 					}
 
@@ -756,22 +775,37 @@ namespace app
 					for (auto* mushroom : mushroomEventCharacters_)
 					{
 						if (!mushroom) continue;
-						// 攻撃アニメーションのヒットタイミングで通知
+
 						if (mushroom->GetStateMachine()->CheckAndConsumeAttackGhostCreated())
 						{
-							// 無敵中はスキップ
-							if (isInvincible_) continue;
+							/** 無敵中はスキップ */
+							if (isInvincible_)
+							{
+								continue;
+							}
 
-							// Stoneと同じく直接HP減算（NotifyはもうAddしない）
+							/** ガード中はダメージを受けない */
+							if (battleCharacter_->GetStateMachine()->IsGuarding())
+							{
+								continue;
+							}
+
+							/** 回避中はダメージを受けない */
+							if (battleCharacter_->GetStateMachine()->IsAvoiding())
+							{
+								continue;
+							}
+
 							float attackPower = mushroom->GetStatus()->GetAttackPower();
 							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
 							newHp = max(newHp, 0.0f);
 							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
 
-							// ノックバック
+							/** ノックバック */
 							battleCharacter_->GetStateMachine()->OnKnockBack();
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Damage));
 
-							// 無敵開始
+							/** 無敵開始 */
 							isInvincible_ = true;
 							invincibleTimer_ = INVINCIBLE_TIME;
 							if (playerHpUIObject_)
@@ -817,7 +851,7 @@ namespace app
 							if (dmg->defender == battleCharacter_) continue;
 
 							// 無敵中はスキップ  
-							if (isInvincible_) continue;
+							if (isInvincible_) continue;							
 
 							// ダメージ計算・適用
 							int damage = CalcDamage(dmg->attacker, dmg->defender);
@@ -854,11 +888,22 @@ namespace app
 						{
 							auto* dmg = static_cast<PlayerDamageNotify*>(notify.get());
 
+							/** ガード中はダメージを受けない */
+							if (battleCharacter_->GetStateMachine()->IsGuarding())
+							{
+								continue;
+							}
+
+							/** 回避中はダメージを受けない */
+							if (battleCharacter_->GetStateMachine()->IsAvoiding())
+							{
+								continue;
+							}
+
 							float attackPower = dmg->attacker->GetStatus()->GetAttackPower();
 							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
 							newHp = max(newHp, 0.0f);
 							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
-							//battleCharacter_->TakeDamage(static_cast<int>(attackPower));
 						}
 					}
 					notifyList_.clear();

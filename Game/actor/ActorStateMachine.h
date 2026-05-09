@@ -4,6 +4,7 @@
 #pragma once
 #include <util/util.h>
 #include "ActorState.h"
+#include "sound/SoundManager.h"
 
 
 namespace app
@@ -117,6 +118,11 @@ namespace app
 			/** 移動にカメラの向きを考慮するか */
 			bool isUseCameraDirection_ = true;
 
+			/** ガード中か */
+			bool isGuarding_ = false;
+			/** 回避中か */
+			bool isAvoiding_ = false;
+
 			/** ボタンを押したか */
 			bool isActionA_ = false;
 			bool isPressA_ = false;
@@ -154,6 +160,14 @@ namespace app
 			virtual void OnEnterAvoidance() {}
 			/** 回避ステートから抜ける時の固有処理 */
 			virtual void OnExitAvoidance() {}
+			/** 走りステートに入った時の固有処理 */
+			virtual void OnEnterRun() {}
+			/** 走りステートから抜ける時の固有処理 */
+			virtual void OnExitRun() {}
+			/** 疲労走りステートに入った時の固有処理 */
+			virtual void OnEnterInjuredRun() {}
+			/** 疲労走りステートから抜ける時の固有処理 */
+			virtual void OnExitInjuredRun() {}
 
 			void Move(const float deltaTime, const float moveSpeed);
 			void Jump(const float jumoPower);
@@ -193,8 +207,12 @@ namespace app
 			const Vector3& GetWarpEndPosition() const { return warpEndPosition_; }
 			const bool IsRequestWarp() const { return isRequestWarp_; }
 			void ClearRequestWarp() { isRequestWarp_ = false; }
-
-
+			/** ガード状態を設定 */
+			void SetGuarding(const bool isGuarding) {isGuarding_ = isGuarding; }
+			bool IsGuarding() const { return isGuarding_; }
+			/** 回避状態を設定 */
+			void SetAvoiding(const bool isAvoiding) { isAvoiding_ = isAvoiding; }
+			bool IsAvoiding() const { return isAvoiding_; }
 
 
 			/** 入力周り */
@@ -223,10 +241,20 @@ namespace app
 		{
 		private:
 			using SuperClass = CharacterStateMachine;
-			/** AI用のタイマー */
-			float aiTimer_ = 0.0f;
+			/** 足音SEのハンドル */
+			app::SoundHandle footStepHandle_ = app::INVALID_SOUND_HANDLE;
+			/** 疲労足音SEのハンドル */
+			app::SoundHandle InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
+			
+			/** 定数 */
 			/** 最初の待機時間 */
 			const float WAIT_TIME = 1.0f;
+
+			/** AI用のタイマー */
+			float aiTimer_ = 0.0f;
+			/** Dead効果音タイマー */
+			float deadSETimer_ = 0.0f;
+
 			/** 死んだか */
 			bool isDead_ = false;
 			/** ノックバックしたか */
@@ -239,6 +267,10 @@ namespace app
 			bool isChargeEffectRequested_ = false;
 			/** チャージ攻撃エフェクト */
 			bool isChargeAttackEffectRequested_ = false;
+			/** Deadの効果音再生したか */
+			bool isDeadSEPlayed_ = false;
+
+
 		public:
 			BattleCharacterStateMachine();
 			virtual ~BattleCharacterStateMachine();
@@ -259,6 +291,12 @@ namespace app
 
 			virtual void OnEnterAvoidance() override;
 			virtual void OnExitAvoidance() override;
+
+			virtual void OnEnterRun() override;
+			virtual void OnExitRun() override;
+
+			virtual void OnEnterInjuredRun() override;
+			virtual void OnExitInjuredRun() override;
 
 		private:
 			void UpdateState();
@@ -450,6 +488,8 @@ namespace app
 
 
 		/******************************************/
+
+
 		class StoneEventCharacterStateMachine : public CharacterStateMachine
 		{
 		private:
@@ -560,6 +600,8 @@ namespace app
 
 
 		/******************************************/
+
+
 		class MushroomEventCharacterStateMachine : public CharacterStateMachine
 		{
 		private:
