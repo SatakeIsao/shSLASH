@@ -465,7 +465,7 @@
             "key": "AtkUp_SlideY",
             "valueType": "Vector3",
             "startValue": { "x": -550.0, "y": 0.0, "z": 0.0 },
-            "endValue":   { "x": -550.0, "y": 180.0, "z": 0.0 },
+            "endValue":   { "x": -550.0, "y": 210.0, "z": 0.0 },
             "duration": 2.0,
             "easing": "EaseOut",
             "loop": "Once"
@@ -494,8 +494,8 @@
             "comment": "攻撃UP用_退場X右移動",
             "key": "AtkUp_ExitX_Right",
             "valueType": "Vector3",
-            "startValue": { "x": -550.0, "y": 180.0, "z": 0.0 },
-            "endValue":   { "x": -380.0, "y": 180.0, "z": 0.0 },
+            "startValue": { "x": -550.0, "y": 210.0, "z": 0.0 },
+            "endValue":   { "x": -380.0, "y": 210.0, "z": 0.0 },
             "duration": 0.25,
             "easing": "EaseOut",
             "loop": "Once"
@@ -504,8 +504,8 @@
             "comment": "攻撃アップ用_退場X左移動（画面外へ）",
             "key": "AtkUp_ExitX_Left",
             "valueType": "Vector3",
-            "startValue": { "x": -380.0,  "y": 180.0, "z": 0.0 },
-            "endValue":   { "x": -1300.0, "y": 180.0, "z": 0.0 },
+            "startValue": { "x": -380.0,  "y": 210.0, "z": 0.0 },
+            "endValue":   { "x": -1300.0, "y": 210.0, "z": 0.0 },
             "duration": 0.3,
             "easing": "EaseIn",
             "loop": "Once"
