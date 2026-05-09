@@ -83,7 +83,11 @@ namespace app
 			
 			/** 無敵時間 */
 			float invincibleTimer_ = 0.0f;
-			float blinkTimer_ = 0.0f;     
+			float blinkTimer_ = 0.0f;   
+			/** 現在表示中のゲージ割合（Lerp後） */
+			float displayLevelRatio_ = 0.0f;
+			/** Lerpの速度（大きいほど速い） */
+			float levelLerpSpeed_ = 3.0f;
 			bool isInvincible_ = false;   
 			bool isVisible_ = true;       
 		public:
