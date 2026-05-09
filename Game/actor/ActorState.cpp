@@ -8,6 +8,7 @@
 #include "ActorStatus.h"
 #include "actor/Types.h"
 #include "core/ParameterManager.h"
+#include "sound/SoundManager.h"
 
 
 namespace app
@@ -35,13 +36,11 @@ namespace app
 
 		void IdleCharacterState::Update()
 		{
-
 		}
 
 
 		void IdleCharacterState::Exit()
 		{
-
 		}
 
 
@@ -66,6 +65,8 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run));
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			/** 走り開始の固有処理を委譲 */
+			characterStateMachine->OnEnterRun();
 		}
 
 
@@ -74,13 +75,14 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			auto* characterStatus = characterStateMachine->GetStatus();
 			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed());
-
 			characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
 		}
 
 
 		void RunCharacterState::Exit()
 		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->OnExitRun();
 		}
 
 
@@ -356,6 +358,7 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch));
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.5f);
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkWeak), false);
 
 			attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
 			attackScheduler_->AddTimer(0.3f, [&]()
@@ -672,6 +675,9 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->OnEnterGuard();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			/** ガード開始 */
+			characterStateMachine->SetGuarding(true);
+
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 				battleMachine->RequestGuardEffect();
 			}
@@ -708,6 +714,8 @@ namespace app
 		void GuardCharacterState::Exit()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			/** ガード終了 */
+			characterStateMachine->SetGuarding(false);
 			characterStateMachine->OnExitGuard();
 		}
 
@@ -755,6 +763,7 @@ namespace app
 				battleMachine->RequestChargeEffect();
 			}
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart));
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Charging));
 
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 		}
@@ -781,6 +790,7 @@ namespace app
 				// 地面に着地したら着地フェーズへ
 				if (!characterStateMachine->IsPressA()) {
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd));
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkCharge));
 					chargeAttackPhase_ = ChargeAttackPhase::End;
 					// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
 					if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
@@ -848,9 +858,7 @@ namespace app
 				return false;
 			}
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			//if (!characterStateMachine->GetCharacterController()->IsOnGround()) {
-			//	return false;
-			//}
+			
 			if (characterStateMachine->GetModelRender()->IsPlayingAnimation()) {
 				return false;
 			}
@@ -882,6 +890,9 @@ namespace app
 			avoidanceDirection_ = characterStateMachine->GetMoveDirection();
 
 			timer_ = 0.0f;
+
+			// 回避中のフラグを立てる
+			characterStateMachine->SetAvoiding(true);
 		}
 
 
@@ -919,6 +930,10 @@ namespace app
 
 		void AvoidanceCharacterState::Exit()
 		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			// 回避終了
+			characterStateMachine->SetAvoiding(false);
+			characterStateMachine->OnExitAvoidance();
 		}
 
 		bool AvoidanceCharacterState::CanChangeState() const
@@ -950,6 +965,7 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredIdle));
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::HpDanger), false);
 		}
 
 
@@ -987,6 +1003,7 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredRun));
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			characterStateMachine->OnEnterInjuredRun();
 		}
 
 
@@ -1001,7 +1018,10 @@ namespace app
 
 
 		void InjuredRunCharacterState::Exit()
-		{}
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->OnExitInjuredRun();
+		}
 
 		bool InjuredRunCharacterState::CanChangeState() const
 		{
@@ -1016,11 +1036,13 @@ namespace app
 
 		KipUpCharacterState::KipUpCharacterState(IStateMachine* owner)
 			: ICharacterState(owner)
-		{}
+		{
+		}
 
 
 		KipUpCharacterState::~KipUpCharacterState()
-		{}
+		{
+		}
 
 
 		void KipUpCharacterState::Enter()
@@ -1028,11 +1050,25 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp));
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+
+			seTimer_ = 0.0f;
+			sePlayed_ = false;
 		}
 
 
 		void KipUpCharacterState::Update()
 		{
+			static constexpr float SE_DELAY = 1.0f;
+
+			if (!sePlayed_)
+			{
+				seTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (seTimer_ >= SE_DELAY)
+				{
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KipUp), false);
+					sePlayed_ = true;
+				}
+			}
 		}
 
 
