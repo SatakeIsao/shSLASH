@@ -238,7 +238,7 @@ namespace app
 			float currentRatio = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
 			currentHP->color.x = currentRatio;
 			currentHP->color.y = HP_BAR_LEFT_W;
-			currentHP->color.z = 0.0f;
+			currentHP->color.z = currentRatio;
 			currentHP->color.w = 1.0f;
 
 			char buf[128];
@@ -513,7 +513,7 @@ namespace app
 				// currentHP即時反映
 				enemyCurHP->color.x = currentRatio;
 				enemyCurHP->color.y = HP_BAR_LEFT_W;
-				enemyCurHP->color.z = 0.0f;
+				enemyCurHP->color.z = currentRatio;
 				enemyCurHP->color.w = 1.0f;
 				enemyCurHP->transform.localPosition.x = screenPos.x + 5.0f;
 				enemyCurHP->transform.localPosition.y = screenPos.y;
@@ -526,7 +526,7 @@ namespace app
 					float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
 					enemyDmgHP->color.x = dmgRatio;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.z = dmgRatio;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				else if (damageDelayTimer_ >= 0.0f)
@@ -534,14 +534,14 @@ namespace app
 					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
 					enemyDmgHP->color.x = damagePosX_;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.z = damagePosX_;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				else
 				{
 					enemyDmgHP->color.x = currentRatio;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.z = currentRatio;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				enemyDmgHP->transform.localPosition.x = screenPos.x + 5.0f;

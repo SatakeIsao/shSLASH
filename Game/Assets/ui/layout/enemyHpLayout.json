@@ -38,7 +38,7 @@
       {
         "type": "UIIcon",
         "name": "enemyCurrentHP",
-        "asset": "Assets/ui/hp/currentHP.DDS",
+        "asset": "Assets/ui/hp/whiteBackGround.DDS",
         "shader": "Assets/Shader/hpBar.fx",
         "width": 100,
         "height": 15,
