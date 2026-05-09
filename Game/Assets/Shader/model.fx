@@ -517,9 +517,9 @@ float3 CalcLigFromLimLight(float3 lightDirection, float3 lightColor, float3 norm
     //最終的なリムの強さを求める
     float limPower = power1 * power2;
     //pow()を使用して、強さの変化を指数関数的にする
-    limPower = pow(limPower, 1.3f);
+    limPower = pow(limPower, 0.8f);
     
-    return limPower * lightColor;
+    return limPower * lightColor * 2.0f;
     
 }
 
