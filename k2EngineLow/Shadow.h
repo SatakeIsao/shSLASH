@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#pragma once
+#include "graphics/GaussianBlur.h"
 
 namespace nsK2EngineLow {
 
@@ -6,22 +7,27 @@ namespace nsK2EngineLow {
 	{
 	public:
 		/// <summary>
-		/// ‰Šú‰»
+		/// åˆæœŸåŒ–
 		/// </summary>
 		void Init();
 		/// <summary>
-		/// •`‰æ
+		/// æç”»
 		/// </summary>
-		/// <param name="rc">ƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒeƒLƒXƒg</param>
+		/// <param name="rc">ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ</param>
 		/// <param name="renderObjects"></param>
 		void Render(
 			RenderContext& rc,
 			std::vector<IRenderer* >& renderObjects
 		);
+
+		const Vector3& GetLightPos() const
+		{
+			return m_lightCameraPos;
+		}
 		/// <summary>
-		/// ‰e‚Ì•`‰æ
+		/// å½±ã®æç”»
 		/// </summary>
-		/// <param name="rc"ƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒeƒLƒXƒg></param>
+		/// <param name="rc"ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ></param>
 		void SpriteShadowDraw(RenderContext& rc);
 
 		RenderTarget& GetRenderTarget()
@@ -39,22 +45,33 @@ namespace nsK2EngineLow {
 			return m_viewProjectionMatrix;
 		}
 
+		/// <summary>
+		/// ã¼ã‹ã—ãŸã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å–å¾—
+		/// </summary>
+		Texture& GetShadowMapBlurTexture()
+		{
+			return m_shadowBlur.GetBokeTexture();
+		}
+
 	private:
 		/// <summary>
-		/// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ì‰Šú‰»
+		/// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆæœŸåŒ–
 		/// </summary>
 		void InitRenderTarget();
 		/// <summary>
-		/// ‰e•`‰æ—p‚ÌƒJƒƒ‰‚Ì‰Šú‰»
+		/// å½±æç”»ç”¨ã®ã‚«ãƒ¡ãƒ©ã®åˆæœŸåŒ–
 		/// </summary>
 		void InitLightCamera();
 
 
 	private:
 		Camera m_lightCamera;
-		//Vector3 m_lightCameraPos;
+		// ãƒ©ã‚¤ãƒˆã‚«ãƒ¡ãƒ©ã®åº§æ¨™
+		Vector3 m_lightCameraPos;
 		RenderTarget m_shadowMap;
 		Sprite m_sprite;
 		Matrix m_viewProjectionMatrix;
+		// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã‚’ã¼ã‹ã™ãŸã‚ã®ã‚¬ã‚¦ã‚·ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼
+		GaussianBlur m_shadowBlur;
 	};
 }

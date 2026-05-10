@@ -38,6 +38,8 @@ struct SPSIn
     float3 normalInView : TEXCOORD2;    //カメラ空間の法線。
     
     float4 posInLVP     : TEXCOORD3;    //ライトビュースクリーン空間でのピクセルの座標
+
+    float2 depth        : TEXCOORD4;    // VSM用:ライトからみた深度値とその二乗を格納
 };
 
 
@@ -50,6 +52,13 @@ cbuffer ModelCb : register(b0)
     float4x4 mWorld;
     float4x4 mView;
     float4x4 mProj;
+};
+
+// 影用パラメータにアクセスする定数バッファ
+cbuffer ShadowParamCb : register(b1)
+{
+    float4x4 mLVP;      // ライトビュープロジェクション行列
+    float4 lightPos;    // ライトの座標
 };
 
 ////////////////////////////////////////////////
@@ -122,6 +131,12 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
     }
     
     psIn.pos = mul(worldMatrix, vsIn.pos); //モデルの頂点をワールド座標系に変換
+
+    // Normal Offset Shadow: 法線方向に頂点をずらしてシャドウマップに書き込む
+    // 丸いスライムなど曲面モデルのセルフシャドウを根本的に防ぐ
+    float3 worldNormal = normalize(mul(worldMatrix, float4(vsIn.normal, 0.0f)).xyz);
+    psIn.pos.xyz += worldNormal * 3.0f;  // 3.0f はオフセット量（大きくしすぎると影がズレる）
+
     psIn.worldPos = psIn.pos;
     psIn.pos = mul(mView, psIn.pos); //ワールド座標系からカメラ座標系に変換
     psIn.pos = mul(mProj, psIn.pos); //カメラ座標系からスクリーン座標系に変換
@@ -135,6 +150,11 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
 
     psIn.normalInView = mul(mView, psIn.normal); //カメラ空間の法線を求める
     
+    // 頂点のライトから見た深度値と、その2乗を計算
+    // psIn.depth.x = length(psIn.worldPos - lightPos) / 1000.0f;
+    psIn.depth.x = psIn.pos.z / psIn.pos.w;
+    psIn.depth.y = psIn.depth.x * psIn.depth.x;
+
     return psIn;
 }
 /// <summary>
@@ -160,5 +180,8 @@ float4 PSMain( SPSIn psIn ) : SV_Target0
     //return float4(0.5f, 0.5f, 0.5f, 1.0f);
     
     //シャドウマップにz値を書き込む
-    return float4(psIn.pos.z, psIn.pos.z, psIn.pos.z, 1.0f);
+   // return float4(psIn.pos.z, psIn.pos.z, psIn.pos.z, 1.0f);
+
+   // Z値とZ値の二乗を出力
+   return float4(psIn.depth.x, psIn.depth.y, 0.0f, 1.0f);
 }
