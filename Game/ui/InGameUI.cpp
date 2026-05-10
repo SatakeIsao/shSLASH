@@ -239,7 +239,20 @@ namespace app
 			currentHP->color.x = currentRatio;
 			currentHP->color.y = HP_BAR_LEFT_W;
 			currentHP->color.z = currentRatio;
-			currentHP->color.w = 1.0f;
+			// color.w はアニメーションに任せるので上書きしない
+
+			// 低HP点滅（color.wだけ操作）
+			const float BLINK_THRESHOLD = 0.3f;
+			if (currentRatio <= BLINK_THRESHOLD)
+			{
+				blinkTimer_ += g_gameTime->GetFrameDeltaTime() * 5.0f;
+				currentHP->color.w = (sin(blinkTimer_) + 1.0f) * 0.5f;
+			}
+			else
+			{
+				blinkTimer_ = 0.0f;
+				currentHP->color.w = 1.0f;
+			}
 
 			char buf[128];
 			sprintf_s(buf, "currentRatio: %f\n", currentRatio);
