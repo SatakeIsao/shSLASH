@@ -184,7 +184,7 @@ namespace app
 			}
 
 			modelRender_ = std::make_unique<ModelRender>();
-			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false);
 
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
@@ -278,7 +278,7 @@ namespace app
 				animationClips_[i].SetLoopFlag(param.animationDataList[i].loop);
 			}
 			modelRender_ = std::make_unique<ModelRender>();
-			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false);
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
 		}
