@@ -218,14 +218,14 @@ namespace app
 				skyCube_->SetScale(300.0f);
 				skyCube_->SetPosition({ 1000.0f,0.0f,1000.0f });
 				//スカイキューブの種類を設定
-				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_Day);
+				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_NightToon_2);
 			}
 			/** イベントキャラクタースポーンマネージャー */
 			{
 				eventCharacterSpawnManagerObject_ = NewGO<app::actor::EventCharacterSpawnManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				eventCharacterSpawnManagerObject_->GetManager().SetOnSpawned([this](const app::actor::SpawnResult& result)
 					{
-						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
+						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>(); 
 						switch (result.type)
 						{
 						case app::actor::EnemyType::STONE:
@@ -975,6 +975,10 @@ namespace app
 			for (auto* mushroom : mushroomEventCharacters_)
 			{
 				if (mushroom) { mushroom->SetPause(isPause_); }
+			}
+			if (eventCharacterSpawnManagerObject_)
+			{
+				eventCharacterSpawnManagerObject_->SetPause(isPause_);
 			}
 		}
 

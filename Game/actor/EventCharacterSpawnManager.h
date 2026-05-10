@@ -76,6 +76,8 @@ namespace app
 			/** 生存中の全敵とHPバーをDeleteGOする（シーン破棄時に呼ぶ） */
 			void CleanUp();
 
+			void SetPause(bool isPause);
+
 
 		private:
 			/** スケルトンの出現確率を計算する (Lv1～Lv5 : 0% , Lv6以降:段階的に上昇) */
@@ -108,6 +110,7 @@ namespace app
 			float spawnTimer_ = 0.0f;                                 // スポーンタイマー
 			int pendingSpawnCount_ = 0;                               // 次フレームでスポーンする残数
 			float pendingSpawnTimer_ = 1.0f;                          // 初期・追加スポーンのインターバルタイマー（初回は即スポーン）
+			bool isPause_ = false;
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック
