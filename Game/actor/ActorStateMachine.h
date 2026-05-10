@@ -381,6 +381,35 @@ namespace app
 				}
 				return false;
 			}
+			/** ポーズ開始時に足音SEを止める */
+			void OnPause()
+			{
+				if (footStepHandle_ != app::INVALID_SOUND_HANDLE)
+				{
+					app::SoundManager::Get().StopSE(footStepHandle_);
+					footStepHandle_ = app::INVALID_SOUND_HANDLE;
+				}
+				if (InjuredFootStepHandle_ != app::INVALID_SOUND_HANDLE)
+				{
+					app::SoundManager::Get().StopSE(InjuredFootStepHandle_);
+					InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
+				}
+			}
+
+			/** ポーズ解除時に、走り中なら足音を再開 */
+			void OnResume() 
+			{
+				if (IsEqualCurrentState(RunCharacterState::ID()))
+				{
+					footStepHandle_ = app::SoundManager::Get().PlaySE(
+						static_cast<int>(app::SoundKind::FootStep), true);
+				}
+				else if (IsEqualCurrentState(InjuredRunCharacterState::ID()))
+				{
+					InjuredFootStepHandle_ = app::SoundManager::Get().PlaySE(
+						static_cast<int>(app::SoundKind::InjuredFootStep), true);
+				}
+			}
 		};
 
 

@@ -81,7 +81,7 @@ namespace app
 			}
 
 			modelRender_ = std::make_unique<ModelRender>();
-			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size());
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false);
 
 			/** DEBUG: スライムと座標同じだったのでテスト用でずらした */
 			//transform.position = Vector3::Zero;

@@ -89,6 +89,16 @@ namespace app
 
 			void SetPouse(bool isPause)
 			{
+				// ポーズ開始のタイミングだけ足音を止める
+				if (isPause && !isPause_)
+				{
+					stateMachine_->OnPause();
+				}
+				else if (!isPause && isPause_)
+				{
+					// ポーズ解除：走り中なら足音を再開する
+					stateMachine_->OnResume();
+				}
 				isPause_ = isPause;
 			}
 		};
