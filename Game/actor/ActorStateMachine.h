@@ -59,6 +59,11 @@ namespace app
 
 			bool CanChangeState() const;
 
+			ICharacterState* GetCurrentState() const 
+			{
+				return currentState_.get(); 
+			}
+
 			void SetCurrentState(const uint32_t stateId)
 			{
 				currentStateId_ = stateId;
@@ -168,6 +173,18 @@ namespace app
 			virtual void OnEnterInjuredRun() {}
 			/** 疲労走りステートから抜ける時の固有処理 */
 			virtual void OnExitInjuredRun() {}
+			/** パンチステートに入った時の固有処理 */
+			virtual void OnEnterPunch() {}
+			/** パンチステートに抜ける時の固有処理 */
+			virtual void OnExitPunch() {}
+			/** パンチ2回目ステートに入った時の固有処理 */
+			virtual void OnEnterPunchSecond() {}
+			/** パンチ2回目ステートに抜ける時の固有処理 */
+			virtual void OnExitPunchSecond() {}
+			/** パンチ3回目ステートに入った時の固有処理 */
+			virtual void OnEnterPunchThird() {}
+			/** パンチ3回目ステートに抜ける時の固有処理 */
+			virtual void OnExitPunchThird() {}
 
 			void Move(const float deltaTime, const float moveSpeed);
 			void Jump(const float jumoPower);
@@ -261,8 +278,8 @@ namespace app
 			bool isKnockBack_ = false;
 			/** 防御したか */
 			bool isGuard_ = false;
-			/** パンチしたか */
-			bool isPunched_ = false;
+			/** 切り込みエフェクト */
+			bool isSlashEffect_ = false;
 			/** チャージエフェクト */
 			bool isChargeEffectRequested_ = false;
 			/** チャージ攻撃エフェクト */
@@ -297,6 +314,15 @@ namespace app
 
 			virtual void OnEnterInjuredRun() override;
 			virtual void OnExitInjuredRun() override;
+
+			virtual void OnEnterPunch() override;
+			virtual void OnExitPunch() override;
+
+			virtual void OnEnterPunchSecond() override;
+			virtual void OnExitPunchSecond() override;
+
+			virtual void OnEnterPunchThird() override;
+			virtual void OnExitPunchThird() override;
 
 		private:
 			void UpdateState();
@@ -347,10 +373,15 @@ namespace app
 				}
 				return false;
 			}
-			/** パンチしたことを取得 */
-			bool IsPunched()
+			/** 切り込みエフェクトしたことを取得 */
+			bool IsSlashEffect() const 
 			{
-				return isPunched_;
+				return isSlashEffect_; 
+			}
+			/** 切り込みエフェクトしたことを設定 */
+			void SetSlashEffect(bool flag) 
+			{
+				isSlashEffect_ = flag; 
 			}
 			/** チャージエフェクトの再生リクエストを出す */
 			void RequestChargeEffect()

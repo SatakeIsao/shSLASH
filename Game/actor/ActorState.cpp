@@ -29,7 +29,7 @@ namespace app
 		void IdleCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Idle));
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Idle), 0.2f);
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 		}
 
@@ -63,7 +63,7 @@ namespace app
 		void RunCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run));
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run), 0.1f);
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 			/** 走り開始の固有処理を委譲 */
 			characterStateMachine->OnEnterRun();
@@ -342,35 +342,36 @@ namespace app
 		/*************************************/
 
 
-		PunchCharacterState::PunchCharacterState(IStateMachine* owner)
-			: ICharacterState(owner)
+		void ComboAttackCharacterState::Enter()
 		{
-		}
+			stateTimer_ = 0.0f;
+			isComboInput_ = false;
+			isFirstFrame_ = true;
 
-
-		PunchCharacterState::~PunchCharacterState()
-		{
-		}
-
-
-		void PunchCharacterState::Enter()
-		{
-			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch));
-			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.5f);
+			const auto param = GetComboParam();
+			auto* csm = owner_->As<CharacterStateMachine>();
+			csm->GetModelRender()->PlayAnimation(static_cast<uint8_t>(param.animKind), 0.5f);
+			csm->GetModelRender()->SetAnimationSpeed(param.animSpeed);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkWeak), false);
 
 			attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
-			attackScheduler_->AddTimer(0.3f, [&]()
+			attackScheduler_->AddTimer(param.attackBodyDelay, [&]()
 				{
-					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+					const auto p = GetComboParam();
+					auto* csm = owner_->As<CharacterStateMachine>();
 					attackBody_ = new app::collision::GhostBody();
-					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 45.0f, app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
-					// @todo for test
-					const float radius = characterStateMachine->GetStatus()->GetRadius();
-					attackBody_->SetPosition(characterStateMachine->transform.position + characterStateMachine->GetMoveDirection() * (radius + radius) + Vector3(0.0f, radius, 0.0f));
+					attackBody_->CreateSphere(
+						csm->GetCharacter(), csm->GetCharacterID(),
+						p.attackBodyRadius,
+						app::collision::ghost::CollisionAttribute::Player,
+						app::collision::ghost::CollisionAttributeMask::All);
+					const float radius = csm->GetStatus()->GetRadius();
+					attackBody_->SetPosition(
+						csm->transform.position
+						+ csm->GetMoveDirection() * (radius + radius)
+						+ Vector3(0.0f, radius, 0.0f));
 				}, false);
-			attackScheduler_->AddTimer(0.3f, [&]()
+			attackScheduler_->AddTimer(param.attackBodyDuration, [&]()
 				{
 					delete attackBody_;
 					attackBody_ = nullptr;
@@ -378,29 +379,43 @@ namespace app
 		}
 
 
-		void PunchCharacterState::Update()
+		void ComboAttackCharacterState::Update()
 		{
+			stateTimer_ += g_gameTime->GetFrameDeltaTime();
 			attackScheduler_->Update(g_gameTime->GetFrameDeltaTime());
-			// ゴーストが存在する間、キャラクターに追従させる
+
+			// Enter と同じフレームは入力を無視
+			if (isFirstFrame_)
+			{
+				isFirstFrame_ = false;
+			}
+			else
+			{
+				if (g_pad[0]->IsTrigger(enButtonB))
+				{
+					isComboInput_ = true;
+				}
+			}
+
+			// ゴースト追従
 			if (attackBody_)
 			{
-				auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-				const float radius = characterStateMachine->GetStatus()->GetRadius();
-				Vector3 forward = characterStateMachine->GetMoveDirection();
+				auto* csm = owner_->As<CharacterStateMachine>();
+				const float radius = csm->GetStatus()->GetRadius();
+				Vector3 forward = csm->GetMoveDirection();
 				if (forward.LengthSq() <= 0.01f) forward = Vector3::Front;
 				attackBody_->SetPosition(
-					characterStateMachine->transform.position
+					csm->transform.position
 					+ forward * (radius + radius)
-					+ Vector3(0.0f, radius, 0.0f)
-				);
+					+ Vector3(0.0f, radius, 0.0f));
 			}
 		}
 
 
-		void PunchCharacterState::Exit()
+		void ComboAttackCharacterState::Exit()
 		{
 			attackScheduler_.reset(nullptr);
-			if (attackBody_ != nullptr) 
+			if (attackBody_ != nullptr)
 			{
 				delete attackBody_;
 				attackBody_ = nullptr;
@@ -408,13 +423,19 @@ namespace app
 		}
 
 
-		bool PunchCharacterState::CanChangeState() const
+		bool ComboAttackCharacterState::CanChangeState() const
 		{
-			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			auto* modelRender = characterStateMachine->GetModelRender();
-			return !modelRender->IsPlayingAnimation();
+			const auto param = GetComboParam();
+			if (isComboInput_)
+			{
+				// コンボ入力あり タイマーで早めに遷移許可
+				return stateTimer_ >= param.comboWindowTime;
+			}
+			// コンボ入力なし アニメ終了で遷移許可
+			auto* csm = owner_->As<CharacterStateMachine>();
+			return !csm->GetModelRender()->IsPlayingAnimation();
 		}
-
+	
 
 
 
@@ -762,7 +783,7 @@ namespace app
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 				battleMachine->RequestChargeEffect();
 			}
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart));
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Charging));
 
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
@@ -779,7 +800,7 @@ namespace app
 			{
 				// 上昇が終わったら落下フェーズへ
 				if (!characterStateMachine->GetModelRender()->IsPlayingAnimation()) {
-					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping));
+					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping), 0.1f);
 					chargeAttackPhase_ = ChargeAttackPhase::Looping;
 				}
 					
@@ -789,7 +810,7 @@ namespace app
 			{
 				// 地面に着地したら着地フェーズへ
 				if (!characterStateMachine->IsPressA()) {
-					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd));
+					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd), 0.1f);
 					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkCharge));
 					chargeAttackPhase_ = ChargeAttackPhase::End;
 					// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
@@ -963,7 +984,7 @@ namespace app
 		void InjuredIdleCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredIdle));
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredIdle), 0.2);
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::HpDanger), false);
 		}
@@ -1001,7 +1022,7 @@ namespace app
 		void InjuredRunCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredRun));
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::InjuredRun), 0.2f);
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 			characterStateMachine->OnEnterInjuredRun();
 		}
@@ -1048,7 +1069,7 @@ namespace app
 		void KipUpCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp));
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp), 0.1f);
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
 
 			seTimer_ = 0.0f;

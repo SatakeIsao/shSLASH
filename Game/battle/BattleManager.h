@@ -121,8 +121,8 @@ namespace app
             app::ui::PlayerHpUIObject* playerHpUIObject_ = nullptr;
             app::ui::EnemyHpUIObject* enemyHpUIObject_ = nullptr;
             app::ui::LevelUpUIObject* levelUpObject_ = nullptr;
-
-            nsK2EngineLow::SkyCube* skyCube_ = nullptr;									//スカイキューブのオブジェクト
+            //スカイキューブのオブジェクト
+            nsK2EngineLow::SkyCube* skyCube_ = nullptr;
             /** 通知リスト */
 			std::vector<std::unique_ptr<INotify>> notifyList_;
 

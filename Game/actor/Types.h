@@ -18,10 +18,12 @@ namespace app
 		{
 			Idle,
 			Run,
-			//JumpAscend,		// 上昇
+			//JumpAscend,	// 上昇
 			//JumpFalling,	// 落下
 			//JumpLand,		// 着地
-			Punch,
+			SlashFirst,
+			SlashSecond,
+			SlashThird,
 			ChargedAttackStart,
 			ChargedAttackLooping,
 			ChargedAttackEnd,
