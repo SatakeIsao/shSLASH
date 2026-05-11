@@ -62,8 +62,14 @@ namespace
 			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpLand)].filename = "Assets/animData/player/PlayerJump_End.tka";
 			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpLand)].loop = false;
 			//
-			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch)].filename = "Assets/animData/player/playerSmallAttack.tka";
-			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Punch)].loop = false;
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashFirst)].filename = "Assets/animData/player/playerSmallAttack_First.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashFirst)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashSecond)].filename = "Assets/animData/player/playerSmallAttack_Second.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashSecond)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashThird)].filename = "Assets/animData/player/playerSmallAttack_Third.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashThird)].loop = false;
 
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart)].filename = "Assets/animData/player/playerChargedAttack_Start.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart)].loop = false;
@@ -310,7 +316,9 @@ namespace app
 						battleCharacter_->AddState<app::actor::RunCharacterState>();
 						battleCharacter_->AddState<app::actor::ChargeAttackCharacterState>();
 						//battleCharacter_->AddState<app::actor::FallingCharacterState>();
-						battleCharacter_->AddState<app::actor::PunchCharacterState>();
+						battleCharacter_->AddState<app::actor::SlashFirstCharacterState>();
+						battleCharacter_->AddState<app::actor::SlashSecondCharacterState>();
+						battleCharacter_->AddState<app::actor::SlashThirdCharacterState>();
 						battleCharacter_->AddState<app::actor::WarpInCharacterState>();
 						battleCharacter_->AddState<app::actor::WarpOutCharacterState>();
 						battleCharacter_->AddState<app::actor::KnockBackCharacterState>();
@@ -616,7 +624,7 @@ namespace app
 
 				//プレイヤーの攻撃アクション
 				{
-					if (battleCharacter_->GetStateMachine()->IsPunched()
+					if (battleCharacter_->GetStateMachine()->IsSlashEffect()
 						&& !isWaitEffectPlay_)
 					{
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
@@ -627,8 +635,11 @@ namespace app
 
 						// 直接再生せず、予約する
 						isWaitEffectPlay_ = true;
-						effectDelayTimer_ = 0.5f;
+						effectDelayTimer_ = 0.3f;
 						reservedEffectPos_ = effectPos;
+
+						// エフェクト予約したらすぐリセット
+						battleCharacter_->GetStateMachine()->SetSlashEffect(false);
 					}
 
 					// エフェクト再生待ち状態ならタイマーを更新

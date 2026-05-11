@@ -194,7 +194,7 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterKnockBack()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack), 0.1f);
 		}
 
 
@@ -205,7 +205,7 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterDead()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead), 0.2f);
 			deadSETimer_ = 0.0f;
 			isDeadSEPlayed_ = false;
 		}
@@ -218,7 +218,7 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterGuard()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Defence));
 		}
 
@@ -230,7 +230,7 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterAvoidance()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Avoidance));
 		}
 
@@ -272,6 +272,29 @@ namespace app
 			InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
 		}
 
+		void BattleCharacterStateMachine::OnEnterPunch()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnExitPunch()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnEnterPunchSecond()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnExitPunchSecond()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnEnterPunchThird()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnExitPunchThird()
+		{
+		}
 
 		void BattleCharacterStateMachine::UpdateState()
 		{
@@ -382,17 +405,50 @@ namespace app
 			// 攻撃
 			{
 				if (IsActionB()) {
-					RequestChangeState(PunchCharacterState::ID());
-					isPunched_ = true;
-					isActionB_ = false;
+					//  コンボ判定を通常Punchへの遷移のみここで行う
+					if (!IsEqualCurrentState(SlashFirstCharacterState::ID())
+						&& !IsEqualCurrentState(SlashSecondCharacterState::ID())
+						&& !IsEqualCurrentState(SlashThirdCharacterState::ID()))
+					{
+						RequestChangeState(SlashFirstCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+				}
 
-					return;
+				// PunchState内でコンボ入力済みなら PunchSecond へ
+				if (IsEqualCurrentState(SlashFirstCharacterState::ID()))
+				{
+					auto* state = static_cast<SlashFirstCharacterState*>(GetCurrentState());
+					if (state->IsComboInput() && CanChangeState())
+					{
+						RequestChangeState(SlashSecondCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+					if (!CanChangeState()) {
+						return;
+					}
 				}
-				else {
-					isPunched_ = false;
+
+				// PunchState内でコンボ入力済みなら PunchSecond へ
+				if (IsEqualCurrentState(SlashSecondCharacterState::ID()))
+				{
+					auto* state = static_cast<SlashSecondCharacterState*>(GetCurrentState());
+					if (state->IsComboInput() && CanChangeState())
+					{
+						RequestChangeState(SlashThirdCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+					if (!CanChangeState()) {
+						return;
+					}
 				}
-				// パンチ中は他の状態に遷移しない
-				if (IsEqualCurrentState(PunchCharacterState::ID()))
+
+				// PunchSecond中はアニメーション終了まで何もさせない
+				if (IsEqualCurrentState(SlashSecondCharacterState::ID())
+					|| IsEqualCurrentState(SlashThirdCharacterState::ID()))
 				{
 					if (!CanChangeState()) {
 						return;
