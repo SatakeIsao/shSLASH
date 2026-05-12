@@ -13,7 +13,7 @@ static const int MAX_SPOT_LIGHT = 32;       //スポットライトの最大数
 //スキニング用の頂点データをひとまとめ。
 struct SSkinVSIn
 {
-	int4   Indices  	: BLENDINDICES0;
+	int4   Indices  : BLENDINDICES0;
     float4 Weights  : BLENDWEIGHT0;
 };
 //頂点シェーダーへの入力。
@@ -99,14 +99,14 @@ cbuffer LightCb : register(b1)
     //スポットライト用のデータ
     float3 spPosition;      //スポットライトの位置
     float3 spColor;         //スポットライトのカラー
-    float  spRange;          //スポットライトの射出範囲
+    float  spRange;         //スポットライトの射出範囲
     float3 spDirection;     //スポットライトの射出方向
     float  spAngle;         //スポットライトの射出角度
     
     
     float3 eyePos;          //視点の位置
     float specPow;          //スペキュラの絞り
-    float3 ambientLight; //環境光
+    float3 ambientLight;    //環境光
 
     //半球ライトのデータ
     float3 groundColor;     //折り返しのライト
@@ -121,16 +121,18 @@ cbuffer LightCb : register(b1)
 // シェーダーリソース
 ////////////////////////////////////////////////
 // モデルテクスチャ
-//Texture2D<float4> g_albedo : register(t0);				//アルベドマップ
+//Texture2D<float4> g_albedo : register(t0);		    //アルベドマップ
 Texture2D<float4> g_texture : register(t0);             //モデルテクスチャ
 Texture2D<float4> g_normalMap : register(t1);           //法線マップ
 Texture2D<float4> g_speclarMap : register(t2);          //スペキュラマップ
-//Texture2D<float4> g_aoMap : register(t10);              //AOマップ
-Texture2D<float4> g_shadowMap : register(t10);          //シャドウマップ
+//Texture2D<float4> g_aoMap : register(t10);            //AOマップ
+Texture2D<float4> g_shadowMap : register(t10);           //シャドウマップ（SampleCmpLevelZero用にfloat型）
 
 StructuredBuffer<float4x4> g_boneMatrix : register(t3);	//ボーン行列。
 
-sampler g_sampler : register(s0);	//サンプラステート。
+sampler g_sampler : register(s0);	                    //サンプラステート。
+
+SamplerComparisonState g_shadowSampler : register(s1);  //シャドウマップ用の比較サンプラー
 
 
 
@@ -175,15 +177,11 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
 {
     SPSIn psIn;
     float4x4 worldMatrix;
-    if (!hasSkin)
-    {
+    if (!hasSkin){
         worldMatrix = mWorld;
-
     }
-    else
-    {
+    else{
         worldMatrix = CalcSkinMatrix(vsIn.skinVert);
-
     }
     psIn.pos = mul(worldMatrix, vsIn.pos); //モデルの頂点をワールド座標系に変換
     psIn.worldPos = psIn.pos;
@@ -201,9 +199,12 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
     
     float4 worldPos = mul(mWorld, vsIn.pos);
     psIn.posInLVP = mul(mLVP, worldPos);    //ライトビュースクリーン空間の座標を計算する
-    
+    //psIn.posInLVP.z = length(worldPos.xyz - lightPos) / 1000.0f;
+
+
     return psIn;
 }
+
 /// <summary>
 /// スキンなしメッシュ用の頂点シェーダーのエントリー関数。
 /// </summary>
@@ -211,6 +212,7 @@ SPSIn VSMain(SVSIn vsIn)
 {
     return VSMainCore(vsIn, false);
 }
+
 /// <summary>
 /// スキンありメッシュの頂点シェーダーのエントリー関数。
 /// </summary>
@@ -227,23 +229,23 @@ SPSOut PSMainCore(SPSIn psIn, int isShadowReceiver) : SV_Target0
 {
     SPSOut psOut;
     
-    //ディレクションライトによるライティングを計算する
+    // ディレクションライトによるライティングを計算する
     float3 directionLig = CalcLigFromDirectionLight(psIn);
     
-     //ポイントライトによるライティングを計算する
+    // ポイントライトによるライティングを計算する
     float3 pointLig = CalcLigFromPointLight(psIn);
     
-    //スポットライトによるライティングを計算する
+    // スポットライトによるライティングを計算する
     float spotLig = CalcLigFromSpotLight(psIn);
     
-    //リムライトによるライティングを計算する
+    // リムライトによるライティングを計算する
     float limLig = CalcLigFromLimLight(dirDirection, dirColor, psIn.normal, psIn.normalInView);
     
-    //半球ライトによるライティングを計算する
+    // 半球ライトによるライティングを計算する
     float hemiLig = CalcLigFromHemiLight(psIn);
     
     //////////////////////////////////////////////////
-   // 半球ライトを計算する
+    // 半球ライトを計算する
     // サーフェイスの法線と地面の法線との内積を計算する
     float t = dot(psIn.normal, groundNormal);
 
@@ -265,13 +267,13 @@ SPSOut PSMainCore(SPSIn psIn, int isShadowReceiver) : SV_Target0
     //環境光の強さを環境光に乗算する
     //ambient *= ambientPower;
     
-    //各種ライトの反射光を足し算して最終的な反射光を求める
+    // 各種ライトの反射光を足し算して最終的な反射光を求める
     float3 finalLig = directionLig + hemiLig;
-    //拡散反射光を計算する
+    // 拡散反射光を計算する
     //finalLig += max(0.0f, dot(psIn.normal, -dirDirection)) * dirColor; //+ ambient;
     
     float4 finalColor = diffuseMap;
-    //テクスチャカラーに求めた光を乗算して最終出力カラーを求める
+    // テクスチャカラーに求めた光を乗算して最終出力カラーを求める
     finalColor.xyz *= finalLig;
     
     float shadowAttn = 1.0f;
@@ -342,50 +344,49 @@ float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 worldP
     // 鏡面反射光を求める
     float3 specularLig = lightColor * t;
     
-    //スペキュラマップからスペキュラ反射の強さをサンプリング
+    // スペキュラマップからスペキュラ反射の強さをサンプリング
     float specPower = g_speclarMap.Sample(g_sampler, uv).a;
     
-    //鏡面反射の強さを鏡面反射光に乗算する
+    // 鏡面反射の強さを鏡面反射光に乗算する
     specularLig *= specPower * 2.0f;
     //return specularLig * t;
      return lightColor * t;
-    
 }
 
-//ディレクションライトによる反射光を計算
+// ディレクションライトによる反射光を計算
 float3 CalcLigFromDirectionLight(SPSIn psIn)
 {
-    //ディレクションライトによるLambert拡散反射光を計算する
+    // ディレクションライトによるLambert拡散反射光を計算する
     float3 diffDirection = CalcLamberDiffuse(dirDirection, dirColor, psIn.normal);
     
-    //ディレクションライトによるPhong鏡面反射光を計算する
+    // ディレクションライトによるPhong鏡面反射光を計算する
     //float3 specDirection = CalcPhongSpecular(dirDirection, dirColor, psIn.worldPos, psIn.normal,psIn.uv);
     
-    //ディレクションライトによるリムライトを計算する
+    // ディレクションライトによるリムライトを計算する
     float3 limLight = CalcLigFromLimLight(dirDirection, dirColor, psIn.normal, psIn.normalInView);
     
-    //ディレクションライトの最終的な反射光を返す
+    // ディレクションライトの最終的な反射光を返す
     return diffDirection + limLight;//diffDirection + specDirection;
 
 }
 
-//ポイントライトによる反射光を計算
+// ポイントライトによる反射光を計算
 float3 CalcLigFromPointLight(SPSIn psIn)
 {
-    //サーフェイスに入射するポイントライトの光の向きを求める
+    // サーフェイスに入射するポイントライトの光の向きを求める
     float3 ligDir = psIn.worldPos - ptPosition;
     
-    //正規化する
+    // 正規化
     ligDir = normalize(ligDir);
     
-    //拡散反射光を計算
+    // 拡散反射光を計算
     float3 diffPoint = CalcLamberDiffuse(
     ligDir,
     ptColor,
     psIn.normal
     );
     
-    //鏡面反射光を計算
+    // 鏡面反射光を計算
     float3 specPoint = CalcPhongSpecular(
     ligDir,
     ptColor,
@@ -394,7 +395,7 @@ float3 CalcLigFromPointLight(SPSIn psIn)
     psIn.uv
     );
     
-    ////リムライトを計算する
+    //// リムライトを計算する
     //float3 limLight = CalcLigFromLimLight(
     //ligDir,
     //spColor,
@@ -402,97 +403,89 @@ float3 CalcLigFromPointLight(SPSIn psIn)
     //psIn.normalInView
     //);
     
-    //距離による影響率を計算する
-    //ポイントライトとの距離を計算する
+    // 距離による影響率を計算する
+    // ポイントライトとの距離を計算する
     float3 distance = length(psIn.worldPos - ptPosition);
     
-    //影響率を距離によって変化させる
+    // 影響率を距離によって変化させる
     float affect = 1.0f - 1.0f / ptRange * distance;
     
-    //影響率がマイナスにならないようにする
+    // 影響率がマイナスにならないようにする
     affect = max(0.0f, affect);
     
-    //乗算して影響率の変化を指数関数的にする
+    // 乗算して影響率の変化を指数関数的にする
     affect = pow(affect, ptRange);
 
     return (diffPoint + specPoint) * affect;
     
 }
 
-//スポットライトによる反射光を計算する
+// スポットライトによる反射光を計算する
 float3 CalcLigFromSpotLight(SPSIn psIn)
 {    
-     // ポイントライトによるLambert拡散反射光とPhong鏡面反射光を計算する
+    // ポイントライトによるLambert拡散反射光とPhong鏡面反射光を計算する
 
-    // step-7 サーフェイスに入射するポイントライトの光の向きを計算する
+    // サーフェイスに入射するポイントライトの光の向きを計算する
     float3 ligDir = psIn.worldPos - spPosition;
     // 正規化して大きさ1のベクトルにする
     ligDir = normalize(ligDir);
 
-    // step-7 減衰なしのLambert拡散反射光を計算する
+    // 減衰なしのLambert拡散反射光を計算する
     float3 diffSpotLight = CalcLamberDiffuse(
-        ligDir, // ライトの方向
-        ptColor, // ライトのカラー
-        psIn.normal // サーフェイスの法線
+        ligDir,         // ライトの方向
+        ptColor,        // ライトのカラー
+        psIn.normal     // サーフェイスの法線
     );
 
-    // step-9 減衰なしのPhong鏡面反射光を計算する
+    // 減衰なしのPhong鏡面反射光を計算する
     float3 specSpotLight = CalcPhongSpecular(
-        ligDir, // ライトの方向
-        ptColor, // ライトのカラー
-        psIn.worldPos, // サーフェイズのワールド座標
-        psIn.normal,     // サーフェイズの法線
+        ligDir,         // ライトの方向
+        ptColor,        // ライトのカラー
+        psIn.worldPos,  // サーフェイズのワールド座標
+        psIn.normal,    // サーフェイズの法線
         psIn.uv
     );
 
-//    //リムライトを計算する
-//    float3 limLight = CalcLigFromLimLight(
-//    ligDir,
-//    spColor,
-//    psIn.normal,
-//    psIn.normalInView
-//);
-    // step-10 距離による影響率を計算する
-    // ポイントライトとの距離を計算する
+    // 距離による影響率を計算
+    // ポイントライトとの距離を計算
     float3 distance = length(psIn.worldPos - spPosition);
 
-    // 影響率は距離に比例して小さくなっていく
+    // 影響率は距離に比例して減少
     float affect = 1.0f - 1.0f / spRange * distance;
 
-    // 影響力がマイナスにならないように補正をかける
+    // 影響力がマイナスにならないように補正
     if (affect < 0.0f)
     {
         affect = 0.0f;
     }
 
-    //影響を指数関数的にする。今回のサンプルでは3乗している
+    //影響を指数関数的に。今回は3乗。
     affect = pow(affect, 3.0f);
 
-    // step-11 拡散反射光と鏡面反射光に減衰率を乗算して影響を弱める
+    // 拡散反射光と鏡面反射光に減衰率を乗算して影響を弱める
     diffSpotLight *= affect;
     specSpotLight *= affect;
     // limLight *= affect;
 
-    //入射角と射出方向の角度を求める
-    //dot()を利用して内積を求める
+    // 入射角と射出方向の角度を求める(内積)
     float angle = dot(ligDir, spDirection);
     
-    //dot()で求めた値をacos()に渡して角度を求める
+    // dot()で求めた値をacos()に渡して角度を求める
     angle = abs(acos(angle));
     
-    //角度に比例して小さくなっていく影響率を計算する
+    // 角度に比例して小さくなっていく影響率を計算
     affect = 1.0f - 1.0f / spAngle * angle;
     
-    // 影響力がマイナスにならないように補正をかける
+    // 影響力がマイナスにならないように補正
     if (affect < 0.0f)
     {
         affect = 0.0f;
     }
     
-     // 影響の仕方を指数関数的にする。今回のサンプルでは0.5乗している
+     // 影響の仕方を指数関数的に。とりあえず0.5乗
     affect = pow(affect, 0.5f);
     
-    //角度による影響率を反射光に乗算して弱める
+    // 角度による影響率を反射光に乗算して弱める
     diffSpotLight *= affect;
     specSpotLight *= affect;
     // limLight *= affect;
@@ -502,45 +495,45 @@ float3 CalcLigFromSpotLight(SPSIn psIn)
 
 
 
-////ディレクションライトによるリムライト
+/** ディレクションライトによるリムライト */
 float3 CalcLigFromLimLight(float3 lightDirection, float3 lightColor, float3 normal, float3 normalInView)
 {   
-    //リムライトの強さを求める
-    //サーフェイスの法線と光の入射方向に依存するリムの強さを求める
+    // リムライトの強さを求める
+    // サーフェイスの法線と光の入射方向に依存するリムの強さを求める
     //float power1 = 1.0f - max(0.0f, dot(dirDirection, psIn.normal));
     float power1 = 1.0f - abs(dot(lightDirection, normal));
     
-    //サーフェイスの法線と視線の方向に依存するリムの強さを求める
+    // サーフェイスの法線と視線の方向に依存するリムの強さを求める
     //float power2 = 1.0f - max(0.0f, psIn.normalInView.z * -1.0f);
-    float power2 = 1.0f - abs(normalInView.z * -1.0f);
+    float power2 = 1.0f - max(0.0f, normalInView.z * -1.0f);  // absをmaxに修正（裏面を無視する）
     
-    //最終的なリムの強さを求める
+    // 最終的なリムの強さを求める
     float limPower = power1 * power2;
-    //pow()を使用して、強さの変化を指数関数的にする
-    limPower = pow(limPower, 1.3f);
+    // pow()を使用して、強さの変化を指数関数的にする
+    // 指数を下げると幅が広がる、乗算係数で明るさを調整する
+    limPower = pow(limPower, 1.0f);
     
-    return limPower * lightColor;
-    
+    return limPower * lightColor * 2.0;
 }
 
 
-////半球ライトを計算
+/** 半球ライトを計算 */
 float3 CalcLigFromHemiLight(SPSIn psIn)
 {
     //float3 directionLig = CalcLigFromDirectionLight(psIn);
-    //サーフェイスの法線と地面の法線と内積を計算する
+    // サーフェイスの法線と地面の法線と内積を計算する
     float t = dot(psIn.normal, groundNormal);
     
-    //内積の結果を0～1の範囲に変換する
+    // 内積の結果を0～1の範囲に変換する
     t = (t + 1.0f) / 2.0f;
     
-    //地面色と天球色を補間率t で線形補完する
+    // 地面色と天球色を補間率t で線形補完する
     float3 hemiLight = lerp(groundColor, skyColor, t);
     
     return hemiLight;
 }
 
-//法線を計算
+/** 法線を計算 */
 float3 CalcNormal(float3 normal, float3 tangent, float3 biNormal, float2 uv)
 {
     float3 binSpaceNormal = g_normalMap.SampleLevel(g_sampler, uv, 0.0f).xyz;
@@ -551,61 +544,74 @@ float3 CalcNormal(float3 normal, float3 tangent, float3 biNormal, float2 uv)
     return newNormal;
 }
 
-//シャドウマップ
+/** シャドウマップ */
 float CalcShadowMap(SPSIn psIn)
 {
+    // 戻り値の初期化（影なし = 1.0f）
     float shadowAttn = 1.0f;
-    
-    //自己影を防ぐ：キャラクターの法線方向と光の方向がほぼ一致する場合
-    //影を無効化
-    //float selfShadowThreshold = 0.9f; 
-    //if(dot(psIn.normal,dirDirection) > selfShadowThreshold)
-    //{
-    //    return shadowAttn;
-    //}
-    
-    ////キャラクターのY座標が特定の範囲にある場合、影を無効化
-    //if (psIn.worldPos.y > 22.0f)
-    //{
-    //    //影を適用しない
-    //    return shadowAttn;
-    //}
-    
-    //ライトビュースクリーン空間からUV空間に座標返還
+    // ピクセルの法線とライトの方向がどれだけ同じ向きかを表す値
+    float NdotL = dot(psIn.normal, -dirDirection);
+
+    // ライトに対して浅い角度の面（ブロック側面など）は影判定スキップ
+    if (NdotL < 0.2f)
+    {
+        return shadowAttn;
+    }
+
+    // ライトビュースクリーン空間からUV空間に座標変換
     float2 shadowMapUV = psIn.posInLVP.xy / psIn.posInLVP.w;
     shadowMapUV *= float2(0.5f, -0.5f);
     shadowMapUV += 0.5f;
     
-    //ライトビュースクリーン空間でのＺ値を計算する
+    // ライトビュースクリーン空間でのZ値を計算
     float zInLVP = psIn.posInLVP.z / psIn.posInLVP.w;
-    zInLVP -= 0.000001f;
+    // ちらつき防止のオフセット
+    float bias = 0.0005f;
+    zInLVP -= bias;
     
-    //UV座標を使ってシャドウマップから影情報をサンプリング
-    float3 shadowMap = 1.0f;
-    
+    // UV座標がシャドウマップの範囲内のみ影判定
     if (shadowMapUV.x > 0.0f && shadowMapUV.x < 1.0f 
         && shadowMapUV.y > 0.0f && shadowMapUV.y < 1.0f)
     {
-        //shadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
-        //シャドウマップに書き込まれているZ値と比較
-        //計算したUV座標を使って、シャドウマップから深度値をサンプリング
-        float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV).r;
-        //モデルの深度値（シャドウマップの深度値）とステージの深度値を比べて
-        //ステージの深度値がモデルの深度値よりも大きかったら影を落とす
-        if (zInLVP > zInShadowMap)
-        {
-            //隠蔽されている
-            shadowAttn *= 0.5f; //デフォルト値：0.5f
-        }
-        // シャドウマップの境界に行くと影の減衰が弱くなるように補正をかける
-        float2 t = shadowMapUV - 0.5f; // uvを-0.5～0.5に変換する
-        t = pow(abs(t) / 0.5f, 0.8f);
-        shadowAttn = lerp(shadowAttn, 1.0f, t.x);
-        shadowAttn = lerp(shadowAttn, 1.0f, t.y);
+       // テクセルサイズ（4096解像度の場合）
+        float texelSize = 1.0f / 4096.0f;
 
-    }
+        float totalAttn = 0.0f;
+
+        // 4×4の16点サンプリング
+        for (int x = -2; x <= 1; x++)
+        {
+            for (int y = -2; y <= 1; y++)
+            {
+                float2 offset = float2(x, y) * texelSize;
+                float2 shadowValue = g_shadowMap.Sample(g_sampler, shadowMapUV + offset).xy;
     
-    //shadowMap = 0.2f;
-    //return shadowMap;
+                float attn = 1.0f;
+                if (zInLVP > shadowValue.r)
+                {
+                    float md = zInLVP - shadowValue.r;
+                    float depth_sq = shadowValue.r * shadowValue.r;
+                    float variance = min(max(shadowValue.g - depth_sq, 0.0001f), 1.0f);
+                    // md はクリップ空間（0〜1）の差なので非常に小さい
+                    // スケールを掛けて増幅することで影を濃くする
+                    float md_scaled = md * 1.5f;
+                    float lit_factor = variance / (variance + md_scaled * md_scaled);
+
+                    // lit_factor=0.0f（完全に影）→ 0.5f（影の色）
+                    // lit_factor=1.0f（完全に明るい）→ 1.0f
+                    // attn = lerp(0.15f, 1.0f, lit_factor);
+                    // しきい値で二値判定して固定値を使う
+                    if (lit_factor < 0.9f)
+                    {
+                        attn = 0.5f;  // 常に固定の濃さ
+                    }
+                }
+                totalAttn += attn;
+            }
+        }
+
+        // 16点の平均
+        shadowAttn = totalAttn / 16.0f;
+    }
     return shadowAttn;
 }

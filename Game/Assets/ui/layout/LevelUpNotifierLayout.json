@@ -1,0 +1,102 @@
+﻿{
+  "canvas": {
+    "elements": [
+      {
+        "comment":  "青の背景バー",
+        "type": "UIIcon",
+        "name": "outerBarBlue",
+        "asset": "Assets/ui/levelUp/outerBar_Blue.DDS",
+        "width": 315,
+        "height": 39.2,
+        "position": [-550, -1260, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "青の内部バー",
+        "type": "UIIcon",
+        "name": "innerBarBlue",
+        "asset": "Assets/ui/levelUp/innerBar_Blue.DDS",
+        "width": 286,
+        "height": 36,
+        "position": [-550, -1260, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "オレンジの背景バー",
+        "type": "UIIcon",
+        "name": "outerBarOrange",
+        "asset": "Assets/ui/levelUp/outerBar_Orange.DDS",
+        "width": 315,
+        "height": 39.2,
+        "position": [-550, -1180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "オレンジの内部バー",
+        "type": "UIIcon",
+        "name": "innerBarOrange",
+        "asset": "Assets/ui/levelUp/innerBar_Orange.DDS",
+        "width": 286,
+        "height": 36,
+        "position": [-550, -1180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "攻撃力UPのデフォルト文字",
+        "type": "UIIcon",
+        "name": "atkPowerUpDefault",
+        "asset": "Assets/ui/levelUp/ATK POWER UP_Default.DDS",
+        "width": 217.98,
+        "height": 32.13,
+        "position": [-550, -1180, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "攻撃力UPのブルーム用文字",
+        "type": "UIIcon",
+        "name": "atkPowerUpBloom",
+        "asset": "Assets/ui/levelUp/ATK POWER UP_Bloom.DDS",
+        "width": 207.9,
+        "height": 22.4,
+        "position": [-550, -1180, 0],
+        "scale": [1,1,1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "レベルUPのデフォルト文字",
+        "type": "UIIcon",
+        "name": "levelUpDefault",
+        "asset": "Assets/ui/levelUp/LEVEL UP_Default.DDS",
+        "width": 148.26,
+        "height": 31.71,
+        "position": [-550, -1260, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "comment":  "レベルUPのブルーム文字",
+        "type": "UIIcon",
+        "name": "levelUpBloom",
+        "asset": "Assets/ui/levelUp/LEVEL UP_Bloom.DDS",
+        "width": 138.18,
+        "height": 21.63,
+        "position": [-550, -1260, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

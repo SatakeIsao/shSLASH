@@ -60,7 +60,7 @@
       {
         "type": "UIIcon",
         "name": "currentHP",
-        "asset": "Assets/ui/hp/currentHP.DDS",
+        "asset": "Assets/ui/hp/whiteBackGround.DDS",
         "shader": "Assets/Shader/hpBar.fx",
         "width": 400,
         "height": 30,

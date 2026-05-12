@@ -14,6 +14,12 @@ namespace app
 			bool Start();
 			void Update();
 
+		public:
+			void SetPause(bool isPause)
+			{
+				spawnManager_.SetPause(isPause);
+			}
+
 			EventCharacterSpawnManager& GetManager() { return spawnManager_; }
 
 		private:

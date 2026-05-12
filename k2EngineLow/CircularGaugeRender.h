@@ -19,7 +19,7 @@ namespace nsK2EngineLow
         struct GaugeCBData
         {
             // 1周目の塗りつぶし色
-            Vector4 fillColor   = { 0.635f, 0.894f, 0.929f, 1.0f };
+            Vector4 fillColor   = { 0.929f, 0.894f, 0.635f, 1.0f };
             // 2周目の塗りつぶし色
             Vector4 fillColor2  = { 1.0f, 0.8f, 0.0f, 1.0f };
             // 空エリアの色

@@ -59,9 +59,9 @@ namespace app
 		void CollisionHitManager::Update()
 		{
 			//デバッグ用現在のヒットペアの数を出力
-			char countBuf[256];
-			sprintf_s(countBuf, "--- Hit Pair Count: %zu ---\n", hitPairList_.size());
-			OutputDebugStringA(countBuf);
+			// char countBuf[256];
+			// sprintf_s(countBuf, "--- Hit Pair Count: %zu ---\n", hitPairList_.size());
+			// OutputDebugStringA(countBuf);
 
 			// GhostBodyのヒット処理で得たペアをもとに処理
 			{

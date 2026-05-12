@@ -4,6 +4,7 @@
 #pragma once
 #include <util/util.h>
 #include "ActorState.h"
+#include "sound/SoundManager.h"
 
 
 namespace app
@@ -57,6 +58,11 @@ namespace app
 			void UpdateStateCore();
 
 			bool CanChangeState() const;
+
+			ICharacterState* GetCurrentState() const 
+			{
+				return currentState_.get(); 
+			}
 
 			void SetCurrentState(const uint32_t stateId)
 			{
@@ -117,6 +123,11 @@ namespace app
 			/** 移動にカメラの向きを考慮するか */
 			bool isUseCameraDirection_ = true;
 
+			/** ガード中か */
+			bool isGuarding_ = false;
+			/** 回避中か */
+			bool isAvoiding_ = false;
+
 			/** ボタンを押したか */
 			bool isActionA_ = false;
 			bool isPressA_ = false;
@@ -154,6 +165,26 @@ namespace app
 			virtual void OnEnterAvoidance() {}
 			/** 回避ステートから抜ける時の固有処理 */
 			virtual void OnExitAvoidance() {}
+			/** 走りステートに入った時の固有処理 */
+			virtual void OnEnterRun() {}
+			/** 走りステートから抜ける時の固有処理 */
+			virtual void OnExitRun() {}
+			/** 疲労走りステートに入った時の固有処理 */
+			virtual void OnEnterInjuredRun() {}
+			/** 疲労走りステートから抜ける時の固有処理 */
+			virtual void OnExitInjuredRun() {}
+			/** パンチステートに入った時の固有処理 */
+			virtual void OnEnterPunch() {}
+			/** パンチステートに抜ける時の固有処理 */
+			virtual void OnExitPunch() {}
+			/** パンチ2回目ステートに入った時の固有処理 */
+			virtual void OnEnterPunchSecond() {}
+			/** パンチ2回目ステートに抜ける時の固有処理 */
+			virtual void OnExitPunchSecond() {}
+			/** パンチ3回目ステートに入った時の固有処理 */
+			virtual void OnEnterPunchThird() {}
+			/** パンチ3回目ステートに抜ける時の固有処理 */
+			virtual void OnExitPunchThird() {}
 
 			void Move(const float deltaTime, const float moveSpeed);
 			void Jump(const float jumoPower);
@@ -193,8 +224,12 @@ namespace app
 			const Vector3& GetWarpEndPosition() const { return warpEndPosition_; }
 			const bool IsRequestWarp() const { return isRequestWarp_; }
 			void ClearRequestWarp() { isRequestWarp_ = false; }
-
-
+			/** ガード状態を設定 */
+			void SetGuarding(const bool isGuarding) {isGuarding_ = isGuarding; }
+			bool IsGuarding() const { return isGuarding_; }
+			/** 回避状態を設定 */
+			void SetAvoiding(const bool isAvoiding) { isAvoiding_ = isAvoiding; }
+			bool IsAvoiding() const { return isAvoiding_; }
 
 
 			/** 入力周り */
@@ -223,22 +258,36 @@ namespace app
 		{
 		private:
 			using SuperClass = CharacterStateMachine;
-			/** AI用のタイマー */
-			float aiTimer_ = 0.0f;
+			/** 足音SEのハンドル */
+			app::SoundHandle footStepHandle_ = app::INVALID_SOUND_HANDLE;
+			/** 疲労足音SEのハンドル */
+			app::SoundHandle InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
+			
+			/** 定数 */
 			/** 最初の待機時間 */
 			const float WAIT_TIME = 1.0f;
+
+			/** AI用のタイマー */
+			float aiTimer_ = 0.0f;
+			/** Dead効果音タイマー */
+			float deadSETimer_ = 0.0f;
+
 			/** 死んだか */
 			bool isDead_ = false;
 			/** ノックバックしたか */
 			bool isKnockBack_ = false;
 			/** 防御したか */
 			bool isGuard_ = false;
-			/** パンチしたか */
-			bool isPunched_ = false;
+			/** 切り込みエフェクト */
+			bool isSlashEffect_ = false;
 			/** チャージエフェクト */
 			bool isChargeEffectRequested_ = false;
 			/** チャージ攻撃エフェクト */
 			bool isChargeAttackEffectRequested_ = false;
+			/** Deadの効果音再生したか */
+			bool isDeadSEPlayed_ = false;
+
+
 		public:
 			BattleCharacterStateMachine();
 			virtual ~BattleCharacterStateMachine();
@@ -260,6 +309,21 @@ namespace app
 			virtual void OnEnterAvoidance() override;
 			virtual void OnExitAvoidance() override;
 
+			virtual void OnEnterRun() override;
+			virtual void OnExitRun() override;
+
+			virtual void OnEnterInjuredRun() override;
+			virtual void OnExitInjuredRun() override;
+
+			virtual void OnEnterPunch() override;
+			virtual void OnExitPunch() override;
+
+			virtual void OnEnterPunchSecond() override;
+			virtual void OnExitPunchSecond() override;
+
+			virtual void OnEnterPunchThird() override;
+			virtual void OnExitPunchThird() override;
+
 		private:
 			void UpdateState();
 
@@ -269,6 +333,17 @@ namespace app
 			{
 				isDead_ = true;
 			}
+
+			// 参照と同時にフラグをリセット
+			bool CheckAndConsumeKnockBack()
+			{
+				if (isKnockBack_) {
+					isKnockBack_ = false;
+					return true;
+				}
+				return false;
+			}
+
 			/** ノックバックしたことを教える */
 			void OnKnockBack()
 			{
@@ -278,7 +353,6 @@ namespace app
 				isKnockBack_ = true;
 			}
 
-			//TODO: Isに変更
 			/** ノックバックしたことを取得 */
 			bool GetKnockBack()
 			{
@@ -299,10 +373,15 @@ namespace app
 				}
 				return false;
 			}
-			/** パンチしたことを取得 */
-			bool IsPunched()
+			/** 切り込みエフェクトしたことを取得 */
+			bool IsSlashEffect() const 
 			{
-				return isPunched_;
+				return isSlashEffect_; 
+			}
+			/** 切り込みエフェクトしたことを設定 */
+			void SetSlashEffect(bool flag) 
+			{
+				isSlashEffect_ = flag; 
 			}
 			/** チャージエフェクトの再生リクエストを出す */
 			void RequestChargeEffect()
@@ -332,6 +411,35 @@ namespace app
 					return true;
 				}
 				return false;
+			}
+			/** ポーズ開始時に足音SEを止める */
+			void OnPause()
+			{
+				if (footStepHandle_ != app::INVALID_SOUND_HANDLE)
+				{
+					app::SoundManager::Get().StopSE(footStepHandle_);
+					footStepHandle_ = app::INVALID_SOUND_HANDLE;
+				}
+				if (InjuredFootStepHandle_ != app::INVALID_SOUND_HANDLE)
+				{
+					app::SoundManager::Get().StopSE(InjuredFootStepHandle_);
+					InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
+				}
+			}
+
+			/** ポーズ解除時に、走り中なら足音を再開 */
+			void OnResume() 
+			{
+				if (IsEqualCurrentState(RunCharacterState::ID()))
+				{
+					footStepHandle_ = app::SoundManager::Get().PlaySE(
+						static_cast<int>(app::SoundKind::FootStep), true);
+				}
+				else if (IsEqualCurrentState(InjuredRunCharacterState::ID()))
+				{
+					InjuredFootStepHandle_ = app::SoundManager::Get().PlaySE(
+						static_cast<int>(app::SoundKind::InjuredFootStep), true);
+				}
 			}
 		};
 
@@ -440,6 +548,8 @@ namespace app
 
 
 		/******************************************/
+
+
 		class StoneEventCharacterStateMachine : public CharacterStateMachine
 		{
 		private:
@@ -550,6 +660,8 @@ namespace app
 
 
 		/******************************************/
+
+
 		class MushroomEventCharacterStateMachine : public CharacterStateMachine
 		{
 		private:

@@ -5,7 +5,8 @@
 #pragma once
 
 #include <random>
-
+#include "sound/SoundManager.h" 
+#include "actor/Types.h"
 
 /**
  * 当初はenumで管理しようと思ったが、
@@ -73,6 +74,10 @@ namespace app
 		{
 			appState(RunCharacterState);
 
+
+		private:
+			float footStepTimer_ = 0.0f;  // 足音タイマー
+			app::SoundHandle footStepHandle_ = app::INVALID_SOUND_HANDLE;
 
 		public:
 			RunCharacterState(IStateMachine* owner);
@@ -162,26 +167,117 @@ namespace app
 
 
 
-
-		class PunchCharacterState : public ICharacterState
+		class ComboAttackCharacterState : public ICharacterState
 		{
-			appState(PunchCharacterState);
-
-
-		private:
+		protected:
 			app::collision::GhostBody* attackBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+			float stateTimer_ = 0.0f;
+			bool isComboInput_ = false;
+			bool isFirstFrame_ = true;
 
+			// 派生クラスで設定するパラメータ
+			struct ComboParam
+			{
+				PlayerAnimationKind animKind;		// アニメーション種別
+				float animSpeed = 1.5f;				// アニメーション速度
+				float comboWindowTime = 0.8f;		// コンボ受付開始時間
+				float attackBodyDelay = 0.3f;		// 攻撃判定発生までの時間
+				float attackBodyDuration = 0.3f;	// 攻撃判定の持続時間
+				float attackBodyRadius = 45.0f;		// 攻撃判定の大きさ
+			};
 
 		public:
-			PunchCharacterState(IStateMachine* owner);
-			~PunchCharacterState();
+			ComboAttackCharacterState(IStateMachine* owner) : ICharacterState(owner) {}
+			virtual ~ComboAttackCharacterState() {}
+
 			void Enter() override;
 			void Update() override;
 			void Exit() override;
 
-			virtual bool CanChangeState() const;
+			virtual bool CanChangeState() const override;
+			bool IsComboInput() const { return isComboInput_; }
+
+		protected:
+			// 派生クラスでパラメータを返す
+			virtual ComboParam GetComboParam() const = 0;
 		};
+
+
+
+
+		class SlashFirstCharacterState : public ComboAttackCharacterState
+		{
+			appState(SlashFirstCharacterState);
+
+		public:
+			SlashFirstCharacterState(IStateMachine* owner) : ComboAttackCharacterState(owner) {}
+			~SlashFirstCharacterState() {}
+
+		protected:
+			ComboParam GetComboParam() const override
+			{
+				ComboParam param;
+				param.animKind = PlayerAnimationKind::SlashFirst;
+				param.animSpeed = 1.5f;
+				param.comboWindowTime = 0.6f;
+				param.attackBodyDelay = 0.3f;
+				param.attackBodyDuration = 0.3f;
+				param.attackBodyRadius = 45.0f;
+				return param;
+			}
+		};
+
+
+
+
+		class SlashSecondCharacterState : public ComboAttackCharacterState
+		{
+			appState(SlashSecondCharacterState);
+
+		public:
+			SlashSecondCharacterState(IStateMachine* owner) : ComboAttackCharacterState(owner) {}
+			~SlashSecondCharacterState() {}
+
+		protected:
+			ComboParam GetComboParam() const override
+			{
+				ComboParam param;
+				param.animKind = PlayerAnimationKind::SlashSecond;
+				param.animSpeed = 1.5f;
+				param.comboWindowTime = 0.8f;
+				param.attackBodyDelay = 0.3f;
+				param.attackBodyDuration = 0.3f;
+				param.attackBodyRadius = 45.0f;
+				return param;
+			}
+		};
+
+
+
+
+		class SlashThirdCharacterState : public ComboAttackCharacterState
+		{
+			appState(SlashThirdCharacterState);
+
+		public:
+			SlashThirdCharacterState(IStateMachine* owner) : ComboAttackCharacterState(owner) {}
+			~SlashThirdCharacterState() {}
+
+		protected:
+			ComboParam GetComboParam() const override
+			{
+				ComboParam param;
+				param.animKind = PlayerAnimationKind::SlashThird;
+				param.animSpeed = 1.5f;
+				param.comboWindowTime = 0.8f;
+				param.attackBodyDelay = 0.3f;
+				param.attackBodyDuration = 0.3f;
+				param.attackBodyRadius = 45.0f;
+				return param;
+			}
+		};
+
 
 
 
@@ -355,6 +451,7 @@ namespace app
 
 		private:
 			float timer_ = 0.0f;
+			bool isInjuredIdleSEPlayed_ = false;
 
 		public:
 			InjuredIdleCharacterState(IStateMachine* owner);
@@ -397,6 +494,8 @@ namespace app
 
 		private:
 			float timer_ = 0.0f;
+			float seTimer_ = 0.0f;
+			bool sePlayed_ = false;
 
 		public:
 			KipUpCharacterState(IStateMachine* owner);

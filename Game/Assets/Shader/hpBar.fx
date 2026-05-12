@@ -53,5 +53,21 @@ float4 PSMain(PSInput In) : SV_Target0
         discard;
     }
 
-    return colorTexture.Sample(Sampler, In.uv) * float4(1, 1, 1, mulColor.w);
+    float hpRatio = mulColor.z;
+
+float3 hpColor;
+if (hpRatio > 0.5f)
+{
+    float t = (hpRatio - 0.5f) / 0.5f;
+    hpColor = float3(1.0f - t, 1.0f, 0.0f); // 緑→黄
+}
+else
+{
+    float t = hpRatio / 0.5f;
+    hpColor = float3(1.0f, t, 0.0f);         // 黄→赤
+}
+
+float4 tex = colorTexture.Sample(Sampler, In.uv);
+return float4(hpColor * tex.rgb, tex.a * mulColor.w);
+    //return colorTexture.Sample(Sampler, In.uv) * float4(1, 1, 1, mulColor.w);
 }

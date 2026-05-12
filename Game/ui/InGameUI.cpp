@@ -2,8 +2,12 @@
 #include "InGameUI.h"
 #include "core/ParameterManager.h"
 #include "actor/ActorStatus.h" 
+#include "ui/UIAnimationFactory.h"
+#include "ui/UIAnimation.h"
 
 namespace {
+	static app::ui::UIAnimationSequence* seq = nullptr;
+
 	static constexpr int MAX_TIME = 10;
 	static constexpr int MAX_LEVEL = 10;
 	/** 獲得した経験値 */
@@ -17,6 +21,9 @@ namespace {
 	// テクスチャの斜め部分の幅をUV空間で指定する
 	static constexpr float HP_BAR_LEFT_W = 0.06f;  // 左は斜めなし
 	static constexpr float HP_BAR_RIGHT_W = 0.0f;  // 右斜めの幅 (実測して調整)
+
+	/** 無敵時間 */
+	static constexpr float BLINK_INTERVAL = 0.01f;
 }
 
 namespace app
@@ -44,7 +51,7 @@ namespace app
 			if (!layout_) return; // layout自体がなければ何もしない
 
 			auto menu = layout_->GetMenu();
-			if (menu) 
+			if (menu)
 			{
 				// 取得に失敗（nullptr）した場合の安全策を強化
 				auto timerDigit = menu->GetUI<app::ui::UIDigit>(Hash32("timerNumbers"));
@@ -139,8 +146,8 @@ namespace app
 				hpGauge_.Init(nullptr, 200.0f, 200.0f);
 				hpGauge_.SetPosition({ -740, 360, 0 });
 				// リングの中心半径と幅を指定する例
-				hpGauge_.SetInnerRadius(0.32);  // 0.62
-				hpGauge_.SetOuterRadius(1.0);  // 0.78
+				hpGauge_.SetInnerRadius(0.32);
+				hpGauge_.SetOuterRadius(1.0);
 				hpGauge_.SetScale(0.5f);
 			}
 			// アイコン
@@ -161,93 +168,161 @@ namespace app
 
 			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterHpUIParameter>();
 
+			auto currentHP = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentHP"));
+			auto damageHP = layout_->GetMenu()->GetUI<UIIcon>(Hash32("damageHP"));
+			auto currentLevel = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentLevel"));
+
+			if (!currentHP || !damageHP || !currentLevel) return;
+
+			// 無敵中の点滅処理
+			if (isInvincible_)
 			{
-				auto currentHP = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentHP"));
-				auto damageHP = layout_->GetMenu()->GetUI<UIIcon>(Hash32("damageHP"));
-				auto currentLevel = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentLevel"));
+				invincibleTimer_ -= g_gameTime->GetFrameDeltaTime();
+				blinkTimer_ += g_gameTime->GetFrameDeltaTime();
 
-				if (!currentHP || !damageHP || !currentLevel) return;
+				if (blinkTimer_ >= BLINK_INTERVAL)
+				{
+					isVisible_ = !isVisible_;
+					blinkTimer_ = 0.0f;
+				}
 
-				// デバッグ: 左ボタンでHP減少
+				if (invincibleTimer_ <= 0.0f)
+				{
+					isInvincible_ = false;
+					isVisible_ = true; // 無敵終了時は必ず表示
+				}
+
+				// BattleCharacterのモデルを点滅
+				if (player_)
+				{
+					player_->GetModelRender()->SetVisible(isVisible_);
+				}
+			}
+			else
+			{
+				// 通常時は必ず表示
+				if (player_)
+				{
+					player_->GetModelRender()->SetVisible(true);
+				}
+			}
+
+			// プレイヤーのHPが有効なら反映、無効ならデバッグボタンで操作
+			if (player_ && player_->GetStatus()->GetMaxHp() > 0.0f)
+			{
+				float maxHp = player_->GetStatus()->GetMaxHp();
+				float curHp = player_->GetStatus()->GetCurrentHp();
+
+				int newIndex = static_cast<int>((curHp / maxHp) * static_cast<float>(MAX_LEVEL));
+				if (newIndex < index_) // HPが減った瞬間だけディレイバーを更新
+				{
+					damagePosX_ = damageHP->color.x;
+					damageDelayTimer_ = DAMAGE_DELAY_TIME;
+					lerpVal_ = 0.0f;
+				}
+				index_ = newIndex;
+			}
+			else
+			{
+				// デバッグ：左ボタンでHP減少
 				if (g_pad[0]->IsTrigger(enButtonLeft))
 				{
 					index_ = max(0, index_ - 1);
 					damageDelayTimer_ = DAMAGE_DELAY_TIME;
 					lerpVal_ = 0.0f;
-					
 					damagePosX_ = damageHP->color.x;
 				}
+			}
 
-				// HP割合を毎フレーム計算してセット
-				float currentRatio = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
-				currentHP->color.x = currentRatio;
-				currentHP->color.y = HP_BAR_LEFT_W;
-				currentHP->color.z = 0.0f;
+			// HP割合を毎フレーム計算してセット
+			float currentRatio = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
+			currentHP->color.x = currentRatio;
+			currentHP->color.y = HP_BAR_LEFT_W;
+			currentHP->color.z = currentRatio;
+			// color.w はアニメーションに任せるので上書きしない
+
+			// 低HP点滅（color.wだけ操作）
+			const float BLINK_THRESHOLD = 0.3f;
+			if (currentRatio <= BLINK_THRESHOLD)
+			{
+				blinkTimer_ += g_gameTime->GetFrameDeltaTime() * 5.0f;
+				currentHP->color.w = (sin(blinkTimer_) + 1.0f) * 0.5f;
+			}
+			else
+			{
+				blinkTimer_ = 0.0f;
 				currentHP->color.w = 1.0f;
+			}
 
-				char buf[128];
-				sprintf_s(buf, "currentRatio: %f\n", currentRatio);
-				OutputDebugStringA(buf);
+			char buf[128];
+			sprintf_s(buf, "currentRatio: %f\n", currentRatio);
+			OutputDebugStringA(buf);
 
-				// ダメージバーのLerp更新（毎フレーム）
-				if (lerpVal_ < 1.0f && damageDelayTimer_ < 0.0f)
-				{
-					lerpVal_ += 1.0f * g_gameTime->GetFrameDeltaTime();
-					lerpVal_ = min(lerpVal_, 1.0f);
+			// ダメージバーのLerp更新（毎フレーム）
+			if (lerpVal_ < 1.0f && damageDelayTimer_ < 0.0f)
+			{
+				lerpVal_ += 1.0f * g_gameTime->GetFrameDeltaTime();
+				lerpVal_ = min(lerpVal_, 1.0f);
 
-					float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
-					damageHP->color.x = dmgRatio;
-					damageHP->color.y = HP_BAR_LEFT_W;
-					damageHP->color.z = 0.0;
-					damageHP->color.w = 1.0f;
-				}
-				else if (damageDelayTimer_ >= 0.0f)
-				{
-					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
-					damageHP->color.x = damagePosX_;
-					damageHP->color.y = HP_BAR_LEFT_W;
-					damageHP->color.z = 0.0f;
-					damageHP->color.w = 1.0f;
-				}
-				else
-				{
-					damageHP->color.x = currentRatio;
-					damageHP->color.y = HP_BAR_LEFT_W;
-					damageHP->color.z = 0.0f;
-					damageHP->color.w = 1.0f;
-				}
+				float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
+				damageHP->color.x = dmgRatio;
+				damageHP->color.y = HP_BAR_LEFT_W;
+				damageHP->color.z = 0.0;
+				damageHP->color.w = 1.0f;
+			}
+			else if (damageDelayTimer_ >= 0.0f)
+			{
+				damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
+				damageHP->color.x = damagePosX_;
+				damageHP->color.y = HP_BAR_LEFT_W;
+				damageHP->color.z = 0.0f;
+				damageHP->color.w = 1.0f;
+			}
+			else
+			{
+				damageHP->color.x = currentRatio;
+				damageHP->color.y = HP_BAR_LEFT_W;
+				damageHP->color.z = 0.0f;
+				damageHP->color.w = 1.0f;
+			}
 
-				// レベルゲージ (変更なし)
-				if (levelUpIndex_ >= MAX_LEVEL)
+			/** ゲージが満タンになったら表示が追いつくまで待機 */
+			if (levelUpIndex_ >= MAX_LEVEL && level_ < MAX_LEVEL)
+			{
+				if (displayLevelRatio_ >= 1.0f - 0.001f)
 				{
-					if (level_ < MAX_LEVEL)
+					level_++;
+					isLevelUpPending_ = true;
+					if (levelUpUIObject_)
 					{
-						level_++;
-						isLevelUpPending_ = true;
+						levelUpUIObject_->TriggerLevelUp(level_);
 					}
 					levelUpIndex_ = 0;
+					displayLevelRatio_ = 0.0f;
 					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
 					currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
 				}
-				if (level_ >= MAX_LEVEL)
-				{
-					levelUpIndex_ = MAX_LEVEL;
-					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[MAX_LEVEL];
-					currentLevel->transform.localScale.x = parameter->levelBarScaleX[MAX_LEVEL];
-				}
+			}
+			/** Lv.MAX時はゲージを満タン固定 */
+			if (level_ >= MAX_LEVEL)
+			{
+				levelUpIndex_ = MAX_LEVEL;
+				currentLevel->transform.localPosition.x = parameter->levelBarPositionX[MAX_LEVEL];
+				currentLevel->transform.localScale.x = parameter->levelBarScaleX[MAX_LEVEL];
+			}
 
-				// デバッグ: 右ボタンでレベルアップ
-				if (g_pad[0]->IsTrigger(enButtonRight))
+			// デバッグ: 右ボタンでレベルアップ
+			if (g_pad[0]->IsTrigger(enButtonRight))
 
+			{
+				if (level_ < MAX_LEVEL)
 				{
-					if (level_ < MAX_LEVEL)
-					{
-						levelUpIndex_ = min(MAX_LEVEL, levelUpIndex_ + GOIN_EXP);
-						currentLevel->transform.localPosition.x = parameter->levelBarPositionX[levelUpIndex_];
-						currentLevel->transform.localScale.x = parameter->levelBarScaleX[levelUpIndex_];
-					}
+					levelUpIndex_ = min(MAX_LEVEL, levelUpIndex_ + GOIN_EXP);
+					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[levelUpIndex_];
+					currentLevel->transform.localScale.x = parameter->levelBarScaleX[levelUpIndex_];
 				}
 			}
+
 
 			/** レベル数値の表示 */
 			{
@@ -261,15 +336,23 @@ namespace app
 
 			bgCircle_.Update();
 
-			float levelRatio = static_cast<float>(levelUpIndex_) / static_cast<float>(MAX_LEVEL);
-			hpGauge_.SetFillAmount(levelRatio);
+			// 経験値ゲージを線形補間で滑らかに上昇させる
+			float targetLevelRatio = static_cast<float>(levelUpIndex_) / static_cast<float>(MAX_LEVEL);
+
+			// Lerpで displayLevelRatio_ を目標値に近づける
+			float dt = g_gameTime->GetFrameDeltaTime();
+			displayLevelRatio_ += (targetLevelRatio - displayLevelRatio_) * levelLerpSpeed_ * dt;
+
+			// 微小誤差でガタつかないようにスナップ
+			if (std::abs(targetLevelRatio - displayLevelRatio_) < 0.001f)
+			{
+				displayLevelRatio_ = targetLevelRatio;
+			}
+
+			hpGauge_.SetFillAmount(displayLevelRatio_);
 			hpGauge_.Update();
 
 			icon_.Update();
-
-			//hpGaugeBg_.SetFillAmount(levelRatio);
-			//hpGaugeBg_, Update();
-
 		}
 
 		void PlayerHpUIObject::Render(RenderContext& rc)
@@ -280,9 +363,9 @@ namespace app
 
 				hpGauge_.Draw(rc);
 				icon_.Draw(rc);
-				//hpGaugeBg_.Draw(rc);
 			}
 		}
+
 
 
 
@@ -301,7 +384,7 @@ namespace app
 						hpBarPositionX[14] = 'A' + i;
 						p.enemyHpBarPositionX[i] = j[hpBarPositionX];
 					}
-			
+
 					// HPバーのスケールX
 					char hpBarScaleX[] = "hpBarScaleXA";
 					const uint32_t barScaleX = ARRAYSIZE(p.enemyHpBarScaleX);
@@ -443,7 +526,7 @@ namespace app
 				// currentHP即時反映
 				enemyCurHP->color.x = currentRatio;
 				enemyCurHP->color.y = HP_BAR_LEFT_W;
-				enemyCurHP->color.z = 0.0f;
+				enemyCurHP->color.z = currentRatio;
 				enemyCurHP->color.w = 1.0f;
 				enemyCurHP->transform.localPosition.x = screenPos.x + 5.0f;
 				enemyCurHP->transform.localPosition.y = screenPos.y;
@@ -456,7 +539,7 @@ namespace app
 					float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
 					enemyDmgHP->color.x = dmgRatio;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.z = dmgRatio;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				else if (damageDelayTimer_ >= 0.0f)
@@ -464,14 +547,14 @@ namespace app
 					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
 					enemyDmgHP->color.x = damagePosX_;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.z = damagePosX_;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				else
 				{
 					enemyDmgHP->color.x = currentRatio;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = 0.0f;
+					enemyDmgHP->color.z = currentRatio;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				enemyDmgHP->transform.localPosition.x = screenPos.x + 5.0f;
@@ -521,5 +604,215 @@ namespace app
 				layout_->Render(rc);
 			}
 		}
-}
+
+
+
+
+		/**********************************************/
+
+
+		LevelUpUIObject::LevelUpUIObject()
+		{
+			layout_ = std::make_unique<app::ui::Layout>();
+			layout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/LevelUpNotifierLayout.json");
+		}
+
+		LevelUpUIObject::~LevelUpUIObject()
+		{
+		}
+
+		void LevelUpUIObject::Update()
+		{
+			if (!layout_) return;
+
+			// アニメーションをアタッチして再生するラムダ
+			auto playSlideAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
+				{
+					if (!icon) return;
+					// 常に Remove → Attach で再生成してからPlay
+					icon->RemoveAnimation(animKey);
+					app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(icon, animKey);
+
+					auto* anim = icon->FindAnimation(animKey);
+					if (anim)
+					{
+						anim->Play();
+					}
+				};
+
+			// カラーアニメをアタッチして再生するラムダ
+			auto playColorAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
+				{
+					if (!icon) return;
+					icon->RemoveAnimation(animKey);
+					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(icon, animKey);
+					auto* anim = icon->FindAnimation(animKey);
+					if (anim) anim->Play();
+				};
+
+			if (isLevelUpPending_)
+			{
+				auto* menu = layout_->GetMenu();
+				if (menu)
+				{
+					// レベルUPバー：即座に再生
+					if (!isLevelAnimPlayed_)
+					{
+						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_SlideY"));
+						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_SlideY"));
+						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_SlideY"));
+						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_SlideY"));
+
+						// フェードインも同時再生
+						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_FadeIn"));
+						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_FadeIn"));
+						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_FadeIn"));
+						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_FadeIn"));
+
+						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::LevelUp), false);
+						isLevelAnimPlayed_ = true;
+					}
+
+					// 攻撃力UPバー：0.3秒遅れて再生
+					if (!isAtkAnimPlayed_)
+					{
+						if (!isAtkUpLevel_)
+						{
+							// 偶数レベル以外はスキップ
+							isLevelAnimPlayed_ = true;
+						}
+						else
+						{
+							levelAnimTimer_ += g_gameTime->GetFrameDeltaTime();
+							if (levelAnimTimer_ >= 0.3f)
+							{
+								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_SlideY"));
+								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_SlideY"));
+								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_SlideY"));
+								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_SlideY"));
+
+								// フェードインも同時再生
+								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_FadeIn"));
+								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_FadeIn"));
+								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_FadeIn"));
+								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_FadeIn"));
+								isAtkAnimPlayed_ = true;
+							}
+						}
+					}
+
+					// 両方再生済みなら退場タイマー加算
+					if (isAtkAnimPlayed_ && isLevelAnimPlayed_)
+					{
+						exitAnimTimer_ += g_gameTime->GetFrameDeltaTime();
+
+						// 1.0秒後：右へ少し移動
+						if (!isExitRightPlayed_ && exitAnimTimer_ >= 2.0f)
+						{
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Right"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Right"));
+
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Slide), false);
+							isExitRightPlayed_ = true;
+						}
+
+						// 1.15秒後：左へ画面外に吹っ飛ぶ
+						if (isExitRightPlayed_ && !isExitLeftPlayed_ && exitAnimTimer_ >= 2.15f)
+						{
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Left"));
+							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Left"));
+							isExitLeftPlayed_ = true;
+							exitLeftTimer_ = 0.0f;
+						}
+
+						// 退場完了
+						if (isExitLeftPlayed_)
+						{
+							exitLeftTimer_ += g_gameTime->GetFrameDeltaTime();
+
+							if (exitLeftTimer_ >= 0.3f)
+							{
+								// アニメーションを全削除してから座標リセット
+								auto clearAnims = [](app::ui::UIIcon* icon)
+									{
+										if (!icon) return;
+										icon->RemoveAnimation(Hash32("LevelUp_SlideY"));
+										icon->RemoveAnimation(Hash32("LevelUp_ExitX_Right"));
+										icon->RemoveAnimation(Hash32("LevelUp_ExitX_Left"));
+										icon->RemoveAnimation(Hash32("AtkUp_SlideY"));
+										icon->RemoveAnimation(Hash32("AtkUp_ExitX_Right"));
+										icon->RemoveAnimation(Hash32("AtkUp_ExitX_Left"));
+										icon->RemoveAnimation(Hash32("LevelUp_FadeIn"));
+										icon->RemoveAnimation(Hash32("AtkUp_FadeIn"));
+									};
+
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
+								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")));
+
+								auto resetPosition = [](app::ui::UIIcon* icon, float x, float y)
+									{
+										if (!icon) return;
+										icon->transform.localPosition.x = x;
+										icon->transform.localPosition.y = y;
+									};
+
+								auto resetAlpha = [](app::ui::UIIcon* icon)
+									{
+										if (!icon) return;
+										icon->color.w = 0.0f;
+									};
+
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), -550.0f, -1260.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), -550.0f, -1260.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), -550.0f, -1260.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), -550.0f, -1260.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), -550.0f, -1180.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), -550.0f, -1180.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), -550.0f, -1180.0f);
+								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), -550.0f, -1180.0f);
+
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
+								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")));
+
+								isLevelUpPending_ = false;
+							}
+						}
+					}
+				}
+			}
+
+			layout_->Update();
+		}
+
+		void LevelUpUIObject::Render(RenderContext& rc)
+		{
+			if (layout_) {
+				layout_->Render(rc);
+			}
+		}
+	}
 }

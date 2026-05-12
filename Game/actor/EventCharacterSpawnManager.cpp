@@ -53,6 +53,24 @@ namespace app
 			activeEntries_.clear();
 		}
 
+		void EventCharacterSpawnManager::SetPause(bool isPause)
+		{
+			isPause_ = isPause;
+
+			// 現在生存中の全敵にポーズ状態を伝える
+			for (auto& entry : activeEntries_)
+			{
+				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
+				{
+					stone->SetPause(isPause);
+				}
+				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
+				{
+					mushroom->SetPause(isPause);
+				}
+			}
+		}
+
 
 		bool EventCharacterSpawnManager::Start(app::actor::BattleCharacter* battleCharacter)
 		{
@@ -70,6 +88,7 @@ namespace app
 
 		void EventCharacterSpawnManager::Update()
 		{
+			if (isPause_) { return; }
 			// 初期スポーン・敵死亡後の追加スポーンを1秒おきに1体ずつ処理
 			if (pendingSpawnCount_ > 0)
 			{
@@ -184,6 +203,7 @@ namespace app
 			{
 				auto* stone = NewGO<StoneEventCharacter>(
 					static_cast<uint8_t>(ObjectPriority::Character), "StoneEventCharacter");
+				stone->SetPause(isPause_);
 				stone->transform.position = spawnPosition;
 				stone->GetStateMachine()->transform.position = spawnPosition;
 
@@ -212,6 +232,7 @@ namespace app
 			{
 				auto* mushroom = NewGO<MushroomEventCharacter>(
 					static_cast<uint8_t>(ObjectPriority::Character), "MushroomEventCharacter");
+				mushroom->SetPause(isPause_);
 				mushroom->transform.position = spawnPosition;
 				mushroom->GetStateMachine()->transform.position = spawnPosition;
 

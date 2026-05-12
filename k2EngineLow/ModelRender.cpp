@@ -1,157 +1,151 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "ModelRender.h"
 
 namespace nsK2EngineLow {
 
-	ModelRender::ModelRender()
-	{
-		//ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìˆ—
-	}
+    ModelRender::ModelRender() :
+        m_animationClips(nullptr),
+        m_numAnimationClips(0),
+        m_animationSpeed(1.0f),
+        m_isShadowCaster(false) // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§åˆæœŸå€¤ã‚’æ˜ç¤º
+    {}
 
-	ModelRender::~ModelRender()
-	{
-		// ƒfƒXƒgƒ‰ƒNƒ^‚Ìˆ—
-	}
+    ModelRender::~ModelRender()
+    {}
 
-	void ModelRender::Init(
-		const char* tkmFilePath,
-		AnimationClip* animationClips,
-		int numAnimationClips,
-		EnModelUpAxis enModelUpAcxis,
-		bool isShadowCaster,
-		bool isShadowReceiver)
-	{
-		//ƒXƒPƒ‹ƒgƒ“‚ğ‰Šú‰»
-		InitSkeleton(tkmFilePath);
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‰Šú‰»B
-		InitAnimation(animationClips, numAnimationClips, enModelUpAcxis);
-		//ƒ‚ƒfƒ‹‚Ì‰Šú‰»
-		ModelInitData initData;
-		Camera lightCamera;
+    void ModelRender::Init(
+        const char* tkmFilePath,
+        AnimationClip* animationClips,
+        int numAnimationClips,
+        EnModelUpAxis enModelUpAxis, // ã‚¿ã‚¤ãƒä¿®æ­£
+        bool isShadowCaster,
+        bool isShadowReceiver)
+    {
+        m_isShadowCaster = isShadowCaster; // ãƒ¡ãƒ³ãƒå¤‰æ•°ã¸ã®ä¿å­˜æ¼ã‚Œã‚’ä¿®æ­£
 
-		initData.m_tkmFilePath = tkmFilePath;
-		//ƒVƒƒƒhƒEƒŒƒV[ƒo[i‰e‚ª—‚Æ‚³‚ê‚éƒ‚ƒfƒ‹j—p‚ÌƒVƒF[ƒ_[‚ğw’è‚·‚é
-		initData.m_fxFilePath = "Assets/Shader/model.fx";
+        // 1. ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã¨ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–
+        InitSkeleton(tkmFilePath);
+        InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
 
-		lightCamera.SetAspectOnrFlag(true);
-		lightCamera.SetViewAngle(Math::DegToRad(80.0f));
-		lightCamera.SetPosition(-6000.0f, 500.0f, -500.0f);
-		lightCamera.SetTarget(0, 0, 0);
-		lightCamera.Update();
+        // 2. ãƒ¢ãƒ‡ãƒ«åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+        ModelInitData initData;
+        initData.m_tkmFilePath = tkmFilePath;
+        initData.m_fxFilePath = "Assets/Shader/model.fx";
 
-		m_light.m_mt = lightCamera.GetViewProjectionMatrix();
-		initData.m_expandConstantBuffer = &g_sceneLight->GetLightData();
+        // ãƒ©ã‚¤ãƒˆæƒ…å ±ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+        // NOTE: Initå†…ã§ã‚«ãƒ¡ãƒ©ã‚’Newã™ã‚‹ã®ã¯ä¸è‡ªç„¶ãªã®ã§ã€
+        // æœ¬æ¥ã¯ã‚·ãƒ¼ãƒ³å…¨ä½“ã®ãƒ©ã‚¤ãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹ã‹ã‚‰è¡Œåˆ—ã‚’ã‚‚ã‚‰ã†ã®ãŒç†æƒ³çš„ã§ã™ã€‚
+        initData.m_expandConstantBuffer = &g_sceneLight->GetLightData();
+        initData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
 
-		initData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
-	
-		//ƒmƒ“ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’è‚·‚é
-		initData.m_vsEntryPointFunc = "VSMain";
-	
-		//ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’èB
-		initData.m_vsSkinEntryPointFunc = "VSSkinMain";
-		
-		if (isShadowCaster == true)
-		{
-			InitShadowModel(tkmFilePath, enModelUpAcxis);
-		}
+        // ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã®æ±ºå®š
+        initData.m_vsEntryPointFunc = "VSMain";
+        initData.m_vsSkinEntryPointFunc = "VSSkinMain";
 
-		if (isShadowReceiver == true)
-		{
-			initData.m_psEntryPointFunc = "PSShadowReceverMain";
+        // ã‚·ãƒ£ãƒ‰ã‚¦ãƒ¬ã‚·ãƒ¼ãƒãƒ¼ï¼ˆå½±ã‚’å—ã‘ã‚‹å´ï¼‰ã®è¨­å®š
+        if (isShadowReceiver)
+        {
+            initData.m_psEntryPointFunc = "PSShadowReceverMain";
+            // ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã‚’ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¬ã‚¸ã‚¹ã‚¿0ã«ã‚»ãƒƒãƒˆ
+            initData.m_expandShaderResoruceView[0] =
+                &(g_renderingEngine->GetShadowMap().GetRenderTargetTexture());
+        }
+        else
+        {
+            initData.m_psEntryPointFunc = "PSNormalMain";
+        }
 
-			initData.m_expandShaderResoruceView[0] =
-				&(g_renderingEngine->GetShadowMap().GetRenderTargetTexture());
-		}
-		else
-		{
-			initData.m_psEntryPointFunc = "PSNormalMain";
-		}
-		if (animationClips != nullptr) {
-			initData.m_skeleton = &m_skeleton;
-		}
-		//ƒXƒPƒ‹ƒgƒ“‚ª–³‚¢ê‡AƒXƒPƒ‹ƒgƒ“‚ ‚è—p‚Ì’¸“_ƒVƒF[ƒ_[‚ğg‚í‚È‚¢‚æ‚¤‚É•ÏX‚·‚éB
-		if (initData.m_skeleton == nullptr)
-		{
-			initData.m_vsSkinEntryPointFunc = "VSMain";
-		}
+        // ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã®æœ‰ç„¡ã«ã‚ˆã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼åˆ‡ã‚Šæ›¿ãˆ
+        if (animationClips != nullptr) {
+            initData.m_skeleton = &m_skeleton;
+        }
+        else {
+            // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒãªã„å ´åˆã¯ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ãªã—ã®VSã‚’ä½¿ã†
+            initData.m_vsSkinEntryPointFunc = "VSMain";
+        }
 
-		m_model.Init(initData);
-	}
+        m_model.Init(initData);
 
-	void ModelRender::InitShadowModel(const char* tkmFilePath, EnModelUpAxis modelUpAxis)
-	{
-		ModelInitData shadowInitData;
-		shadowInitData.m_tkmFilePath = tkmFilePath;
-		shadowInitData.m_fxFilePath = "Assets/Shader/drawShadowMap.fx";
-		shadowInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
+        // 3. ã‚·ãƒ£ãƒ‰ã‚¦ã‚­ãƒ£ã‚¹ã‚¿ãƒ¼ï¼ˆå½±ã‚’è½ã¨ã™å´ï¼‰ãªã‚‰å½±å°‚ç”¨ãƒ¢ãƒ‡ãƒ«ã‚‚åˆæœŸåŒ–
+        if (m_isShadowCaster)
+        {
+            InitShadowModel(tkmFilePath, enModelUpAxis);
+        }
+    }
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ª‚ ‚é‚È‚çƒXƒPƒ‹ƒgƒ“‚ğw’è‚·‚é
-		if (m_animationClips != nullptr)
-		{
-			shadowInitData.m_skeleton = &m_skeleton;
-		}
-	
-		//ƒmƒ“ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’è‚·‚é
-		shadowInitData.m_vsEntryPointFunc = "VSMain";
-		
-		//ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’èB
-		shadowInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
-		m_shadowModel.Init(shadowInitData);
-	}
+    void ModelRender::InitShadowModel(const char* tkmFilePath, EnModelUpAxis modelUpAxis)
+    {
+        ModelInitData shadowInitData;
+        shadowInitData.m_tkmFilePath = tkmFilePath;
+        shadowInitData.m_fxFilePath = "Assets/Shader/drawShadowMap.fx";
+        shadowInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
 
-	void ModelRender::InitSkeleton(const char* tkmFilePath)
-	{
-		//ƒXƒPƒ‹ƒgƒ“‚Ìƒf[ƒ^‚ğ“Ç‚İ‚İB
-		std::string skeletonFilePath = tkmFilePath;
-		int pos = (int)skeletonFilePath.find(".tkm");
-		skeletonFilePath.replace(pos, 4, ".tks");
-		m_skeleton.Init(skeletonFilePath.c_str());
-	}
+        if (m_animationClips != nullptr)
+        {
+            shadowInitData.m_skeleton = &m_skeleton;
+        }
 
-	void ModelRender::InitAnimation(AnimationClip* animationClips, int numAnimationClips,EnModelUpAxis EnModelUpAxis)
-	{
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚Ìİ’è
-		m_animationClips = animationClips;
-		m_numAnimationClips = numAnimationClips;
-		if (m_animationClips != nullptr)
-		{
-			m_animation.Init(
-				m_skeleton,
-				m_animationClips,
-				numAnimationClips
-			);
-		}
-	}
+        shadowInitData.m_vsEntryPointFunc = "VSMain";
+        shadowInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 
-	void ModelRender::Update()
-	{
-		//ƒ‚ƒfƒ‹‚Ìƒ[ƒ‹ƒhs—ñXV
-		m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
-		m_shadowModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+        m_shadowModel.Init(shadowInitData);
+    }
 
-		m_skeleton.Update(m_model.GetWorldMatrix());
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚é
-		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
-	}
+    void ModelRender::InitSkeleton(const char* tkmFilePath)
+    {
+        std::string skeletonFilePath = tkmFilePath;
+        size_t pos = skeletonFilePath.find(".tkm");
+        if (pos != std::string::npos) {
+            skeletonFilePath.replace(pos, 4, ".tks");
+            m_skeleton.Init(skeletonFilePath.c_str());
+        }
+    }
 
-	void ModelRender::Draw(RenderContext& rc)
-	{
-		g_renderingEngine->AddRenderObject(this);
-	}
+    void ModelRender::InitAnimation(AnimationClip* animationClips, int numAnimationClips, EnModelUpAxis enModelUpAxis)
+    {
+        m_animationClips = animationClips;
+        m_numAnimationClips = numAnimationClips;
 
-	void ModelRender::OnRenderShadowMap(RenderContext& rc, const Matrix& lvpMatrix)
-	{
-		m_shadowModel.Draw(
-			rc,
-			g_matIdentity,
-			lvpMatrix,
-			1
-		);
-	}
+        if (m_animationClips != nullptr && m_numAnimationClips > 0)
+        {
+            m_animation.Init(m_skeleton, m_animationClips, m_numAnimationClips);
+        }
+    }
 
-	void ModelRender::OnRenderModel(RenderContext& rc)
-	{
-		m_model.Draw(rc);
-		
-	}
+    void ModelRender::Update()
+    {
+        // ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®æ›´æ–°
+        m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+
+        if (m_isShadowCaster) {
+            m_shadowModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+        }
+
+        // ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã¨ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
+        m_skeleton.Update(m_model.GetWorldMatrix());
+
+        if (m_animationClips != nullptr) {
+            m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
+        }
+    }
+
+    void ModelRender::Draw(RenderContext& rc)
+    {
+        // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¨ãƒ³ã‚¸ãƒ³ã«è‡ªèº«ã‚’ç™»éŒ²
+        g_renderingEngine->AddRenderObject(this);
+    }
+
+    void ModelRender::OnRenderShadowMap(RenderContext& rc, const Matrix& lvpMatrix)
+    {
+        if (!m_isShadowCaster) return;
+
+        m_shadowModel.Draw(rc, g_matIdentity, lvpMatrix, 1);
+    }
+
+    void ModelRender::OnRenderModel(RenderContext& rc)
+    {
+        // éè¡¨ç¤ºãªã‚‰æç”»ã—ãªã„
+        if (!m_isVisible_) return;
+        m_model.Draw(rc);
+    }
 }

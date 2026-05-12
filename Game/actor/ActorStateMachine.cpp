@@ -7,6 +7,7 @@
 #include "ActorStatus.h"
 #include "BattleCharacter.h"
 #include "EventCharacter.h"
+#include "sound/SoundManager.h"
 
 
 namespace
@@ -193,7 +194,7 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterKnockBack()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack), 0.1f);
 		}
 
 
@@ -204,7 +205,9 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterDead()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead), 0.2f);
+			deadSETimer_ = 0.0f;
+			isDeadSEPlayed_ = false;
 		}
 
 
@@ -215,7 +218,8 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterGuard()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard), 0.1f);
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Defence));
 		}
 
 
@@ -226,7 +230,8 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterAvoidance()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance));
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance), 0.1f);
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Avoidance));
 		}
 
 
@@ -234,6 +239,62 @@ namespace app
 		{
 		}
 
+
+		void BattleCharacterStateMachine::OnEnterRun()
+		{
+			footStepHandle_ = app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::FootStep), true);
+		}
+
+
+		void BattleCharacterStateMachine::OnExitRun()
+		{
+			if (footStepHandle_ == app::INVALID_SOUND_HANDLE)
+			{
+				return;
+			}
+			app::SoundManager::Get().StopSE(footStepHandle_);
+			footStepHandle_ = app::INVALID_SOUND_HANDLE;
+		}
+
+
+		void BattleCharacterStateMachine::OnEnterInjuredRun()
+		{
+			InjuredFootStepHandle_ = app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::InjuredFootStep), true);
+		}
+
+		void BattleCharacterStateMachine::OnExitInjuredRun()
+		{
+			if (InjuredFootStepHandle_ == app::INVALID_SOUND_HANDLE)
+			{
+				return;
+			}
+			app::SoundManager::Get().StopSE(InjuredFootStepHandle_);
+			InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
+		}
+
+		void BattleCharacterStateMachine::OnEnterPunch()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnExitPunch()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnEnterPunchSecond()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnExitPunchSecond()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnEnterPunchThird()
+		{
+		}
+
+		void BattleCharacterStateMachine::OnExitPunchThird()
+		{
+		}
 
 		void BattleCharacterStateMachine::UpdateState()
 		{
@@ -247,6 +308,17 @@ namespace app
 
 				if (IsEqualCurrentState(DeadCharacterState::ID()))
 				{
+					// 遅延SE再生
+					if (!isDeadSEPlayed_)
+					{
+						constexpr float SE_DELAY = 1.3f;
+						deadSETimer_ += g_gameTime->GetFrameDeltaTime();
+						if (deadSETimer_ >= SE_DELAY)
+						{
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadPlayer));
+							isDeadSEPlayed_ = true;
+						}
+					}
 					if (isXTrigger)
 					{
 						RequestChangeState(KipUpCharacterState::ID());
@@ -282,7 +354,13 @@ namespace app
 				{
 					if (CanChangeState())
 					{
-						RequestChangeState(IdleCharacterState::ID());
+						if (GetStatus()->IsInjured())
+						{
+							RequestChangeState(InjuredIdleCharacterState::ID());
+						}
+						else{
+							RequestChangeState(IdleCharacterState::ID());
+						}
 					}
 					return;
 				}
@@ -327,17 +405,50 @@ namespace app
 			// 攻撃
 			{
 				if (IsActionB()) {
-					RequestChangeState(PunchCharacterState::ID());
-					isPunched_ = true;
-					isActionB_ = false;
+					//  コンボ判定を通常Punchへの遷移のみここで行う
+					if (!IsEqualCurrentState(SlashFirstCharacterState::ID())
+						&& !IsEqualCurrentState(SlashSecondCharacterState::ID())
+						&& !IsEqualCurrentState(SlashThirdCharacterState::ID()))
+					{
+						RequestChangeState(SlashFirstCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+				}
 
-					return;
+				// PunchState内でコンボ入力済みなら PunchSecond へ
+				if (IsEqualCurrentState(SlashFirstCharacterState::ID()))
+				{
+					auto* state = static_cast<SlashFirstCharacterState*>(GetCurrentState());
+					if (state->IsComboInput() && CanChangeState())
+					{
+						RequestChangeState(SlashSecondCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+					if (!CanChangeState()) {
+						return;
+					}
 				}
-				else {
-					isPunched_ = false;
+
+				// PunchState内でコンボ入力済みなら PunchSecond へ
+				if (IsEqualCurrentState(SlashSecondCharacterState::ID()))
+				{
+					auto* state = static_cast<SlashSecondCharacterState*>(GetCurrentState());
+					if (state->IsComboInput() && CanChangeState())
+					{
+						RequestChangeState(SlashThirdCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+					if (!CanChangeState()) {
+						return;
+					}
 				}
-				// パンチ中は他の状態に遷移しない
-				if (IsEqualCurrentState(PunchCharacterState::ID()))
+
+				// PunchSecond中はアニメーション終了まで何もさせない
+				if (IsEqualCurrentState(SlashSecondCharacterState::ID())
+					|| IsEqualCurrentState(SlashThirdCharacterState::ID()))
 				{
 					if (!CanChangeState()) {
 						return;
@@ -387,10 +498,12 @@ namespace app
 			}
 
 			bool isLB2Pressed = g_pad[0]->IsPress(enButtonLB2);
+			// 負傷判定
+			const bool isInjured = GetStatus()->IsInjured();
 			const Vector3 direction = moveSpeedVector_;
 			if (direction.LengthSq() >= MOVE_MIN_FLOAT || inputPower_ >= MOVE_MIN_FLOAT)
 			{
-				if (isLB2Pressed)
+				if (isLB2Pressed || isInjured)
 				{
 					// LB2を押しながら移動入力がある場合：負傷走りへ
 					RequestChangeState(InjuredRunCharacterState::ID());
@@ -404,10 +517,11 @@ namespace app
 			}
 			else
 			{
-				if (isLB2Pressed)
+				if (isLB2Pressed || isInjured)
 				{
 					// 移動入力がなく、LB2だけ押されている場合：負傷待機へ
 					RequestChangeState(InjuredIdleCharacterState::ID());
+					//app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::HpDanger),false);
 					return;
 				}
 			}
@@ -649,6 +763,7 @@ namespace app
 		void StoneEventCharacterStateMachine::OnEnterDead()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead));
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadStone));
 		}
 
 
@@ -661,6 +776,8 @@ namespace app
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
 			Jump(80.0f);
+			SetMoveDirection(knockBackDirection_);
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
 		}
 
 
@@ -759,6 +876,7 @@ namespace app
 					if (distance <= 40.0f) {
 						SetMoveDirection(chaseDirection_);
 						RequestChangeState(AttackCharacterState::ID());
+						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkStone), false);
 					}
 					else if (distance <= 200.0f) {
 						SetMoveDirection(chaseDirection_);
@@ -864,6 +982,7 @@ namespace app
 		void MushroomEventCharacterStateMachine::OnEnterDead()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead));
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadMushroom));
 		}
 
 
@@ -876,6 +995,8 @@ namespace app
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
 			Jump(80.0f);
+			SetMoveDirection(knockBackDirection_);
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
 		}
 
 
@@ -939,6 +1060,7 @@ namespace app
 				//ノックバックする方向を設定
 				SetMoveDirection(knockBackDirection_);
 				RequestChangeState(KnockBackCharacterState::ID());
+				//app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
 
 				if (IsEqualCurrentState(KnockBackCharacterState::ID())
 					&& CanChangeState())
@@ -978,6 +1100,7 @@ namespace app
 					if (distance <= 40.0f) {
 						SetMoveDirection(chaseDirection_);
 						RequestChangeState(AttackCharacterState::ID());
+						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkMushroom), false);
 					}
 					else if (distance <= 200.0f) {
 						SetMoveDirection(chaseDirection_);

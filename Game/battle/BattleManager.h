@@ -44,6 +44,7 @@ namespace app
         class TimerUIObject;
         class PlayerHpUIObject;
         class EnemyHpUIObject;
+        class LevelUpUIObject;
     }
 }
 
@@ -119,8 +120,9 @@ namespace app
             app::ui::TimerUIObject* timerUIObject_ = nullptr;
             app::ui::PlayerHpUIObject* playerHpUIObject_ = nullptr;
             app::ui::EnemyHpUIObject* enemyHpUIObject_ = nullptr;
-
-            nsK2EngineLow::SkyCube* skyCube_ = nullptr;									//スカイキューブのオブジェクト
+            app::ui::LevelUpUIObject* levelUpObject_ = nullptr;
+            //スカイキューブのオブジェクト
+            nsK2EngineLow::SkyCube* skyCube_ = nullptr;
             /** 通知リスト */
 			std::vector<std::unique_ptr<INotify>> notifyList_;
 
@@ -132,6 +134,10 @@ namespace app
             float effectDelayTimer_ = 0.0f; //遅延時間をカウント
             /** 残り時間 */
             float remainTime_ = 120.0f;
+            /** 無敵時間をカウント */
+            float invincibleTimer_ = 0.0f;
+            /** 無敵になったか */
+            bool isInvincible_ = false;
 
             bool isWaitEffectPlay_ = false;
             Vector3 reservedEffectPos_;     //再生予定の位置を保持
@@ -155,6 +161,15 @@ namespace app
             {
                 notifyList_.push_back(std::move(std::unique_ptr<INotify>(notify)));
 			}
+            /** プレイヤーへのダメージ通知 */
+            struct PlayerDamageNotify : public INotify
+            {
+                // 攻撃してきた敵
+                app::actor::Character* attacker = nullptr;
+
+                static uint32_t StaticID() { return 2; }
+                virtual uint32_t ID() const override { return StaticID(); }
+            };
 
             /** DEBUG:あとで書き換える */
             bool GetDeadTest()
@@ -164,6 +179,7 @@ namespace app
 
 
             void SetPause(bool isPause);
+            void SetLevelUpUIObject(app::ui::LevelUpUIObject* obj) { levelUpObject_ = obj; }
 
         private:
             int CalcDamage(const app::actor::BattleCharacter* attacker,

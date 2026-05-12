@@ -52,6 +52,7 @@ namespace app
 			float radius_ = 0.0f;
 			float height_ = 0.0f;
 			float hp_ = 0.0f;
+			float currentHp_ = 0.0f;
 			float attackPower_ = 0.0f;
 
 			float warpStartScale_ = 1.0f;
@@ -95,7 +96,21 @@ namespace app
 				warpTimeSeconds_ = timeSeconds;
 			}
 
+			inline float GetCurrentHp() const { return currentHp_; }
+			inline void SetCurrentHp(const float hp) { currentHp_ = hp; }
 			inline float GetMaxHp() const { return hp_; }
+
+			/** HPが最大の30％以下なら負傷 */
+			bool IsInjured() const
+			{
+				if (GetMaxHp() <= 0)return false;
+				if (static_cast<float>(GetCurrentHp()) / static_cast<float>(GetMaxHp()) <= 0.3f)
+				{
+					return true;
+				}
+				return false;
+				
+			}
 		};
 
 
