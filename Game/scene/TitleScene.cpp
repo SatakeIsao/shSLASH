@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "TitleScene.h"
 #include "BattleScene.h"
+#include "title/TitleManager.h"
 
 #if defined(APP_DEBUG)
 #include "DebugScene.h"
@@ -17,40 +18,39 @@ TitleScene::TitleScene()
 
 TitleScene::~TitleScene()
 {
+	/**シーン終了時にマネージャーを破棄する*/
+	app::title::TitleManager::Finalize();
 }
 
 
 bool TitleScene::Start()
 {
-	backGroundRender_.Init("Assets/ui/title/testTitle.dds", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
+	app::title::TitleManager::Initialize();
+	app::title::TitleManager::Get().Start();
 	return true;
 }
 
 
 void TitleScene::Update()
 {
-	if (g_pad[0]->IsTrigger(enButtonA)) {
-//#if defined(APP_DEBUG)
-		m_requestSceneId = BattleScene::ID();
-//#endif
-	}
-
-	backGroundRender_.Update();
+	app::title::TitleManager::Get().Update();
 }
 
 
 void TitleScene::Render(RenderContext& rc)
 {
-	backGroundRender_.Draw(rc);
 }
 
 
 bool TitleScene::RequestScene(uint32_t& id, float& waitTime)
 {
-	if (m_requestSceneId != INVALID_SCENE_ID) {
-		id = m_requestSceneId;
-		waitTime = 3.0f;
+	if (app::title::TitleManager::Get().IsGameStartDecided())
+	{
+		id = BattleScene::ID();
+		waitTime = 1.0f;
 		return true;
 	}
+
+
 	return false;
 }

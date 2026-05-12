@@ -1,0 +1,50 @@
+{
+    "canvas": {
+        "elements": [
+            {
+                "type": "UIIcon",
+                "name": "Highlight",
+                "asset": "Assets/ui/word/highlight.DDS",
+                "width": 210,
+                "height": 53,
+                "position": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "TitleText_Start",
+                "asset": "Assets/ui/word/start.DDS",
+                "width": 146,
+                "height": 34,
+                "position": [0.0, -225.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "TitleText_System",
+                "asset": "Assets/ui/word/system.DDS",
+                "width": 175,
+                "height": 34,
+                "position": [0.0, -305.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "TitleText_Exit",
+                "asset": "Assets/ui/word/exit.DDS",
+                "width": 105,
+                "height": 34,
+                "position": [0.0, -385.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            } 
+        ]
+    }
+}
