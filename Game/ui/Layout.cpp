@@ -37,7 +37,7 @@ namespace
             arr[1].get<float>(),
             arr[2].get<float>()
         );
-	}
+    }
 
 
     Vector4 ParseVector4(const nlohmann::json& arr)
@@ -48,7 +48,7 @@ namespace
             arr[2].get<float>(),
             arr[3].get<float>()
         );
-	}
+    }
 
 
     Vector4 ParseColor(const nlohmann::json& arr)
@@ -78,18 +78,18 @@ namespace
     template <typename T>
     void InitializeUIParts(T* parts, const nlohmann::json& item)
     {
-		K2_ASSERT(false, "未実装\n");
+        K2_ASSERT(false, "未実装\n");
     }
 
     void InitializeUIParts(app::ui::UIIcon* image, const nlohmann::json& item)
     {
-		const std::string assetName = item["asset"].get<std::string>();
-		const float w = item["width"].get<float>();
-		const float h = item["height"].get<float>();
-		const Vector3 position = ParseVector3(item["position"]);
-		const Vector3 scale = ParseVector3(item["scale"]);
-		const Quaternion rotation = ParseRotation(item["rotation"].get<float>());
-        const Vector4 color = ParseVector3(item["color"]);
+        const std::string assetName = item["asset"].get<std::string>();
+        const float w = item["width"].get<float>();
+        const float h = item["height"].get<float>();
+        const Vector3 position = ParseVector3(item["position"]);
+        const Vector3 scale = ParseVector3(item["scale"]);
+        const Quaternion rotation = ParseRotation(item["rotation"].get<float>());
+        const Vector4 color = ParseVector4(item["color"]);
 
         // shaderフィールドがあればカスタムシェーダーで初期化
         if (item.contains("shader"))
@@ -110,22 +110,22 @@ namespace
 
         //image->Initialize(assetName.c_str(), w, h);
         image->transform.localPosition = position;
-		image->transform.localScale = scale;
-		image->transform.localRotation = rotation;
-		image->color = color;
+        image->transform.localScale = scale;
+        image->transform.localRotation = rotation;
+        image->color = color;
     }
     void InitializeUIParts(app::ui::UIText* text, const nlohmann::json& item)
     {
         const Vector3 position = ParseVector3(item["position"]);
         const Vector3 scale = ParseVector3(item["scale"]);
-        const Vector4 color = ParseVector3(item["color"]);
+        const Vector4 color = ParseVector4(item["color"]);
         const auto str = item["text"].get<std::string>();
         const auto wstr = Utf8ToShiftJis(str);
 
-		text->SetText(wstr.c_str());
-		text->transform.localPosition = position;
+        text->SetText(wstr.c_str());
+        text->transform.localPosition = position;
         text->transform.localScale = scale;
-		text->color = color;
+        text->color = color;
     }
     void InitializeUIParts(app::ui::UIDigit* text, const nlohmann::json& item)
     {
@@ -145,12 +145,12 @@ namespace
 
 namespace app
 {
-	namespace ui
-	{
-		
-		void Layout::Update()
+    namespace ui
+    {
+
+        void Layout::Update()
         {
-			menu_->Update();
+            menu_->Update();
 
 #ifdef APP_ENABLE_LAYOUT_HOTRELOAD
             // ホットリロードチェック
@@ -192,9 +192,9 @@ namespace app
                 std::string name = item["name"];
 
                 // すでに存在するUIならパラメータ更新のみ
-				const uint32_t key = Hash32(name.c_str());
+                const uint32_t key = Hash32(name.c_str());
                 if (menu_->HasUI(key)) {
-					menu_->UnregisterUI(key);
+                    menu_->UnregisterUI(key);
                     canvas->RemoveUI(key);
                 }
                 auto* ui = CreateUI(canvas, type, key, item);
@@ -210,12 +210,12 @@ namespace app
             if (type == "UIIcon") {
                 canvas->CreateUI<UIIcon>(key);
                 auto* image = canvas->FindUI<UIIcon>(key);
-			    InitializeUIParts(image, item);
+                InitializeUIParts(image, item);
                 return image;
             }
             if (type == "UIText") {
-				canvas->CreateUI<UIText>(key);
-				auto text = canvas->FindUI<UIText>(key);
+                canvas->CreateUI<UIText>(key);
+                auto text = canvas->FindUI<UIText>(key);
                 InitializeUIParts(text, item);
                 return text;
             }
@@ -229,5 +229,5 @@ namespace app
             //if (type == "UIGauge")  return canvas->CreateUI<UIGauge>(key);
             return nullptr;
         }
-	}
+    }
 }

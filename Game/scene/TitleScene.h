@@ -6,7 +6,7 @@
 #include "IScene.h"
 
 
-/** タイトルシーン */
+ /** タイトルシーン */
 class TitleScene : public IScene
 {
 	appScene(TitleScene);
@@ -16,7 +16,6 @@ private:
 	/** 遷移をリクエストする先のシーンID */
 	uint32_t m_requestSceneId = INVALID_SCENE_ID;
 
-	SpriteRender backGroundRender_;
 
 
 public:

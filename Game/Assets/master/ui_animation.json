@@ -5,7 +5,7 @@
             "valueType": "Vector4",
             "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
             "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
-            "duration": 0.6,
+            "duration": 0.5,
             "easing": "EaseOut",
             "loop": "PingPong"
         },
@@ -424,6 +424,26 @@
             "loop": "Once"
         },
         {
+            "comment": "ポーズ：画面外から中央を少し通り過ぎる位置まで（行き過ぎ）",
+            "key": "SlideIn_Pause_Overshoot",
+            "valueType": "Vector3",
+            "startValue": { "x": 1000.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": -60.0, "y": 0.0, "z": 0.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "ポーズ：通り過ぎた位置から定位置へ戻る（ブレーキ）",
+            "key": "SlideBack_Pause",
+            "valueType": "Vector3",
+            "startValue": { "x": -60.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0 },
+            "duration": 0.2,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
             "key": "FadeIn_NumberBackground",
             "valueType": "Vector4",
             "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
@@ -451,31 +471,171 @@
             "loop": "Once"
         },
         {
+            "comment": "タイトルロゴ左：1段階目",
+            "key": "TitleLogoSplitLeft_1",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 130.0, "z": 0.0 },
+            "endValue": { "x": -20.0, "y": 146.0, "z": 0.0 },
+            "duration": 0.8,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ右：1段階目",
+            "key": "TitleLogoSplitRight_1",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 108.0, "z": 0.0 },
+            "endValue": { "x": 20.0, "y": 92.0, "z": 0.0 },
+            "duration": 0.8,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ左：メニューから戻るときに元の位置へ",
+            "key": "TitleLogoReturnLeft",
+            "valueType": "Vector3",
+            "startValue": { "x": -20.0, "y": 146.0, "z": 0.0 },
+            "endValue": { "x": 0.0, "y": 130.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ右：メニューから戻るときに元の位置へ",
+            "key": "TitleLogoReturnRight",
+            "valueType": "Vector3",
+            "startValue": { "x": 20.0, "y": 92.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": 108.0, "z": 0.0 },
+            "duration": 0.4,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "ゲームオーバー用：ゆっくりフェードイン",
+            "key": "GameOverFadeIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 3.0,
+            "easing": "Linear",
+            "loop": "Once"
+        },
+        {
+            "comment": "ゲームオーバーフォグ：横に広がる",
+            "key": "GameOverFogExpand",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 10.0, "y": 1.0, "z": 1.0 },
+            "duration": 3.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "リザルトのスコアボード：上から定位置へスライドイン",
+            "key": "ScoreBoardSlideIn",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": -50.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "リザルトの文字：中央から上の定位置へスライド",
+            "key": "ResultSlide",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": 350.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "エネミーアイコン1：上からスライド",
+            "key": "EnemyIcon1Slide",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": 45.0, "z": 0.0 }, 
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "エネミーアイコン2：上からスライド",
+            "key": "EnemyIcon2Slide",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": -20.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "エネミーアイコン3：上からスライド",
+            "key": "EnemyIcon3Slide",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": -90.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "ランクハンコ：大きくから一気に定位置へ",
+            "key": "RankStamp",
+            "valueType": "Vector3",
+            "startValue": { "x": 4.0, "y": 4.0, "z": 4.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 1.0,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "リザルト画面の数字オーバーシュート：拡大",
+            "key": "DigitOvershoot_Pop",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 1.5, "y": 1.5, "z": 1.0 },
+            "duration": 0.1,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "リザルト画面の数字オーバーシュート：戻る",
+            "key": "DigitOvershoot_Settle",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.5, "y": 1.5, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.15,
+            "easing": "EaseInOut",
+             "loop": "Once"
+        },
+        {
             "comment": "レベルアップ用_Y座標スライドイージング",
             "key": "LevelUp_SlideY",
             "valueType": "Vector3",
             "startValue": { "x": -550.0, "y": 0.0, "z": 0.0 },
-            "endValue":   { "x": -550.0, "y": 260.0, "z": 0.0 },
+            "endValue": { "x": -550.0, "y": 260.0, "z": 0.0 },
             "duration": 2.0,
             "easing": "EaseOut",
             "loop": "Once"
-        },
+        }, 
         {
             "comment": "攻撃力アップ用_Y座標スライドイージング",
             "key": "AtkUp_SlideY",
             "valueType": "Vector3",
             "startValue": { "x": -550.0, "y": 0.0, "z": 0.0 },
-            "endValue":   { "x": -550.0, "y": 210.0, "z": 0.0 },
+            "endValue": { "x": -550.0, "y": 210.0, "z": 0.0 },
             "duration": 2.0,
             "easing": "EaseOut",
             "loop": "Once"
         },
         {
-            "comment": "レベルアップ用_退場X右移動",
+            "comment": "レベルアップ用_退場x右移動",
             "key": "LevelUp_ExitX_Right",
             "valueType": "Vector3",
             "startValue": { "x": -550.0, "y": 260.0, "z": 0.0 },
-            "endValue":   { "x": -380.0, "y": 260.0, "z": 0.0 },
+            "endValue": { "x": -380.0, "y": 260.0, "z": 0.0 },
             "duration": 0.25,
             "easing": "EaseOut",
             "loop": "Once"

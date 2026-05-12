@@ -1,0 +1,50 @@
+{
+    "canvas": {
+        "elements": [
+            {
+                "type": "UIIcon",
+                "name": "TitleBG",
+                "asset": "Assets/ui/backFilter.DDS",
+                "width": 1920,
+                "height": 1080,
+                "position": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "TitleLeft",
+                "asset": "Assets/ui/title/titleRogo_Left.DDS",
+                "width": 1356,
+                "height": 879,
+                "position": [0.0, 130.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "TitleRight",
+                "asset": "Assets/ui/title/titleRogo_Right.DDS",
+                "width": 1356,
+                "height": 879,
+                "position": [0.0, 108.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "GuideA",
+                "asset": "Assets/ui/title/guideA.DDS",
+                "width": 580,
+                "height": 48,
+                "position": [0.0, -250.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            }
+        ]
+    }
+}
