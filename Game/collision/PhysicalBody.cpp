@@ -38,14 +38,15 @@ namespace app
 		}
 
 
-		void PhysicalBody::CreateBox(const Vector3& size, const Vector3& position, const uint32_t collisionAttribute, const btCollisionObject::CollisionFlags collisionFlags, const float restitution)
+		void PhysicalBody::CreateBox(const Vector3& size, const Vector3& position, const uint32_t collisionAttribute, const Quaternion& rotation, const btCollisionObject::CollisionFlags collisionFlags, const float restitution)
 		{
 			auto* boxCollider = new BoxCollider();
 			boxCollider->Create(size);
 			collider_.reset(boxCollider);
-			CreateCore([position](RigidBodyInitData& data)
+			CreateCore([position, rotation](RigidBodyInitData& data)
 				{
 					data.pos = position;
+					data.rot = rotation;
 				},
 				collisionAttribute, collisionFlags, restitution);
 		}

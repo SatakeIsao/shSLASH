@@ -237,6 +237,9 @@
     <ClCompile Include="actor\EquipmentSlotManager.cpp" />
     <ClCompile Include="actor\QuadrantManager.cpp" />
     <ClCompile Include="actor\EventCharacterSpawnManagerObject.cpp" />
+    <ClCompile Include="core\TitleMenuManager.cpp" />
+    <ClCompile Include="core\TitleMenuManagerObject.cpp" />
+    <ClCompile Include="title\TitleManager.cpp" />
     <ClCompile Include="ui\ReturnToTitleMenu.cpp" />
     <ClCompile Include="ui\PauseMenu.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
@@ -284,6 +287,8 @@
     <ClCompile Include="system\system.cpp" />
     <ClCompile Include="ui\Layout.cpp" />
     <ClCompile Include="ui\Menu.cpp" />
+    <ClCompile Include="ui\TitleMenu.cpp" />
+    <ClCompile Include="ui\TitleSubMenu.cpp" />
     <ClCompile Include="ui\UIAnimation.cpp" />
     <ClCompile Include="ui\UIParts.cpp" />
     <ClCompile Include="util\Curve.cpp" />
@@ -307,6 +312,9 @@
     <ClInclude Include="actor\EquipmentSlotManager.h" />
     <ClInclude Include="actor\QuadrantManager.h" />
     <ClInclude Include="actor\EventCharacterSpawnManagerObject.h" />
+    <ClInclude Include="core\TitleMenuManager.h" />
+    <ClInclude Include="core\TitleMenuManagerObject.h" />
+    <ClInclude Include="title\TitleManager.h" />
     <ClInclude Include="ui\ReturnToTitleMenu.h" />
     <ClInclude Include="ui\PauseMenu.h" />
     <ClInclude Include="ui\InGameUI.h" />
@@ -355,6 +363,8 @@
     <ClInclude Include="Types.h" />
     <ClInclude Include="ui\Layout.h" />
     <ClInclude Include="ui\Menu.h" />
+    <ClInclude Include="ui\TitleMenu.h" />
+    <ClInclude Include="ui\TitleSubMenu.h" />
     <ClInclude Include="ui\UIAnimation.h" />
     <ClInclude Include="ui\UIAnimationFactory.h" />
     <ClInclude Include="ui\UIAnimationParameter.h" />

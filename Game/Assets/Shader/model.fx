@@ -188,7 +188,7 @@ SPSIn VSMainCore(SVSIn vsIn, uniform bool hasSkin)
     psIn.pos = mul(mView, psIn.pos); //ワールド座標系からカメラ座標系に変換
     psIn.pos = mul(mProj, psIn.pos); //カメラ座標系からスクリーン座標系に変換
 
-    psIn.normal = mul(worldMatrix, vsIn.normal); //法線を回転させる。
+    psIn.normal = normalize(mul(worldMatrix, vsIn.normal)); //法線を回転させる。
     
     psIn.tangent = normalize(mul(worldMatrix, vsIn.tangent)); //接ベクトルをワールド空間に変換する
     psIn.biNormal = normalize(mul(worldMatrix, vsIn.biNormal)); //従ベクトルをワールド空間に変換する
