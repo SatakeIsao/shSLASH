@@ -31,7 +31,7 @@ namespace app
 			 */
 			void CreateFromModel(Model& model, const Matrix& worldMatrix, const uint32_t collisionAttribute, const btCollisionObject::CollisionFlags collisionFlags = btCollisionObject::CF_STATIC_OBJECT, const float restitution = 0.0f);
 			void CreateCapsule(float radius, float height, const Vector3& position, const uint32_t collisionAttribute, const btCollisionObject::CollisionFlags collisionFlags = btCollisionObject::CF_STATIC_OBJECT, const float restitution = 0.0f);
-			void CreateBox(const Vector3& size, const Vector3& position, const uint32_t collisionAttribute, const btCollisionObject::CollisionFlags collisionFlags = btCollisionObject::CF_STATIC_OBJECT, const float restitution = 0.0f);
+			void CreateBox(const Vector3& size, const Vector3& position, const uint32_t collisionAttribute, const Quaternion& rotation, const btCollisionObject::CollisionFlags collisionFlags = btCollisionObject::CF_STATIC_OBJECT, const float restitution = 0.0f);
 			void CreateSphere(float radius, const Vector3& position, const uint32_t collisionAttribute, const btCollisionObject::CollisionFlags collisionFlags = btCollisionObject::CF_STATIC_OBJECT, const float restitution = 0.0f);
 
 			/** 剛体を破棄 */

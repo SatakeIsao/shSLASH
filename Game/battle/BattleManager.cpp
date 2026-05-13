@@ -315,7 +315,7 @@ namespace app
 						battleCharacter_->AddState<app::actor::IdleCharacterState>();
 						battleCharacter_->AddState<app::actor::RunCharacterState>();
 						battleCharacter_->AddState<app::actor::ChargeAttackCharacterState>();
-						//battleCharacter_->AddState<app::actor::FallingCharacterState>();
+						battleCharacter_->AddState<app::actor::FallingCharacterState>();
 						battleCharacter_->AddState<app::actor::SlashFirstCharacterState>();
 						battleCharacter_->AddState<app::actor::SlashSecondCharacterState>();
 						battleCharacter_->AddState<app::actor::SlashThirdCharacterState>();
@@ -368,23 +368,28 @@ namespace app
 
 				// ギミック設置（テスト用）
 				{
-					const int gimmickNum = 100;
-					const int gimmickRowNum = 10;
-					const int gimmickColNum = 10;
-					testGimmickList_.resize(gimmickNum);
-
-					for (int i = 0; i < testGimmickList_.size(); ++i)
-					{
-						testGimmickList_[i] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
-						//配置
-						int row = i / gimmickColNum;
-						int col = i % gimmickColNum;
-						float x = (static_cast<float>(col) - (gimmickColNum / 2.0f)) * 100.0f;
-						float z = (static_cast<float>(row) - (gimmickRowNum / 2.0f)) * 100.0f;
-						testGimmickList_[i]->transform.position = Vector3(x, -50.0f, z);
-						testGimmickList_[i]->transform.scale = Vector3(1.0f, 1.0f, 1.0f);
-						testGimmickList_[i]->Initialize("Assets/ModelData/stage/GroundGreenBlock.tkm");
-					}
+					testGimmickList_.resize(1);
+					testGimmickList_[0] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
+					testGimmickList_[0]->transform.position = Vector3(0.0f, -50.0f, 0.0f);
+					testGimmickList_[0]->transform.scale = Vector3(5.0f, 5.0f, 5.0f);
+					testGimmickList_[0]->Initialize("Assets/ModelData/stage/stage.tkm");
+					//  const int gimmickNum = 100;
+					//  const int gimmickRowNum = 10;
+					//  const int gimmickColNum = 10;
+					//  testGimmickList_.resize(gimmickNum);
+					//  
+					//  for (int i = 0; i < testGimmickList_.size(); ++i)
+					//  {
+					//  	testGimmickList_[i] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
+					//  	//配置
+					//  	int row = i / gimmickColNum;
+					//  	int col = i % gimmickColNum;
+					//  	float x = (static_cast<float>(col) - (gimmickColNum / 2.0f)) * 100.0f;
+					//  	float z = (static_cast<float>(row) - (gimmickRowNum / 2.0f)) * 100.0f;
+					//  	testGimmickList_[i]->transform.position = Vector3(x, -50.0f, z);
+					//  	testGimmickList_[i]->transform.scale = Vector3(1.0f, 1.0f, 1.0f);
+					//  	testGimmickList_[i]->Initialize("Assets/ModelData/stage/GroundGreenBlock.tkm");
+					//  }
 				}
 				// カメラ初期化
 				{

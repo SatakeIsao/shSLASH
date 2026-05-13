@@ -194,6 +194,11 @@
     <ClCompile Include="actor\EquipmentSlotManager.cpp" />
     <ClCompile Include="actor\QuadrantManager.cpp" />
     <ClCompile Include="actor\EventCharacterSpawnManagerObject.cpp" />
+    <ClCompile Include="core\TitleMenuManager.cpp" />
+    <ClCompile Include="core\TitleMenuManagerObject.cpp" />
+    <ClCompile Include="ui\TitleMenu.cpp" />
+    <ClCompile Include="ui\TitleSubMenu.cpp" />
+    <ClCompile Include="title\TitleManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -375,6 +380,11 @@
     <ClInclude Include="actor\EquipmentSlotManager.h" />
     <ClInclude Include="actor\QuadrantManager.h" />
     <ClInclude Include="actor\EventCharacterSpawnManagerObject.h" />
+    <ClInclude Include="core\TitleMenuManager.h" />
+    <ClInclude Include="core\TitleMenuManagerObject.h" />
+    <ClInclude Include="ui\TitleMenu.h" />
+    <ClInclude Include="ui\TitleSubMenu.h" />
+    <ClInclude Include="title\TitleManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

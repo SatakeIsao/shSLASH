@@ -19,7 +19,8 @@ namespace app
 
 		protected:
 			std::unique_ptr<ModelRender> modelRender_ = nullptr;
-			std::unique_ptr<app::collision::PhysicalBody> physicalBody_ = nullptr;
+			//std::unique_ptr<app::collision::PhysicalBody> physicalBody_ = nullptr;
+			std::vector<std::unique_ptr<app::collision::PhysicalBody>> physicalBodies_;
 
 
 		public:
@@ -33,7 +34,11 @@ namespace app
 			virtual void Initialize(const char* path) = 0;
 
 			ModelRender* GetModelRender() { return modelRender_.get(); }
-			app::collision::PhysicalBody* GetPhysicalBody() { return physicalBody_.get(); }
+			//app::collision::PhysicalBody* GetPhysicalBody() { return physicalBody_.get(); }
+			// 後方互換用（最初の1つを返す）
+			app::collision::PhysicalBody* GetPhysicalBody() {
+				return physicalBodies_.empty() ? nullptr : physicalBodies_[0].get();
+			}
 		};
 
 
