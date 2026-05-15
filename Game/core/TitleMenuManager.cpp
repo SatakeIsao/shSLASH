@@ -28,7 +28,7 @@ namespace app {
             mainMenuLayout_ = new app::ui::Layout();
             mainMenuLayout_->Initialize<app::ui::TitleSubMenu>("Assets/ui/layout/titleMenuLayout.json");
 
-            // ★追加：サウンドメニューのレイアウト初期化
+            // サウンドメニューのレイアウト初期化
             soundMenuLayout_ = new app::ui::Layout();
             soundMenuLayout_->Initialize<app::ui::SoundOptionMenu>("Assets/ui/layout/pauseMenuLayout.json");
         }
@@ -43,6 +43,11 @@ namespace app {
             // ==========================================
             if (isPlayingAnimation_) {
                 bool isAnimationFinished = true;
+
+                // PressAnyButton中のワイプアニメーション更新
+                if (currentState_ == TitleMenuState::enPressAnyButton) {
+                    if (pressAnyButtonLayout_) pressAnyButtonLayout_->Update();
+                }
 
                 if (currentState_ == TitleMenuState::enMainMenu) {
                     if (mainMenuLayout_) mainMenuLayout_->Update();
@@ -138,6 +143,10 @@ namespace app {
             if (pressAnyButtonLayout_) {
                 pressAnyButtonLayout_->Render(rc);
             }
+
+            // JSONのUI描画後にスラッシュエフェクトを描画
+            auto* titleMenu = dynamic_cast<app::ui::TitleMenu*>(pressAnyButtonLayout_->GetMenu());
+            if (titleMenu) titleMenu->DrawSlash(rc);
 
             // 現在の状態に応じたメニューを描画
             if (currentState_ == TitleMenuState::enMainMenu) {
