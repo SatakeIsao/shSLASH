@@ -476,7 +476,7 @@
             "valueType": "Vector3",
             "startValue": { "x": 0.0, "y": 130.0, "z": 0.0 },
             "endValue": { "x": -20.0, "y": 146.0, "z": 0.0 },
-            "duration": 0.8,
+            "duration": 0.06,
             "easing": "EaseOut",
             "loop": "Once"
         },
@@ -486,7 +486,7 @@
             "valueType": "Vector3",
             "startValue": { "x": 0.0, "y": 108.0, "z": 0.0 },
             "endValue": { "x": 20.0, "y": 92.0, "z": 0.0 },
-            "duration": 0.8,
+            "duration": 0.06,
             "easing": "EaseOut",
             "loop": "Once"
         },
@@ -688,6 +688,86 @@
             "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
             "duration": 2.0,
             "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ左：衝撃1回目跳ね",
+            "key": "TitleLogoShakeLeft_1",
+            "valueType": "Vector3",
+            "startValue": { "x": -20.0, "y": 146.0, "z": 0.0 },
+            "endValue":   { "x": -28.0, "y": 138.0, "z": 0.0 },
+            "duration": 0.04,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ左：衝撃1回目戻り",
+            "key": "TitleLogoShakeLeft_2",
+            "valueType": "Vector3",
+            "startValue": { "x": -28.0, "y": 138.0, "z": 0.0 },
+            "endValue":   { "x": -20.0, "y": 146.0, "z": 0.0 },
+            "duration": 0.07,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ左：衝撃2回目跳ね",
+            "key": "TitleLogoShakeLeft_3",
+            "valueType": "Vector3",
+            "startValue": { "x": -20.0, "y": 146.0, "z": 0.0 },
+            "endValue":   { "x": -24.0, "y": 142.0, "z": 0.0 },
+            "duration": 0.04,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ左：衝撃2回目戻り",
+            "key": "TitleLogoShakeLeft_4",
+            "valueType": "Vector3",
+            "startValue": { "x": -24.0, "y": 142.0, "z": 0.0 },
+            "endValue":   { "x": -20.0, "y": 146.0, "z": 0.0 },
+            "duration": 0.07,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ右：衝撃1回目跳ね",
+            "key": "TitleLogoShakeRight_1",
+            "valueType": "Vector3",
+            "startValue": { "x": 20.0, "y": 92.0, "z": 0.0 },
+            "endValue":   { "x": 28.0, "y": 84.0, "z": 0.0 },
+            "duration": 0.04,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ右：衝撃1回目戻り",
+            "key": "TitleLogoShakeRight_2",
+            "valueType": "Vector3",
+            "startValue": { "x": 28.0, "y": 84.0, "z": 0.0 },
+            "endValue":   { "x": 20.0, "y": 92.0, "z": 0.0 },
+            "duration": 0.07,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ右：衝撃2回目跳ね",
+            "key": "TitleLogoShakeRight_3",
+            "valueType": "Vector3",
+            "startValue": { "x": 20.0, "y": 92.0, "z": 0.0 },
+            "endValue":   { "x": 24.0, "y": 88.0, "z": 0.0 },
+            "duration": 0.04,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイトルロゴ右：衝撃2回目戻り",
+            "key": "TitleLogoShakeRight_4",
+            "valueType": "Vector3",
+            "startValue": { "x": 24.0, "y": 88.0, "z": 0.0 },
+            "endValue":   { "x": 20.0, "y": 92.0, "z": 0.0 },
+            "duration": 0.07,
+            "easing": "EaseIn",
             "loop": "Once"
         }
     ]
