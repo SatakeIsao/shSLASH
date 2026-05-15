@@ -647,7 +647,7 @@ namespace app
 					deceleration = 0.0f;
 				}
 				//スピード調整
-				float currentSpeed = 500.0f * deceleration;
+				float currentSpeed = 300.0f * deceleration;
 
 				characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
 			}

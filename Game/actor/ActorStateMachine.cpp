@@ -775,7 +775,7 @@ namespace app
 		void StoneEventCharacterStateMachine::OnEnterKnockBack()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
-			Jump(80.0f);
+			//Jump(5.0f);
 			SetMoveDirection(knockBackDirection_);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
 		}
@@ -994,7 +994,7 @@ namespace app
 		void MushroomEventCharacterStateMachine::OnEnterKnockBack()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
-			Jump(80.0f);
+			//Jump(5.0f);
 			SetMoveDirection(knockBackDirection_);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
 		}
