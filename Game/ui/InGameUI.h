@@ -89,7 +89,22 @@ namespace app
 			/** Lerpの速度（大きいほど速い） */
 			float levelLerpSpeed_ = 3.0f;
 			bool isInvincible_ = false;   
-			bool isVisible_ = true;       
+			bool isVisible_ = true;
+			/** HP全回復の表示をフレームをまたいで強制 */
+			bool isHealPending_ = false;
+			/** 回復アニメーション中フラグ */
+			bool isHealAnimating_ = false;
+			/** 回復アニメーション経過時間 */
+			float healAnimTimer_ = 0.0f;
+			/** アニメーション総時間 */
+			float healAnimDuration_ = 1.5f;
+			/** アニメーション開始時のHP割合 */
+			float healStartRatio_ = 0.0f;
+			/** 表示用HP割合 */
+			float displayHpRatio_ = 0.0f;
+			/** 目標HP割合 */
+			float targetHpRatio_ = 0.0f;
+
 		public:
 			PlayerHpUIObject();
 			~PlayerHpUIObject();
@@ -190,10 +205,14 @@ namespace app
 			float atkAnimTimer_ = 0.0f;
 			/** レベルUPアニメーションタイマー */
 			float levelAnimTimer_ = 0.0f;
+			/** 全回復アニメーションタイマー */
+			float maxHpAnimTimer_ = 0.0f;
 			/** 退場アニメーションタイマー */
 			float exitAnimTimer_ = 0.0f;
 			float exitLeftTimer_ = 0.0f;
 
+			/** 全回復アニメーションしたか */
+			bool isHpMaxAnimPlayed_ = false;
 			/** 攻撃UPアニメーションしたか */
 			bool isAtkAnimPlayed_ = false;
 			/** レベルUPアニメーションしたか */
@@ -241,6 +260,13 @@ namespace app
 				isLevelUpPending_ = true;
 				// 偶数レベルなら攻撃力UPも再生
 				isAtkUpLevel_ = (newLevel % 2 == 0)||(newLevel == 1);
+
+				// レベルアップ時にHPを全回復
+				if (player_)
+				{
+					player_->GetStatus()->SetCurrentHp(player_->GetStatus()->GetMaxHp());
+				}
+
 				atkAnimTimer_ = 0.0f;
 				levelAnimTimer_ = 0.0f;
 				exitAnimTimer_ = 0.0f;
@@ -249,6 +275,8 @@ namespace app
 				isLevelAnimPlayed_ = false;
 				isExitRightPlayed_ = false;
 				isExitLeftPlayed_ = false;
+				isHpMaxAnimPlayed_ = false;
+				maxHpAnimTimer_ = 0.0f;
 
 				// 攻撃力UPが不要なら最初からスキップ済み扱い
 				isAtkAnimPlayed_ = !isAtkUpLevel_;
