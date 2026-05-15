@@ -214,7 +214,9 @@ namespace app
 				float curHp = player_->GetStatus()->GetCurrentHp();
 
 				int newIndex = static_cast<int>((curHp / maxHp) * static_cast<float>(MAX_LEVEL));
-				if (newIndex < index_) // HPが減った瞬間だけディレイバーを更新
+				targetHpRatio_ = static_cast<float>(newIndex) / static_cast<float>(MAX_LEVEL);
+
+				if (newIndex < index_) // HP減少
 				{
 					damagePosX_ = damageHP->color.x;
 					damageDelayTimer_ = DAMAGE_DELAY_TIME;
@@ -232,10 +234,33 @@ namespace app
 					lerpVal_ = 0.0f;
 					damagePosX_ = damageHP->color.x;
 				}
+				targetHpRatio_ = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
 			}
 
-			// HP割合を毎フレーム計算してセット
-			float currentRatio = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
+			// 回復アニメーション中は指数関数的に補間、通常時は即時追従
+			if (isHealAnimating_)
+			{
+				healAnimTimer_ += g_gameTime->GetFrameDeltaTime();
+				float t = min(healAnimTimer_ / healAnimDuration_, 1.0f);
+
+				// ease-out expo
+				float easedT = (t >= 1.0f) ? 1.0f : 1.0f - powf(2.0f, -10.0f * t);
+				displayHpRatio_ = healStartRatio_ + (1.0f - healStartRatio_) * easedT;
+
+				if (t >= 1.0f)
+				{
+					isHealAnimating_ = false;
+					displayHpRatio_ = 1.0f;
+				}
+			}
+			else
+			{
+				// 通常時は即時追従（滑らかにしたい場合は Lerp に変えてもOK）
+				displayHpRatio_ = targetHpRatio_;
+			}
+
+			// HP割合を毎フレーム計算してセット（displayHpRatio_ を使う）
+			float currentRatio = displayHpRatio_;
 			currentHP->color.x = currentRatio;
 			currentHP->color.y = HP_BAR_LEFT_W;
 			currentHP->color.z = currentRatio;
@@ -297,6 +322,24 @@ namespace app
 					{
 						levelUpUIObject_->TriggerLevelUp(level_);
 					}
+					
+					// HP全回復フラグをセット
+					if (player_)
+					{
+						player_->GetStatus()->SetCurrentHp(player_->GetStatus()->GetMaxHp());
+					}
+					// 回復アニメーション開始
+					/** 現在の表示位置からスタート */
+					healStartRatio_ = displayHpRatio_;
+					healAnimTimer_ = 0.0f;
+					isHealAnimating_ = true;
+					isHealPending_ = false;
+					index_ = MAX_LEVEL;
+					targetHpRatio_ = 1.0f;
+					damagePosX_ = 1.0f;
+					damageDelayTimer_ = -1.0f;
+					lerpVal_ = 1.0f;
+
 					levelUpIndex_ = 0;
 					displayLevelRatio_ = 0.0f;
 					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
@@ -706,13 +749,15 @@ namespace app
 					{
 						exitAnimTimer_ += g_gameTime->GetFrameDeltaTime();
 
-						// 1.0秒後：右へ少し移動
+						// 2.0秒後：右へ少し移動
 						if (!isExitRightPlayed_ && exitAnimTimer_ >= 2.0f)
 						{
+							/** 攻撃UP */
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Right"));
+							/** レベルUP */
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Right"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Right"));
@@ -722,17 +767,20 @@ namespace app
 							isExitRightPlayed_ = true;
 						}
 
-						// 1.15秒後：左へ画面外に吹っ飛ぶ
+						// 2.15秒後：左へ画面外に吹っ飛ぶ
 						if (isExitRightPlayed_ && !isExitLeftPlayed_ && exitAnimTimer_ >= 2.15f)
 						{
+							/** 攻撃力UP */
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Left"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Left"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Left"));
+							/** レベルアップ */
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Left"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Left"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Left"));
 							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Left"));
+
 							isExitLeftPlayed_ = true;
 							exitLeftTimer_ = 0.0f;
 						}
@@ -748,20 +796,24 @@ namespace app
 								auto clearAnims = [](app::ui::UIIcon* icon)
 									{
 										if (!icon) return;
+										/** レベルアップ用 */
 										icon->RemoveAnimation(Hash32("LevelUp_SlideY"));
 										icon->RemoveAnimation(Hash32("LevelUp_ExitX_Right"));
 										icon->RemoveAnimation(Hash32("LevelUp_ExitX_Left"));
+										icon->RemoveAnimation(Hash32("LevelUp_FadeIn"));
+										/** 攻撃力UP用 */
 										icon->RemoveAnimation(Hash32("AtkUp_SlideY"));
 										icon->RemoveAnimation(Hash32("AtkUp_ExitX_Right"));
 										icon->RemoveAnimation(Hash32("AtkUp_ExitX_Left"));
-										icon->RemoveAnimation(Hash32("LevelUp_FadeIn"));
 										icon->RemoveAnimation(Hash32("AtkUp_FadeIn"));
 									};
 
+								/** レベルアップ用 */
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
+								/** 攻撃力UP用 */
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
 								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
@@ -780,19 +832,23 @@ namespace app
 										icon->color.w = 0.0f;
 									};
 
+								/** レベルアップ用 */
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), -550.0f, -1260.0f);
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), -550.0f, -1260.0f);
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), -550.0f, -1260.0f);
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), -550.0f, -1260.0f);
+								/** 攻撃力UP用 */
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), -550.0f, -1180.0f);
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), -550.0f, -1180.0f);
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), -550.0f, -1180.0f);
 								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), -550.0f, -1180.0f);
 
+								/** レベルアップ用 */
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
+								/** 攻撃力UP用 */
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
 								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
