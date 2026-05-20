@@ -94,6 +94,7 @@ void nsK2EngineLow::Shadow::Render(RenderContext& rc, std::vector<IRenderer*>& r
 	rc.ClearRenderTargetView(m_shadowMap);
 	for (auto& renderer : renderObjects)
 	{
+		if (renderer == nullptr) { continue; }
 		renderer->OnRenderShadowMap(rc, m_viewProjectionMatrix);
 	}
 	rc.WaitUntilFinishDrawingToRenderTarget(m_shadowMap);

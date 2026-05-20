@@ -24,6 +24,7 @@ namespace app
 
 		void Character::Update()
 		{
+			if (modelRender_ == nullptr) { return; }
 			modelRender_->SetTRS(transform.position, transform.rotation, transform.scale);
 			modelRender_->Update();
 		}
@@ -31,6 +32,7 @@ namespace app
 
 		void Character::Render(RenderContext& rc)
 		{
+			if (modelRender_ == nullptr) { return; }
 			modelRender_->Draw(rc);
 		}
 	}
