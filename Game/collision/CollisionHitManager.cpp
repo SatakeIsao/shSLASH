@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "CollisionHitManager.h"
 #include "actor/ActorState.h"
 #include "actor/ActorStateMachine.h"
@@ -45,7 +45,7 @@ namespace app
 
 		CollisionHitManager::CollisionHitManager()
 		{
-			/** DEBUG: ƒƒCƒ„[ƒtƒŒ[ƒ€•`‰æ */
+			/** DEBUG: ç‰©ç†ãƒ‡ãƒãƒƒã‚°ãƒ¯ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ  */
 			//PhysicsWorld::Get().EnableDrawDebugWireFrame();
 		}
 
@@ -58,35 +58,35 @@ namespace app
 
 		void CollisionHitManager::Update()
 		{
-			//ƒfƒoƒbƒO—pŒ»İ‚ÌƒqƒbƒgƒyƒA‚Ì”‚ğo—Í
+			// ãƒ‡ãƒãƒƒã‚°ç”¨ ç¾åœ¨ã®ãƒ’ãƒƒãƒˆãƒšã‚¢ã®æ•°ã‚’å‡ºåŠ›
 			// char countBuf[256];
 			// sprintf_s(countBuf, "--- Hit Pair Count: %zu ---\n", hitPairList_.size());
 			// OutputDebugStringA(countBuf);
 
-			// GhostBody‚Ìƒqƒbƒgˆ—‚Å“¾‚½ƒyƒA‚ğ‚à‚Æ‚Éˆ—
+			// GhostBodyã®ãƒ’ãƒƒãƒˆæƒ…å ±ã‚’ä¸€æ—¦ãƒšã‚¢ã”ã¨ã«å‡¦ç†
 			{
 				app::memory::StackAllocatorMarker marker;
 				app::memory::StackVector<Pair*>  eventCharacterPairList(marker);
 				app::memory::StackVector<Pair*> mushroomPairList(marker);
 				for (auto& hitPair : hitPairList_) {
-					// ƒfƒoƒbƒOƒeƒXƒg
+					// ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚¹ãƒˆ
 					//char idBuf[256];
 					//sprintf_s(idBuf, "Collision! A_ID: %u, B_ID: %u\n", hitPair.a->GetOwnerId(), hitPair.b->GetOwnerId());
 					//OutputDebugStringA(idBuf);
-					
-					// ƒCƒxƒ“ƒgƒLƒƒƒ‰ƒNƒ^[‚ÌƒyƒA‚©
+
+					// ã‚¤ãƒ™ãƒ³ãƒˆã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒšã‚¢
 					if (ContainsEventCharacterPair(hitPair)) {
 						eventCharacterPairList.push_back(&hitPair);
 					}
-					// ƒ}ƒbƒVƒ…ƒ‹ƒCƒxƒ“ƒgƒLƒƒƒ‰ƒNƒ^[‚ÌƒyƒA‚©
+					// ãƒãƒƒã‚·ãƒ¥ãƒ«ãƒ¼ãƒ ã‚¤ãƒ™ãƒ³ãƒˆã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒšã‚¢
 					else if (ContainsMushroomEventCharacterPair(hitPair))
 						mushroomPairList.push_back(&hitPair);
 				}
-				// ƒCƒxƒ“ƒgƒLƒƒƒ‰ƒNƒ^[
+				// ã‚¤ãƒ™ãƒ³ãƒˆã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼
 				for (auto* pair : eventCharacterPairList) {
 					UpdateEventCharacterPair(*pair);
 				}
-				// ƒ}ƒbƒVƒ…ƒ‹
+				// ãƒãƒƒã‚·ãƒ¥ãƒ«ãƒ¼ãƒ 
 				for (auto* pair : mushroomPairList) {
 					UpdateMushroomEventCharacterPair(*pair);
 				}
@@ -97,7 +97,7 @@ namespace app
 
 		void CollisionHitManager::RegisterHitPair(app::collision::GhostBody* a, app::collision::GhostBody* b)
 		{
-			// ƒqƒbƒgƒyƒA“o˜^
+			// ãƒ’ãƒƒãƒˆãƒšã‚¢ç™»éŒ²
 			hitPairList_.push_back(std::move(Pair(a, b)));
 		}
 
@@ -122,12 +122,12 @@ namespace app
 			Vector3 playerPos = battleCharacter->transform.position;
 			Vector3 enemyPos = eventCharacter->transform.position;
 
-			// ƒmƒbƒNƒoƒbƒN•ûŒü‚ğŒvZ
+			// ãƒãƒƒã‚¯ãƒãƒƒã‚¯ãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
 			Vector3 knockBackDirection = enemyPos - playerPos;
 			knockBackDirection.y = 0.0f;
 			knockBackDirection.Normalize();
 
-			//ƒpƒ“ƒ`‚³‚ê‚½‚©‚Ìƒ`ƒFƒbƒN
+			// ãƒ‘ãƒ¼ãƒ„ï¼ˆåˆ¤å®šç”¨ãƒœãƒ‡ã‚£ï¼‰ã§å½“ãŸã£ãŸã‹ã®ãƒã‚§ãƒƒã‚¯
 			app::collision::GhostBody* colliedPlayerBody = nullptr;
 			if (hitPair.a->GetOwnerId() == app::actor::BattleCharacter::ID())
 			{
@@ -138,43 +138,46 @@ namespace app
 				colliedPlayerBody = hitPair.b;
 			}
 
-			//ƒpƒ“ƒ`‚Ì“–‚½‚è”»’è
+			// ãƒ‘ãƒ¼ãƒ„ã®åˆ¤å®šå‡¦ç†
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
 			{
-				// ƒpƒ“ƒ`‚ª“–‚½‚Á‚½‚ç’Ê’m
+				// æºœã‚æ”»æ’ƒä¸­ã‹ã©ã†ã‹åˆ¤å®š
+				bool isBlowBack = battleCharacter->GetStateMachine()->IsChargeAttacking();
+				// æ”»æ’ƒãƒ‘ãƒ¼ãƒ„ã®è¡çªã‚’é€šçŸ¥
 				auto* notify = new app::battle::BattleManager::DamageNotify();
 				notify->attacker = battleCharacter;
 				notify->defender = eventCharacter;
 				notify->knockBackDirection = knockBackDirection;
 				notify->enemyType = app::battle::BattleManager::DamageNotify::EnemyType::Stone;
 				app::battle::BattleManager::Get().AddNotify(notify);
+				notify->isBlowBack = isBlowBack;
 
-				////ƒvƒŒƒCƒ„[‚©‚çƒXƒ‰ƒCƒ€‚Ö‚ÌƒxƒNƒgƒ‹‚ğŒvZ
+				//// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ã‚¨ãƒãƒŸãƒ¼ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
 				//Vector3 knockBackDirection = enemyPos - playerPos;
 				//knockBackDirection.y = 0.0f;
 				//knockBackDirection.Normalize();
-				////ƒXƒ‰ƒCƒ€‚ªƒmƒbƒNƒoƒbƒN‚µ‚½
+				//// ã‚¨ãƒãƒŸãƒ¼ã®ãƒãƒƒã‚¯ãƒãƒƒã‚¯
 				//eventCharacter->GetStateMachine()->OnKnockBack(knockBackDirection);
 				//
 				//float attack = battleCharacter->GetTotalAttack();
 				//eventCharacter->TakeDamage(static_cast<int>(attack));
-				//// HP‚ª0‚É‚È‚Á‚½‚çADead ƒXƒe[ƒg‚Ö
+				//// HPãŒ0ã«ãªã£ãŸã‚‰Deadã‚¹ãƒ†ãƒ¼ãƒˆã¸
 				//if (eventCharacter->GetCurrentHP() <= 0)
 				//{
 				//	eventCharacter->GetStateMachine()->OnDead();
 				//}
 			}
-			/** ƒvƒŒƒCƒ„[–{‘Ì‚ÌƒS[ƒXƒg‚ÆÕ“Ë‚µ‚½ */
+			/** ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æœ¬ä½“ã®ã‚´ãƒ¼ã‚¹ãƒˆï¼ˆå®Ÿä½“ï¼‰ã¨è¡çªã—ãŸå ´åˆ */
 			else
 			{
-				/** ƒXƒ‰ƒCƒ€‚©‚çƒvƒŒƒCƒ„[‚ÉŒü‚©‚¤ƒxƒNƒgƒ‹ */
+				/** ã‚¨ãƒãƒŸãƒ¼ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å‘ã‹ã†ãƒ™ã‚¯ãƒˆãƒ« */
 				Vector3 toPlayer = playerPos - enemyPos;
 				toPlayer.Normalize();
 				float dot = toPlayer.y;
 				bool isAbove = (dot > 0.1f);
 
-				// Player‚ªã‹ó‚É‚¢‚é‚È‚ç
+				// PlayerãŒä¸Šã«ä¹—ã£ãŸãªã‚‰
 				if (isAbove)
 				{
 					eventCharacter->GetStateMachine()->OnSquashed();
@@ -207,12 +210,12 @@ namespace app
 			Vector3 playerPos = battleCharacter->transform.position;
 			Vector3 enemyPos = eventCharacter->transform.position;
 
-			// ƒmƒbƒNƒoƒbƒN•ûŒü‚ğŒvZ
+			// ãƒãƒƒã‚¯ãƒãƒƒã‚¯ãƒ™ã‚¯ãƒˆãƒ«ã®è¨ˆç®—
 			Vector3 knockBackDirection = enemyPos - playerPos;
 			knockBackDirection.y = 0.0f;
 			knockBackDirection.Normalize();
 
-			//ƒpƒ“ƒ`‚³‚ê‚½‚©‚Ìƒ`ƒFƒbƒN
+			// ãƒ‘ãƒ¼ãƒ„ï¼ˆåˆ¤å®šç”¨ãƒœãƒ‡ã‚£ï¼‰ã§å½“ãŸã£ãŸã‹ã®ãƒã‚§ãƒƒã‚¯
 			app::collision::GhostBody* colliedPlayerBody = nullptr;
 			if (hitPair.a->GetOwnerId() == app::actor::BattleCharacter::ID())
 			{
@@ -223,28 +226,31 @@ namespace app
 				colliedPlayerBody = hitPair.b;
 			}
 
-			//ƒpƒ“ƒ`‚Ì“–‚½‚è”»’è
+			// ãƒ‘ãƒ¼ãƒ„ã®åˆ¤å®šå‡¦ç†
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
 			{
-				// ƒpƒ“ƒ`‚ª“–‚½‚Á‚½‚ç’Ê’m
+				// æºœã‚æ”»æ’ƒä¸­ã‹ã©ã†ã‹åˆ¤å®š
+				bool isBlowBack = battleCharacter->GetStateMachine()->IsChargeAttacking();
+				// æ”»æ’ƒãƒ‘ãƒ¼ãƒ„ã®è¡çªã‚’é€šçŸ¥
 				auto* notify = new app::battle::BattleManager::DamageNotify();
 				notify->attacker = battleCharacter;
 				notify->defender = eventCharacter;
 				notify->knockBackDirection = knockBackDirection;
 				notify->enemyType = app::battle::BattleManager::DamageNotify::EnemyType::Mushroom;
 				app::battle::BattleManager::Get().AddNotify(notify);
+				notify->isBlowBack = isBlowBack;
 			}
-			/** ƒvƒŒƒCƒ„[–{‘Ì‚ÌƒS[ƒXƒg‚ÆÕ“Ë‚µ‚½ */
+			/** ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æœ¬ä½“ã®ã‚´ãƒ¼ã‚¹ãƒˆï¼ˆå®Ÿä½“ï¼‰ã¨è¡çªã—ãŸå ´åˆ */
 			else
 			{
-				/** ƒXƒ‰ƒCƒ€‚©‚çƒvƒŒƒCƒ„[‚ÉŒü‚©‚¤ƒxƒNƒgƒ‹ */
+				/** ã‚¨ãƒãƒŸãƒ¼ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å‘ã‹ã†ãƒ™ã‚¯ãƒˆãƒ« */
 				Vector3 toPlayer = playerPos - enemyPos;
 				toPlayer.Normalize();
 				float dot = toPlayer.y;
 				bool isAbove = (dot > 0.1f);
 
-				// Player‚ªã‹ó‚É‚¢‚é‚È‚ç
+				// PlayerãŒä¸Šã«ä¹—ã£ãŸãªã‚‰
 				if (isAbove)
 				{
 					eventCharacter->GetStateMachine()->OnSquashed();

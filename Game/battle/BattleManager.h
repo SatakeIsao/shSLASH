@@ -88,6 +88,8 @@ namespace app
                 app::actor::Character* defender = nullptr;
                 // ノックバック方向
                 Vector3 knockBackDirection;
+                // 溜め攻撃による吹き飛ばしか
+                bool isBlowBack = false;
                 
                 EnemyType enemyType = EnemyType::Stone;
 
@@ -131,7 +133,8 @@ namespace app
             bool isPause_ = false;
 
             float countDownTimer_ = 3.0f;
-            float effectDelayTimer_ = 0.0f; //遅延時間をカウント
+            /** 遅延時間をカウント */
+            float effectDelayTimer_ = 0.0f;
             /** 残り時間 */
             float remainTime_ = 120.0f;
             /** 無敵時間をカウント */
@@ -140,9 +143,21 @@ namespace app
             bool isInvincible_ = false;
 
             bool isWaitEffectPlay_ = false;
-            Vector3 reservedEffectPos_;     //再生予定の位置を保持
+            /** 再生予定の位置を保持 */
+            Vector3 reservedEffectPos_;
+            /** 攻撃開始時の向きを固定保持 */
+            Vector3 reservedEffectDir_;
             Quaternion reservedEffectRot_;
             std::unique_ptr<app::ui::Layout> layout_;
+
+            // スポーンエフェクト遅延再生エントリ
+            struct PendingSpawnEffect
+            {
+                int effectKind = 0;
+                Vector3 position = Vector3::Zero;
+                float timer = 0.0f;
+            };
+            std::vector<PendingSpawnEffect> pendingSpawnEffects_;
 
 
         private:

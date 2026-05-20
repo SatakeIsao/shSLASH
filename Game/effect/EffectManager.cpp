@@ -29,6 +29,25 @@ EffectManager::~EffectManager()
 
 void EffectManager::Update()
 {
+	// 追従エフェクトの座標を毎フレーム同期
+	// 終了済みエントリ（K2Engine側で削除済み）は除去する
+	m_followEffectList.erase(
+		std::remove_if(m_followEffectList.begin(), m_followEffectList.end(),
+			[](const FollowEffectEntry& entry)
+			{
+				// emitterがnullptrまたは再生終了していたら除去
+				return entry.emitter == nullptr || !entry.emitter->IsPlay();
+			}),
+		m_followEffectList.end()
+	);
+
+	for (auto& entry : m_followEffectList)
+	{
+		if (entry.targetPosition)
+		{
+			entry.emitter->SetPosition(*entry.targetPosition);
+		}
+	}
 }
 
 
@@ -48,6 +67,33 @@ EffectHandle EffectManager::PlayEffect(const int kind, const Vector3& position, 
 	m_effect->Play();
 
 	return m_effectHandleCount;
+}
+
+EffectHandle EffectManager::PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale)
+{
+	if (m_effectHandleCount == INVALID_EFFECT_HANDLE) {
+		K2_ASSERT(false, "エフェクトの再生が多いです。\n");
+		return INVALID_EFFECT_HANDLE;
+	}
+	if (targetPosition == nullptr) {
+		K2_ASSERT(false, "追従先のポインタがnullptrです。\n");
+		return INVALID_EFFECT_HANDLE;
+	}
+
+	EffectEmitter* emitter = NewGO<EffectEmitter>(0);
+	emitter->Init(kind);
+	emitter->SetPosition(*targetPosition);
+	emitter->SetRotation(rotation);
+	emitter->SetScale(scale);
+	emitter->Play();
+
+	FollowEffectEntry entry;
+	entry.handle = m_effectHandleCount;
+	entry.emitter = emitter;
+	entry.targetPosition = targetPosition;
+	m_followEffectList.push_back(entry);
+
+	return m_effectHandleCount++;
 }
 
 
@@ -87,6 +133,7 @@ bool EffectManagerObject::Start()
 
 void EffectManagerObject::Update()
 {
+	EffectManager::Get().Update();
 }
 
 
@@ -106,4 +153,9 @@ void EffectManagerObject::StopEffect(const EffectHandle handle)
 {
 	/** 処理はEffectManagerに任せる */
 	EffectManager::Get().StopEffect(handle);
+}
+
+EffectHandle EffectManagerObject::PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale)
+{
+	return EffectManager::Get().PlayEffectFollow(kind, targetPosition, rotation, scale);
 }
