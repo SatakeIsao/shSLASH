@@ -7,6 +7,7 @@
 #include "ActorStatus.h"
 #include "BattleCharacter.h"
 #include "EventCharacter.h"
+#include "effect/EffectManager.h"
 #include "sound/SoundManager.h"
 
 
@@ -194,6 +195,13 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterKnockBack()
 		{
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_PlayerKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::KnockBack), 0.1f);
 		}
 
@@ -205,6 +213,13 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterDead()
 		{
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_PlayerKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Dead), 0.2f);
 			deadSETimer_ = 0.0f;
 			isDeadSEPlayed_ = false;
@@ -230,6 +245,62 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterAvoidance()
 		{
+			// スティック入力から回避方向を取得（Y成分は不要）
+			Vector3 avoidDir = GetMoveDirection();
+			avoidDir.y = 0.0f;
+
+			Quaternion effectRot = Quaternion::Identity;
+
+			// 入力がある場合のみ向きを計算
+			if (avoidDir.LengthSq() > 0.0001f)
+			{
+				avoidDir.Normalize();
+
+				// カメラの前方向・右方向を取得（Y成分は除外）
+				Vector3 cameraForward = g_camera3D->GetForward();
+				Vector3 cameraRight = g_camera3D->GetRight();
+				cameraForward.y = 0.0f;
+				cameraRight.y = 0.0f;
+				cameraForward.Normalize();
+				cameraRight.Normalize();
+
+				// スティック入力（カメラ空間）をワールド空間の回避方向に変換
+				Vector3 worldDir = cameraRight * avoidDir.x + cameraForward * avoidDir.z;
+				worldDir.y = 0.0f;
+				worldDir.Normalize();
+
+				// 内積でワールド方向がカメラ前方向（奥）と一致しているか判定
+				// 0.7f ≒ cos45度：概ね奥向きなら反転対象とする
+				float dot = worldDir.Dot(cameraForward);
+
+				// 奥方向への回避：エフェクトは回避方向と同じ向きに
+				if (dot > 0.7f)
+				{
+					float yaw = atan2f(-worldDir.x, -worldDir.z);
+					effectRot.SetRotationY(yaw);
+				}
+				// 手前・左右への回避：エフェクトは回避方向の逆向きに
+				else
+				{
+					float yaw = atan2f(-worldDir.x, -worldDir.z);
+					effectRot.SetRotationY(yaw);
+				}
+			}
+			// 回避エフェクト
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_PlayerAvoidance,
+				&transform.position,
+				effectRot,
+				Vector3::One
+			);
+			// 砂埃エフェクト
+			EffectManager::Get().PlayEffect(
+				enEffectKind_PlayerAvoidanceDust,
+				transform.position,
+				effectRot,
+				Vector3::One
+			);
+
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Avoidance));
 		}
@@ -756,12 +827,24 @@ namespace app
 		void StoneEventCharacterStateMachine::Update()
 		{
 			UpdateState();
+			// 攻撃エフェクトの遅延再生を更新
+			if (attackEffectScheduler_)
+			{
+				attackEffectScheduler_->Update(g_gameTime->GetFrameDeltaTime());
+			}
 			SuperClass::Update();
 		}
 
 
 		void StoneEventCharacterStateMachine::OnEnterDead()
 		{
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_StoneKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead));
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadStone));
 		}
@@ -775,8 +858,21 @@ namespace app
 		void StoneEventCharacterStateMachine::OnEnterKnockBack()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
-			//Jump(5.0f);
 			SetMoveDirection(knockBackDirection_);
+			// 溜め攻撃のときだけ吹き飛ばす
+			if (isBlowBack_)
+			{
+				Jump(80.0f);
+				isBlowBack_ = false;
+			}
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_StoneKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
+
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
 		}
 
@@ -794,6 +890,35 @@ namespace app
 		void StoneEventCharacterStateMachine::OnEnterAttack()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack));
+
+			// 攻撃方向を取得（ワールド空間）
+			Vector3 attackDir = GetMoveDirection();
+			attackDir.y = 0.0f;
+
+			// 攻撃方向に合わせた回転を計算
+			Quaternion effectRot = Quaternion::Identity;
+			if (attackDir.LengthSq() > 0.0001f)
+			{
+				attackDir.Normalize();
+				float yaw = atan2f(attackDir.x, attackDir.z);
+				effectRot.SetRotationY(yaw);
+			}
+
+			// 攻撃方向にオフセットした座標
+			const float offset = 20.0f;
+			Vector3 effectPos = transform.position + attackDir * offset;
+
+			// エフェクト再生
+			attackEffectScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
+			attackEffectScheduler_->AddTimer(0.35f, [effectPos, effectRot]()
+				{
+					EffectManager::Get().PlayEffect(
+						enEffectKind_StoneAttack,
+						effectPos,
+						effectRot,
+						Vector3::One
+					);
+				}, false);
 		}
 
 		void StoneEventCharacterStateMachine::OnExitAttack()
@@ -975,12 +1100,26 @@ namespace app
 		void MushroomEventCharacterStateMachine::Update()
 		{
 			UpdateState();
+
+			// 攻撃エフェクトの遅延再生を更新
+			if (attackEffectScheduler_)
+			{
+				attackEffectScheduler_->Update(g_gameTime->GetFrameDeltaTime());
+			}
+
 			SuperClass::Update();
 		}
 
 
 		void MushroomEventCharacterStateMachine::OnEnterDead()
 		{
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_MushroomKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead));
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadMushroom));
 		}
@@ -994,8 +1133,21 @@ namespace app
 		void MushroomEventCharacterStateMachine::OnEnterKnockBack()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
-			//Jump(5.0f);
 			SetMoveDirection(knockBackDirection_);
+			// 溜め攻撃のときだけ吹き飛ばす
+			if (isBlowBack_)
+			{
+				Jump(80.0f);
+				isBlowBack_ = false;
+			}
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_MushroomKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
+
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
 		}
 
@@ -1009,6 +1161,34 @@ namespace app
 		void MushroomEventCharacterStateMachine::OnEnterAttack()
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Attack));
+			// 攻撃方向を取得（ワールド空間）
+			Vector3 attackDir = GetMoveDirection();
+			attackDir.y = 0.0f;
+
+			// 攻撃方向に合わせた回転を計算
+			Quaternion effectRot = Quaternion::Identity;
+			if (attackDir.LengthSq() > 0.0001f)
+			{
+				attackDir.Normalize();
+				float yaw = atan2f(attackDir.x, attackDir.z);
+				effectRot.SetRotationY(yaw);
+			}
+
+			// 攻撃方向にオフセットした座標にエフェクトを設置
+			const float offset = 20.0f;
+			Vector3 effectPos = transform.position + attackDir * offset;
+
+			// 0.5秒後にエフェクト再生
+			attackEffectScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
+			attackEffectScheduler_->AddTimer(0.55f, [effectPos, effectRot]()
+				{
+					EffectManager::Get().PlayEffect(
+						enEffectKind_MushroomAttack,
+						effectPos,
+						effectRot,
+						Vector3::One
+					);
+				}, false);
 		}
 
 

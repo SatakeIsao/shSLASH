@@ -30,6 +30,14 @@ private:
      * NOTE: 各エフェクトソースを参照するための数値はユニークな数値になる
      */
     EffectHandle m_effectHandleCount = 0;
+    /** 追従エフェクトのエントリ */
+    struct FollowEffectEntry
+    {
+        EffectHandle handle;
+        EffectEmitter* emitter = nullptr;
+        const Vector3* targetPosition = nullptr; // 追従先座標へのポインタ
+    };
+    std::vector<FollowEffectEntry> m_followEffectList;
 
 
 private:
@@ -48,6 +56,8 @@ public:
 public:
     /** エフェクト再生 */
     EffectHandle PlayEffect(const int kind, const Vector3& position, const Quaternion& rotation, const Vector3& scale);
+    // 追従エフェクト再生
+    EffectHandle PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale);
     /** エフェクト停止 */
     void StopEffect(const EffectHandle handle);
 
@@ -87,6 +97,15 @@ public:
     static EffectManager& Get()
     {
         return *m_instance;
+    }
+
+
+    /**
+     * インスタンスが有効か
+     */
+    static bool IsAvailable()
+    {
+        return m_instance != nullptr;
     }
 
 
@@ -136,4 +155,6 @@ public:
     EffectHandle PlayEffect(const int kind, const Vector3& position, const Quaternion& rotation, const Vector3& scale);
     /** エフェクト停止をEffectMangerに委譲 */
     void StopEffect(const EffectHandle handle);
+
+    EffectHandle PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale);
 };

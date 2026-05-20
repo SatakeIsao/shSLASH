@@ -226,6 +226,10 @@ namespace app
 				//スカイキューブの種類を設定
 				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_NightToon_2);
 			}
+			//エフェクトマネージャーオブジェクト
+			{
+				effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+			}
 			/** イベントキャラクタースポーンマネージャー */
 			{
 				eventCharacterSpawnManagerObject_ = NewGO<app::actor::EventCharacterSpawnManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
@@ -237,6 +241,7 @@ namespace app
 						case app::actor::EnemyType::STONE:
 						{
 							auto* stone = result.stoneCharacter;
+
 							stoneEventCharacters_.push_back(stone);
 							stone->Initialize(sStoneEnemyInitializeParameter);
 							stone->AddState <app::actor::IdleCharacterState>();
@@ -247,12 +252,33 @@ namespace app
 							stone->AddState <app::actor::KnockBackCharacterState>();
 							stone->GetStatus()->SetFriction(stageParam->friction);
 							stone->GetStatus()->SetGravity(stageParam->gravity);
-							stone->GetStateMachine()->transform.position = stone->transform.position;
-
+							stone->GetCharacterController()->SetGravity(stageParam->gravity);
+							//stone->GetStateMachine()->transform.position = stone->transform.position;
+							// スポーンエフェクト
+							if (effectManagerObject_)
+							{
+								static Vector3 spawnEffectPos = result.spawnPosition;
+								effectManagerObject_->PlayEffectFollow(
+									enEffectKind_StoneSpawn,
+									&spawnEffectPos,
+									Quaternion::Identity,
+									Vector3::One
+								);
+							}
 
 							// 死亡時のコールバックをセット
 							stone->AddOnDead([this, stone]()
 							{
+								// 死亡エフェクト再生
+								if (effectManagerObject_)
+								{
+									effectManagerObject_->PlayEffect(
+										enEffectKind_StoneDead,
+										stone->transform.position,
+										Quaternion::Identity,
+										Vector3::One
+									);
+								}
 								// リストから削除
 								stoneEventCharacters_.erase(
 									std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
@@ -264,12 +290,13 @@ namespace app
 									playerHpUIObject_->AddLevelUpGauge(3);
 									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
 								}
-							});						
+							});		
 							break;
 						}
 						case app::actor::EnemyType::MUSHROOM:
 						{
 							auto* mushroom = result.mushroomCharacter;
+
 							mushroomEventCharacters_.push_back(mushroom);
 							mushroom->Initialize(sMushroomEnemyInitializeParameter);
 							mushroom->AddState <app::actor::IdleCharacterState>();
@@ -280,11 +307,34 @@ namespace app
 							mushroom->AddState <app::actor::KnockBackCharacterState>();
 							mushroom->GetStatus()->SetFriction(stageParam->friction);
 							mushroom->GetStatus()->SetGravity(stageParam->gravity);
-							mushroom->GetStateMachine()->transform.position = mushroom->transform.position;
+							mushroom->GetCharacterController()->SetGravity(stageParam->gravity);
+							///mushroom->GetStateMachine()->transform.position = mushroom->transform.position;
 
+							//　スポーンエフェクト
+							if (effectManagerObject_)
+							{
+								static Vector3 spawnEffectPos = result.spawnPosition;
+								effectManagerObject_->PlayEffectFollow(
+									enEffectKind_MushroomSpawn,
+									&spawnEffectPos,
+									Quaternion::Identity,
+									Vector3::One
+								);
+							}
 							//死亡時のコールバックをセット
 							mushroom->AddOnDead([this, mushroom]()
 							{
+								// 死亡エフェクト再生
+								if (effectManagerObject_)
+								{
+									effectManagerObject_->PlayEffect(
+										enEffectKind_MushroomDead,
+										mushroom->transform.position,
+										Quaternion::Identity,
+										Vector3::One
+									);
+								}
+
 								// リストから削除
 								mushroomEventCharacters_.erase(
 									std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
@@ -343,6 +393,7 @@ namespace app
 				characterSteering_->Initialize(battleCharacter_, 0);
 
 				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
+				eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
 				eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
 
 				// 敵キャラクター 
@@ -412,10 +463,6 @@ namespace app
 					gameCameraController_ = gameCamera;
 					app::camera::CameraManager::Get().Register(app::camera::GameCamera::ID(), gameCameraController_);
 					app::camera::CameraManager::Get().SwitchCamera(gameCameraController_);
-				}
-				//エフェクトマネージャーオブジェクト
-				{
-					effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				}
 				//ポーズマネージャーオブジェクト
 				{
@@ -632,26 +679,56 @@ namespace app
 					if (battleCharacter_->GetStateMachine()->IsSlashEffect()
 						&& !isWaitEffectPlay_)
 					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 50.0f);
-						effectPos.y += 30.0f;
+						// プレイヤーのモデルが向いている方向を前方ベクトルとして取得
+						Vector3 forward = Vector3(0.0f, 0.0f, 1.0f);
+						battleCharacter_->transform.localRotation.Apply(forward);
+						forward.y = 0.0f;
+						forward.Normalize();
 
-						Vector3 dir = battleCharacter_->GetStateMachine()->GetMoveDirection();
-						reservedEffectRot_ = Quaternion::Identity;
+						// 攻撃開始時の向きを固定
+						reservedEffectDir_ = forward;
 
-						// 直接再生せず、予約する
+						// 回転を固定
+						if (reservedEffectDir_.LengthSq() > 0.0001f)
+						{
+							float yaw = atan2f(reservedEffectDir_.x, reservedEffectDir_.z) + Math::PI / 2.0f;
+							reservedEffectRot_.SetRotationY(yaw);
+
+							// 斬撃モーションに合わせた傾きを追加（角度は要調整）
+							Quaternion tilt;
+							tilt.SetRotationX(Math::DegToRad(-45.0f));  // 45度は要調整
+							reservedEffectRot_ = reservedEffectRot_ * tilt;
+						}
+						else
+						{
+							reservedEffectRot_ = Quaternion::Identity;
+						}
+
+						bool isFirstSlash = battleCharacter_->GetStateMachine()->IsSlashFirst();
+						bool isSecondSlash = battleCharacter_->GetStateMachine()->isSlashSecond();
 						isWaitEffectPlay_ = true;
-						effectDelayTimer_ = 0.3f;
-						reservedEffectPos_ = effectPos;
+						effectDelayTimer_ = isFirstSlash ? 0.0f : 0.3f;
 
-						// エフェクト予約したらすぐリセット
+						/** 2回目だけ回転を変更 */
+						if (isSecondSlash)
+						{
+							Quaternion flipX;
+							flipX.SetRotationX(Math::PI);
+							reservedEffectRot_ = reservedEffectRot_ * flipX;
+						}
+						 
 						battleCharacter_->GetStateMachine()->SetSlashEffect(false);
 					}
 
 					// エフェクト再生待ち状態ならタイマーを更新
 					if (isWaitEffectPlay_)
 					{
-						float deltaTime = g_gameTime->GetFrameDeltaTime();
+						// 座標はプレイヤーに追従、向きは reservedEffectDir_（固定）でオフセット
+						reservedEffectPos_ = battleCharacter_->transform.position
+							+ (reservedEffectDir_ * 30.0f);
+						reservedEffectPos_.y += 30.0f;
 
+						float deltaTime = g_gameTime->GetFrameDeltaTime();
 						effectDelayTimer_ -= deltaTime;
 
 						if (effectDelayTimer_ <= 0.0f)
@@ -662,7 +739,6 @@ namespace app
 								reservedEffectRot_,
 								Vector3::One
 							);
-
 							isWaitEffectPlay_ = false;
 						}
 					}
@@ -684,13 +760,27 @@ namespace app
 					// チャージエフェクトの再生判定
 					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
 					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						// 通常攻撃と同じようにキャラクターの向きを取得
+						Vector3 forward = Vector3(0.0f, 0.0f, 1.0f);
+						battleCharacter_->transform.localRotation.Apply(forward);
+						forward.y = 0.0f;
+						forward.Normalize();
+
+						// 向きに合わせて回転を設定
+						Quaternion effectRot = Quaternion::Identity;
+						if (forward.LengthSq() > 0.0001f)
+						{
+							float yaw = atan2f(forward.x, forward.z) + Math::PI / 2.0f;
+							effectRot.SetRotationY(yaw);
+						}
+
+						Vector3 effectPos = battleCharacter_->transform.position + (forward * 30.0f);
 						effectPos.y += 30.0f;
 
 						effectManagerObject_->PlayEffect(
 							enEffectKind_PlayerAttackCharge_End,
 							effectPos,
-							Quaternion::Identity,
+							effectRot,
 							Vector3::One
 						);
 					}
@@ -880,7 +970,7 @@ namespace app
 							{
 								// ノックバック
 								auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
-								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
+								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack);
 								// 死亡判定
 								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
@@ -891,7 +981,7 @@ namespace app
 							{
 								// ノックバック
 								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
-								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection);
+								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack);
 								// 死亡判定
 								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
@@ -963,6 +1053,17 @@ namespace app
 					{
 						if (battleCharacter_) {
 							battleCharacter_->LevelUp();
+							// レベルアップエフェクト再生
+							if (effectManagerObject_)
+							{
+								effectManagerObject_->PlayEffectFollow(
+									enEffectKind_PlayerLevelUp,
+									&battleCharacter_->transform.position,
+									Quaternion::Identity,
+									Vector3::One
+								);
+							}
+
 						}
 						playerHpUIObject_->ClearLevelUp();  // フラグをリセット
 					}

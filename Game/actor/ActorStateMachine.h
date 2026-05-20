@@ -388,6 +388,11 @@ namespace app
 			{
 				isChargeEffectRequested_ = true;
 			}
+			/** 溜め攻撃中か */
+			bool IsChargeAttacking() const
+			{
+				return IsEqualCurrentState(ChargeAttackCharacterState::ID());
+			}
 
 			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
 			bool CheckAndConsumeChargeEffectRequest()
@@ -440,6 +445,16 @@ namespace app
 					InjuredFootStepHandle_ = app::SoundManager::Get().PlaySE(
 						static_cast<int>(app::SoundKind::InjuredFootStep), true);
 				}
+			}
+			/** 斬撃1回目か */
+			bool IsSlashFirst() const
+			{
+				return IsEqualCurrentState(SlashFirstCharacterState::ID());
+			}
+			/** 斬撃2回目か */
+			bool isSlashSecond() const
+			{
+				return IsEqualCurrentState(SlashSecondCharacterState::ID());
 			}
 		};
 
@@ -556,6 +571,7 @@ namespace app
 			using SuperClass = CharacterStateMachine;
 			app::collision::GhostBody* attackBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+			std::unique_ptr<app::core::TaskSchedulerSystem> attackEffectScheduler_;
 
 			Vector3 targetPosition_ = Vector3::Zero;
 			Vector3 chaseDirection_ = Vector3::Zero;
@@ -574,6 +590,8 @@ namespace app
 			bool isChasing_ = false;
 			/** パンチされたか */
 			bool isKnockBack_ = false;
+			/** 溜め攻撃による吹き飛ばしたか */
+			bool isBlowBack_ = false;
 
 			bool isAttackGhostCreated_ = false;
 
@@ -629,10 +647,11 @@ namespace app
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
 			 * パンチ食らったことを教える⇒ノックバックに変更したい
 			 */
-			void OnKnockBack(const Vector3& direction)
+			void OnKnockBack(const Vector3& direction, bool isBlowBack = false)
 			{
 				isKnockBack_ = true;
 				knockBackDirection_ = direction;
+				isBlowBack_ = isBlowBack;
 			}
 			bool IsKnockBack()
 			{
@@ -668,6 +687,7 @@ namespace app
 			using SuperClass = CharacterStateMachine;
 			app::collision::GhostBody* attackBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+			std::unique_ptr<app::core::TaskSchedulerSystem> attackEffectScheduler_;
 
 			Vector3 targetPosition_ = Vector3::Zero;
 			Vector3 chaseDirection_ = Vector3::Zero;
@@ -685,6 +705,8 @@ namespace app
 			bool isChasing_ = false;
 			/** パンチされたか */
 			bool isKnockBack_ = false;
+			/** 溜め攻撃による吹き飛ばしか */
+			bool isBlowBack_ = false;
 
 			bool isAttackGhostCreated_ = false;
 
@@ -740,10 +762,11 @@ namespace app
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
 			 * パンチ食らったことを教える⇒ノックバックに変更したい
 			 */
-			void OnKnockBack(const Vector3& direction)
+			void OnKnockBack(const Vector3& direction, bool isBlowBack = false)
 			{
 				isKnockBack_ = true;
 				knockBackDirection_ = direction;
+				isBlowBack_ = isBlowBack;
 			}
 			bool IsKnockBack()
 			{
