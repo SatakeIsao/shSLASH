@@ -15,11 +15,21 @@ namespace app
 		/** イベントキャラクターのスポーンする象限 */
 		enum class SpawnDirection
 		{
+			// 4隅
 			NORTH_WEST,
 			NORTH_EAST,
 			SOUTH_WEST,
 			SOUTH_EAST,
-			MAX
+			// 4辺の中央
+			NORTH,
+			SOUTH,
+			WEST, 
+			EAST, 
+			// 北辺の1/4・3/4地点
+			NORTH_WEST_MID, 
+			NORTH_EAST_MID, 
+
+			MAX             
 		};
 
 
@@ -52,6 +62,12 @@ namespace app
 					SpawnDirection::NORTH_EAST,
 					SpawnDirection::SOUTH_WEST,
 					SpawnDirection::SOUTH_EAST,
+					SpawnDirection::NORTH,
+					SpawnDirection::SOUTH,
+					SpawnDirection::WEST,
+					SpawnDirection::EAST,
+					SpawnDirection::NORTH_WEST_MID,
+					SpawnDirection::NORTH_EAST_MID,
 				};
 
 				std::shuffle(directions.begin(), directions.end(), std::mt19937(std::random_device{}()));

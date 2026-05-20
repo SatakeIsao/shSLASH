@@ -314,6 +314,7 @@
     <ClInclude Include="actor\EventCharacterSpawnManagerObject.h" />
     <ClInclude Include="core\TitleMenuManager.h" />
     <ClInclude Include="core\TitleMenuManagerObject.h" />
+    <ClInclude Include="actor\EnemyPool.h" />
     <ClInclude Include="title\TitleManager.h" />
     <ClInclude Include="ui\ReturnToTitleMenu.h" />
     <ClInclude Include="ui\PauseMenu.h" />

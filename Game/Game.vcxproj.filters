@@ -385,6 +385,7 @@
     <ClInclude Include="ui\TitleMenu.h" />
     <ClInclude Include="ui\TitleSubMenu.h" />
     <ClInclude Include="title\TitleManager.h" />
+    <ClInclude Include="actor\EnemyPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />
