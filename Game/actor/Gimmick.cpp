@@ -8,7 +8,7 @@ namespace
 {
     /** 地面 */
     // 地面のYオフセット
-    static constexpr float GROUND_OFFSET_Y = -350.0f;
+    static constexpr float GROUND_OFFSET_Y = -354.0f;
 
     /** 壁 */
     // 壁の半径
@@ -102,7 +102,7 @@ namespace app
         {
             // モデル読み込み
             modelRender_ = std::make_unique<ModelRender>();
-            modelRender_->Init(path);
+            modelRender_->Init(path, nullptr, 0, enModelUpAxisY, false, true);
             modelRender_->SetTRS(transform.position, transform.rotation, transform.scale);
             modelRender_->Update();
 

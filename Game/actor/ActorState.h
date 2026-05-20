@@ -182,7 +182,7 @@ namespace app
 				PlayerAnimationKind animKind;		// アニメーション種別
 				float animSpeed = 1.5f;				// アニメーション速度
 				float comboWindowTime = 0.8f;		// コンボ受付開始時間
-				float attackBodyDelay = 0.3f;		// 攻撃判定発生までの時間
+				float attackBodyDelay = 0.15f;		// 攻撃判定発生までの時間
 				float attackBodyDuration = 0.3f;	// 攻撃判定の持続時間
 				float attackBodyRadius = 45.0f;		// 攻撃判定の大きさ
 			};

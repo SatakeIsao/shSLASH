@@ -85,7 +85,7 @@ namespace app
 
 			/** DEBUG: スライムと座標同じだったのでテスト用でずらした */
 			//transform.position = Vector3::Zero;
-			transform.position = Vector3(0.0f,0.0f,-500.0f);
+			transform.position = Vector3(0.0f,-354.0f,-500.0f);
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
 

@@ -106,21 +106,34 @@ namespace app
 		{
 			stateTimer_ = 0.0f;
 
-			////ここで攻撃用のゴーストオブジェクトを作成
+			// StoneかMushroomかでタイマーを切り替える
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			// StoneかMushroomかでゴースト生成タイミングを切り替える
+			const bool isStone = (characterStateMachine->As<app::actor::StoneEventCharacterStateMachine>() != nullptr);
+			// StoneかMushroomかでゴースト生成タイミングを切り替える
+			float ghostDelay = 0.1f;
+			if (characterStateMachine->As<app::actor::StoneEventCharacterStateMachine>() != nullptr)
+			{
+				ghostDelay = 1.0f;
+			}
+			else if (characterStateMachine->As<app::actor::MushroomEventCharacterStateMachine>() != nullptr)
+			{
+				ghostDelay = 1.0f;
+			}
+
 			attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
-			attackScheduler_->AddTimer(0.1f, [&]()
+			attackScheduler_->AddTimer(ghostDelay, [&]()
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::SlimeAnimationKind::Attack));
 					characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+					characterStateMachine->OnEnterAttack();
+
 					attackBody_ = new app::collision::GhostBody();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
 
-					//if (auto* eventMachine = owner_->As<app::actor::EventCharacterStateMachine>())
-					//{
-					//	eventMachine->NontifyAttackGhostCreated();
-					//}
 					if (auto* m = owner_->As<app::actor::StoneEventCharacterStateMachine>())
 					{
 						m->NontifyAttackGhostCreated();
@@ -130,20 +143,15 @@ namespace app
 						m->NontifyAttackGhostCreated();
 					}
 
-
-					// @todo for test
 					const float radius = characterStateMachine->GetStatus()->GetRadius();
-					
 					Vector3 forward = characterStateMachine->GetMoveDirection();
-					
 					if (forward.LengthSq() < 0.01f) {
 						forward = Vector3::Front;
 					}
 					attackBody_->SetPosition(characterStateMachine->transform.position + forward * (radius + radius) + Vector3(0.0f, radius, 0.0f));
-			}, false);
+				}, false);
 
-			// DEBUG; 削除はEnterではしない
-			//ゴースト削除タイマー
+			// ゴースト削除タイマー
 			attackScheduler_->AddTimer(0.1f, [&]()
 				{
 					if (attackBody_ != nullptr) {
@@ -365,10 +373,16 @@ namespace app
 						p.attackBodyRadius,
 						app::collision::ghost::CollisionAttribute::Player,
 						app::collision::ghost::CollisionAttributeMask::All);
+
 					const float radius = csm->GetStatus()->GetRadius();
+					
+					// 常にキャラクターの向きを使用
+					Vector3 forward = Vector3::Front;
+					csm->transform.rotation.Apply(forward);
+					
 					attackBody_->SetPosition(
 						csm->transform.position
-						+ csm->GetMoveDirection() * (radius + radius)
+						+ forward * (radius * 4)
 						+ Vector3(0.0f, radius, 0.0f));
 				}, false);
 			attackScheduler_->AddTimer(param.attackBodyDuration, [&]()
@@ -403,10 +417,13 @@ namespace app
 				auto* csm = owner_->As<CharacterStateMachine>();
 				const float radius = csm->GetStatus()->GetRadius();
 				Vector3 forward = csm->GetMoveDirection();
-				if (forward.LengthSq() <= 0.01f) forward = Vector3::Front;
+				// 常にキャラクターの向きを使用
+				forward = Vector3::Front;
+				csm->transform.rotation.Apply(forward);
+
 				attackBody_->SetPosition(
 					csm->transform.position
-					+ forward * (radius + radius)
+					+ forward * (radius * 4)
 					+ Vector3(0.0f, radius, 0.0f));
 			}
 		}
@@ -830,10 +847,16 @@ namespace app
 								25.0f,
 								app::collision::ghost::CollisionAttribute::Player,
 								app::collision::ghost::CollisionAttributeMask::All);
+
 							const float radius = csm->GetStatus()->GetRadius();
+
+							// 常にキャラクターの向きを使用
+							Vector3 forward = Vector3::Front;
+							csm->transform.rotation.Apply(forward);
+
 							attackBody_->SetPosition(
 								csm->transform.position
-								+ csm->GetMoveDirection() * (radius + radius)
+								+ forward * (radius + radius)
 								+ Vector3(0.0f, radius, 0.0f));
 						}, false);
 					attackScheduler_->AddTimer(0.1f, [&]()
@@ -904,16 +927,13 @@ namespace app
 		void AvoidanceCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->OnEnterAvoidance();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.5f);
 
-			// 回避開始時のスティックの入力を保存
-			avoidanceDirection_ = characterStateMachine->GetMoveDirection();
-
+			avoidanceDirection_ = characterStateMachine->GetMoveDirection(); // 先に確定
 			timer_ = 0.0f;
-
-			// 回避中のフラグを立てる
 			characterStateMachine->SetAvoiding(true);
+
+			characterStateMachine->OnEnterAvoidance();
 		}
 
 
