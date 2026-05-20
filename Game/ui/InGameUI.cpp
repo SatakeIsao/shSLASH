@@ -476,7 +476,6 @@ namespace app
 			}
 			else
 			{
-				DeleteGO(this);
 				return;
 			}
 

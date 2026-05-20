@@ -2,14 +2,15 @@
 #include "EventCharacterSpawnManager.h"
 #include "actor/EventCharacter.h"
 #include "actor/BattleCharacter.h"
+#include "effect/EffectManager.h"
 #include "ui/InGameUI.h"
 #include <functional>
 
 
 namespace
 {
-	const int MAX_EVENT_CHARACTER = 4;                    // 同時に存在できるイベントキャラクターの最大数
-	const int INITIAL_SPAWN_COUNT = 4;                    // 初期スポーン数
+	//const int MAX_EVENT_CHARACTER = 10;                   // 同時に存在できるイベントキャラクターの最大数
+	const int INITIAL_SPAWN_COUNT = 10;                   // 初期スポーン数
 	const int MAX_PLAYER_LEVEL = 10;                      // プレイヤーレベルの最大値
 	const int SKELETON_SPAWN_LEVEL = 6;                   // スケルトンがスポーンし始めるプレイヤーレベル
 	const float SKELETON_BASE_PROBABILITY = 0.1f;         // スケルトンの基本出現確率 (Lv6で10%)
@@ -43,14 +44,23 @@ namespace app
 				if (entry.hpUI)
 				{
 					entry.hpUI->ClearTarget();
-					DeleteGO(entry.hpUI);
+					hpUIPool_.Release(entry.hpUI);
 				}
-				if (entry.enemy)
+				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
 				{
-					DeleteGO(entry.enemy);
+					stonePool_.Release(stone);
+				}
+				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
+				{
+					mushroomPool_.Release(mushroom);
 				}
 			}
 			activeEntries_.clear();
+
+			// シーン終了時にプールごと破棄
+			stonePool_.Finalize();
+			mushroomPool_.Finalize();
+			hpUIPool_.Finalize();
 		}
 
 		void EventCharacterSpawnManager::SetPause(bool isPause)
@@ -76,11 +86,18 @@ namespace app
 		{
 			battleCharacter_ = battleCharacter;
 
-			// 象限管理を初期化（4象限をシャッフルしてキューに積む）
+			// スポーン地点管理を初期化（10地点をシャッフルしてキューに積む）
 			quadrantManager_.Initialize();
 
 			// 初期スポーンを予約
 			pendingSpawnCount_ = INITIAL_SPAWN_COUNT;
+
+			// 起動時に一括でオブジェクトを生成（以降はNewGOしない）
+			stonePool_.Initialize();
+			StoneEventCharacter::ResetInstanceCount();
+			mushroomPool_.Initialize();
+			MushroomEventCharacter::ResetInstanceCount();
+			hpUIPool_.Initialize();
 
 			return true;
 		}
@@ -89,6 +106,8 @@ namespace app
 		void EventCharacterSpawnManager::Update()
 		{
 			if (isPause_) { return; }
+			// EffectManagerの初期化完了を待つ
+			if (!EffectManager::IsAvailable()) { return; }
 			// 初期スポーン・敵死亡後の追加スポーンを1秒おきに1体ずつ処理
 			if (pendingSpawnCount_ > 0)
 			{
@@ -150,19 +169,29 @@ namespace app
 		Vector3 EventCharacterSpawnManager::CalcSpawnPosition(const SpawnDirection& direction) const
 		{
 			// 原点（プレイヤー初期位置）を基準にした固定ワールド座標でスポーン
+			// fieldEdge_ = フィールド端までの距離
+			// halfEdge_  = その半分（辺中央・南北・東西用）
+			const float e = fieldEdge_;
+			const float h = fieldEdge_ * 0.5f;
+
 			switch (direction)
 			{
-			case SpawnDirection::NORTH_WEST:
-				return Vector3(-fieldEdge_, 0.0f, -fieldEdge_);
+			// 4隅
+			case SpawnDirection::NORTH_WEST:    return Vector3(-e, spawnPosY_, -e);
+			case SpawnDirection::NORTH_EAST:    return Vector3(e, spawnPosY_, -e);
+			case SpawnDirection::SOUTH_WEST:    return Vector3(-e, spawnPosY_, e);
+			case SpawnDirection::SOUTH_EAST:    return Vector3(e, spawnPosY_, e);
 
-			case SpawnDirection::NORTH_EAST:
-				return Vector3(fieldEdge_, 0.0f, -fieldEdge_);
+			// 4辺の中央
+			case SpawnDirection::NORTH:         return Vector3(0.0f, spawnPosY_, -e);
+			case SpawnDirection::SOUTH:         return Vector3(0.0f, spawnPosY_, e);
+			case SpawnDirection::WEST:          return Vector3(-e, spawnPosY_, 0.0f);
+			case SpawnDirection::EAST:          return Vector3(e, spawnPosY_, 0.0f);
 
-			case SpawnDirection::SOUTH_WEST:
-				return Vector3(-fieldEdge_, 0.0f, fieldEdge_);
-
-			case SpawnDirection::SOUTH_EAST:
-				return Vector3(fieldEdge_, 0.0f, fieldEdge_);
+			// 北辺・南辺の1/4地点
+			// 北辺を3分割した中間2点
+			case SpawnDirection::NORTH_WEST_MID: return Vector3(-h, spawnPosY_, -e);
+			case SpawnDirection::NORTH_EAST_MID: return Vector3(h, spawnPosY_, -e);
 
 			default:
 				return Vector3::Zero;
@@ -182,13 +211,23 @@ namespace app
 
 		void EventCharacterSpawnManager::SpawnEventCharacter()
 		{
-			// QuadrantManagerから次の象限を取得（使用済みフラグも内部で立てる）
+			// QuadrantManagerから次のスポーン地点を取得（使用済みフラグも内部で立てる）
 			const SpawnDirection direction = quadrantManager_.GetNext();
 			const Vector3 spawnPosition = CalcSpawnPosition(direction);
+
+			/** スポーン時のY座標が反映されているかのtest */
+			OutputDebugStringA(
+				("spawnPosition Y: " + std::to_string(spawnPosition.y) + "\n").c_str()
+			);
+
 			const EnemyType type = SelectEnemyType();
 
-			// デバッグ用：どの象限が選ばれたか出力
-			const char* dirNames[] = { "NORTH_WEST", "NORTH_EAST", "SOUTH_WEST", "SOUTH_EAST" };
+			// デバッグ用：どの地点が選ばれたか出力
+			const char* dirNames[] = {
+				"NORTH_WEST", "NORTH_EAST", "SOUTH_WEST", "SOUTH_EAST",
+				"NORTH", "SOUTH", "WEST", "EAST",
+				"NORTH_WEST_MID", "NORTH_EAST_MID"
+			};
 			OutputDebugStringA(
 				(std::string("Spawn direction: ") +
 					dirNames[static_cast<int>(direction)] + "\n").c_str()
@@ -196,18 +235,24 @@ namespace app
 
 			SpawnResult result;
 			result.type = type;
+			result.spawnPosition = spawnPosition;
 
 			switch (type)
 			{
 			case EnemyType::STONE:
 			{
-				auto* stone = NewGO<StoneEventCharacter>(
-					static_cast<uint8_t>(ObjectPriority::Character), "StoneEventCharacter");
-				stone->SetPause(isPause_);
+				auto* stone = stonePool_.Acquire();
+				if (!stone) { break; }
+
 				stone->transform.position = spawnPosition;
 				stone->GetStateMachine()->transform.position = spawnPosition;
+				
+				stone->GetCharacterController()->SetPosition(spawnPosition);
+				stone->GetCharacterController()->RequestTeleport();
+				stone->SetPause(isPause_);
 
-				auto* hpUI = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::EnemyUI));
+				auto* hpUI = hpUIPool_.Acquire();
+				hpUI->OnSpawn();
 				hpUI->SetTargetEnemy(stone);
 				hpUI->SetPlayer(battleCharacter_);
 
@@ -216,9 +261,9 @@ namespace app
 				stone->AddOnDead([this, stone, hpUI, direction]()
 					{
 						hpUI->ClearTarget();
-						DeleteGO(hpUI);
-						DeleteGO(stone);
-						quadrantManager_.Release(direction); // 象限を解放
+						hpUIPool_.Release(hpUI);
+						stonePool_.Release(stone);
+						quadrantManager_.Release(direction);
 						++pendingSpawnCount_;
 						activeEntries_.erase(
 							std::remove_if(activeEntries_.begin(), activeEntries_.end(),
@@ -230,13 +275,19 @@ namespace app
 			}
 			case EnemyType::MUSHROOM:
 			{
-				auto* mushroom = NewGO<MushroomEventCharacter>(
-					static_cast<uint8_t>(ObjectPriority::Character), "MushroomEventCharacter");
-				mushroom->SetPause(isPause_);
+				auto* mushroom = mushroomPool_.Acquire();
+				if (!mushroom) { break; }
+
 				mushroom->transform.position = spawnPosition;
 				mushroom->GetStateMachine()->transform.position = spawnPosition;
 
-				auto* hpUI = NewGO<app::ui::EnemyHpUIObject>(static_cast<uint8_t>(ObjectPriority::EnemyUI));
+				mushroom->GetCharacterController()->SetPosition(spawnPosition);
+				mushroom->GetCharacterController()->RequestTeleport();
+				
+				mushroom->SetPause(isPause_);
+
+				auto* hpUI = hpUIPool_.Acquire();
+				hpUI->OnSpawn();
 				hpUI->SetTargetEnemy(mushroom);
 				hpUI->SetPlayer(battleCharacter_);
 
@@ -245,9 +296,9 @@ namespace app
 				mushroom->AddOnDead([this, mushroom, hpUI, direction]()
 					{
 						hpUI->ClearTarget();
-						DeleteGO(hpUI);
-						DeleteGO(mushroom);
-						quadrantManager_.Release(direction); // 象限を解放
+						hpUIPool_.Release(hpUI);
+						mushroomPool_.Release(mushroom);
+						quadrantManager_.Release(direction);
 						++pendingSpawnCount_;
 						activeEntries_.erase(
 							std::remove_if(activeEntries_.begin(), activeEntries_.end(),
@@ -270,6 +321,34 @@ namespace app
 			{
 				onSpawned_(result);
 			}
+
+			//  // スポーンエフェクト再生
+			//  if (effectManagerObject_ && result.IsValid())
+			//  {
+			//  	int spawnEffect = enEffectKind_None;
+			//  
+			//  	switch (type)
+			//  	{
+			//  	case EnemyType::STONE:
+			//  		spawnEffect = enEffectKind_StoneSpawn;
+			//  		break;
+			//  	case EnemyType::MUSHROOM:
+			//  		spawnEffect = enEffectKind_mushroomSpawn;
+			//  		break;
+			//  	default:
+			//  		break;
+			//  	}
+			//  
+			//  	if (spawnEffect != enEffectKind_None)
+			//  	{
+			//  		effectManagerObject_->PlayEffect(
+			//  			spawnEffect,
+			//  			spawnPosition,
+			//  			Quaternion::Identity,
+			//  			Vector3::One
+			//  		);
+			//  	}
+			//  }
 		}
 
 	}

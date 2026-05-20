@@ -2,10 +2,15 @@
 
 #include "Actor.h"
 #include "actor/types.h"
+#include "actor/EnemyPool.h"
 #include "actor/QuadrantManager.h"
 #include <functional>
 #include <utility>
 
+namespace
+{
+	constexpr int MAX_EVENT_CHARACTER = 10;
+}
 
 namespace app
 {
@@ -35,6 +40,8 @@ namespace app
 			app::actor::StoneEventCharacter* stoneCharacter = nullptr;
 			app::actor::MushroomEventCharacter* mushroomCharacter = nullptr;
 			/** TODO::スケルトンのクラスが出来たら追加 */
+
+			Vector3 spawnPosition = Vector3::Zero;
 
 			bool IsValid() const
 			{
@@ -78,6 +85,9 @@ namespace app
 
 			void SetPause(bool isPause);
 
+			/** スポーン時のY座標を設定 */
+			void SetSpawnPosY(float y) { spawnPosY_ = y; }
+
 
 		private:
 			/** スケルトンの出現確率を計算する (Lv1～Lv5 : 0% , Lv6以降:段階的に上昇) */
@@ -101,19 +111,24 @@ namespace app
 			};
 			std::vector<EnemyEntry> activeEntries_;
 
-			QuadrantManager quadrantManager_;                          // 象限管理
+			QuadrantManager quadrantManager_;                         // スポーン地点管理
 
-			float fieldEdge_ = 20000.0f; // 原点からスポーン地点までの距離（フィールド端寄り）
+			float fieldEdge_ = 20000.0f;							  // 原点からスポーン地点までの距離（フィールド端寄り）
 
 			int playerLevel_ = 1;
 			float spawnInterval_ = 5.0f;                              // スポーン間隔（秒）
 			float spawnTimer_ = 0.0f;                                 // スポーンタイマー
 			int pendingSpawnCount_ = 0;                               // 次フレームでスポーンする残数
 			float pendingSpawnTimer_ = 1.0f;                          // 初期・追加スポーンのインターバルタイマー（初回は即スポーン）
+			float spawnPosY_ = 0.0f;									  // スポーンY座標
 			bool isPause_ = false;
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック
+
+			EnemyPool<StoneEventCharacter, MAX_EVENT_CHARACTER> stonePool_;
+			EnemyPool<MushroomEventCharacter, MAX_EVENT_CHARACTER> mushroomPool_;
+			EnemyPool<app::ui::EnemyHpUIObject, MAX_EVENT_CHARACTER> hpUIPool_;
 
 			/**
 			* シングルトン用

@@ -5,6 +5,7 @@
 #include "Actor.h"
 #include "ActorStateMachine.h"
 #include "actor/Types.h"
+#include "actor/EnemyPool.h"
 
 namespace app
 {
@@ -32,7 +33,6 @@ namespace app
 			bool Start() override;
 			void Update() override;
 			void Render(RenderContext& rc) override;
-
 
 		public:
 			void Initialize(CharacterInitializeParameter& param) override final;
@@ -70,7 +70,7 @@ namespace app
 		/****************************************************/
 		
 		
-		class StoneEventCharacter : public Character
+		class StoneEventCharacter : public Character , public IPoolable
 		{
 			appActor(StoneEventCharacter);
 
@@ -86,7 +86,7 @@ namespace app
 			std::vector<std::function<void()>> onDeadCallbacks_;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
-			bool isPause_ = false;
+			bool isPause_ = true;
 
 
 		public:
@@ -141,10 +141,12 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
+
 			void AddOnDead(std::function<void()> callback)
 			{
 				onDeadCallbacks_.push_back(std::move(callback));
 			}
+
 			void NotifyDead()
 			{
 				for (auto& cb : onDeadCallbacks_)
@@ -153,15 +155,44 @@ namespace app
 				}
 				onDeadCallbacks_.clear();
 			}
+
+			void OnSpawn() override
+			{
+				// 表示ON・コリジョンON・ステートマシン初期化
+				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
+				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());
+				ghostBody_->SetActive(true);
+				onDeadCallbacks_.clear(); // 前回のコールバックをクリア
+				instanceCount_++;
+
+				stateMachine_->Initialize();
+				//GetStateMachine()->Initialize();
+				isPause_ = false;
+			}
+
+			void OnRecycle() override
+			{
+				// 表示OFF・コリジョンOFF（DeleteGOは呼ばない！）
+				ghostBody_->SetActive(false);
+				instanceCount_--;
+				if (instanceCount_ < 0) { instanceCount_ = 0; }
+				// GetStateMachine()->Initialize();
+				isPause_ = true;
+			}
+
+			static void ResetInstanceCount()
+			{
+				instanceCount_ = 0;
+			}
 		};
 
 
 
 
 		/****************************************************/
-		
-		
-		class MushroomEventCharacter : public Character
+
+
+		class MushroomEventCharacter : public Character, public IPoolable
 		{
 			appActor(MushroomEventCharacter);
 
@@ -177,7 +208,7 @@ namespace app
 			std::vector<std::function<void()>> onDeadCallbacks_;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
-			bool isPause_ = false;
+			bool isPause_ = true;
 
 
 		public:
@@ -245,6 +276,34 @@ namespace app
 					if (cb)cb();
 				}
 				onDeadCallbacks_.clear();
+			}
+
+			void OnSpawn() override
+			{
+				// 表示ON・コリジョンON・ステートマシン初期化
+				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
+				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());
+				ghostBody_->SetActive(true);
+				onDeadCallbacks_.clear(); // 前回のコールバックをクリア
+				instanceCount_++;
+				//GetStateMachine()->Initialize();
+				stateMachine_->Initialize();
+				isPause_ = false;
+			}
+
+			void OnRecycle() override
+			{
+				// 表示OFF・コリジョンOFF（DeleteGOは呼ばない！）
+				ghostBody_->SetActive(false);
+				instanceCount_--;
+				if (instanceCount_ < 0) { instanceCount_ = 0; }
+				// GetStateMachine()->Initialize();
+				isPause_ = true;
+			}
+
+			static void ResetInstanceCount()
+			{
+				instanceCount_ = 0;
 			}
 		};
 	}

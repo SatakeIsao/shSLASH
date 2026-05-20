@@ -143,11 +143,6 @@ namespace app
 		{
 			if (isPause_) { return; }
 
-			if (transform.position.y < -200.0f)
-			{
-				stateMachine_->OnDead();
-			}
-
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
 			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
@@ -168,6 +163,7 @@ namespace app
 
 		void StoneEventCharacter::Render(RenderContext& rc)
 		{
+			if (isPause_) { return; }
 			SuperClass::Render(rc);
 		}
 
@@ -242,11 +238,6 @@ namespace app
 		{
 			if (isPause_) { return; }
 
-			if (transform.position.y < -200.0f)
-			{
-				stateMachine_->OnDead();
-			}
-
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
 			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
@@ -264,6 +255,7 @@ namespace app
 
 		void MushroomEventCharacter::Render(RenderContext& rc)
 		{
+			if (isPause_) { return; }
 			SuperClass::Render(rc);
 		}
 

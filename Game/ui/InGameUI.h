@@ -2,6 +2,7 @@
 #include "Layout.h"
 #include "actor/BattleCharacter.h"
 #include "actor/EventCharacter.h"
+#include "actor/EnemyPool.h"
 
 namespace app
 {
@@ -137,7 +138,7 @@ namespace app
 		/*************************************************/
 
 
-		class EnemyHpUIObject : public HpUIObject
+		class EnemyHpUIObject : public HpUIObject, public app::actor::IPoolable
 		{
 		private:
 			bool isDead_ = false;
@@ -179,6 +180,37 @@ namespace app
 				stoneTarget_ = nullptr;
 				mushroomTarget_ = nullptr;
 				isDead_ = true;
+			}
+			/** プールから取り出す時に呼ぶ */
+			void OnSpawn()
+			{
+				isDead_ = false;
+				isVisible_ = false;
+				hpIndex_ = 10; // コンストラクタと同じ初期値
+				damagePosX_ = 1.0f;
+				damageDelayTimer_ = 0.0f;
+				curHpOffsetX_ = 0.0f; // Layoutから再取得するので後述
+				dmgHpOffsetX_ = 0.0f;
+				stoneTarget_ = nullptr;
+				mushroomTarget_ = nullptr;
+				player_ = nullptr;
+
+				// Layoutのオフセット座標を再取得
+				auto menu = layout_->GetMenu();
+				auto enemyCurHP = menu->GetUI<UIIcon>(Hash32("enemyCurrentHP"));
+				auto enemyDmgHP = menu->GetUI<UIIcon>(Hash32("enemyDamageHP"));
+				if (enemyCurHP) curHpOffsetX_ = enemyCurHP->transform.localPosition.x;
+				if (enemyDmgHP) dmgHpOffsetX_ = enemyDmgHP->transform.localPosition.x;
+			}
+
+			/** プールに返す時に呼ぶ */
+			void OnRecycle()
+			{
+				isDead_ = true;   // Update()を即スキップさせる
+				isVisible_ = false;
+				stoneTarget_ = nullptr;
+				mushroomTarget_ = nullptr;
+				player_ = nullptr;
 			}
 		};
 
