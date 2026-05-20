@@ -8,28 +8,28 @@ namespace nsK2EngineLow {
 	RenderingEngine::~RenderingEngine()
 	{}
 
-	//“o˜^ˆ—
+	//ç™»éŒ²å‡¦ç†
 	void RenderingEngine::Init()
 	{
-		//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@[‚Ì‰¡•A‚‚³‚ðŽæ“¾
+		//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®æ¨ªå¹…ã€é«˜ã•ã‚’å–å¾—
 		int frameBuffer_w = g_graphicsEngine->GetFrameBufferWidth();
 		int frameBuffer_h = g_graphicsEngine->GetFrameBufferHeight();
 
 		float clearColor[4] = { 0.5f,0.5f,0.5f,1.0f };
 
-		//ƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		m_mainRenderingTarget.Create(
-			frameBuffer_w,	//ƒeƒNƒXƒ`ƒƒ‚Ì•
-			frameBuffer_h,	//ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³
-			1,											//MipmapƒŒƒxƒ‹
-			1,											//ƒeƒNƒXƒ`ƒƒ”z—ñ‚ÌƒTƒCƒY
-			DXGI_FORMAT_R32G32B32A32_FLOAT,				//ƒJƒ‰[ƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒg
-			DXGI_FORMAT_D32_FLOAT,						//ƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒg
+			frameBuffer_w,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…
+			frameBuffer_h,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•
+			1,											//Mipmapãƒ¬ãƒ™ãƒ«
+			1,											//ãƒ†ã‚¯ã‚¹ãƒãƒ£é…åˆ—ã®ã‚µã‚¤ã‚º
+			DXGI_FORMAT_R32G32B32A32_FLOAT,				//ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
+			DXGI_FORMAT_D32_FLOAT,						//ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
 			clearColor
 		);
 
-		//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@[‚ÉƒeƒNƒXƒ`ƒƒ‚ð“\‚è•t‚¯‚é‚½‚ß‚ÌƒXƒvƒ‰ƒCƒg‚ð‰Šú‰»
-		//‰Šú‰»ƒIƒuƒWƒFƒNƒg‚ðì¬
+		//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ãƒ¼ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è²¼ã‚Šä»˜ã‘ã‚‹ãŸã‚ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
+		//åˆæœŸåŒ–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆ
 		SpriteInitData spriteInitData;
 		spriteInitData.m_textures[0] = &m_mainRenderingTarget.GetRenderTargetTexture();
 		spriteInitData.m_width = frameBuffer_w;
@@ -40,13 +40,13 @@ namespace nsK2EngineLow {
 
 		m_bloom.InitRenderTarget(m_mainRenderingTarget);
 
-		//2D(ƒtƒHƒ“ƒg‚âƒXƒvƒ‰ƒCƒg)—p‚Ì‰Šú‰»
+		//2D(ãƒ•ã‚©ãƒ³ãƒˆã‚„ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ)ç”¨ã®åˆæœŸåŒ–
 		Init2DSprite();
 
-		//ƒuƒ‹[ƒ€‚Ì‰Šú‰»
+		//ãƒ–ãƒ«ãƒ¼ãƒ ã®åˆæœŸåŒ–
 		InitBloom();
 
-		//ƒVƒƒƒhƒE‚Ì‚½‚ß‚Ì‰Šú‰»
+		//ã‚·ãƒ£ãƒ‰ã‚¦ã®ãŸã‚ã®åˆæœŸåŒ–
 		InitShadowMap();
 	}
 
@@ -66,7 +66,7 @@ namespace nsK2EngineLow {
 	void RenderingEngine::Init2DSprite()
 	{
 		float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
-		//2D—p‚Ìƒ^[ƒQƒbƒg‚Ì‰Šú‰»
+		//2Dç”¨ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆæœŸåŒ–
 		m_2DRenderTarget.Create(
 			m_mainRenderingTarget.GetWidth(),
 			m_mainRenderingTarget.GetHeight(),
@@ -77,32 +77,32 @@ namespace nsK2EngineLow {
 			clearColor
 		);
 
-		//ÅI‡¬—p‚ÌƒXƒvƒ‰ƒCƒg‚ð‰Šú‰»‚·‚é
+		//æœ€çµ‚åˆæˆç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–ã™ã‚‹
 		SpriteInitData spriteInitData;
-		//ƒeƒNƒXƒ`ƒƒ‚Í2DƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯2Dãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		spriteInitData.m_textures[0] = &m_2DRenderTarget.GetRenderTargetTexture();
-		//‰ð‘œ“x‚ÍmainRenderTarget‚Ì•‚Æ‚‚³
+		//è§£åƒåº¦ã¯mainRenderTargetã®å¹…ã¨é«˜ã•
 		spriteInitData.m_width = m_mainRenderingTarget.GetWidth();
 		spriteInitData.m_height = m_mainRenderingTarget.GetHeight();
-		//2D—pƒVƒF[ƒ_[‚ðŽg—p‚·‚é
+		//2Dç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ç”¨ã™ã‚‹
 		spriteInitData.m_fxFilePath = "Assets/Shader/sprite.fx";
 		spriteInitData.m_vsEntryPointFunc = "VSMain";
 		spriteInitData.m_psEntryPoinFunc = "PSMain";
-		//ã‘‚«
+		//ä¸Šæ›¸ã
 		spriteInitData.m_alphaBlendMode = AlphaBlendMode_None;
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒtƒH[ƒ}ƒbƒg
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
 		spriteInitData.m_colorBufferFormat[0] = m_mainRenderingTarget.GetColorBufferFormat();
 
 		m_2DSprite.Init(spriteInitData);
 
-		//ƒeƒNƒXƒ`ƒƒ‚ÍƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		spriteInitData.m_textures[0] = &m_mainRenderingTarget.GetRenderTargetTexture();
 
-		//‰ð‘œ“x‚Í2DƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ì•‚Æ‚‚³
+		//è§£åƒåº¦ã¯2Dãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¹…ã¨é«˜ã•
 		spriteInitData.m_width = m_2DRenderTarget.GetWidth();
 		spriteInitData.m_height = m_2DRenderTarget.GetHeight();
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒtƒH[ƒ}ƒbƒg
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
 		spriteInitData.m_colorBufferFormat[0] = m_2DRenderTarget.GetColorBufferFormat();
 
 		m_mainSprite.Init(spriteInitData);
@@ -110,45 +110,45 @@ namespace nsK2EngineLow {
 
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
-		//‰e‚Ì•`‰æ
+		//å½±ã®æç”»
 		m_shadow.Render(rc, m_renderObjects);
 		//PreRender2D(rc);
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ðƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚É•ÏX
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«å¤‰æ›´
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderingTarget);
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ðÝ’è
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®š
 		rc.SetRenderTargetAndViewport(m_mainRenderingTarget);
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ðƒNƒŠƒA
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ã‚¯ãƒªã‚¢
 		rc.ClearRenderTargetView(m_mainRenderingTarget);
 
-		//ƒ‚ƒfƒ‹‚Ì•`‰æ
+		//ãƒ¢ãƒ‡ãƒ«ã®æç”»
 		ModelDraw(rc);
-		//ƒGƒtƒFƒNƒg‚Ì•`‰æ
+		//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æç”»
 		EffectEngine::GetInstance()->Draw();
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ö‚Ì‘‚«ž‚ÝI—¹‘Ò‚¿
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®æ›¸ãè¾¼ã¿çµ‚äº†å¾…ã¡
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderingTarget);
 
-		//‰æ‘œ‚Æ•¶Žš‚Ì•`‰æ
+		//ç”»åƒã¨æ–‡å­—ã®æç”»
 		SpriteFontDraw(rc);
 
-		/** ƒuƒ‹[ƒ€ */
-		// ‹P“x’Šo
+		/** ãƒ–ãƒ«ãƒ¼ãƒ  */
+		// è¼åº¦æŠ½å‡º
 		m_bloom.RenderLumi(rc);
-		//ƒ{ƒP‰æ‘œ‚ð¶¬
+		//ãƒœã‚±ç”»åƒã‚’ç”Ÿæˆ
 		m_bloom.RenderGauss(rc);
-		////ƒ{ƒP‰æ‘œ‚ð‰ÁŽZ‡¬
+		////ãƒœã‚±ç”»åƒã‚’åŠ ç®—åˆæˆ
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderingTarget);
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ðÝ’è
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®š
 		rc.SetRenderTargetAndViewport(m_mainRenderingTarget);
-		//ÅI‡¬
+		//æœ€çµ‚åˆæˆ
 		m_bloom.FinalSpriteDraw(rc);
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì‘‚«ž‚ÝI—¹‘Ò‚¿
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ›¸ãè¾¼ã¿çµ‚äº†å¾…ã¡
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderingTarget);
 
-		//ƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌŠG‚ðƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒRƒs[
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®çµµã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼
 		CopyMainRenderTargetToFrameBuffer(rc);
 
 		Render2DSprite(rc);
-		//“o˜^‚³‚ê‚Ä‚¢‚é•`‰æƒIƒuƒWƒFƒNƒg‚ðƒNƒŠƒA
+		//ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚¯ãƒªã‚¢
 		m_renderObjects.clear();
 	}
 
@@ -156,13 +156,14 @@ namespace nsK2EngineLow {
 	{
 		for (auto& renderObj : m_renderObjects)
 		{
+			if (renderObj == nullptr) { continue; }
 			renderObj->OnRenderModel(rc);
 		}
 	}
 
 	void RenderingEngine::CopyMainRenderTargetToFrameBuffer(RenderContext& rc)
 	{
-		//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚àƒZƒbƒg
+		//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚‚ã‚»ãƒƒãƒˆ
 		rc.SetRenderTarget(
 			g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
 			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
@@ -174,31 +175,32 @@ namespace nsK2EngineLow {
 
 	void RenderingEngine::SpriteFontDraw(RenderContext& rc)
 	{
-		//2D—p‚Ìƒ^[ƒQƒbƒg‚ªŽg‚¦‚é‚æ‚¤‚É‚È‚é‚Ü‚Å‘Ò‚Â
+		//2Dç”¨ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒä½¿ãˆã‚‹ã‚ˆã†ã«ãªã‚‹ã¾ã§å¾…ã¤
 		rc.WaitUntilToPossibleSetRenderTarget(m_2DRenderTarget);
-		//ƒ^[ƒQƒbƒgƒZƒbƒg
+		//ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚»ãƒƒãƒˆ
 		rc.SetRenderTargetAndViewport(m_2DRenderTarget);
-		//ƒ^[ƒQƒbƒg‚ÌƒNƒŠƒA
+		//ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚¯ãƒªã‚¢
 		rc.ClearRenderTargetView(m_2DRenderTarget);
 
 		m_mainSprite.Draw(rc);
 
 		m_2DSprite.Draw(rc);
 
-		//•`‰æ‚³‚ê‚é‚Ü‚Å‘Ò‚Â
+		//æç”»ã•ã‚Œã‚‹ã¾ã§å¾…ã¤
 		rc.WaitUntilFinishDrawingToRenderTarget(m_2DRenderTarget);
-		//ƒ^[ƒQƒbƒg‚ðƒƒCƒ“‚É–ß‚·
+		//ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ãƒ¡ã‚¤ãƒ³ã«æˆ»ã™
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderingTarget);
 		rc.SetRenderTargetAndViewport(m_mainRenderingTarget);
-		//ƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ö‚Ì‘‚«ž‚ÝI—¹‘Ò‚¿
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®æ›¸ãè¾¼ã¿çµ‚äº†å¾…ã¡
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderingTarget);
 	}
 
-	//2D•`‰æˆ—
+	//2Dæç”»å‡¦ç†
 	void RenderingEngine::Render2DSprite(RenderContext& rc)
 	{
 		for (auto& renderObj : m_renderObjects)
 		{
+			if (renderObj == nullptr) { continue; }
 			renderObj->OnRender2D(rc);
 		}
 	}

@@ -1,5 +1,5 @@
 /*!
- * @brief	ƒxƒNƒgƒ‹ƒNƒ‰ƒXB
+ * @brief	ãƒ™ã‚¯ãƒˆãƒ«ã‚¯ãƒ©ã‚¹ã€‚
  */
 
 #include "k2EngineLowPreCompile.h"
@@ -27,14 +27,14 @@ namespace nsK2EngineLow {
 	const Quaternion Quaternion::Identity = { 0.0f,  0.0f, 0.0f, 1.0f };
 
 	/*!
-	*@brief	s—ñ‚©‚çƒNƒH[ƒ^ƒjƒIƒ“‚ğì¬B
+	*@brief	è¡Œåˆ—ã‹ã‚‰ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ä½œæˆã€‚
 	*/
 	void Quaternion::SetRotation(const Matrix& m)
 	{
 		DirectX::XMStoreFloat4(&vec, DirectX::XMQuaternionRotationMatrix(m));
 	}
 	/*!
-	*@brief	fromƒxƒNƒgƒ‹‚©‚çtoƒxƒNƒgƒ‹‚É‰ñ“]‚³‚¹‚éƒNƒH[ƒ^ƒjƒIƒ“‚ğì¬B
+	*@brief	fromãƒ™ã‚¯ãƒˆãƒ«ã‹ã‚‰toãƒ™ã‚¯ãƒˆãƒ«ã«å›è»¢ã•ã›ã‚‹ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã‚’ä½œæˆã€‚
 	*/
 	void Quaternion::SetRotation(Vector3 from, Vector3 to)
 	{
@@ -43,12 +43,12 @@ namespace nsK2EngineLow {
 		auto t = nsK2EngineLow::Dot(from, to);
 		Vector3 rotAxis;
 		if (t > 0.998f) {
-			//‚Ù‚Ú“¯‚¶Œü‚«‚È‚Ì‚Å’PˆÊƒNƒH[ƒ^ƒjƒIƒ“‚É‚·‚éB
+			//ã»ã¼åŒã˜å‘ããªã®ã§å˜ä½ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã«ã™ã‚‹ã€‚
 			*this = Quaternion::Identity;
 			return ;
 		}
 		else if (t < -0.998f) {
-			//‚Ù‚Ú‹tŒü‚«‚È‚Ì‚ÅA
+			//ã»ã¼é€†å‘ããªã®ã§ã€
 			if (fabsf(to.x) < 1.0f) {
 				//
 				rotAxis = Cross(Vector3::AxisX, to);
