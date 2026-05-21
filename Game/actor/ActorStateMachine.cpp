@@ -752,14 +752,6 @@ namespace app
 					}
 					return;
 				}
-
-				//TODO: もとの下の流れに戻したい
-
-
-
-				//aiTimer_ = 5.0f;
-				//isChasing_ = false;
-				//return;
 			}
 
 			app::actor::BattleCharacter* player = nullptr;
@@ -821,6 +813,19 @@ namespace app
 			RequestChangeState(IdleCharacterState::ID());
 
 			isUseCameraDirection_ = false;
+			// フラグを全リセット
+			isKnockBack_ = false;
+			isDead_ = false;
+			isChasing_ = false;
+			isBlowBack_ = false;
+			knockBackDirection_ = Vector3::Zero;
+			aiTimer_ = 0.0f;
+			isJustSpawned_ = true;
+
+			// スポーン時の向きをランダムに設定
+			randomEngine_.seed(std::random_device{}());
+			float randomYaw = (randomEngine_() % 360) * (Math::PI / 180.0f);
+			transform.rotation.SetRotationY(randomYaw);
 		}
 
 
@@ -839,9 +844,9 @@ namespace app
 		void StoneEventCharacterStateMachine::OnEnterDead()
 		{
 			// エフェクト再生
-			EffectManager::Get().PlayEffectFollow(
+			EffectManager::Get().PlayEffect(
 				enEffectKind_StoneKnockBack,
-				&transform.position,
+				transform.position,
 				Quaternion::Identity,
 				Vector3::One
 			);
@@ -928,6 +933,19 @@ namespace app
 
 		void StoneEventCharacterStateMachine::UpdateState()
 		{
+			/** スポーン直後、一定時間は他のステートに遷移不可 */
+			if (isJustSpawned_)
+			{
+				/** スポーン直後の待機時間 */
+				static const float SPAWN_WAIT_TIME = 1.5f;
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (aiTimer_ > SPAWN_WAIT_TIME)
+				{
+					isJustSpawned_ = false;
+					aiTimer_ = 0.0f;
+				}
+				return;
+			}
 			if (isDead_)
 			{
 				RequestChangeState(DeadCharacterState::ID());
@@ -1016,14 +1034,6 @@ namespace app
 					}
 					return;
 				}
-
-				//TODO: もとの下の流れに戻したい
-
-
-
-				//aiTimer_ = 5.0f;
-				//isChasing_ = false;
-				//return;
 			}
 
 			app::actor::BattleCharacter* player = nullptr;
@@ -1032,6 +1042,8 @@ namespace app
 			if (IsEqualCurrentState(IdleCharacterState::ID()))
 			{
 				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				
+				/** 通常の待機 */
 				if (aiTimer_ > WAIT_TIME)
 				{
 					RequestChangeState(PatrolCharacterState::ID());
@@ -1094,6 +1106,19 @@ namespace app
 			SetCurrentState(INVALID_STATE_ID);
 			RequestChangeState(IdleCharacterState::ID());
 			isUseCameraDirection_ = false;
+			// フラグを全リセット
+			isKnockBack_ = false;
+			isDead_ = false;
+			isChasing_ = false;
+			isBlowBack_ = false;
+			knockBackDirection_ = Vector3::Zero;
+			aiTimer_ = 0.0f;
+			isJustSpawned_ = true;
+
+			// スポーン時の向きをランダムに設定
+			randomEngine_.seed(std::random_device{}());
+			float randomYaw = (randomEngine_() % 360) * (Math::PI / 180.0f);
+			transform.rotation.SetRotationY(randomYaw);
 		}
 
 
@@ -1205,6 +1230,19 @@ namespace app
 
 		void MushroomEventCharacterStateMachine::UpdateState()
 		{
+			/** スポーン直後、一定時間は他のステートに遷移不可 */
+			if (isJustSpawned_)
+			{
+				/** スポーン直後の待機時間 */
+				static const float SPAWN_WAIT_TIME = 1.5f;
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (aiTimer_ > SPAWN_WAIT_TIME)
+				{
+					isJustSpawned_ = false;
+					aiTimer_ = 0.0f;
+				}
+				return;
+			}
 			if (isDead_)
 			{
 				RequestChangeState(DeadCharacterState::ID());
@@ -1295,14 +1333,6 @@ namespace app
 					}
 					return;
 				}
-
-				//TODO: もとの下の流れに戻したい
-
-
-
-				//aiTimer_ = 5.0f;
-				//isChasing_ = false;
-				//return;
 			}
 
 			app::actor::BattleCharacter* player = nullptr;
