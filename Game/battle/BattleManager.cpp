@@ -39,7 +39,9 @@ namespace
 
 	/** 無敵時間 */
 	static constexpr float INVINCIBLE_TIME = 2.0f;
-
+	/** エフェクトのY座標調整 */
+	static constexpr float STONE_SPAWN_EFFECT_OFFSET_Y = 180.0f;
+	static constexpr float MUSHROOM_SPAWN_EFFECT_OFFSET_Y = 180.0f;
 
 	// Player用
 	static app::actor::CharacterInitializeParameter sPlayerInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
@@ -258,6 +260,8 @@ namespace app
 							if (effectManagerObject_)
 							{
 								static Vector3 spawnEffectPos = result.spawnPosition;
+								spawnEffectPos = result.spawnPosition;          // 毎回更新（static の初期化は初回のみなので必要）
+								spawnEffectPos.y += STONE_SPAWN_EFFECT_OFFSET_Y;
 								effectManagerObject_->PlayEffectFollow(
 									enEffectKind_StoneSpawn,
 									&spawnEffectPos,
@@ -314,11 +318,13 @@ namespace app
 							if (effectManagerObject_)
 							{
 								static Vector3 spawnEffectPos = result.spawnPosition;
+								spawnEffectPos = result.spawnPosition;          // 毎回更新（static の初期化は初回のみなので必要）
+								spawnEffectPos.y += MUSHROOM_SPAWN_EFFECT_OFFSET_Y;
 								effectManagerObject_->PlayEffectFollow(
 									enEffectKind_MushroomSpawn,
 									&spawnEffectPos,
 									Quaternion::Identity,
-									Vector3::One
+									Vector3(1.2f,1.2f,1.2f)
 								);
 							}
 							//死亡時のコールバックをセット

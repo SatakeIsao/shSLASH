@@ -572,6 +572,7 @@ namespace app
 			app::collision::GhostBody* attackBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackEffectScheduler_;
+			std::mt19937 randomEngine_;
 
 			Vector3 targetPosition_ = Vector3::Zero;
 			Vector3 chaseDirection_ = Vector3::Zero;
@@ -592,8 +593,10 @@ namespace app
 			bool isKnockBack_ = false;
 			/** 溜め攻撃による吹き飛ばしたか */
 			bool isBlowBack_ = false;
-
+			/** 攻撃用のゴーストボディ生成したか */
 			bool isAttackGhostCreated_ = false;
+			/** スポーン直後の待機フラグ */
+			bool isJustSpawned_ = true;
 
 		public:
 			StoneEventCharacterStateMachine();
@@ -630,6 +633,9 @@ namespace app
 
 			/** 視野角に入ったことを教える */
 			void OnViewAngle(const Vector3& targetPos) {
+				/** スポーン直後は視野角に反応しない */
+				if (isJustSpawned_) return;
+
 				isViewAngle_ = true;
 				targetPosition_ = targetPos;
 			}
@@ -638,6 +644,9 @@ namespace app
 
 			/** 追跡開始を教える */
 			void OnChase(const Vector3& direction, const Vector3& targetPos) {
+				/** スポーン直後は視野角に反応しない */
+				if (isJustSpawned_) return;
+
 				isChasing_ = true;
 				chaseDirection_ = direction;
 				targetPosition_ = targetPos;
@@ -688,6 +697,7 @@ namespace app
 			app::collision::GhostBody* attackBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackEffectScheduler_;
+			std::mt19937 randomEngine_;
 
 			Vector3 targetPosition_ = Vector3::Zero;
 			Vector3 chaseDirection_ = Vector3::Zero;
@@ -707,8 +717,10 @@ namespace app
 			bool isKnockBack_ = false;
 			/** 溜め攻撃による吹き飛ばしか */
 			bool isBlowBack_ = false;
-
+			/** 攻撃用のゴーストボディ生成したか */
 			bool isAttackGhostCreated_ = false;
+			/** スポーン直後の待機フラグ */
+			bool isJustSpawned_ = true;
 
 		public:
 			MushroomEventCharacterStateMachine();
@@ -745,6 +757,9 @@ namespace app
 
 			/** 視野角に入ったことを教える */
 			void OnViewAngle(const Vector3& targetPos) {
+				/** スポーン直後は視野角に反応しない */
+				if (isJustSpawned_) return;
+				
 				isViewAngle_ = true;
 				targetPosition_ = targetPos;
 			}
@@ -753,6 +768,9 @@ namespace app
 
 			/** 追跡開始を教える */
 			void OnChase(const Vector3& direction, const Vector3& targetPos) {
+				/** スポーン直後は視野角に反応しない */
+				if (isJustSpawned_) return;
+
 				isChasing_ = true;
 				chaseDirection_ = direction;
 				targetPosition_ = targetPos;

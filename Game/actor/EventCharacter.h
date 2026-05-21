@@ -87,6 +87,9 @@ namespace app
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
+			/** 表示フラグ */
+			bool isVisible_ = false;
+			bool justSpawned_ = false;
 
 
 		public:
@@ -166,8 +169,10 @@ namespace app
 				instanceCount_++;
 
 				stateMachine_->Initialize();
-				//GetStateMachine()->Initialize();
+
+				justSpawned_ = true;
 				isPause_ = false;
+				isVisible_ = true;
 			}
 
 			void OnRecycle() override
@@ -176,8 +181,9 @@ namespace app
 				ghostBody_->SetActive(false);
 				instanceCount_--;
 				if (instanceCount_ < 0) { instanceCount_ = 0; }
-				// GetStateMachine()->Initialize();
+				
 				isPause_ = true;
+				isVisible_ = false;
 			}
 
 			static void ResetInstanceCount()
@@ -209,7 +215,8 @@ namespace app
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
-
+			/** 表示フラグ */
+			bool isVisible_ = false;
 
 		public:
 			MushroomEventCharacter();
@@ -284,21 +291,24 @@ namespace app
 				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
 				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());
 				ghostBody_->SetActive(true);
-				onDeadCallbacks_.clear(); // 前回のコールバックをクリア
+				// 前回のコールバックをクリア
+				onDeadCallbacks_.clear();
 				instanceCount_++;
-				//GetStateMachine()->Initialize();
 				stateMachine_->Initialize();
+
 				isPause_ = false;
+				isVisible_ = true;
 			}
 
 			void OnRecycle() override
 			{
-				// 表示OFF・コリジョンOFF（DeleteGOは呼ばない！）
+				// 表示OFF・コリジョンOFF
 				ghostBody_->SetActive(false);
 				instanceCount_--;
 				if (instanceCount_ < 0) { instanceCount_ = 0; }
-				// GetStateMachine()->Initialize();
+				
 				isPause_ = true;
+				isVisible_ = false;
 			}
 
 			static void ResetInstanceCount()

@@ -146,6 +146,11 @@ namespace app
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
 			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
+			if (justSpawned_)
+			{
+				justSpawned_ = false;
+				nextPosition = stateMachine_->transform.position; // コントローラーの古い位置を無視
+			}
 
 			transform.localPosition = nextPosition;
 			transform.localScale = stateMachine_->transform.scale;
@@ -163,7 +168,8 @@ namespace app
 
 		void StoneEventCharacter::Render(RenderContext& rc)
 		{
-			if (isPause_) { return; }
+			// ポーズ中は描画する、プール中（非表示）は描画しない
+			if (!isVisible_) { return; }
 			SuperClass::Render(rc);
 		}
 
@@ -255,7 +261,8 @@ namespace app
 
 		void MushroomEventCharacter::Render(RenderContext& rc)
 		{
-			if (isPause_) { return; }
+			// ポーズ中は描画する、プール中（非表示）は描画しない
+			if (!isVisible_) { return; }
 			SuperClass::Render(rc);
 		}
 
