@@ -3,7 +3,9 @@
  */
 #pragma once
 #include "Actor.h"
+#include "ActorStatus.h"
 #include "ActorStateMachine.h"
+#include "BattleCharacter.h"
 #include "actor/Types.h"
 #include "actor/EnemyPool.h"
 
@@ -84,6 +86,7 @@ namespace app
 			std::unique_ptr<StoneEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			std::vector<std::function<void()>> onDeadCallbacks_;
+			app::actor::BattleCharacter* battleCharacter_ = nullptr;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
@@ -145,6 +148,11 @@ namespace app
 				isPause_ = isPause;
 			}
 
+			void SetBattleCharacter(app::actor::BattleCharacter* battleCharacter)
+			{
+				battleCharacter_ = battleCharacter;
+			}
+
 			void AddOnDead(std::function<void()> callback)
 			{
 				onDeadCallbacks_.push_back(std::move(callback));
@@ -161,6 +169,15 @@ namespace app
 
 			void OnSpawn() override
 			{
+				StoneEventCharacterStatus* s = status_ -> As<StoneEventCharacterStatus>();
+
+				if (s && battleCharacter_)
+				{
+					s->Setup();
+					s->ResetPhase();
+					s->ApplyPhase(battleCharacter_->GetLevel());
+				}
+
 				// 表示ON・コリジョンON・ステートマシン初期化
 				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
 				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());
@@ -212,6 +229,7 @@ namespace app
 			std::unique_ptr<MushroomEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			std::vector<std::function<void()>> onDeadCallbacks_;
+			app::actor::BattleCharacter* battleCharacter_ = nullptr;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
@@ -287,6 +305,16 @@ namespace app
 
 			void OnSpawn() override
 			{
+				MushroomEventCharacterStatus* s = status_->As<MushroomEventCharacterStatus>();
+
+				if (s && battleCharacter_)
+				{
+					s->Setup();
+					s->ResetPhase();
+					s->ApplyPhase(battleCharacter_->GetLevel());
+				}
+
+
 				// 表示ON・コリジョンON・ステートマシン初期化
 				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
 				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());

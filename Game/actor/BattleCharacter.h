@@ -4,6 +4,7 @@
 #pragma once
 #include "Actor.h"
 #include "ActorStateMachine.h"
+#include "EventCharacterSpawnManager.h"
 #include "actor/Types.h"
 #include "actor/Equipment.h"
 
@@ -24,6 +25,7 @@ namespace app
 		private:
 			std::unique_ptr<BattleCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
+			app::actor::EventCharacterSpawnManager* spawnManager_ = nullptr;
 
 			/** TODO: jsonで管理 */
 			int level_ = 0;
@@ -47,6 +49,12 @@ namespace app
 			{ 
 				if (level_ >= 10) return;
 				level_++; 
+
+				if(spawnManager_)
+				{
+					spawnManager_->OnPlayerLevelUp(level_);
+				}
+
 				// EquipmentSlot 経由で武器のレベルを上げる
 				auto* slot = equipmentSlots_.GetSlot(EquipmentSlotType::Weapon);
 				if (slot && slot->HasEquipment())
@@ -100,6 +108,12 @@ namespace app
 					stateMachine_->OnResume();
 				}
 				isPause_ = isPause;
+			}
+
+
+			void SetSpawnManager(app::actor::EventCharacterSpawnManager* spawnManager)
+			{
+				spawnManager_ = spawnManager;
 			}
 		};
 	}

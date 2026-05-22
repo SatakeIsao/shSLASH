@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ActorStatus.h"
 #include "core/ParameterManager.h"
+#include "EnemyPhase.h"
 
 
 namespace app
@@ -36,8 +37,8 @@ namespace app
 
 
 		/**********************************/
-		
-		
+
+
 		void EventCharacterStatus::LoadParameter(const char* path)
 		{
 			// 無し
@@ -77,6 +78,39 @@ namespace app
 			hp_ = parameter->hp;
 			currentHp_ = parameter->hp;
 			attackPower_ = parameter->attackPower;
+
+			enemyPhase_.SetPhases({
+					{ 0,  parameter->hp, parameter->attackPower, parameter->moveSpeed},
+					{ 4,  parameter->hp, parameter->attackPower * 1.5f, parameter->moveSpeed},
+					{ 8,  parameter->hp, parameter->attackPower * 2.0f, parameter->moveSpeed},
+				});
+		}
+
+		bool MushroomEventCharacterStatus::ApplyPhase(int playerLevel)
+		{
+			EnemyPhaseData data;
+			if (enemyPhase_.Update(playerLevel, data))
+			{
+				// フェーズが進んだ場合
+				hp_ = data.hp;
+				currentHp_ = data.hp;
+				attackPower_ = data.attackPower;
+				moveSpeed_ = data.moveSpeed;
+				return true;
+			}
+
+			// Reset直後(currentIndex_==-1)からの再適用時もここに来る可能性があるため
+			// Updateが false でも現在フェーズのデータを取得して反映する
+			if (enemyPhase_.TryGetCurrentPhaseData(data))
+			{
+				hp_ = data.hp;
+				currentHp_ = data.hp;
+				attackPower_ = data.attackPower;
+				moveSpeed_ = data.moveSpeed;
+				return true;
+			}
+
+			return false;
 		}
 
 
@@ -102,6 +136,39 @@ namespace app
 			hp_ = parameter->hp;
 			currentHp_ = parameter->hp;
 			attackPower_ = parameter->attackPower;
+
+			enemyPhase_.SetPhases({
+					{ 0,  parameter->hp, parameter->attackPower, parameter->moveSpeed},
+					{ 4,  parameter->hp, parameter->attackPower * 1.5f, parameter->moveSpeed},
+					{ 8,  parameter->hp, parameter->attackPower * 2.0f, parameter->moveSpeed},
+					});
+		}
+
+		bool StoneEventCharacterStatus::ApplyPhase(int playerLevel)
+		{
+			EnemyPhaseData data;
+			if (enemyPhase_.Update(playerLevel, data))
+			{
+				// フェーズが進んだ場合
+				hp_ = data.hp;
+				currentHp_ = data.hp;
+				attackPower_ = data.attackPower;
+				moveSpeed_ = data.moveSpeed;
+				return true;
+			}
+
+			// Reset直後(currentIndex_==-1)からの再適用時もここに来る可能性があるため
+			// Updateが false でも現在フェーズのデータを取得して反映する
+			if (enemyPhase_.TryGetCurrentPhaseData(data))
+			{
+				hp_ = data.hp;
+				currentHp_ = data.hp;
+				attackPower_ = data.attackPower;
+				moveSpeed_ = data.moveSpeed;
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

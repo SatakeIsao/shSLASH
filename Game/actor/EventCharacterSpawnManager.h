@@ -67,7 +67,6 @@ namespace app
 			/** イベントキャラクターをスポーンする */
 			void SpawnEventCharacter();
 
-
 		public:
 			/** プレイヤーレベルを設定する */
 			void SetPlayerLevel(int level) { playerLevel_ = level; }
@@ -83,10 +82,16 @@ namespace app
 			/** 生存中の全敵とHPバーをDeleteGOする（シーン破棄時に呼ぶ） */
 			void CleanUp();
 
+			/** ポーズ状態を設定する */
 			void SetPause(bool isPause);
 
 			/** スポーン時のY座標を設定 */
 			void SetSpawnPosY(float y) { spawnPosY_ = y; }
+
+			void SetPhaseUI(PhaseUI* phaseUI) { phaseUI_ = phaseUI; }
+
+			/** プレイヤーレベルが上がったときに呼ばれる */
+			void OnPlayerLevelUp(int newLevel);
 
 
 		private:
@@ -112,6 +117,8 @@ namespace app
 			std::vector<EnemyEntry> activeEntries_;
 
 			QuadrantManager quadrantManager_;                         // スポーン地点管理
+
+			PhaseUI* phaseUI_ = nullptr;							  // フェーズUIへの参照（スポーン間隔の表示に使う）
 
 			float fieldEdge_ = 20000.0f;							  // 原点からスポーン地点までの距離（フィールド端寄り）
 

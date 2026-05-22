@@ -123,6 +123,8 @@ namespace app
             app::ui::PlayerHpUIObject* playerHpUIObject_ = nullptr;
             app::ui::EnemyHpUIObject* enemyHpUIObject_ = nullptr;
             app::ui::LevelUpUIObject* levelUpObject_ = nullptr;
+
+			app::actor::PhaseUI* phaseUI_ = nullptr;    // フェーズを表示できる様に仮置き
             //スカイキューブのオブジェクト
             nsK2EngineLow::SkyCube* skyCube_ = nullptr;
             /** 通知リスト */
