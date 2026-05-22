@@ -3,6 +3,7 @@
  * ステータスをまとめたクラス群
  */
 #pragma once
+#include "EnemyPhase.h"
 
 
 namespace app
@@ -152,10 +153,22 @@ namespace app
 		protected:
 
 
+		private:
+			EnemyPhase enemyPhase_;
+
+
 		public:
 			virtual ~MushroomEventCharacterStatus() {}
 			virtual void LoadParameter(const char* path) override;
 			virtual void Setup() override;
+
+			/** プレイヤーのレベルに応じてフェーズを適用する */
+			bool ApplyPhase(int playerLevel);
+
+			/** フェーズをリセットする */
+			void ResetPhase() { enemyPhase_.Reset(); }
+
+			int GetCurrentPhaseIndex() const { return enemyPhase_.GetCurrentIndex() + 1; }
 		};
 
 
@@ -167,10 +180,22 @@ namespace app
 		protected:
 
 
+		private:
+			EnemyPhase enemyPhase_;
+
+
 		public:
 			virtual ~StoneEventCharacterStatus() {}
 			virtual void LoadParameter(const char* path) override;
 			virtual void Setup() override;
+
+			/** プレイヤーのレベルに応じてフェーズを適用する */
+			bool ApplyPhase(int playerLevel);
+
+			/** フェーズをリセットする */
+			void ResetPhase() { enemyPhase_.Reset(); }
+
+			int GetCurrentPhaseIndex() const { return enemyPhase_.GetCurrentIndex() + 1; }
 		};
 	}
 }

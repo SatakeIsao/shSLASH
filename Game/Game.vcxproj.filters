@@ -199,6 +199,7 @@
     <ClCompile Include="ui\TitleMenu.cpp" />
     <ClCompile Include="ui\TitleSubMenu.cpp" />
     <ClCompile Include="title\TitleManager.cpp" />
+    <ClCompile Include="EnemyPhase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -386,6 +387,7 @@
     <ClInclude Include="ui\TitleSubMenu.h" />
     <ClInclude Include="title\TitleManager.h" />
     <ClInclude Include="actor\EnemyPool.h" />
+    <ClInclude Include="EnemyPhase.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

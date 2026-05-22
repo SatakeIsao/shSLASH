@@ -23,6 +23,7 @@
 #include "effect/EffectManager.h"
 #include "core/PauseManager.h"
 #include "core/PauseManagerObject.h"
+#include "EnemyPhase.h"
 #include "sound/SoundManager.h"
 
 
@@ -198,6 +199,7 @@ namespace app
 			DeleteGO(playerHpUIObject_);
 			DeleteGO(enemyHpUIObject_);
 			DeleteGO(levelUpObject_);
+			DeleteGO(phaseUI_);
 			for (auto& test : testGimmickList_)
 			{
 				DeleteGO(test);
@@ -401,6 +403,7 @@ namespace app
 				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
 				eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
 				eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
+				battleCharacter_->SetSpawnManager(&eventCharacterSpawnManagerObject_->GetManager());
 
 				// 敵キャラクター 
 				//eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
@@ -505,6 +508,12 @@ namespace app
 				if (playerHpUIObject_ && levelUpObject_)
 				{
 					playerHpUIObject_->SetLevelUpUIObject(levelUpObject_);
+				}
+
+				{
+					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
+
+					eventCharacterSpawnManagerObject_->GetManager().SetPhaseUI(phaseUI_);
 				}
 			}
 		}
@@ -863,7 +872,8 @@ namespace app
 								continue;
 							}
 
-							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f;
+							float attackPower = stone->GetStatus()->GetAttackPower();
+							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
 							newHp = max(newHp, 0.0f);
 							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
 

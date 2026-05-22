@@ -3,7 +3,6 @@
  */
 #include "stdafx.h"
 #include "EventCharacter.h"
-#include "ActorStatus.h"
 
 namespace app
 {

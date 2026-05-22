@@ -28,7 +28,8 @@ namespace app
 		EventCharacterSpawnManager* EventCharacterSpawnManager::instance_ = nullptr;
 
 		EventCharacterSpawnManager::EventCharacterSpawnManager()
-		{}
+		{
+		}
 
 
 		EventCharacterSpawnManager::~EventCharacterSpawnManager()
@@ -244,9 +245,11 @@ namespace app
 				auto* stone = stonePool_.Acquire();
 				if (!stone) { break; }
 
+				stone->SetBattleCharacter(battleCharacter_);
+
 				stone->transform.position = spawnPosition;
 				stone->GetStateMachine()->transform.position = spawnPosition;
-				
+
 				stone->GetCharacterController()->SetPosition(spawnPosition);
 				stone->GetCharacterController()->RequestTeleport();
 				stone->SetPause(isPause_);
@@ -283,7 +286,7 @@ namespace app
 
 				mushroom->GetCharacterController()->SetPosition(spawnPosition);
 				mushroom->GetCharacterController()->RequestTeleport();
-				
+
 				mushroom->SetPause(isPause_);
 
 				auto* hpUI = hpUIPool_.Acquire();
@@ -349,6 +352,45 @@ namespace app
 			//  		);
 			//  	}
 			//  }
+		}
+
+		void EventCharacterSpawnManager::OnPlayerLevelUp(int newLevel)
+		{
+			playerLevel_ = newLevel;
+
+			for (auto& entry : activeEntries_)
+			{
+				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
+				{
+					auto* s = stone->GetStatus()->As<StoneEventCharacterStatus>();
+					if (s)
+					{
+						s->ApplyPhase(newLevel); // 戻り値に関わらず実行
+
+						// phaseUIは常に現在のフェーズで更新する
+						if (phaseUI_)
+						{
+							phaseUI_->SetPhaseCount(s->GetCurrentPhaseIndex());
+						}
+					}
+				}
+
+
+				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
+				{
+					auto* s = mushroom->GetStatus()->As<MushroomEventCharacterStatus>();
+					if (s)
+					{
+						s->ApplyPhase(newLevel); // 戻り値に関わらず実行
+						// phaseUIは常に現在のフェーズで更新する
+						if (phaseUI_)
+						{
+							phaseUI_->SetPhaseCount(s->GetCurrentPhaseIndex());
+						}
+					}
+				}
+				
+			}
 		}
 
 	}
