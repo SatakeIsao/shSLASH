@@ -13,10 +13,28 @@ namespace app
 		class TimerUIObject : public IGameObject
 		{
 		private:
-			std::unique_ptr<app::ui::Layout> layout_;
+			/** 残り時間を表示する中間リングゲージ */
+			CircularGaugeRender timerGauge_;
+			/** 内側塗りつぶし円（残り時間で色変化） */
+			CircularGaugeRender timerBackGround_;
+			/** 外側装飾リング（常に白・固定） */
+			CircularGaugeRender timerOuterRing_;
+			/** 内側円と外側リングの間を埋める黒リング */
+			CircularGaugeRender timerGapRing_;
+			/** 経過時間を示す動く針 */
+			SpriteRender needleSprite_;
+			/** 12時方向に固定された基準針 */
+			SpriteRender needleFixedSprite_;
+			/** 最大制限時間（秒） */
+			float maxTime_ = 0.0f;
+			/** 残り時間（秒） */
 			float timer_ = 0.0f;
-
+			/** 点滅演出用タイマー */
+			float blinkTimer_ = 0.0f;
+			/** カウントダウン中かどうか */
 			bool isCounting_ = true;
+			/** 点滅中の表示・非表示フラグ */
+			bool isVisible_ = true;
 
 
 		public:
@@ -25,13 +43,16 @@ namespace app
 		public:
 			void Update();
 			void Render(RenderContext& rc);
-			// タイマー操作用の関数
+			/** タイマー操作用の関数 */
 			float GetTimer() const { return timer_; }
-			void SetTimer(float time) { timer_ = time; }
+			void SetTimer(float time) { timer_ = time; maxTime_ = time; }
 
 			void StartTimer() { isCounting_ = true; }
 			void StopTimer() { isCounting_ = false; }
 			bool IsTimeUp() const { return timer_ <= 0.0f; }
+
+		private:
+			void ApplyGaugeColor(const Vector4& fillColor);
 
 		};
 
@@ -45,7 +66,7 @@ namespace app
 		{
 		protected:
 			float damageDelayTimer_ = 0.0f;
-			//ディレイHPバーがHPバーに線形補間で追従する時用
+			/** ディレイHPバーがHPバーに線形補間で追従する時用 */
 			float lerpVal_ = 0.5f;
 			float damagePosX_ = 0.0f;
 			float damageScaleX_ = 0.0f;
@@ -55,7 +76,8 @@ namespace app
 			int level_ = 0;
 
 			bool isCounting_ = true;
-			bool isLevelUpPending_ = false; // レベルアップ演出待ちフラグ
+			/** レベルアップ演出待ちフラグ */
+			bool isLevelUpPending_ = false;
 
 
 		public:
@@ -91,8 +113,6 @@ namespace app
 			float levelLerpSpeed_ = 3.0f;
 			bool isInvincible_ = false;   
 			bool isVisible_ = true;
-			/** HP全回復の表示をフレームをまたいで強制 */
-			bool isHealPending_ = false;
 			/** 回復アニメーション中フラグ */
 			bool isHealAnimating_ = false;
 			/** 回復アニメーション経過時間 */
@@ -113,7 +133,7 @@ namespace app
 			void Update() override;
 			void Render(RenderContext& rc) override;
 
-			// BattleCharacterから level を受け取って表示
+			/** BattleCharacterから level を受け取って表示 */
 			void SetLevel(int level) { level_ = min(level, 10);}
 			void AddLevelUpGauge(int exp) { levelUpIndex_ = min(levelUpIndex_ + exp, 10); }
 
@@ -166,7 +186,7 @@ namespace app
 			{
 				player_ = player;
 			}
-			// どのEnemyに追従するか設定
+			/** どのEnemyに追従するか設定 */
 			void SetTargetEnemy(app::actor::StoneEventCharacter* enemy)
 			{
 				stoneTarget_ = enemy;
@@ -186,16 +206,16 @@ namespace app
 			{
 				isDead_ = false;
 				isVisible_ = false;
-				hpIndex_ = 10; // コンストラクタと同じ初期値
+				hpIndex_ = 10;
 				damagePosX_ = 1.0f;
 				damageDelayTimer_ = 0.0f;
-				curHpOffsetX_ = 0.0f; // Layoutから再取得するので後述
+				curHpOffsetX_ = 0.0f;
 				dmgHpOffsetX_ = 0.0f;
 				stoneTarget_ = nullptr;
 				mushroomTarget_ = nullptr;
 				player_ = nullptr;
 
-				// Layoutのオフセット座標を再取得
+				/** Layoutのオフセット座標を再取得 */
 				auto menu = layout_->GetMenu();
 				auto enemyCurHP = menu->GetUI<UIIcon>(Hash32("enemyCurrentHP"));
 				auto enemyDmgHP = menu->GetUI<UIIcon>(Hash32("enemyDamageHP"));
@@ -206,7 +226,7 @@ namespace app
 			/** プールに返す時に呼ぶ */
 			void OnRecycle()
 			{
-				isDead_ = true;   // Update()を即スキップさせる
+				isDead_ = true;
 				isVisible_ = false;
 				stoneTarget_ = nullptr;
 				mushroomTarget_ = nullptr;
@@ -220,97 +240,86 @@ namespace app
 		/*************************************************/
 
 
-		class LevelUpUIObject : public HpUIObject
+		class LevelUpUIObject : public IGameObject
 		{
 		private:
-			bool isDead_ = false;
-
+			/** レイアウト管理 */
 			std::unique_ptr<app::ui::Layout> layout_;
 
+			/** レベルアップ演出をトリガーしたプレイヤー */
 			app::actor::BattleCharacter* player_ = nullptr;
-			app::actor::StoneEventCharacter* stoneTarget_ = nullptr;
-			app::actor::MushroomEventCharacter* mushroomTarget_ = nullptr;
 
-			float curHpOffsetX_ = 0.0f;
-			float dmgHpOffsetX_ = 0.0f;
 			/** 攻撃UPアニメーションタイマー */
 			float atkAnimTimer_ = 0.0f;
 			/** レベルUPアニメーションタイマー */
 			float levelAnimTimer_ = 0.0f;
-			/** 全回復アニメーションタイマー */
-			float maxHpAnimTimer_ = 0.0f;
-			/** 退場アニメーションタイマー */
+			/** 退場アニメーションタイマー（右移動開始まで） */
 			float exitAnimTimer_ = 0.0f;
+			/** 退場アニメーションタイマー（左移動開始まで） */
 			float exitLeftTimer_ = 0.0f;
 
+			/** レベルアップ演出待ちフラグ */
+			bool isLevelUpPending_ = false;
 			/** 全回復アニメーションしたか */
 			bool isHpMaxAnimPlayed_ = false;
 			/** 攻撃UPアニメーションしたか */
 			bool isAtkAnimPlayed_ = false;
 			/** レベルUPアニメーションしたか */
 			bool isLevelAnimPlayed_ = false;
-			/** 退場アニメーションしたか（右移動） */
+			/** 退場アニメーション（右移動）済みか */
 			bool isExitRightPlayed_ = false;
-			/** 退場アニメーションしたか（左移動） */
+			/** 退場アニメーション（左移動）済みか */
 			bool isExitLeftPlayed_ = false;
-			/** 攻撃力UPも再生するか */
+			/** 攻撃力UPアニメーションも再生するか（偶数レベル時true） */
 			bool isAtkUpLevel_ = false;
 
-
-
-			int hpIndex_ = 0;
-			/** 表示フラグ */
-			bool isVisible_ = false;
 		public:
 			LevelUpUIObject();
 			~LevelUpUIObject();
-		public:
+
 			void Update() override;
 			void Render(RenderContext& rc) override;
+
+			/** 登場アニメーションを再生する */
+			void PlayEntryAnimation(app::ui::MenuBase* menu);
+			/** 退場アニメーションを再生・管理する */
+			void PlayExitAnimation(app::ui::MenuBase* menu);
+			/** アニメーション完了後にUIをリセットする */
+			void ResetAnimation(app::ui::MenuBase* menu);
 
 			void SetPlayer(app::actor::BattleCharacter* player)
 			{
 				player_ = player;
 			}
-			// どのEnemyに追従するか設定
-			void SetTargetEnemy(app::actor::StoneEventCharacter* enemy)
-			{
-				stoneTarget_ = enemy;
-			}
-			void SetTargetEnemy(app::actor::MushroomEventCharacter* enemy)
-			{
-				mushroomTarget_ = enemy;
-			}
-			void ClearTarget()
-			{
-				stoneTarget_ = nullptr;
-				mushroomTarget_ = nullptr;
-				isDead_ = true;
-			}
+
 			void TriggerLevelUp(int newLevel)
 			{
 				isLevelUpPending_ = true;
-				// 偶数レベルなら攻撃力UPも再生
-				isAtkUpLevel_ = (newLevel % 2 == 0)||(newLevel == 1);
+				/** レベル1、または偶数レベルのとき攻撃力UPアニメーション再生 */
+				const bool isFirstLevel = (newLevel == 1);
+				const bool isEvenLevel = (newLevel % 2 == 0);
+				isAtkUpLevel_ = isFirstLevel || isEvenLevel;
 
-				// レベルアップ時にHPを全回復
+				/** レベルアップ時にHPを全回復 */
 				if (player_)
 				{
 					player_->GetStatus()->SetCurrentHp(player_->GetStatus()->GetMaxHp());
 				}
 
+				/** タイマーをリセット */
 				atkAnimTimer_ = 0.0f;
 				levelAnimTimer_ = 0.0f;
 				exitAnimTimer_ = 0.0f;
 				exitLeftTimer_ = 0.0f;
+
+				/** 演出フラグをリセット */
 				isAtkAnimPlayed_ = false;
 				isLevelAnimPlayed_ = false;
 				isExitRightPlayed_ = false;
 				isExitLeftPlayed_ = false;
 				isHpMaxAnimPlayed_ = false;
-				maxHpAnimTimer_ = 0.0f;
 
-				// 攻撃力UPが不要なら最初からスキップ済み扱い
+				/** 攻撃力UPが不要なら最初からスキップ済み扱い */
 				isAtkAnimPlayed_ = !isAtkUpLevel_;
 			}
 		};

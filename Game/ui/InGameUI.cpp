@@ -6,24 +6,64 @@
 #include "ui/UIAnimation.h"
 
 namespace {
-	static app::ui::UIAnimationSequence* seq = nullptr;
+	/** 色 */
+	/** 通常時のゲージ色（クリーム） */
+	static const Vector4 TIMER_COLOR_CREAM = { 0.761f, 0.749f, 0.620f, 1.0f };
+	/** 警告時のゲージ色（オレンジ） */
+	static const Vector4 TIMER_COLOR_ORANGE = { 1.0f,   0.55f,  0.0f,   1.0f };
+	/** 危険時のゲージ色（赤） */
+	static const Vector4 TIMER_COLOR_RED = { 1.0f,   0.1f,   0.1f,   1.0f };
+	/** 経過時間エリアの色（黒） */
+	static const Vector4 TIMER_COLOR_BLACK = { 0.0f,   0.0f,   0.0f,   1.0f };
+	/** 経過時間エリアの色（薄いクリーム灰） */
+	static const Vector4 TIMER_COLOR_EMPTY = { 0.25f, 0.25f, 0.20f, 1.0f };
+	/** 外側装飾リングの色（白） */
+	static const Vector4 TIMER_COLOR_WHITE = { 1.0f,   1.0f,   1.0f,   1.0f };
 
+	/** 半径 */
+	/** 内側円の外縁 = 黒区切りリングの内縁 */
+	static constexpr float TIMER_BG_OUTER_R = 0.85f;
+	/** 黒区切りリングの外縁 = 外側白リングの内縁 */
+	static constexpr float TIMER_GAP_OUTER_R = 0.92f;
+
+	/** 警告しきい値 */
+	/** この割合以下で橙色に変化（残り30%） */
+	static constexpr float TIMER_WARNING_RATIO = 0.30f;
+	/** この割合以下で赤く点滅（残り10%） */
+	static constexpr float TIMER_DANGER_RATIO = 0.10f;
+	/** 点滅の切り替え間隔（秒） */
+	static constexpr float TIMER_BLINK_SPEED = 0.08f;
+
+	/** 座標・スケール */
+	/** タイマーUIの表示座標（画面右上） */
+	static const Vector3 TIMER_POSITION = { 720.0f, 340.0f, 0.0f };
+	/** 内側塗りつぶし円のスケール */
+	static constexpr float   TIMER_SCALE_LARGE = 0.75f;
+	/** リング類のスケール */
+	static constexpr float   TIMER_SCALE_NORMAL = 0.65f;
+
+	/** 共通定数 */
+	/** バトルの制限時間（秒） */
 	static constexpr int MAX_TIME = 10;
+	/** レベルの最大値 */
 	static constexpr int MAX_LEVEL = 10;
-	/** 獲得した経験値 */
-	// 一旦、すぐレベルアップする感じで。Lv.10に近づくにつれて、もらう経験値少なくしたい
+	/** 敵撃破時に獲得する経験値
+	 * @todo Lv.10に近づくにつれて獲得量を減らす調整が必要 */
 	static constexpr int GOIN_EXP = 1;
 
+	/** HPバー定数 */
+	/** 敵HPバーを表示する最大距離 */
 	static constexpr float DRAW_DISTANCE = 400.0f;
+	/** ダメージバーが追従を開始するまでの遅延時間 */
 	static constexpr float DAMAGE_DELAY_TIME = 0.5f;
 
-	// HPバーシェーダー用
-	// テクスチャの斜め部分の幅をUV空間で指定する
-	static constexpr float HP_BAR_LEFT_W = 0.06f;  // 左は斜めなし
-	static constexpr float HP_BAR_RIGHT_W = 0.0f;  // 右斜めの幅 (実測して調整)
+	/** HPバーシェーダー用：左端の斜め幅（UV空間） */
+	static constexpr float HP_BAR_LEFT_W = 0.06f;
 
-	/** 無敵時間 */
+	/** 無敵中の点滅切り替え間隔 */
 	static constexpr float BLINK_INTERVAL = 0.01f;
+	/** HPがこの割合以下で点滅演出を開始 */
+	static constexpr float HP_BLINK_THRESHOLD = 0.3f;
 }
 
 namespace app
@@ -32,43 +72,131 @@ namespace app
 	{
 		TimerUIObject::TimerUIObject()
 		{
-			layout_ = std::make_unique<app::ui::Layout>();
-			layout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/timerLayout.json");
-
 			timer_ = MAX_TIME;
+			maxTime_ = MAX_TIME;
+
+			/** 内側塗りつぶし円（残り時間で色変化） */
+			{
+				timerBackGround_.Init(nullptr, 200.0f, 200.0f);
+				timerBackGround_.SetPosition(TIMER_POSITION);
+				timerBackGround_.SetScale(TIMER_SCALE_LARGE);
+				timerBackGround_.SetInnerRadius(0.0f);
+				timerBackGround_.SetOuterRadius(TIMER_BG_OUTER_R);
+				timerBackGround_.SetStartAngle(0.0f);
+				timerBackGround_.SetArcSpan(Math::PI2);
+				timerBackGround_.SetFillAmount(1.0f);
+				timerBackGround_.SetFillColor(TIMER_COLOR_CREAM);
+				timerBackGround_.SetEmptyColor(TIMER_COLOR_BLACK);
+			}
+			/** 中間ゲージリング（残り時間で色変化） */
+			{
+				timerGauge_.Init(nullptr, 200.0f, 200.0f);
+				timerGauge_.SetPosition(TIMER_POSITION);
+				timerGauge_.SetScale(TIMER_SCALE_NORMAL);
+				timerGauge_.SetInnerRadius(0.55f);
+				timerGauge_.SetOuterRadius(TIMER_BG_OUTER_R);
+				timerGauge_.SetFillAmount(1.0f);
+				timerGauge_.SetStartAngle(0.0f);
+				timerGauge_.SetArcSpan(Math::PI2);
+				timerGauge_.SetFillColor(TIMER_COLOR_CREAM);
+				timerGauge_.SetEmptyColor(TIMER_COLOR_BLACK);
+			}
+			/** 隙間を埋める黒リング */
+			{
+				timerGapRing_.Init(nullptr, 200.0f, 200.0f);
+				timerGapRing_.SetPosition(TIMER_POSITION);
+				timerGapRing_.SetScale(TIMER_SCALE_NORMAL);
+				timerGapRing_.SetInnerRadius(TIMER_BG_OUTER_R);
+				timerGapRing_.SetOuterRadius(TIMER_GAP_OUTER_R);
+				timerGapRing_.SetFillAmount(1.0f);
+				timerGapRing_.SetArcSpan(0.0f);
+				timerGapRing_.SetFillColor(TIMER_COLOR_BLACK);
+				timerGapRing_.SetEmptyColor(TIMER_COLOR_BLACK);
+			}
+			/** 外側白リング（固定・装飾） */
+			{
+				timerOuterRing_.Init(nullptr, 200.0f, 200.0f);
+				timerOuterRing_.SetPosition(TIMER_POSITION);
+				timerOuterRing_.SetScale(TIMER_SCALE_NORMAL);
+				timerOuterRing_.SetInnerRadius(TIMER_GAP_OUTER_R);
+				timerOuterRing_.SetOuterRadius(1.0f);
+				timerOuterRing_.SetFillAmount(1.0f);
+				timerOuterRing_.SetArcSpan(Math::PI2);
+				timerOuterRing_.SetFillColor(TIMER_COLOR_WHITE);
+				timerOuterRing_.SetEmptyColor(TIMER_COLOR_WHITE);
+			}
+			/** 針（動く） */
+			{
+				needleSprite_.Init("Assets/ui/timer/clock_hand.dds", 500.0f, 500.0f);
+				needleSprite_.SetPosition(TIMER_POSITION);
+				needleSprite_.SetScale(0.2f);
+				needleSprite_.SetMulColor(TIMER_COLOR_RED);
+				needleSprite_.SetPivot({ 0.5f, 0.25f });
+			}
+			/** 針（固定・12時方向） */
+			{
+				needleFixedSprite_.Init("Assets/ui/timer/clock_hand.dds", 500.0f, 500.0f);
+				needleFixedSprite_.SetPosition(TIMER_POSITION);
+				needleFixedSprite_.SetScale(0.2f);
+				needleFixedSprite_.SetPivot({ 0.5f, 0.25f });
+			}
 		}
 
 		TimerUIObject::~TimerUIObject()
-		{
-		}
+		{}
 
 		void TimerUIObject::Update()
 		{
-			if (timer_ <= 0.0f) {
-				timer_ = 0.0f;
-			}
-
-			if (!layout_) return; // layout自体がなければ何もしない
-
-			auto menu = layout_->GetMenu();
-			if (menu)
+			if (isCounting_)
 			{
-				// 取得に失敗（nullptr）した場合の安全策を強化
-				auto timerDigit = menu->GetUI<app::ui::UIDigit>(Hash32("timerNumbers"));
-				if (timerDigit)
-				{
-					timerDigit->SetZeroPadding(true);
-					timerDigit->SetNumber(static_cast<int>(std::ceil(timer_)));
-				}
+				timer_ -= g_gameTime->GetFrameDeltaTime();
 			}
-			layout_->Update();
+			timer_ = max(timer_, 0.0f);
+
+			const float ratio = (maxTime_ > 0.0f) ? (timer_ / maxTime_) : 0.0f;
+			/** fillAmountを反転して時計回りに減るように */
+			const float fillAmount = 1.0f - ratio;
+			timerGauge_.SetFillAmount(fillAmount);
+			timerBackGround_.SetFillAmount(fillAmount);
+
+			isVisible_ = true;
+			ApplyGaugeColor(TIMER_COLOR_CREAM);
+
+			timerBackGround_.Update();
+			timerGauge_.Update();
+			timerGapRing_.Update();
+			timerOuterRing_.Update();
+
+			/** 針の角度を更新（経過割合 × 2π、時計回り） */
+			const float elapsedRatio = 1.0f - ratio;
+			Quaternion rot;
+			rot.SetRotationZ(-Math::PI2 * elapsedRatio);
+			needleSprite_.SetRotation(rot);
+			needleSprite_.Update();
+			needleFixedSprite_.Update();
 		}
 
 		void TimerUIObject::Render(RenderContext& rc)
 		{
-			if (layout_) {
-				layout_->Render(rc);
+			timerBackGround_.Draw(rc);
+			timerGapRing_.Draw(rc);
+			if (isVisible_)
+			{
+				timerGauge_.Draw(rc);
 			}
+			timerOuterRing_.Draw(rc);
+			needleSprite_.Draw(rc);
+			needleFixedSprite_.Draw(rc);
+		}
+
+		void TimerUIObject::ApplyGaugeColor(const Vector4& fillColor)
+		{
+			timerGauge_.SetFillColor(TIMER_COLOR_EMPTY);
+			timerGauge_.SetEmptyColor(fillColor);
+			timerBackGround_.SetFillColor(TIMER_COLOR_EMPTY);
+			timerBackGround_.SetEmptyColor(fillColor);
+			timerOuterRing_.SetFillColor(TIMER_COLOR_WHITE);
+			timerOuterRing_.SetEmptyColor(TIMER_COLOR_WHITE);
 		}
 
 
@@ -81,7 +209,7 @@ namespace app
 		{
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterHpUIParameter>("Assets/master/HpUIParameter.json", [](const nlohmann::json& j, app::core::MasterHpUIParameter& p)
 				{
-					// hpバー座標X
+					/** HPバー座標X */
 					char hpBarPositionX[] = "hpBarPositionXA";
 					const uint32_t barPosX = ARRAYSIZE(p.hpBarPositionX);
 					for (uint32_t i = 0; i < barPosX; ++i) {
@@ -89,7 +217,7 @@ namespace app
 						p.hpBarPositionX[i] = j[hpBarPositionX];
 					}
 
-					// HPバーのスケールX
+					/** HPバーのスケールX */
 					char hpBarScaleX[] = "hpBarScaleXA";
 					const uint32_t barScaleX = ARRAYSIZE(p.hpBarScaleX);
 					for (uint32_t i = 0; i < barScaleX; ++i) {
@@ -97,7 +225,7 @@ namespace app
 						p.hpBarScaleX[i] = j[hpBarScaleX];
 					}
 
-					// レベルバー座標X
+					/** レベルバー座標X */
 					char levelBarPositionX[] = "levelBarPositionXA";
 					const uint32_t PosX = ARRAYSIZE(p.levelBarPositionX);
 					for (uint32_t i = 0; i < PosX; ++i) {
@@ -105,7 +233,7 @@ namespace app
 						p.levelBarPositionX[i] = j[levelBarPositionX];
 					}
 
-					// レベルバーのスケールX
+					/** レベルバーのスケールX */
 					char levelBarScaleX[] = "levelBarScaleXA";
 					const uint32_t ScaleX = ARRAYSIZE(p.levelBarScaleX);
 					for (uint32_t i = 0; i < ScaleX; ++i) {
@@ -115,42 +243,40 @@ namespace app
 				});
 
 			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterHpUIParameter>();
-
+			/** 初期値設定 */
 			index_ = MAX_LEVEL;
 			damagePosX_ = 1.0f;
 
 			layout_ = std::make_unique<app::ui::Layout>();
 			layout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/hpLayout.json");
-
-			auto currentLevel = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentLevel"));
-			if (currentLevel)
+			/** レベルバーの初期位置・スケールをJSONパラメータから設定 */
 			{
-				currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
-				currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
+				auto currentLevel = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentLevel"));
+				if (currentLevel)
+				{
+					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
+					currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
+				}
 			}
-
-			index_ = MAX_LEVEL;
-			damagePosX_ = 1.0f;
-
-			// Circleの背景
+			/** Circleの背景 */
 			{
 				bgCircle_.Init(nullptr, 200.0f, 200.0f);
 				bgCircle_.SetPosition({ -740, 360, 0 });
 				bgCircle_.SetScale(0.55f);
-				bgCircle_.SetInnerRadius(0.0f);        // 穴なし（塗りつぶし円）
-				bgCircle_.SetFillColor({ 0,0,0,1 });   // 黒
-				bgCircle_.SetEmptyColor({ 0,0,0,1 });  // 黒（空エリアも黒）
+				bgCircle_.SetInnerRadius(0.0f);
+				bgCircle_.SetFillColor({ 0,0,0,1 });
+				bgCircle_.SetEmptyColor({ 0,0,0,1 });
 			}
-			// HPゲージ
+			/** HPゲージ */
 			{
 				hpGauge_.Init(nullptr, 200.0f, 200.0f);
 				hpGauge_.SetPosition({ -740, 360, 0 });
-				// リングの中心半径と幅を指定する例
+				/** リングの中心半径と幅を指定 */
 				hpGauge_.SetInnerRadius(0.32);
 				hpGauge_.SetOuterRadius(1.0);
 				hpGauge_.SetScale(0.5f);
 			}
-			// アイコン
+			/** アイコン */
 			{
 				icon_.Init("Assets/ui/hp/playerIcon.DDS", 90.0f, 90.0f);
 				icon_.SetPosition({ -740, 360, 0 });
@@ -159,8 +285,7 @@ namespace app
 		}
 
 		PlayerHpUIObject::~PlayerHpUIObject()
-		{
-		}
+		{}
 
 		void PlayerHpUIObject::Update()
 		{
@@ -174,7 +299,7 @@ namespace app
 
 			if (!currentHP || !damageHP || !currentLevel) return;
 
-			// 無敵中の点滅処理
+			/** 無敵中の点滅処理 */
 			if (isInvincible_)
 			{
 				invincibleTimer_ -= g_gameTime->GetFrameDeltaTime();
@@ -189,10 +314,10 @@ namespace app
 				if (invincibleTimer_ <= 0.0f)
 				{
 					isInvincible_ = false;
-					isVisible_ = true; // 無敵終了時は必ず表示
+					isVisible_ = true;
 				}
 
-				// BattleCharacterのモデルを点滅
+				/** Playerモデルを点滅 */
 				if (player_)
 				{
 					player_->GetModelRender()->SetVisible(isVisible_);
@@ -200,14 +325,14 @@ namespace app
 			}
 			else
 			{
-				// 通常時は必ず表示
+				/** 通常時は必ず表示 */
 				if (player_)
 				{
 					player_->GetModelRender()->SetVisible(true);
 				}
 			}
 
-			// プレイヤーのHPが有効なら反映、無効ならデバッグボタンで操作
+			/** プレイヤーのHPが有効なら反映、無効ならデバッグボタンで操作 */
 			if (player_ && player_->GetStatus()->GetMaxHp() > 0.0f)
 			{
 				float maxHp = player_->GetStatus()->GetMaxHp();
@@ -224,6 +349,7 @@ namespace app
 				}
 				index_ = newIndex;
 			}
+			/** NOTE: 確認でき次第削除 */
 			else
 			{
 				// デバッグ：左ボタンでHP減少
@@ -237,13 +363,12 @@ namespace app
 				targetHpRatio_ = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
 			}
 
-			// 回復アニメーション中は指数関数的に補間、通常時は即時追従
+			/** 回復アニメーション中は指数関数的に補間、通常時は即時追従 */
 			if (isHealAnimating_)
 			{
 				healAnimTimer_ += g_gameTime->GetFrameDeltaTime();
 				float t = min(healAnimTimer_ / healAnimDuration_, 1.0f);
 
-				// ease-out expo
 				float easedT = (t >= 1.0f) ? 1.0f : 1.0f - powf(2.0f, -10.0f * t);
 				displayHpRatio_ = healStartRatio_ + (1.0f - healStartRatio_) * easedT;
 
@@ -255,11 +380,11 @@ namespace app
 			}
 			else
 			{
-				// 通常時は即時追従（滑らかにしたい場合は Lerp に変えてもOK）
+				/** 通常時は即時追従 */
 				displayHpRatio_ = targetHpRatio_;
 			}
 
-			// HP割合を毎フレーム計算してセット（displayHpRatio_ を使う）
+			/** HP割合を毎フレーム計算して設定 */
 			float currentRatio = displayHpRatio_;
 			currentHP->color.x = currentRatio;
 			currentHP->color.y = HP_BAR_LEFT_W;
@@ -267,8 +392,7 @@ namespace app
 			// color.w はアニメーションに任せるので上書きしない
 
 			// 低HP点滅（color.wだけ操作）
-			const float BLINK_THRESHOLD = 0.3f;
-			if (currentRatio <= BLINK_THRESHOLD)
+			if (currentRatio <= HP_BLINK_THRESHOLD)
 			{
 				blinkTimer_ += g_gameTime->GetFrameDeltaTime() * 5.0f;
 				currentHP->color.w = (sin(blinkTimer_) + 1.0f) * 0.5f;
@@ -278,10 +402,6 @@ namespace app
 				blinkTimer_ = 0.0f;
 				currentHP->color.w = 1.0f;
 			}
-
-			char buf[128];
-			sprintf_s(buf, "currentRatio: %f\n", currentRatio);
-			OutputDebugStringA(buf);
 
 			// ダメージバーのLerp更新（毎フレーム）
 			if (lerpVal_ < 1.0f && damageDelayTimer_ < 0.0f)
@@ -322,18 +442,16 @@ namespace app
 					{
 						levelUpUIObject_->TriggerLevelUp(level_);
 					}
-					
-					// HP全回復フラグをセット
+
+					/** HP全回復フラグをセット */
 					if (player_)
 					{
 						player_->GetStatus()->SetCurrentHp(player_->GetStatus()->GetMaxHp());
 					}
-					// 回復アニメーション開始
 					/** 現在の表示位置からスタート */
 					healStartRatio_ = displayHpRatio_;
 					healAnimTimer_ = 0.0f;
 					isHealAnimating_ = true;
-					isHealPending_ = false;
 					index_ = MAX_LEVEL;
 					targetHpRatio_ = 1.0f;
 					damagePosX_ = 1.0f;
@@ -455,8 +573,7 @@ namespace app
 		}
 
 		EnemyHpUIObject::~EnemyHpUIObject()
-		{
-		}
+		{}
 
 		void EnemyHpUIObject::Update()
 		{
@@ -524,14 +641,24 @@ namespace app
 					{
 						currentHP = stoneTarget_->GetCurrentHP();
 						auto* status = stoneTarget_->GetStatus();
-						if (status == nullptr) { DeleteGO(this); return; }
+						if (status == nullptr)
+						{
+							// statusが無効な場合は安全に終了フラグを立てて次フレームで破棄
+							isDead_ = true;
+							return;
+						}
 						maxHP = static_cast<int>(stoneTarget_->GetStatus()->GetMaxHp());
 					}
 					else if (mushroomTarget_)
 					{
 						currentHP = mushroomTarget_->GetCurrentHP();
 						auto* status = mushroomTarget_->GetStatus();
-						if (status == nullptr) { DeleteGO(this); return; }
+						if (status == nullptr)
+						{
+							// statusが無効な場合は安全に終了フラグを立てて次フレームで破棄
+							isDead_ = true;
+							return;
+						}
 						maxHP = static_cast<int>(mushroomTarget_->GetStatus()->GetMaxHp());
 					}
 
@@ -660,13 +787,35 @@ namespace app
 		}
 
 		LevelUpUIObject::~LevelUpUIObject()
-		{
-		}
+		{}
 
 		void LevelUpUIObject::Update()
 		{
 			if (!layout_) return;
 
+			if (!isLevelUpPending_)
+			{
+				layout_->Update();
+				return;
+			}
+
+			auto* menu = layout_->GetMenu();
+			if (menu)
+			{
+				PlayEntryAnimation(menu);
+
+				// 登場アニメーション完了後に退場アニメーションへ移行
+				if (isAtkAnimPlayed_ && isLevelAnimPlayed_)
+				{
+					PlayExitAnimation(menu);
+				}
+			}
+
+			layout_->Update();
+		}
+
+		void LevelUpUIObject::PlayEntryAnimation(app::ui::MenuBase* menu)
+		{
 			// アニメーションをアタッチして再生するラムダ
 			auto playSlideAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
 				{
@@ -674,15 +823,10 @@ namespace app
 					// 常に Remove → Attach で再生成してからPlay
 					icon->RemoveAnimation(animKey);
 					app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(icon, animKey);
-
 					auto* anim = icon->FindAnimation(animKey);
-					if (anim)
-					{
-						anim->Play();
-					}
+					if (anim) anim->Play();
 				};
 
-			// カラーアニメをアタッチして再生するラムダ
 			auto playColorAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
 				{
 					if (!icon) return;
@@ -692,175 +836,165 @@ namespace app
 					if (anim) anim->Play();
 				};
 
-			if (isLevelUpPending_)
+			// レベルUPバー：即座に再生
+			if (!isLevelAnimPlayed_)
 			{
-				auto* menu = layout_->GetMenu();
-				if (menu)
-				{
-					// レベルUPバー：即座に再生
-					if (!isLevelAnimPlayed_)
-					{
-						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_SlideY"));
-						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_SlideY"));
-						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_SlideY"));
-						playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_SlideY"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_SlideY"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_SlideY"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_SlideY"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_SlideY"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_FadeIn"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_FadeIn"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_FadeIn"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_FadeIn"));
 
-						// フェードインも同時再生
-						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_FadeIn"));
-						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_FadeIn"));
-						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_FadeIn"));
-						playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_FadeIn"));
-
-						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::LevelUp), false);
-						isLevelAnimPlayed_ = true;
-					}
-
-					// 攻撃力UPバー：0.3秒遅れて再生
-					if (!isAtkAnimPlayed_)
-					{
-						if (!isAtkUpLevel_)
-						{
-							// 偶数レベル以外はスキップ
-							isLevelAnimPlayed_ = true;
-						}
-						else
-						{
-							levelAnimTimer_ += g_gameTime->GetFrameDeltaTime();
-							if (levelAnimTimer_ >= 0.3f)
-							{
-								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_SlideY"));
-								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_SlideY"));
-								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_SlideY"));
-								playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_SlideY"));
-
-								// フェードインも同時再生
-								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_FadeIn"));
-								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_FadeIn"));
-								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_FadeIn"));
-								playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_FadeIn"));
-								isAtkAnimPlayed_ = true;
-							}
-						}
-					}
-
-					// 両方再生済みなら退場タイマー加算
-					if (isAtkAnimPlayed_ && isLevelAnimPlayed_)
-					{
-						exitAnimTimer_ += g_gameTime->GetFrameDeltaTime();
-
-						// 2.0秒後：右へ少し移動
-						if (!isExitRightPlayed_ && exitAnimTimer_ >= 2.0f)
-						{
-							/** 攻撃UP */
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Right"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Right"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Right"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Right"));
-							/** レベルUP */
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Right"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Right"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Right"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Right"));
-
-							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Slide), false);
-							isExitRightPlayed_ = true;
-						}
-
-						// 2.15秒後：左へ画面外に吹っ飛ぶ
-						if (isExitRightPlayed_ && !isExitLeftPlayed_ && exitAnimTimer_ >= 2.15f)
-						{
-							/** 攻撃力UP */
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Left"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Left"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Left"));
-							/** レベルアップ */
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Left"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Left"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Left"));
-							playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Left"));
-
-							isExitLeftPlayed_ = true;
-							exitLeftTimer_ = 0.0f;
-						}
-
-						// 退場完了
-						if (isExitLeftPlayed_)
-						{
-							exitLeftTimer_ += g_gameTime->GetFrameDeltaTime();
-
-							if (exitLeftTimer_ >= 0.3f)
-							{
-								// アニメーションを全削除してから座標リセット
-								auto clearAnims = [](app::ui::UIIcon* icon)
-									{
-										if (!icon) return;
-										/** レベルアップ用 */
-										icon->RemoveAnimation(Hash32("LevelUp_SlideY"));
-										icon->RemoveAnimation(Hash32("LevelUp_ExitX_Right"));
-										icon->RemoveAnimation(Hash32("LevelUp_ExitX_Left"));
-										icon->RemoveAnimation(Hash32("LevelUp_FadeIn"));
-										/** 攻撃力UP用 */
-										icon->RemoveAnimation(Hash32("AtkUp_SlideY"));
-										icon->RemoveAnimation(Hash32("AtkUp_ExitX_Right"));
-										icon->RemoveAnimation(Hash32("AtkUp_ExitX_Left"));
-										icon->RemoveAnimation(Hash32("AtkUp_FadeIn"));
-									};
-
-								/** レベルアップ用 */
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
-								/** 攻撃力UP用 */
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
-								clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")));
-
-								auto resetPosition = [](app::ui::UIIcon* icon, float x, float y)
-									{
-										if (!icon) return;
-										icon->transform.localPosition.x = x;
-										icon->transform.localPosition.y = y;
-									};
-
-								auto resetAlpha = [](app::ui::UIIcon* icon)
-									{
-										if (!icon) return;
-										icon->color.w = 0.0f;
-									};
-
-								/** レベルアップ用 */
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), -550.0f, -1260.0f);
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), -550.0f, -1260.0f);
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), -550.0f, -1260.0f);
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), -550.0f, -1260.0f);
-								/** 攻撃力UP用 */
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), -550.0f, -1180.0f);
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), -550.0f, -1180.0f);
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), -550.0f, -1180.0f);
-								resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), -550.0f, -1180.0f);
-
-								/** レベルアップ用 */
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
-								/** 攻撃力UP用 */
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
-								resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")));
-
-								isLevelUpPending_ = false;
-							}
-						}
-					}
-				}
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::LevelUp), false);
+				isLevelAnimPlayed_ = true;
 			}
 
-			layout_->Update();
+			// 攻撃力UPバー：0.3秒遅れて再生
+			if (!isAtkAnimPlayed_)
+			{
+				if (!isAtkUpLevel_)
+				{
+					// 攻撃力UPが不要なレベルはスキップ済み扱い
+					isAtkAnimPlayed_ = true;
+					return;
+				}
+
+				levelAnimTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (levelAnimTimer_ >= 0.3f)
+				{
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_SlideY"));
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_SlideY"));
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_SlideY"));
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_SlideY"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_FadeIn"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_FadeIn"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_FadeIn"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_FadeIn"));
+					isAtkAnimPlayed_ = true;
+				}
+			}
+		}
+
+		void LevelUpUIObject::PlayExitAnimation(app::ui::MenuBase* menu)
+		{
+			auto playSlideAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
+				{
+					if (!icon) return;
+					icon->RemoveAnimation(animKey);
+					app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(icon, animKey);
+					auto* anim = icon->FindAnimation(animKey);
+					if (anim) anim->Play();
+				};
+
+			exitAnimTimer_ += g_gameTime->GetFrameDeltaTime();
+
+			// 2.0秒後：右へ少し移動
+			if (!isExitRightPlayed_ && exitAnimTimer_ >= 2.0f)
+			{
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Right"));
+
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Slide), false);
+				isExitRightPlayed_ = true;
+			}
+
+			// 2.15秒後：左へ画面外に吹っ飛ぶ
+			if (isExitRightPlayed_ && !isExitLeftPlayed_ && exitAnimTimer_ >= 2.15f)
+			{
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Left"));
+
+				isExitLeftPlayed_ = true;
+				exitLeftTimer_ = 0.0f;
+			}
+
+			// 退場完了後にリセットへ移行
+			if (isExitLeftPlayed_)
+			{
+				exitLeftTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (exitLeftTimer_ >= 0.3f)
+				{
+					ResetAnimation(menu);
+				}
+			}
+		}
+
+		void LevelUpUIObject::ResetAnimation(app::ui::MenuBase* menu)
+		{
+			// 全アニメーションを削除するラムダ
+			auto clearAnims = [](app::ui::UIIcon* icon)
+				{
+					if (!icon) return;
+					icon->RemoveAnimation(Hash32("LevelUp_SlideY"));
+					icon->RemoveAnimation(Hash32("LevelUp_ExitX_Right"));
+					icon->RemoveAnimation(Hash32("LevelUp_ExitX_Left"));
+					icon->RemoveAnimation(Hash32("LevelUp_FadeIn"));
+					icon->RemoveAnimation(Hash32("AtkUp_SlideY"));
+					icon->RemoveAnimation(Hash32("AtkUp_ExitX_Right"));
+					icon->RemoveAnimation(Hash32("AtkUp_ExitX_Left"));
+					icon->RemoveAnimation(Hash32("AtkUp_FadeIn"));
+				};
+
+			// 座標をリセットするラムダ
+			auto resetPosition = [](app::ui::UIIcon* icon, float x, float y)
+				{
+					if (!icon) return;
+					icon->transform.localPosition.x = x;
+					icon->transform.localPosition.y = y;
+				};
+
+			// 透明度をリセットするラムダ
+			auto resetAlpha = [](app::ui::UIIcon* icon)
+				{
+					if (!icon) return;
+					icon->color.w = 0.0f;
+				};
+
+			/** レベルアップ用UI */
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), -550.0f, -1260.0f);
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), -550.0f, -1260.0f);
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), -550.0f, -1260.0f);
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), -550.0f, -1260.0f);
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")));
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")));
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")));
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")));
+
+			/** 攻撃力UP用UI */
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
+			clearAnims(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")));
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), -550.0f, -1180.0f);
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), -550.0f, -1180.0f);
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), -550.0f, -1180.0f);
+			resetPosition(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), -550.0f, -1180.0f);
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")));
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")));
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")));
+			resetAlpha(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")));
+
+			// 演出完了フラグをリセット
+			isLevelUpPending_ = false;
 		}
 
 		void LevelUpUIObject::Render(RenderContext& rc)

@@ -484,6 +484,8 @@ namespace app
 				// タイマーUI
 				{
 					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
+					// 初回だけセット
+					timerUIObject_->SetTimer(remainTime_);
 				}
 				// HPUI
 				{
@@ -828,24 +830,6 @@ namespace app
 						);
 					}
 				
-
-				//スライムの攻撃アクション
-				{
-					//  if (eventCharacter_->GetStateMachine()->CheckAndConsumeAttackGhostCreated()
-					//  	&& battleCharacter_->GetCurrentHP() > 0)
-					//  {
-					//  	effectManagerObject_->PlayEffect(
-					//  		enEffectKind_SlimeAttack,
-					//  		eventCharacter_->transform.position + (eventCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f) + Vector3(0.0f, 30.0f, 0.0f),
-					//  		Quaternion::Identity,
-					//  		Vector3(3.0f, 3.0f, 3.0f)
-					//  	);
-					//  
-					//  	// プレイヤーへのダメージ処理を追加
-					//  	float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f; // ダメージ量は要調整
-					//  	newHp = max(newHp, 0.0f);
-					//  	battleCharacter_->GetStatus()->SetCurrentHp(newHp);
-					//  }
 					/** ストーンの攻撃判定 */
 					for (auto* stone : stoneEventCharacters_)
 					{
@@ -936,28 +920,6 @@ namespace app
 							}
 						}
 					}
-				}
-
-				//スライムのノックバック
-				{
-					//if (eventCharacter_->GetStateMachine()->IsKnockBack()
-					//	|| eventCharacter_->GetStateMachine()->IsSquashed())
-					//{
-					//	if (!hasPlayedPunchEffect_)
-					//	{
-					//		effectManagerObject_->PlayEffect(
-					//			enEffectKind_SlimeKnockBack,
-					//			eventCharacter_->transform.position,
-					//			Quaternion::Identity,
-					//			Vector3::One
-					//		);
-					//		hasPlayedPunchEffect_ = true;
-					//	}
-					//}
-					//else {
-					//	hasPlayedPunchEffect_ = false;
-					//}
-				}
 
 				// 衝突後の処理
 				{
@@ -1040,30 +1002,12 @@ namespace app
 				/** 制限時間の管理 */
 				{
 					if (!timerUIObject_) return;
-
-					if (remainTime_ > 0.0f)
-					{
-						remainTime_ -= g_gameTime->GetFrameDeltaTime();
-					}
-
-					if (timerUIObject_) {
-						timerUIObject_->SetTimer(remainTime_);
-					}
+					// 残り時間が必要な取得
+					remainTime_ = timerUIObject_->GetTimer();
 				}
 
 				/** レベル */
 				{
-					if (g_pad[0]->IsTrigger(enButtonRight))
-					{
-						if (playerHpUIObject_) {
-							//playerHpUIObject_->AddLevelUpGauge();  // ← ゲージを進めるだけ
-						}
-						//// 本物のキャラクターのレベルを上げる
-						//if (battleCharacter_) {
-						//	battleCharacter_->LevelUp();
-						//}
-					}
-
 					// ゲージ折り返しを検知したらキャラのLv.を上げる
 					if (playerHpUIObject_ && playerHpUIObject_->IsLevelUp())
 					{
@@ -1083,11 +1027,6 @@ namespace app
 						}
 						playerHpUIObject_->ClearLevelUp();  // フラグをリセット
 					}
-
-					//if (battleCharacter_ && playerHpUIObject_)
-					//{
-					//	playerHpUIObject_->SetLevel(battleCharacter_->GetLevel());
-					//}
 				}
 
 				layout_->Update();
@@ -1098,20 +1037,37 @@ namespace app
 		void BattleManager::SetPause(bool isPause)
 		{
 			isPause_ = isPause;
-			if (battleCharacter_) battleCharacter_->SetPouse(isPause_);
-			//if (eventCharacter_)eventCharacter_->SetPause(isPause_);
+			/** プレイヤー停止 */
+			if (battleCharacter_)
+			{
+				battleCharacter_->SetPouse(isPause_);
+			}
+			/** ストーンモンスター停止 */
 			for (auto* stone : stoneEventCharacters_)
 			{
 				if (stone) { stone->SetPause(isPause_); }
 			}
-
+			/** きのこモンスター停止 */
 			for (auto* mushroom : mushroomEventCharacters_)
 			{
 				if (mushroom) { mushroom->SetPause(isPause_); }
 			}
+			/** スポーンマネージャーのポーズ設定 */
 			if (eventCharacterSpawnManagerObject_)
 			{
 				eventCharacterSpawnManagerObject_->SetPause(isPause_);
+			}
+			/** カウントダウン停止 */
+			if (timerUIObject_)
+			{
+				if (isPause_)
+				{
+					timerUIObject_->StopTimer();
+				}
+				else
+				{
+					timerUIObject_->StartTimer();
+				}
 			}
 		}
 
