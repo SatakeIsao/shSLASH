@@ -6,7 +6,7 @@
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
 
-namespace app 
+namespace app
 {
 	namespace ui
 	{
@@ -14,10 +14,8 @@ namespace app
 		{
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterPauseMenuParameter>("Assets/master/PauseMenuParameter.json", [](const nlohmann::json& j, app::core::MasterPauseMenuParameter& p)
 				{
-					//TODO; X座標もやりたいなぁ
 					p.cursolPositionX[0] = j["cursolPositionXA"];
 					p.cursolPositionX[1] = j["cursolPositionXB"];
-
 					p.cursolPositionY[0] = j["cursolPositionYA"];
 					p.cursolPositionY[1] = j["cursolPositionYB"];
 				});
@@ -31,148 +29,147 @@ namespace app
 		void PauseMenu::Update()
 		{
 			auto* canvas = GetCanvas();
-			if (canvas)
+			bool isAnimating = false;
+
+			if (canvas) {
+				auto* inAnim = canvas->FindAnimation(Hash32("SlideIn_Pause_Overshoot"));
+				auto* backAnim = canvas->FindAnimation(Hash32("SlideBack_Pause"));
+				auto* outAnim = canvas->FindAnimation(Hash32("SlideOut_Pause_Exit"));
+
+				if (inAnim && !inAnim->IsPlay()) {
+					canvas->RemoveAnimation(Hash32("SlideIn_Pause_Overshoot"));
+
+					app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(canvas, Hash32("SlideBack_Pause"));
+					auto* newBackAnim = canvas->FindAnimation(Hash32("SlideBack_Pause"));
+					if (newBackAnim) newBackAnim->Play();
+				}
+
+				// アニメーション中かどうかのフラグを立てる
+				inAnim = canvas->FindAnimation(Hash32("SlideIn_Pause_Overshoot"));
+				backAnim = canvas->FindAnimation(Hash32("SlideBack_Pause"));
+				if ((inAnim && inAnim->IsPlay()) || (backAnim && backAnim->IsPlay()) || (outAnim && outAnim->IsPlay())) {
+					isAnimating = true;
+				}
+			}
+
+			if (!isAnimating)
 			{
-				//閉じる
+				if (g_pad[0]->IsTrigger(enButtonDown))
 				{
-					auto* closeAnim = canvas->FindAnimation(Hash32("ScaleDown"));
-					if (closeAnim && !closeAnim->IsPlay())
-					{
-						canvas->RemoveAnimation(Hash32("ScaleDown"));
-						closeAnim = nullptr;
-						isPause_ = false;
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+					cursolIndex_++;
+					if (cursolIndex_ >= 1) cursolIndex_ = 1;
+				}
+				if (g_pad[0]->IsTrigger(enButtonUp))
+				{
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+					cursolIndex_--;
+					if (cursolIndex_ < 0) cursolIndex_ = 0;
+				}
+
+				// カーソルの位置更新
+				auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterPauseMenuParameter>();
+				{
+					const float x = parameter->cursolPositionX[cursolIndex_];
+					const float y = parameter->cursolPositionY[cursolIndex_];
+					auto cursol = GetUI<UIIcon>(Hash32("Cursol"));
+					if (cursol) {
+						cursol->transform.localPosition.x = x;
+						cursol->transform.localPosition.y = y;
 					}
 				}
-				//開く
-				{
-					auto* openAnim = canvas->FindAnimation(Hash32("ScaleUp"));
-					if (openAnim && !openAnim->IsPlay())
-					{
-						canvas->RemoveAnimation(Hash32("ScaleUp"));
-					}
-				}
 			}
 
-			if (g_pad[0]->IsTrigger(enButtonDown))
-			{
-				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-				cursolIndex_++;
-				if (cursolIndex_ >= 1)
-				{
-					cursolIndex_ = 1;
-				}
-			}
-			if (g_pad[0]->IsTrigger(enButtonUp))
-			{
-				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-				cursolIndex_--;
-				if (cursolIndex_ < 0)
-				{
-					cursolIndex_ = 0;
-				}
-			}
-
-			// 動的に数値をUIに設定
-			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterPauseMenuParameter>();
-			// 音を変える/タイトルにもどるテキストの場所
-			{
-				const float x = parameter->cursolPositionX[cursolIndex_];
-				auto cursol = GetUI<UIIcon>(Hash32("Cursol"));
-				cursol->transform.localPosition.x = x;
-			}
-			{
-				const float y = parameter->cursolPositionY[cursolIndex_];
-				auto cursol = GetUI<UIIcon>(Hash32("Cursol"));
-				cursol->transform.localPosition.y = y;
-			}
-
-			PlaySelectedAnimation();
 			MenuBase::Update();
+
+			if (canvas) {
+				auto* backFilter = GetUI<app::ui::UIIcon>(Hash32("BackFilter"));
+				if (backFilter) {
+					backFilter->transform.localPosition.x = -canvas->transform.localPosition.x;
+					backFilter->transform.localPosition.y = -canvas->transform.localPosition.y;
+					backFilter->Update(); 
+				}
+			}
 		}
 
 		void PauseMenu::OnOpen()
 		{
-			isPause_ = true;
-
-			//キャンバス
+			auto* canvas = GetCanvas();
+			if (canvas)
 			{
-				auto* canvas = GetCanvas();
-				if (canvas)
-				{
-					canvas->transform.localScale = Vector3::Zero;
-					canvas->RemoveAnimation(Hash32("ScaleUp"));
-					canvas->RemoveAnimation(Hash32("ScaleDown"));
-					//アニメーションをアタッチ
-					app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(canvas, Hash32("ScaleUp"));
-					auto* openAnim = canvas->FindAnimation(Hash32("ScaleUp"));
-					if (openAnim) openAnim->Play();
-				}
+				canvas->transform.localScale = Vector3::One;
+				canvas->RemoveAnimation(Hash32("SlideOut_Pause_Exit"));
+				canvas->RemoveAnimation(Hash32("SlideBack_Pause"));
+
+				app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(canvas, Hash32("SlideIn_Pause_Overshoot"));
+				auto* anim = canvas->FindAnimation(Hash32("SlideIn_Pause_Overshoot"));
+				if (anim) anim->Play();
+			}
+
+			auto* backFilter = GetUI<app::ui::UIIcon>(Hash32("BackFilter"));
+			if (backFilter) {
+				backFilter->isDraw = true;
+			}
+
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol) {
+				cursol->isDraw = true;
+				auto* anim = cursol->FindAnimation(Hash32("FadeIn"));
+				if (anim) anim->Play();
 			}
 		}
 
 		void PauseMenu::OnClose()
 		{
-			// キャンバス
+			auto* canvas = GetCanvas();
+			if (canvas)
 			{
-				auto* canvas = GetCanvas();
-				if (canvas)
-				{
-					canvas->RemoveAnimation(Hash32("ScaleUp"));
-					canvas->RemoveAnimation(Hash32("ScaleDown"));
-					//アニメーションをアタッチ
-					app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(canvas, Hash32("ScaleDown"));
-					auto* closeAnim = canvas->FindAnimation(Hash32("ScaleDown"));
-					if (closeAnim) closeAnim->Play();
-				}
+				canvas->RemoveAnimation(Hash32("SlideIn_Pause_Overshoot"));
+				canvas->RemoveAnimation(Hash32("SlideBack_Pause"));
+
+				app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(canvas, Hash32("SlideOut_Pause_Exit"));
+				auto* anim = canvas->FindAnimation(Hash32("SlideOut_Pause_Exit"));
+				if (anim) anim->Play();
+			}
+
+			auto* backFilter = GetUI<app::ui::UIIcon>(Hash32("BackFilter"));
+			if (backFilter) {
+				backFilter->isDraw = false;
+			}
+
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol) {
+				cursol->isDraw = false;
+				cursol->StopSpriteAnimation();
 			}
 		}
 
-		void PauseMenu::PlaySelectedAnimation()
+		bool PauseMenu::IsPause()
 		{
-			/** TODO: Updateで、処理が走っているので、無駄な処理を改善したい */
-			auto* textSound = GetUI<app::ui::UIIcon>(Hash32("text_ChangeTheSound"));
-			auto* textTitle = GetUI<app::ui::UIIcon>(Hash32("text_ReturnToTitle"));
-
-			/** 各項目選択中に拡大アニメーションを再生 */
-			if (cursolIndex_ == 0
-				&& textSound)
-			{
-				/** リセット: 黄色から白 */
-				textTitle->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textTitle->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-				/** 黄色 */
-				textSound->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textSound->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
+			auto* canvas = GetCanvas();
+			if (canvas) {
+				auto* anim = canvas->FindAnimation(Hash32("SlideOut_Pause_Exit"));
+				if (anim && anim->IsPlay()) {
+					return true;
+				}
 			}
-			else if (cursolIndex_ == 1
-				&& textTitle)
-			{
-				/** リセット: 黄色から白 */
-				textSound->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textSound->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-				/** 黄色 */
-				textTitle->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textTitle->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
-			}
+			return false;
 		}
 
 		void PauseMenu::InitializeLogic()
 		{
-			// サウンドバーの位置情報設定
-			// アニメーションとかいれたり
-			/** キャンバス（UI全体) */
+			auto* canvas = GetCanvas();
+			if (canvas)
 			{
-				auto* canvas = GetCanvas();
-				if (canvas)
-				{
-					canvas->transform.localScale = Vector3::Zero;
-				}
+				canvas->transform.localScale = Vector3::One;
+			}
+
+
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol) {
+				app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeIn"));
+				auto* anim = cursol->FindAnimation(Hash32("FadeIn"));
+				if (anim) anim->Play();
 			}
 		}
 	}
