@@ -769,6 +769,46 @@
             "duration": 0.07,
             "easing": "EaseIn",
             "loop": "Once"
+        },
+        {
+          "comment": "ダメージポップ：フェードイン",
+          "key": "DamagePop_FadeIn",
+          "valueType": "Vector4",
+          "startValue": { "x": 1, "y": 1, "z": 1, "w": 0 },
+          "endValue":   { "x": 1, "y": 1, "z": 1, "w": 1 },
+          "duration": 0.08,
+          "easing": "EaseOut",
+          "loop": "Once"
+        },
+        {
+          "comment": "ダメージポップ：スケール 1.0→1.5（ポップイン）",
+          "key": "DamagePop_ScaleUp",
+          "valueType": "Vector3",
+          "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+          "endValue":   { "x": 1.5, "y": 1.5, "z": 1.0 },
+          "duration": 0.08,
+          "easing": "EaseOut",
+          "loop": "Once"
+        },
+        {
+          "comment": "ダメージポップ：スケール 1.5→1.0（ポップ戻り）",
+          "key": "DamagePop_ScaleDown",
+          "valueType": "Vector3",
+          "startValue": { "x": 1.5, "y": 1.5, "z": 1.0 },
+          "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+          "duration": 0.08,
+          "easing": "EaseOut",
+          "loop": "Once"
+        },
+        {
+          "comment": "ダメージポップ：フェードアウト",
+          "key": "DamagePop_FadeOut",
+          "valueType": "Vector4",
+          "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+          "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+          "duration": 0.25,
+          "easing": "EaseIn",
+          "loop": "Once"
         }
     ]
 }

@@ -19,6 +19,7 @@
 #include "collision/GhostBodyManager.h"
 #include "collision/CollisionHitManager.h"
 #include "ui/BattleSequence.h"
+#include "ui/DamagePopUI.h"
 #include "ui/InGameUI.h"
 #include "effect/EffectManager.h"
 #include "core/PauseManager.h"
@@ -200,6 +201,12 @@ namespace app
 			DeleteGO(enemyHpUIObject_);
 			DeleteGO(levelUpObject_);
 			DeleteGO(phaseUI_);
+			if (damagePopPool_)
+			{
+				damagePopPool_->Finalize();
+				delete damagePopPool_;
+				damagePopPool_ = nullptr;
+			}
 			for (auto& test : testGimmickList_)
 			{
 				DeleteGO(test);
@@ -511,11 +518,17 @@ namespace app
 				{
 					playerHpUIObject_->SetLevelUpUIObject(levelUpObject_);
 				}
-
+				// フェーズUI
 				{
 					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
 
 					eventCharacterSpawnManagerObject_->GetManager().SetPhaseUI(phaseUI_);
+				}
+				// ダメージポッププール
+				{
+					damagePopPool_ = new app::ui::DamagePopPool();
+					damagePopPool_->Initialize();
+					SetDamagePopListener(damagePopPool_);
 				}
 			}
 		}
@@ -939,10 +952,17 @@ namespace app
 
 							// ダメージ計算・適用
 							int damage = CalcDamage(dmg->attacker, dmg->defender);
-							float newHp = dmg->defender->GetStatus()->GetCurrentHp() - damage;
+							const float oldHp = dmg->defender->GetStatus()->GetCurrentHp();
+							float newHp = oldHp - damage;
 							newHp = max(newHp, 0.0f);
 							dmg->defender->GetStatus()->SetCurrentHp(newHp);
 							dmg->defender->TakeDamage(damage);
+
+							/** ダメージポップ通知 */
+							if (damagePopListener_ && oldHp > 0.0f)
+							{
+								damagePopListener_->OnDamageDealt(damage, dmg->defender->transform.position);
+							}
 
 							if (dmg->enemyType == DamageNotify::EnemyType::Stone)
 							{

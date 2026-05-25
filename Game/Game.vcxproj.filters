@@ -200,6 +200,7 @@
     <ClCompile Include="ui\TitleSubMenu.cpp" />
     <ClCompile Include="title\TitleManager.cpp" />
     <ClCompile Include="EnemyPhase.cpp" />
+    <ClCompile Include="ui\DamagePopUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -388,6 +389,8 @@
     <ClInclude Include="title\TitleManager.h" />
     <ClInclude Include="actor\EnemyPool.h" />
     <ClInclude Include="EnemyPhase.h" />
+    <ClInclude Include="ui\DamagePopUI.h" />
+    <ClInclude Include="battle\IDamagePopListener.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

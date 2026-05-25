@@ -9,6 +9,7 @@
 #include "camera/CameraSteering.h"
 #include "ui/Layout.h"
 #include "effect/EffectManager.h"
+#include "battle/IDamagePopListener.h"
 
 namespace nsK2EngineLow
 {
@@ -45,6 +46,7 @@ namespace app
         class PlayerHpUIObject;
         class EnemyHpUIObject;
         class LevelUpUIObject;
+        class DamagePopPool;
     }
 }
 
@@ -123,9 +125,12 @@ namespace app
             app::ui::PlayerHpUIObject* playerHpUIObject_ = nullptr;
             app::ui::EnemyHpUIObject* enemyHpUIObject_ = nullptr;
             app::ui::LevelUpUIObject* levelUpObject_ = nullptr;
-
-			app::actor::PhaseUI* phaseUI_ = nullptr;    // フェーズを表示できる様に仮置き
-            //スカイキューブのオブジェクト
+            app::ui::DamagePopPool* damagePopPool_ = nullptr;
+            /** ダメージポップ通知先 */
+            IDamagePopListener* damagePopListener_ = nullptr;
+            /** フェーズを表示できる様に仮置き */
+			app::actor::PhaseUI* phaseUI_ = nullptr;
+            /** スカイキューブのオブジェクト */
             nsK2EngineLow::SkyCube* skyCube_ = nullptr;
             /** 通知リスト */
 			std::vector<std::unique_ptr<INotify>> notifyList_;
@@ -178,6 +183,14 @@ namespace app
             {
                 notifyList_.push_back(std::move(std::unique_ptr<INotify>(notify)));
 			}
+            /**
+            * ダメージポップリスナーを登録
+            * BattleManager はリスナーの所有権を持たない
+            */
+            void SetDamagePopListener(IDamagePopListener* listener)
+            {
+                damagePopListener_ = listener;
+            }
             /** プレイヤーへのダメージ通知 */
             struct PlayerDamageNotify : public INotify
             {
@@ -258,32 +271,5 @@ namespace app
             /** シングルトンインスタンス */
             static BattleManager* instance_;
         };
-
-
-        //class IPauseMenu : Noncopyable
-        //{
-        //public:
-        //    IPauseMenu() {}
-        //    virtual ~IPauseMenu() {}
-        //
-        //    virtual bool Start() = 0;
-        //    virtual void Update() = 0;
-        //    virtual void Render(RenderContext& rc) = 0;
-        //    virtual void CanChange(int& request) = 0;
-        //};
-        //
-        //
-        //
-        ///** ポーズメニュー表示 */
-        //class BattlePauseMenu : IPauseMenu
-        //{
-        //public:
-        //    enum EnPauseMenuType
-        //    {
-        //        enPauseMenuType_ReGame,
-        //        enPauseMenuType_Volume,
-        //
-        //    };
-        //};
     }
 }
