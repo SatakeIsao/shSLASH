@@ -1,12 +1,13 @@
-/** 
+/**
  * GameOverScene.h
  * ゲームオーバーシーンクラス
  */
 #pragma once
 #include "IScene.h"
+#include "ui/Layout.h"
 
 
-/** ゲームオーバーシーン */
+ /** ゲームオーバーシーン */
 class GameOverScene : public IScene
 {
 	appScene(GameOverScene);
@@ -16,7 +17,8 @@ private:
 	/** 遷移をリクエストする先のシーンID */
 	uint32_t m_requestSceneId = INVALID_SCENE_ID;
 
-	SpriteRender backGroundRender_;
+	//SpriteRender backGroundRender_;
+	app::ui::Layout layout_;
 
 
 public:

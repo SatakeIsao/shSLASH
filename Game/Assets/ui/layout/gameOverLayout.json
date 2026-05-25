@@ -1,0 +1,28 @@
+{
+    "canvas": {
+        "elements": [
+            {
+                "type": "UIIcon",
+                "name": "GameOverFog",
+                "asset": "Assets/ui/gameOver/gameOver_Fog.DDS",
+                "width": 288,
+                "height": 288,
+                "position": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "GameOver",
+                "asset": "Assets/ui/gameOver/gameOver_Word.DDS",
+                "width": 1010,
+                "height": 141,
+                "position": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            }
+        ]
+    }
+}

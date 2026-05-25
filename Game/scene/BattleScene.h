@@ -4,9 +4,10 @@
  */
 #pragma once
 #include "IScene.h"
+#include "ui/Layout.h"
+#include "ui/GameOverSequence.h"
 
-
-/** バトルシーン */
+ /** バトルシーン */
 class BattleScene : public IScene
 {
 	appScene(BattleScene);
@@ -14,6 +15,11 @@ class BattleScene : public IScene
 
 private:
 	uint32_t requestSceneId_ = INVALID_SCENE_ID;
+
+	//
+	// app::ui::Layout gameOverLayout_;
+	std::unique_ptr<app::ui::GameOverSequence> gameOverSequence_;
+	bool isGameOver_ = false;
 
 public:
 	BattleScene();
