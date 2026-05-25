@@ -125,6 +125,12 @@ namespace app
 					if (openAnim) openAnim->Play();
 				}
 			}
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol) {
+				cursol->isDraw = true;
+				auto* anim = cursol->FindAnimation(Hash32("FadeIn"));
+				if (anim) anim->Play();
+			}
 		}
 
 		void ReturnToTitleMenu::OnClose()
@@ -142,41 +148,15 @@ namespace app
 					if (closeAnim) closeAnim->Play();
 				}
 			}
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol) {
+				cursol->isDraw = false;
+				cursol->StopSpriteAnimation();
+			}
 		}
 
 		void ReturnToTitleMenu::PlaySelectedAnimation()
 		{
-			/** TODO: Updateで、処理が走っているので、無駄な処理を改善したい */
-			auto* textYes = GetUI<app::ui::UIIcon>(Hash32("text_Yes"));
-			auto* textNo = GetUI<app::ui::UIIcon>(Hash32("text_No"));
-
-			/** 各項目選択中に拡大アニメーションを再生 */
-			if (cursolIndex_ == 0
-				&& textYes)
-			{
-				/** リセット: 黄色から白 */
-				textNo->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textNo->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-				/** 黄色 */
-				textYes->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textYes->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
-			}
-			else if (cursolIndex_ == 1
-				&& textNo)
-			{
-				/** リセット: 黄色から白 */
-				textYes->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textYes->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-				/** 黄色 */
-				textNo->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textNo->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
-			}
 		}
 
 		void ReturnToTitleMenu::InitializeLogic()
@@ -189,6 +169,13 @@ namespace app
 			if (canvas)
 			{
 				canvas->transform.localScale = Vector3::Zero;
+			}
+
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol) {
+				app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeIn"));
+				auto* anim = cursol->FindAnimation(Hash32("FadeIn"));
+				if (anim) anim->Play();
 			}
 		}
 	}

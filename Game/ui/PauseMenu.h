@@ -10,12 +10,7 @@ namespace app
 		{
 		private:
 			std::unique_ptr <app::ui::Layout> layout_;
-
 			int cursolIndex_ = 0;
-
-			bool isPause_ = false;
-			bool isVolume_ = false;
-
 
 		public:
 			PauseMenu();
@@ -24,7 +19,6 @@ namespace app
 
 			void OnOpen();
 			void OnClose();
-			void PlaySelectedAnimation();
 
 			int GerCurrentIndex() const
 			{
@@ -33,12 +27,8 @@ namespace app
 		public:
 			virtual void InitializeLogic();
 
-
 		public:
-			bool IsPause()
-			{
-				return isPause_;
-			}
+			bool IsPause();
 		};
 	}
 }

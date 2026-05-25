@@ -188,28 +188,19 @@ namespace app
 				// --- MASTERのUI更新
 				{
 					const float volumeMaster = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::Master);
+					
+					int volIndex = static_cast<int>(std::round(volumeMaster * VOLUME_DISPLAY_MULTIPLIER));
+					if (volIndex < 0) volIndex = 0;
+					if (volIndex > 10) volIndex = 10;
+
 					// ゲージの大きさ
-					{
-						auto gaugeMASTER = GetUI<UIIcon>(Hash32("VolumeBar_MASTER"));
-						gaugeMASTER->transform.localScale.x = volumeMaster;
+					auto gaugeMASTER = GetUI<UIIcon>(Hash32("VolumeBar_MASTER"));
+					if (gaugeMASTER) {
+						gaugeMASTER->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
 					}
-					// MASTERノブのX座標
-					{
-						const float minX = parameter->gaugeBarX[0];
-						const float maxX = parameter->gaugeBarX[10];
-
-						auto knobMASTER = GetUI<UIIcon>(Hash32("Knob_MASTER"));
-						const float x = minX + ((minX - maxX) * volumeMaster);
-						knobMASTER->transform.localPosition.x = x;
-					}
-					// MASTERノブ背景のX座標
-					{
-						const float minX = parameter->gaugeBarX[0];
-						const float maxX = parameter->gaugeBarX[10];
-
-						auto knobBackGroundMASTER = GetUI<UIIcon>(Hash32("KnobBackground_MASTER"));
-						const float x = minX + ((minX - maxX) * volumeMaster);
-						knobBackGroundMASTER->transform.localPosition.x = x;
+					auto knobBackGroundMASTER = GetUI<UIIcon>(Hash32("KnobBackground_MASTER"));
+					if (knobBackGroundMASTER) {
+						knobBackGroundMASTER->transform.localPosition.x = parameter->knobX[volIndex];
 					}
 					//数値表示
 					{
@@ -223,76 +214,48 @@ namespace app
 				// --- BGMのUI更新
 				{
 					const float volumeBGM = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::BGM);
-					// ゲージの大きさ
-					{
-						auto gaugeBGM = GetUI<UIIcon>(Hash32("VolumeBar_BGM"));
-						gaugeBGM->transform.localScale.x = volumeBGM;
-					}
-					// BGMノブのX座標
-					{
-						const float minX = parameter->gaugeBarX[0];
-						const float maxX = parameter->gaugeBarX[10];
+					int volIndex = static_cast<int>(std::round(volumeBGM * VOLUME_DISPLAY_MULTIPLIER));
+					if (volIndex < 0) volIndex = 0;
+					if (volIndex > 10) volIndex = 10;
 
-						auto knobBGM = GetUI<UIIcon>(Hash32("Knob_BGM"));
-						const float x = minX + ((minX - maxX) * volumeBGM);
-						knobBGM->transform.localPosition.x = x;
+					auto gaugeBGM = GetUI<UIIcon>(Hash32("VolumeBar_BGM"));
+					if (gaugeBGM) {
+						gaugeBGM->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
 					}
-					// BGMノブ背景のX座標
-					{
-						const float minX = parameter->gaugeBarX[0];
-						const float maxX = parameter->gaugeBarX[10];
 
-						auto knobBackGroundBGM = GetUI<UIIcon>(Hash32("KnobBackground_BGM"));
-						const float x = minX + ((minX - maxX) * volumeBGM);
-						knobBackGroundBGM->transform.localPosition.x = x;
+					auto knobBackGroundBGM = GetUI<UIIcon>(Hash32("KnobBackground_BGM"));
+					if (knobBackGroundBGM) {
+						knobBackGroundBGM->transform.localPosition.x = parameter->knobX[volIndex];
 					}
-					//数値表示
-					{
-						auto digitBGM = GetUI<UIDigit>(Hash32("VolumeDigit_BGM"));
-						if (digitBGM) {
-							digitBGM->SetNumber(static_cast<int>(std::round(volumeBGM * VOLUME_DISPLAY_MULTIPLIER)));
-						}
+
+					auto digitBGM = GetUI<UIDigit>(Hash32("VolumeDigit_BGM"));
+					if (digitBGM) {
+						digitBGM->SetNumber(volIndex);
 					}
 				}
 
 				// --- SEのUI更新
 				{
 					const float volumeSE = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::SE);
-					// ゲージの大きさ
-					{
-						auto gaugeScaleSE = GetUI<UIIcon>(Hash32("VolumeBar_SE"));
-						gaugeScaleSE->transform.localScale.x = volumeSE;
-					}
-					// SEノブのX座標
-					{
-						const float minX = parameter->gaugeBarX[0];
-						const float maxX = parameter->gaugeBarX[10];
+					int volIndex = static_cast<int>(std::round(volumeSE * VOLUME_DISPLAY_MULTIPLIER));
+					if (volIndex < 0) volIndex = 0;
+					if (volIndex > 10) volIndex = 10;
 
-						// 四角の場所 ＝ minX + ((maxX - minX) * ボリュームパーセント)
-						// ※ (maxX - minX) = 長さ
-
-						auto knobSE = GetUI<UIIcon>(Hash32("Knob_SE"));
-						const float x = minX + ((minX - maxX) * volumeSE);
-						knobSE->transform.localPosition.x = x;
+					auto gaugeScaleSE = GetUI<UIIcon>(Hash32("VolumeBar_SE"));
+					if (gaugeScaleSE) {
+						gaugeScaleSE->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
 					}
-					// SEノブ背景のX座標
-					{
-						const float minX = parameter->gaugeBarX[0];
-						const float maxX = parameter->gaugeBarX[10];
 
-						auto knobBackGroundSE = GetUI<UIIcon>(Hash32("KnobBackground_SE"));
-						const float x = minX + ((minX - maxX) * volumeSE);
-						knobBackGroundSE->transform.localPosition.x = x;
+					auto knobBackGroundSE = GetUI<UIIcon>(Hash32("KnobBackground_SE"));
+					if (knobBackGroundSE) {
+						knobBackGroundSE->transform.localPosition.x = parameter->knobX[volIndex];
 					}
-					//数値の表示
-					{
-						auto digitSE = GetUI<UIDigit>(Hash32("VolumeDigit_SE"));
-						if (digitSE) {
-							digitSE->SetNumber(static_cast<int>(std::round(volumeSE * VOLUME_DISPLAY_MULTIPLIER)));
-						}
+
+					auto digitSE = GetUI<UIDigit>(Hash32("VolumeDigit_SE"));
+					if (digitSE) {
+						digitSE->SetNumber(volIndex);
 					}
 				}
-				PlaySelectedAnimation();
 			}
 
 			seq->Update(g_gameTime->GetFrameDeltaTime());
@@ -365,83 +328,6 @@ namespace app
 
 		void SoundOptionMenu::PlaySelectedAnimation()
 		{
-			/** TODO: Updateで、処理が走っているので、無駄な処理を改善したい */
-			auto* textMASTER = GetUI<app::ui::UIIcon>(Hash32("Text_MASTER"));
-			auto* textBGM = GetUI<app::ui::UIIcon>(Hash32("Text_BGM"));
-			auto* textSE = GetUI<app::ui::UIIcon>(Hash32("Text_SE"));
-
-			auto* digitMASTER = GetUI<app::ui::UIDigit>(Hash32("VolumeDigit_MASTER"));
-			auto* digitBGM = GetUI<app::ui::UIDigit>(Hash32("VolumeDigit_BGM"));
-			auto* digitSE = GetUI<app::ui::UIDigit>(Hash32("VolumeDigit_SE"));
-
-			/** 各項目選択中に拡大アニメーションを再生 */
-			if (volumeCursolIndex_ == static_cast<int>(app::SoundManager::SoundVolumeType::Master)
-				&& textMASTER
-				&& digitMASTER)
-			{
-				/** リセット: 黄色から白 */
-				textBGM->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				textSE->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				digitBGM->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				digitSE->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textBGM->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				textSE->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				digitBGM->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				digitSE->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-				/** 黄色 */
-				textMASTER->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				digitMASTER->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textMASTER->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
-				digitMASTER->transform.localScale = Vector3(1.5f, 1.5f, 0.0f);
-			}
-			else if (volumeCursolIndex_ == static_cast<int>(app::SoundManager::SoundVolumeType::BGM)
-				&& textBGM
-				&& digitBGM)
-			{
-				/** リセット: 黄色から白 */
-				textMASTER->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				textSE->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				digitMASTER->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				digitSE->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textMASTER->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				textSE->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				digitMASTER->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				digitSE->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-				/** 黄色 */
-				textBGM->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				digitBGM->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textBGM->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
-				digitBGM->transform.localScale = Vector3(1.5f, 1.5f, 0.0f);
-			}
-			else if (volumeCursolIndex_ == static_cast<int>(app::SoundManager::SoundVolumeType::SE)
-				&& textSE
-				&& digitSE)
-			{
-				/** リセット: 黄色から白 */
-				textMASTER->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				textBGM->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				digitMASTER->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				digitBGM->color.Set(Vector3(1.0f, 1.0f, 1.0f));
-				/** リセット: 等倍に戻す */
-				textMASTER->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				textBGM->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				digitMASTER->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-				digitBGM->transform.localScale = Vector3(1.0f, 1.0f, 0.0f);
-
-
-				/** 黄色 */
-				textSE->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				digitSE->color.Set(Vector3(1.0f, 1.0f, 0.0f));
-				/** スケール拡大 */
-				textSE->transform.localScale = Vector3(1.3f, 1.3f, 0.0f);
-				digitSE->transform.localScale = Vector3(1.5f, 1.5f, 0.0f);
-			}
 		}
 
 
