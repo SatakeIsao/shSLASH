@@ -29,6 +29,10 @@ namespace app {
             void OnOpen();
             void OnClose();
 
+            bool IsReturnTitleDecided() const;
+            bool IsRetryDecided() const;
+            bool IsExitDecided() const;
+
         private:
             SequenceState currentState_ = SequenceState::Init;
             float stateTimer_ = 0.0f;   // 待ち時間を計るタイマー
@@ -56,6 +60,10 @@ namespace app {
             int debugCurrentRank_ = -1;
             float bRankTimer_ = 0.0f;
             bool isBRankTilted_ = false;
+
+            float shakeTimer_ = 0.0f;           // 揺れている時間を計る
+            int shakingDigitIndex_ = -1;        // 今どの数字が揺れているか
+            Vector3 initialDigitPositions_[5];  // 5つの数字の「元の座標」を記憶
         };
     }
 }

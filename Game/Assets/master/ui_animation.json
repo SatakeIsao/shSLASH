@@ -591,6 +591,16 @@
             "loop": "Once"
         },
         {
+            "comment": "数字ハンコ：大きくから一気に定位置へ",
+            "key": "DigitStamp",
+            "valueType": "Vector3",
+            "startValue": { "x": 3.0, "y": 3.0, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
             "comment": "リザルト画面の数字オーバーシュート：拡大",
             "key": "DigitOvershoot_Pop",
             "valueType": "Vector3",
@@ -961,5 +971,76 @@
           "easing": "EaseIn",
           "loop": "Once"
         }
+        },
+        {
+            "comment": "エネミーアイコン2：上からスライド",
+            "key": "EnemyIcon2Slide",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": -20.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "エネミーアイコン3：上からスライド",
+            "key": "EnemyIcon3Slide",
+            "valueType": "Vector3",
+            "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
+            "endValue":   { "x": -475.0, "y": -90.0, "z": 0.0 },
+            "duration": 1.0,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "ランクハンコ：大きくから一気に定位置へ",
+            "key": "RankStamp",
+            "valueType": "Vector3",
+            "startValue": { "x": 4.0, "y": 4.0, "z": 4.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 1.0,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "リザルト画面の数字オーバーシュート：拡大",
+            "key": "DigitOvershoot_Pop",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 1.5, "y": 1.5, "z": 1.0 },
+            "duration": 0.1,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "リザルト画面の数字オーバーシュート：戻る",
+            "key": "DigitOvershoot_Settle",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.5, "y": 1.5, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.15,
+            "easing": "EaseInOut",
+            "loop": "Once"
+        },
+{
+    "comment": "文字フェードイン",
+    "key": "FadeIn_SubMenu",
+    "valueType": "Vector4",
+    "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+    "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+    "duration": 1.0,
+    "easing": "Linear",
+    "loop": "Once"
+},
+{
+    "comment": "背景フェードイン",
+    "key": "FadeIn_SubMenu_Half",
+    "valueType": "Vector4",
+    "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+    "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.6 },
+    "duration": 1.0,
+    "easing": "Linear",
+    "loop": "Once"
+}
     ]
 }

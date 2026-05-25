@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #include "ResultScene.h"
 #include "TitleScene.h"
+#include "BattleScene.h"
 #include "ui/ResultMenu.h"
 
 ResultScene::ResultScene()
@@ -62,10 +63,6 @@ bool ResultScene::Start()
 
 void ResultScene::Update()
 {
-	if (g_pad[0]->IsTrigger(enButtonDown))
-	{
-		m_requestSceneId = TitleScene::ID();
-	}
 	app::camera::CameraManager::Get().Update(g_gameTime->GetFrameDeltaTime());
 
 	if (playerModel_) {
@@ -88,11 +85,24 @@ void ResultScene::Render(RenderContext& rc)
 
 bool ResultScene::RequestScene(uint32_t& id, float& waitTime)
 {
-	if (m_requestSceneId != INVALID_SCENE_ID)
-	{
-		id = m_requestSceneId;
-		waitTime = 3.0f;
+	auto* resultMenu = dynamic_cast<app::ui::ResultMenu*>(layout_.GetMenu());
+	if (!resultMenu) return false;
+
+	if (resultMenu->IsReturnTitleDecided()) {
+		id = TitleScene::ID();
+		waitTime = 1.0f;
 		return true;
+	}
+
+	if (resultMenu->IsRetryDecided()) {
+		id = BattleScene::ID(); 
+		waitTime = 1.0f;
+		return true;
+	}
+
+	if (resultMenu->IsExitDecided()) {
+		PostQuitMessage(0);
+		return false;
 	}
 	return false;
 }
