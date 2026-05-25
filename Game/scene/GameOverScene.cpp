@@ -7,6 +7,16 @@
 #include "GameOverScene.h"
 #include "TitleScene.h"
 
+namespace app {
+	class GameOverMenu : public ui::MenuBase {
+	public:
+		void InitializeLogic() override {}
+
+		void Update() override {
+			MenuBase::Update();
+		}
+	};
+}
 
 GameOverScene::GameOverScene()
 {
@@ -20,7 +30,8 @@ GameOverScene:: ~GameOverScene()
 
 bool GameOverScene::Start()
 {
-	backGroundRender_.Init("Assets/ui/gameover/gameOver.DDS", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
+	//backGroundRender_.Init("Assets/ui/gameover/gameOver.DDS", MAX_SPRITE_WIDTH, MAX_SPRITE_HIGHT);
+	//layout_.Initialize<app::GameOverMenu>("Assets/ui/layout/gameOverLayout.json");
 	return true;
 }
 
@@ -31,13 +42,15 @@ void GameOverScene::Update()
 	{
 		m_requestSceneId = TitleScene::ID();
 	}
-	backGroundRender_.Update();
+	//backGroundRender_.Update();
+	layout_.Update();
 }
 
 
 void GameOverScene::Render(RenderContext& rc)
 {
-	backGroundRender_.Draw(rc);
+	//backGroundRender_.Draw(rc);
+	layout_.Render(rc);
 }
 
 
