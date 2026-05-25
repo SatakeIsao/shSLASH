@@ -201,6 +201,11 @@
     <ClCompile Include="title\TitleManager.cpp" />
     <ClCompile Include="EnemyPhase.cpp" />
     <ClCompile Include="ui\DamagePopUI.cpp" />
+    <ClCompile Include="ui\CameraOptionMenu.cpp" />
+    <ClCompile Include="ui\GameOverSequence.cpp" />
+    <ClCompile Include="ui\OptionMenu.cpp" />
+    <ClCompile Include="ui\ResultMenu.cpp" />
+    <ClCompile Include="ui\ResultSubMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -391,6 +396,11 @@
     <ClInclude Include="EnemyPhase.h" />
     <ClInclude Include="ui\DamagePopUI.h" />
     <ClInclude Include="battle\IDamagePopListener.h" />
+    <ClInclude Include="ui\CameraOptionMenu.h" />
+    <ClInclude Include="ui\GameOverSequence.h" />
+    <ClInclude Include="ui\OptionMenu.h" />
+    <ClInclude Include="ui\ResultMenu.h" />
+    <ClInclude Include="ui\ResultSubMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

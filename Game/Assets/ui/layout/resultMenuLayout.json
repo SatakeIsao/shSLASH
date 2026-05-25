@@ -10,84 +10,95 @@
                 "position": [0.0, 0.0, 0.0],
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.8]
-            },
-            {
-                "type": "UIIcon",
-                "name": "MenuLine",
-                "asset": "Assets/ui/white.DDS",
-                "width": 200,
-                "height": 200,
-                "position": [0.0, 0.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
-                "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
-            },
-            {
-                "type": "UIIcon",
-                "name": "MenuLine_2",
-                "asset": "Assets/ui/white.DDS",
-                "width": 200,
-                "height": 200,
-                "position": [0.0, 0.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
-                "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
+                "color": [1.0, 1.0, 1.0, 0.6]
             },
             {
                 "type": "UIIcon",
                 "name": "ResultMenuBase",
                 "asset": "Assets/ui/result/ResultMenu.DDS",
-                "width": 404,
-                "height": 86,
+                "width": 500,
+                "height": 325,
                 "position": [0.0, 0.0, 0.0],
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
+                "color": [1.0, 1.0, 1.0, 0.6]
             },
             {
                 "type": "UIIcon",
                 "name": "Retry",
                 "asset": "Assets/ui/word/retry.DDS",
-                "width": 404,
-                "height": 86,
-                "position": [0.0, 350.0, 0.0],
+                "width": 162,
+                "height": 36,
+                "position": [0.0, 106.0, 0.0],
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
+                "color": [1.0, 1.0, 1.0, 1.0]
             },
             {
                 "type": "UIIcon",
                 "name": "TITLE",
                 "asset": "Assets/ui/word/title.DDS",
-                "width": 404,
-                "height": 86,
-                "position": [0.0, 350.0, 0.0],
+                "width": 133,
+                "height": 36,
+                "position": [0.0, 0.0, 0.0],
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
+                "color": [1.0, 1.0, 1.0, 1.0]
             },
             {
                 "type": "UIIcon",
                 "name": "Exit",
                 "asset": "Assets/ui/word/exit.DDS",
-                "width": 404,
-                "height": 86,
-                "position": [0.0, 350.0, 0.0],
+                "width": 113,
+                "height": 36,
+                "position": [0.0, -106.0, 0.0],
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
+                "color": [1.0, 1.0, 1.0, 1.0]
             },
             {
                 "type": "UIIcon",
                 "name": "Highlight",
-                "asset": "Assets/ui/highlight_2.DDS",
-                "width": 100,
-                "height": 100,
+                "asset": "Assets/ui/highlight.DDS",
+                "width": 350,
+                "height": 33,
                 "position": [0.0, 0.0, 0.0],
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 0.0]
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+	    {
+                "type": "UIIcon",
+                "name": "MenuLine",
+                "asset": "Assets/ui/Line.DDS",
+                "width": 325,
+                "height": 3,
+                "position": [0.0, 75.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.9]
+            },
+	    {
+                "type": "UIIcon",
+                "name": "MenuLine_2",
+                "asset": "Assets/ui/Line.DDS",
+                "width": 325,
+                "height": 3,
+                "position": [0.0, -30.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.9]
+            },
+            {
+                "type": "UIIcon",
+                "name": "MenuLine_3",
+                "asset": "Assets/ui/Line.DDS",
+                "width": 325,
+                "height": 3,
+                "position": [0.0, -135.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.9]
             }
         ]
     }
