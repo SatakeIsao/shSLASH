@@ -115,8 +115,12 @@ namespace app
 			bool isVisible_ = true;
 			/** 回復アニメーション中フラグ */
 			bool isHealAnimating_ = false;
+			/** 回復エフェクト発火済みフラグ */
+			bool healEffectFired_ = false;
 			/** 回復アニメーション経過時間 */
 			float healAnimTimer_ = 0.0f;
+			/** レベル数字ポップ演出タイマー（-1=非アクティブ） */
+			float levelNumAnimTimer_ = -1.0f;
 			/** アニメーション総時間 */
 			float healAnimDuration_ = 1.5f;
 			/** アニメーション開始時のHP割合 */

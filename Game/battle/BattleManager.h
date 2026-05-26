@@ -9,6 +9,7 @@
 #include "camera/CameraSteering.h"
 #include "ui/Layout.h"
 #include "effect/EffectManager.h"
+#include "effect/EffectManager2D.h"
 #include "battle/IDamagePopListener.h"
 
 namespace nsK2EngineLow
@@ -119,6 +120,7 @@ namespace app
 			app::camera::RefCameraController gameCameraController_ = nullptr;
 
             EffectManagerObject* effectManagerObject_ = nullptr;
+            EffectManager2DObject* effectManager2DObject_ = nullptr;
             app::core::PauseManagerObject* pauseManagerObject_ = nullptr;
             app::ui::BattleSequence* battleSequenceObject_ = nullptr;
             app::ui::TimerUIObject* timerUIObject_ = nullptr;
@@ -161,10 +163,11 @@ namespace app
             struct PendingSpawnEffect
             {
                 int effectKind = 0;
-                Vector3 position = Vector3::Zero;
+                Vector3 scale = Vector3::Zero;
                 float timer = 0.0f;
             };
             std::vector<PendingSpawnEffect> pendingSpawnEffects_;
+            Vector3 playerSpawnEffectPos_ = Vector3::Zero;
 
 
         private:

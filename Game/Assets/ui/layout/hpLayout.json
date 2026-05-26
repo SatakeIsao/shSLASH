@@ -95,9 +95,9 @@
         "type": "UIIcon",
         "name": "levelIcon",
         "asset": "Assets/ui/LevelUp/LvIcon.DDS",
-        "width": 73,
-        "height": 42,
-        "position": [-390, 394, 0],
+        "width": 58,
+        "height": 33,
+        "position": [-650, 394, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0, 1.0, 1.0, 1.0]
@@ -107,12 +107,12 @@
         "name": "levelNumbers",
         "asset": "Assets/ui/numbers",
         "digit":2,
-        "width": 26,
-        "height": 47,
-        "position": [-310, 394, 0],
+        "width": 21,
+        "height": 37,
+        "position": [-580, 394, 0],
         "scale": [1.0, 1.0, 1.0],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.1]
+        "color": [1.0 ,1.0, 1.0, 1.0]
       },
       {
         "type": "UIDigit",
@@ -121,10 +121,10 @@
         "digit":2,
         "width": 30,
         "height": 54,
-        "position": [-310, 390, 0],
+        "position": [-560, 390, 0],
         "scale": [0, 0, 0],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.1]
+        "color": [1.0 ,1.0, 1.0, 1.0]
       }
     ]
   }
