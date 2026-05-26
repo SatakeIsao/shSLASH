@@ -19,6 +19,7 @@ namespace app
 		AtkWeak,
 		Avoidance,
 		Charging,
+		DamagePlayer,
 		DeadPlayer,
 		DeadMushroom,
 		DeadStone,
@@ -69,6 +70,7 @@ namespace app
 		SoundInformation("Assets/sound/se/atkWeak.wav"),
 		SoundInformation("Assets/sound/se/avoidance.wav"),
 		SoundInformation("Assets/sound/se/charging.wav"),
+		SoundInformation("Assets/sound/se/damagePlayer.wav"),
 		SoundInformation("Assets/sound/se/deadPlayer.wav"),
 		SoundInformation("Assets/sound/se/deadMushroom.wav"),
 		SoundInformation("Assets/sound/se/deadStone.wav"),
@@ -85,7 +87,7 @@ namespace app
 		SoundInformation("Assets/sound/se/levelUp.wav"),
 		SoundInformation("Assets/sound/se/slide.wav"),
 		// BGM
-		SoundInformation("Assets/sound/bgm/explore_bgm.wav"),
+		SoundInformation("Assets/sound/bgm/battle.wav"),
 		// Voice
 		SoundInformation("Assets/sound/voice/StartupVoice_00.wav"),
 		SoundInformation("Assets/sound/voice/StartupVoice_01.wav"),

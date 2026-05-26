@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "InGameUI.h"
 #include "core/ParameterManager.h"
-#include "actor/ActorStatus.h" 
+#include "actor/ActorStatus.h"
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
+#include "effect/EffectManager2D.h"
 
 namespace {
 	/** 色 */
@@ -372,6 +373,14 @@ namespace app
 				float easedT = (t >= 1.0f) ? 1.0f : 1.0f - powf(2.0f, -10.0f * t);
 				displayHpRatio_ = healStartRatio_ + (1.0f - healStartRatio_) * easedT;
 
+				if (!healEffectFired_ && displayHpRatio_ >= 0.9f && EffectManager2D::IsAvailable())
+				{
+					EffectManager2D::Get().PlayEffect(
+						enEffectKind2D_PlayerUIHealHP,
+						{ -320.0f, 340.0f, 0.0f }
+					);
+					healEffectFired_ = true;
+				}
 				if (t >= 1.0f)
 				{
 					isHealAnimating_ = false;
@@ -452,6 +461,15 @@ namespace app
 					healStartRatio_ = displayHpRatio_;
 					healAnimTimer_ = 0.0f;
 					isHealAnimating_ = true;
+					healEffectFired_ = false;
+					if (healStartRatio_ >= 0.9f && EffectManager2D::IsAvailable())
+					{
+						EffectManager2D::Get().PlayEffect(
+							enEffectKind2D_PlayerUIHealHP,
+							{ -320.0f, 340.0f, 0.0f }
+						);
+						healEffectFired_ = true;
+					}
 					index_ = MAX_LEVEL;
 					targetHpRatio_ = 1.0f;
 					damagePosX_ = 1.0f;
@@ -462,6 +480,16 @@ namespace app
 					displayLevelRatio_ = 0.0f;
 					currentLevel->transform.localPosition.x = parameter->levelBarPositionX[0];
 					currentLevel->transform.localScale.x = parameter->levelBarScaleX[0];
+
+					// 落下演出：数字を上に配置してアニメーション開始
+					{
+						auto* levelDigit = layout_->GetMenu()->GetUI<app::ui::UIDigit>(Hash32("levelNumbers"));
+						if (levelDigit)
+						{
+							levelDigit->transform.localPosition.y = 440.0f;
+						}
+						levelNumAnimTimer_ = 0.0f;
+					}
 				}
 			}
 			/** Lv.MAX時はゲージを満タン固定 */
@@ -514,6 +542,60 @@ namespace app
 			hpGauge_.Update();
 
 			icon_.Update();
+
+			// 落下 + 着地揺れアニメーション
+			// Phase1: 重力加速で落下（t^3 EaseIn）
+			// Phase2: 着地後、数字 → Lv.の順に減衰振動
+			if (levelNumAnimTimer_ >= 0.0f)
+			{
+				static constexpr float FALL_DURATION  = 0.28f;
+				static constexpr float SHAKE_DURATION = 0.5f;
+				static constexpr float FALL_START_Y   = 440.0f;
+				static constexpr float FALL_END_Y     = 394.0f;
+				static constexpr float LV_BASE_Y      = 394.0f;
+				static constexpr float LV_DELAY       = 0.06f;
+				static constexpr float SHAKE_FREQ     = 28.0f;
+				static constexpr float SHAKE_DECAY    = 16.0f;
+
+				levelNumAnimTimer_ += dt;
+
+				auto* menu       = layout_->GetMenu();
+				auto* levelDigit = menu->GetUI<app::ui::UIDigit>(Hash32("levelNumbers"));
+				auto* lvIcon     = menu->GetUI<app::ui::UIIcon>(Hash32("levelIcon"));
+
+				if (levelNumAnimTimer_ < FALL_DURATION)
+				{
+					// Phase1: 落下
+					float t      = levelNumAnimTimer_ / FALL_DURATION;
+					float easedT = t * t * t;
+					if (levelDigit) levelDigit->transform.localPosition.y = FALL_START_Y + (FALL_END_Y - FALL_START_Y) * easedT;
+					if (lvIcon)     lvIcon->transform.localPosition.y = LV_BASE_Y;
+				}
+				else
+				{
+					// Phase2: 着地揺れ（減衰正弦波）
+					float shakeT = levelNumAnimTimer_ - FALL_DURATION;
+
+					// 数字の揺れ
+					float numShake = 8.0f * sinf(SHAKE_FREQ * shakeT) * expf(-SHAKE_DECAY * shakeT);
+					if (levelDigit) levelDigit->transform.localPosition.y = FALL_END_Y + numShake;
+
+					// Lv.アイコンの揺れ（衝撃が伝播：少し遅れる）
+					if (shakeT >= LV_DELAY)
+					{
+						float lvT     = shakeT - LV_DELAY;
+						float lvShake = 5.0f * sinf(SHAKE_FREQ * lvT) * expf(-SHAKE_DECAY * lvT);
+						if (lvIcon) lvIcon->transform.localPosition.y = LV_BASE_Y + lvShake;
+					}
+
+					if (shakeT >= SHAKE_DURATION)
+					{
+						if (levelDigit) levelDigit->transform.localPosition.y = FALL_END_Y;
+						if (lvIcon)     lvIcon->transform.localPosition.y = LV_BASE_Y;
+						levelNumAnimTimer_ = -1.0f;
+					}
+				}
+			}
 		}
 
 		void PlayerHpUIObject::Render(RenderContext& rc)
@@ -889,35 +971,37 @@ namespace app
 					if (anim) anim->Play();
 				};
 
+			auto playColorAnim = [](app::ui::UIIcon* icon, uint32_t animKey)
+				{
+					if (!icon) return;
+					icon->RemoveAnimation(animKey);
+					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(icon, animKey);
+					auto* anim = icon->FindAnimation(animKey);
+					if (anim) anim->Play();
+				};
+
 			exitAnimTimer_ += g_gameTime->GetFrameDeltaTime();
 
-			// 2.0秒後：右へ少し移動
-			if (!isExitRightPlayed_ && exitAnimTimer_ >= 2.0f)
+			// 2.0秒後：左スライド + フェードアウトを同時再生
+			if (!isExitLeftPlayed_ && exitAnimTimer_ >= 2.0f)
 			{
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Right"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Right"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")),      Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")),      Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")),    Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")),      Hash32("LevelUp_ExitX_Left"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")),      Hash32("LevelUp_ExitFadeOut"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")),      Hash32("LevelUp_ExitFadeOut"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")),    Hash32("LevelUp_ExitFadeOut"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")),      Hash32("LevelUp_ExitFadeOut"));
 
-				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Slide), false);
-				isExitRightPlayed_ = true;
-			}
-
-			// 2.15秒後：左へ画面外に吹っ飛ぶ
-			if (isExitRightPlayed_ && !isExitLeftPlayed_ && exitAnimTimer_ >= 2.15f)
-			{
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")), Hash32("AtkUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")), Hash32("AtkUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")),    Hash32("AtkUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")),    Hash32("AtkUp_ExitX_Left"));
 				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")), Hash32("AtkUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarBlue")), Hash32("LevelUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarBlue")), Hash32("LevelUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")), Hash32("LevelUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")), Hash32("LevelUp_ExitX_Left"));
+				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")),   Hash32("AtkUp_ExitX_Left"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")),    Hash32("AtkUp_ExitFadeOut"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")),    Hash32("AtkUp_ExitFadeOut"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitFadeOut"));
+				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")),   Hash32("AtkUp_ExitFadeOut"));
 
 				isExitLeftPlayed_ = true;
 				exitLeftTimer_ = 0.0f;
@@ -927,7 +1011,7 @@ namespace app
 			if (isExitLeftPlayed_)
 			{
 				exitLeftTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (exitLeftTimer_ >= 0.3f)
+				if (exitLeftTimer_ >= 0.75f)
 				{
 					ResetAnimation(menu);
 				}
@@ -941,12 +1025,12 @@ namespace app
 				{
 					if (!icon) return;
 					icon->RemoveAnimation(Hash32("LevelUp_SlideY"));
-					icon->RemoveAnimation(Hash32("LevelUp_ExitX_Right"));
 					icon->RemoveAnimation(Hash32("LevelUp_ExitX_Left"));
+					icon->RemoveAnimation(Hash32("LevelUp_ExitFadeOut"));
 					icon->RemoveAnimation(Hash32("LevelUp_FadeIn"));
 					icon->RemoveAnimation(Hash32("AtkUp_SlideY"));
-					icon->RemoveAnimation(Hash32("AtkUp_ExitX_Right"));
 					icon->RemoveAnimation(Hash32("AtkUp_ExitX_Left"));
+					icon->RemoveAnimation(Hash32("AtkUp_ExitFadeOut"));
 					icon->RemoveAnimation(Hash32("AtkUp_FadeIn"));
 				};
 

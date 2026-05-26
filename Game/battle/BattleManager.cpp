@@ -193,6 +193,7 @@ namespace app
 			DeleteGO(skyCube_);
 			DeleteGO(battleCharacter_);
 			DeleteGO(effectManagerObject_);
+			DeleteGO(effectManager2DObject_);
 			DeleteGO(pauseManagerObject_);
 			DeleteGO(eventCharacterSpawnManagerObject_);
 			DeleteGO(eventCharacter_);
@@ -240,6 +241,7 @@ namespace app
 			//エフェクトマネージャーオブジェクト
 			{
 				effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+				effectManager2DObject_ = NewGO<EffectManager2DObject>(static_cast<uint8_t>(ObjectPriority::Default));
 			}
 			/** イベントキャラクタースポーンマネージャー */
 			{
@@ -269,7 +271,7 @@ namespace app
 							if (effectManagerObject_)
 							{
 								static Vector3 spawnEffectPos = result.spawnPosition;
-								spawnEffectPos = result.spawnPosition;          // 毎回更新（static の初期化は初回のみなので必要）
+								spawnEffectPos = result.spawnPosition;
 								spawnEffectPos.y += STONE_SPAWN_EFFECT_OFFSET_Y;
 								effectManagerObject_->PlayEffectFollow(
 									enEffectKind_StoneSpawn,
@@ -394,6 +396,14 @@ namespace app
 						battleCharacter_->AddState<app::actor::InjuredRunCharacterState>();
 						battleCharacter_->AddState<app::actor::KipUpCharacterState>();
 					}
+					{
+						// スポーンエフェクト（EffectManagerのStart完了を待つため遅延キューに積む）
+						PendingSpawnEffect entry;
+						entry.effectKind = enEffectKind_PlayerLevelUp;
+						entry.scale = Vector3::One;
+						entry.timer = 0.1f;
+						pendingSpawnEffects_.push_back(entry);
+					}
 					// TODO: ステージによって変えたいので、ステージクラスが作られたら委嘱する
 					{
 						auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
@@ -507,7 +517,7 @@ namespace app
 				invincibleTimer_ = 3.0f;
 				// BGM再生
 				{
-					//app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
+					app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
 				}
 				// レベルアップ
 				{
@@ -557,6 +567,30 @@ namespace app
 			if (currentPause)
 			{
 				return;
+			}
+
+			/** 遅延再生処理 */
+			if (effectManagerObject_)
+			{
+				for (auto it = pendingSpawnEffects_.begin(); it != pendingSpawnEffects_.end(); )
+				{
+					it->timer -= g_gameTime->GetFrameDeltaTime();
+					if (it->timer <= 0.0f)
+					{
+						playerSpawnEffectPos_ = battleCharacter_->transform.position;
+						effectManagerObject_->PlayEffectFollow(
+							it->effectKind,
+							&playerSpawnEffectPos_,
+							Quaternion::Identity,
+							it->scale
+						);
+						it = pendingSpawnEffects_.erase(it);
+					}
+					else
+					{
+						++it;
+					}
+				}
 			}
 
 			if (!isSequence)
@@ -876,7 +910,7 @@ namespace app
 
 							/** ノックバック */
 							battleCharacter_->GetStateMachine()->OnKnockBack();
-							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Damage));
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DamagePlayer));
 
 							/** 無敵時間開始 */
 							isInvincible_ = true;
@@ -922,7 +956,7 @@ namespace app
 
 							/** ノックバック */
 							battleCharacter_->GetStateMachine()->OnKnockBack();
-							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Damage));
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DamagePlayer));
 
 							/** 無敵開始 */
 							isInvincible_ = true;
@@ -1037,7 +1071,7 @@ namespace app
 							if (effectManagerObject_)
 							{
 								effectManagerObject_->PlayEffectFollow(
-									enEffectKind_PlayerLevelUp,
+									enEffectKind_PlayerSpawn,
 									&battleCharacter_->transform.position,
 									Quaternion::Identity,
 									Vector3::One
