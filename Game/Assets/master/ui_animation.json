@@ -849,7 +849,6 @@
             "duration": 1.0,
             "easing": "EaseOut",
             "loop": "Once"
-            "loop": "Once"
         },
         {
             "comment": "タイトルロゴ左：衝撃1回目跳ね",
@@ -970,7 +969,6 @@
           "duration": 0.25,
           "easing": "EaseIn",
           "loop": "Once"
-        }
         },
         {
             "comment": "エネミーアイコン2：上からスライド",
@@ -1022,25 +1020,25 @@
             "easing": "EaseInOut",
             "loop": "Once"
         },
-{
-    "comment": "文字フェードイン",
-    "key": "FadeIn_SubMenu",
-    "valueType": "Vector4",
-    "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
-    "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
-    "duration": 1.0,
-    "easing": "Linear",
-    "loop": "Once"
-},
-{
-    "comment": "背景フェードイン",
-    "key": "FadeIn_SubMenu_Half",
-    "valueType": "Vector4",
-    "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
-    "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.6 },
-    "duration": 1.0,
-    "easing": "Linear",
-    "loop": "Once"
-}
+        {
+            "comment": "文字フェードイン",
+            "key": "FadeIn_SubMenu",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 1.0,
+            "easing": "Linear",
+            "loop": "Once"
+        },
+        {
+            "comment": "背景フェードイン",
+            "key": "FadeIn_SubMenu_Half",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.6 },
+            "duration": 1.0,
+            "easing": "Linear",
+            "loop": "Once"
+        }
     ]
 }
