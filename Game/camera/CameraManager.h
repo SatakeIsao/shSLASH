@@ -22,6 +22,10 @@ namespace app
 #endif
 
             std::unique_ptr<SpringCamera> springCamera_;
+            /** バネカメラ＋当たり判定のON/OFF */
+            bool isSpringCameraEnabled_ = true;
+            /** Refresh遅延カウンター（0になったフレームでRefreshを実行） */
+            int pendingRefreshFrames_ = 0;
 
             /** ブレンド用 */
             bool isBlending_ = false;
@@ -44,6 +48,9 @@ namespace app
              * エンジン側の実体カメラを設定
              */
             void Setup(nsK2EngineLow::Camera* engineCamera);
+
+            /** バネカメラ機能の有効/無効を設定 */
+            void SetSpringCameraEnabled(bool enabled) { isSpringCameraEnabled_ = enabled; }
 
             /**
              * 更新処理

@@ -7,6 +7,14 @@ static const int NUM_DIRECTIONAL_LIGHT = 4; //ディレクションライトの�
 static const int MAX_POINT_LIGHT = 32;      //ポイントライトの最大数
 static const int MAX_SPOT_LIGHT = 32;       //スポットライトの最大数
 
+// 4x4 ベイヤー行列（順序付きディザリング用）
+static const int ditherPattern[4][4] = {
+    { 0, 32,  8, 40},
+    {48, 16, 56, 24},
+    {12, 44,  4, 36},
+    {60, 28, 52, 20},
+};
+
 ////////////////////////////////////////////////
 // 構造体
 ////////////////////////////////////////////////
@@ -228,7 +236,20 @@ SPSIn VSSkinMain(SVSIn vsIn)
 SPSOut PSMainCore(SPSIn psIn, int isShadowReceiver) : SV_Target0
 {
     SPSOut psOut;
-    
+
+    // ディザリング：カメラに近づくにつれてオブジェクトをフェードアウト
+    {
+        int dx = (int)fmod(psIn.pos.x, 4.0f);
+        int dy = (int)fmod(psIn.pos.y, 4.0f);
+        int dither = ditherPattern[dy][dx];
+
+        float distToEye = length(psIn.worldPos - eyePos);
+        float clipRange = 20.0f;    // この距離より近づくとフェード開始
+        float eyeToClipRange = max(0.0f, distToEye - clipRange);
+        float clipRate = 1.0f - min(1.0f, eyeToClipRange / 30.0f);
+        clip(dither - 64 * clipRate);
+    }
+
     // ディレクションライトによるライティングを計算する
     float3 directionLig = CalcLigFromDirectionLight(psIn);
     

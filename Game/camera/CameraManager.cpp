@@ -11,13 +11,13 @@ namespace app
 
         CameraManager::CameraManager()
         {
-            //‚Î‚ËƒJƒƒ‰‚Ì‰Šú‰»
+            //ï¿½Î‚ËƒJï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
             springCamera_ = std::make_unique<SpringCamera>();
             springCamera_->Init(
-                *g_camera3D,	//‚Î‚ËƒJƒƒ‰‚Ìˆ—‚ğs‚¤ƒJƒƒ‰‚ğw’è‚·‚é
-                1000.0f,		//ƒJƒƒ‰‚ÌˆÚ“®‘¬“x‚ÌÅ‘å’l
-                true,			//ƒJƒƒ‰‚Æ’nŒ`‚Æ‚Ì‚ ‚½‚è”»’è‚ğæ‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒOBtrue‚¾‚Æ‚ ‚½‚è”»’è‚ğs‚¤
-                5.0f			//ƒJƒƒ‰‚Éİ’è‚³‚ê‚é‹…‘ÌƒRƒŠƒWƒ‡ƒ“‚Ì”¼ŒaB‘æ3ˆø”‚ªtrue‚Ì‚É—LŒø‚É‚È‚é
+                *g_camera3D,	//ï¿½Î‚ËƒJï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½è‚·ï¿½ï¿½
+                1000.0f,		//ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ÌˆÚ“ï¿½ï¿½ï¿½ï¿½xï¿½ÌÅ‘ï¿½l
+                true,			//ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Æ’nï¿½`ï¿½Æ‚Ì‚ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½Ìƒtï¿½ï¿½ï¿½Oï¿½Btrueï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
+                5.0f			//ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Éİ’è‚³ï¿½ï¿½é‹…ï¿½ÌƒRï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Ì”ï¿½ï¿½aï¿½Bï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½trueï¿½Ìï¿½ï¿½É—Lï¿½ï¿½ï¿½É‚È‚ï¿½
             );
         }
 
@@ -36,7 +36,7 @@ namespace app
         void CameraManager::Register(const uint32_t nameHash, RefCameraController controller)
         {
             if (controllers_.find(nameHash) != controllers_.end()) {
-				// ‚·‚Å‚É“o˜^‚³‚ê‚Ä‚¢‚éê‡‚Í–³‹
+				// ï¿½ï¿½ï¿½Å‚É“oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡ï¿½Í–ï¿½ï¿½ï¿½
                 return;
             }
             controllers_[nameHash] = controller;
@@ -46,7 +46,7 @@ namespace app
         void CameraManager::Unregister(const uint32_t nameHash)
         {
             if (controllers_.find(nameHash) == controllers_.end()) {
-				// “o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í–³‹
+				// ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½Í–ï¿½ï¿½ï¿½
 				return;
             }
             controllers_.erase(nameHash);
@@ -67,18 +67,19 @@ namespace app
             prev_ = current_;
 #endif
             if (!current_ || blendTime <= 0.0f) {
-                // ‘¦Ø‚è‘Ö‚¦
+                // å³æ™‚åˆ‡ã‚Šæ›¿ãˆï¼šæ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã§æ­£ã—ã„ä½ç½®ãŒæƒã£ã¦ã‹ã‚‰Refreshã™ã‚‹
                 current_ = controller;
                 current_->OnEnter();
                 next_ = nullptr;
                 isBlending_ = false;
+                pendingRefreshFrames_ = 2;
             } else {
-                // ƒuƒŒƒ“ƒhŠJn
+                // ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½hï¿½Jï¿½n
                 if (current_ != controller) {
                     next_ = controller;
                     next_->OnEnter();
 
-                    // Œ»İ‚ÌƒGƒ“ƒWƒ“ƒJƒƒ‰‚Ìó‘Ô‚ğƒuƒŒƒ“ƒhŠJn’n“_‚Æ‚µ‚Ä•Û‘¶
+                    // ï¿½ï¿½ï¿½İ‚ÌƒGï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½Ô‚ï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½hï¿½Jï¿½nï¿½nï¿½_ï¿½Æ‚ï¿½ï¿½Ä•Û‘ï¿½
                     blendStartData_.position = engineCamera_->GetPosition();
                     blendStartData_.target = engineCamera_->GetTarget();
                     blendStartData_.up = engineCamera_->GetUp();
@@ -100,7 +101,7 @@ namespace app
 
             CameraData applyData;
 
-            // ŠeƒRƒ“ƒgƒ[ƒ‰[‚ÌUpdate
+            // ï¿½eï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½Update
             if (current_) {
                 current_->Update();
             }
@@ -108,18 +109,18 @@ namespace app
                 next_->Update();
             }
 
-            // î•ñ‚ÌŒˆ’è
+            // ï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½
             if (isBlending_ && next_) {
                 blendTimer_ += deltaTime;
                 const float t = blendTimer_ / blendDuration_;
-                // •ÛŠÇI—¹
+                // ï¿½ÛŠÇIï¿½ï¿½
                 if (t >= 1.0f) {
                     isBlending_ = false;
                     current_ = next_;
                     next_ = nullptr;
                     applyData = current_->GetCameraData();
                 } else {
-                    // SmoothStep‚È‚Ç‚ÅŠŠ‚ç‚©‚É‚·‚é‚Æ‚æ‚è—Ç‚¢
+                    // SmoothStepï¿½È‚Ç‚ÅŠï¿½ï¿½ç‚©ï¿½É‚ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ç‚ï¿½
                     // t = t * t * (3.0f - 2.0f * t); 
                     applyData = CameraData::Lerp(t, blendStartData_, next_->GetCameraData());
                 }
@@ -127,17 +128,24 @@ namespace app
                 applyData = current_->GetCameraData();
             }
 
-            // 3. ƒGƒ“ƒWƒ“ƒJƒƒ‰‚Ö‚Ì”½‰f
-            engineCamera_->SetPosition(applyData.position);
-            engineCamera_->SetTarget(applyData.target);
+            if (isSpringCameraEnabled_) {
+                // ãƒãƒã‚«ãƒ¡ãƒ©ï¼‹å½“ãŸã‚Šåˆ¤å®šã‚ã‚Š
+                springCamera_->SetTarget(applyData.target);
+                springCamera_->SetPosition(applyData.position);
+                if (pendingRefreshFrames_ > 0 && --pendingRefreshFrames_ == 0) {
+                    springCamera_->Refresh();
+                }
+                springCamera_->Update();
+            } else {
+                // ç›´æ¥åæ˜ ï¼ˆãƒãƒãªã—ãƒ»å½“ãŸã‚Šåˆ¤å®šãªã—ï¼‰
+                engineCamera_->SetPosition(applyData.position);
+                engineCamera_->SetTarget(applyData.target);
+            }
+
             engineCamera_->SetUp(applyData.up);
             engineCamera_->SetViewAngle(applyData.fov);
             engineCamera_->SetNear(applyData.nearClip);
             engineCamera_->SetFar(applyData.farClip);
-
-            // •K—v‚È‚çUpdate‚ğŒÄ‚Ô
-            // m_engineCamera->Update(); 
-            springCamera_->Update();
         }
 	}
 }

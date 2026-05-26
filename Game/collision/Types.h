@@ -15,7 +15,7 @@ namespace app
 		{
 			enum Enum : uint32_t
 			{
-				Ground			= 1 << 0,
+				Ground			= enCollisionAttr_Ground,		// 0: enCollisionAttr_Characterと被らないよう一致させる
 				Character		= 1 << 1,
 				Enemy			= 1 << 2,
 			};

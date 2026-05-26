@@ -39,9 +39,19 @@ namespace app
 				yRotation.SetRotationY(-rotationVector.x);
 				yRotation.Apply(toVector_);
 				// rotY‚ÅXZŽ²‰ñ“]
+				Vector3 nextToVector = toVector_;
 				Quaternion xzRotation;
 				xzRotation.SetRotation(g_camera3D->GetRight(), -rotationVector.y);
-				xzRotation.Apply(toVector_);
+				xzRotation.Apply(nextToVector);
+
+				// toVector_‚ÌY¬•ª‚Åã‰ºŒÀ‚ðƒ`ƒFƒbƒN
+				// ¦distanceŠî€‚Å sin(pitchMin/Max) * distance ‚ªY¬•ª‚ÌŒÀŠE
+				const float len = toVector_.Length();
+				const float yMin = len * sin(config_.pitchMin);
+				const float yMax = len * sin(config_.pitchMax);
+				if (nextToVector.y >= yMin && nextToVector.y <= yMax) {
+					toVector_ = nextToVector;
+				}
 			}
 			nextData.position = targetCharacter_->transform.position + toVector_;
 			data = nextData;

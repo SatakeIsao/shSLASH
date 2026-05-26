@@ -50,6 +50,7 @@ namespace nsK2EngineLow {
 	void SceneLight::Update()
 	{
 		m_light.mLVP = g_renderingEngine->GetLigCameraViewProjection();
+		m_light.eyePos = g_camera3D->GetPosition();
 
 		//DirRot();
 	}

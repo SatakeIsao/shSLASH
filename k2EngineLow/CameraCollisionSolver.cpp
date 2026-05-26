@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "CameraCollisionSolver.h"
 
 namespace nsK2EngineLow {
@@ -31,13 +31,13 @@ namespace nsK2EngineLow {
 	{
 		m_radius = radius;
 		m_collider.Create(radius);
-		m_isInited = true;	//‰Šú‰»Ï‚İ‚Ìƒtƒ‰ƒO‚ğ—§‚Ä‚éB
+		m_isInited = true;	// åˆæœŸåŒ–æ¸ˆã¿ã®ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹ã€‚
 	}
 	bool CameraCollisionSolver::Execute(Vector3& result, const Vector3& position, const Vector3& target)
 	{
 		if (m_isInited == false) {
-			//TK_WARNING_MESSAGE("‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒJƒƒ‰ƒRƒŠƒWƒ‡ƒ“ƒ\ƒ‹ƒo[‚ÌExecuteŠÖ”‚ªŒÄ‚Î‚ê‚Ä‚¢‚Ü‚·B\n"
-				//"CCameraCollisionSolver::InitŠÖ”‚ğŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢B\n");
+			//TK_WARNING_MESSAGE("åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„ã‚«ãƒ¡ãƒ©ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚½ãƒ«ãƒãƒ¼ã®Executeé–¢æ•°ãŒå‘¼ã°ã‚Œã¦ã—ã¾ã„ã¾ã—ãŸã€‚\n"
+				//"CCameraCollisionSolver::Inité–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦ãã ã•ã„ã€‚\n");
 			return false;
 
 		}
@@ -45,11 +45,11 @@ namespace nsK2EngineLow {
 		Vector3 vWk;
 		vWk.Subtract(target, position);
 		if (vWk.LengthSq() < FLT_EPSILON) {
-			//‹“_‚Æ’‹“_‚ª‚Ù‚Ú“¯‚¶À•W‚É‚ ‚éB
+			// è¦–ç‚¹ã¨æ³¨è¦–ç‚¹ãŒã»ã¼åŒã˜ä½ç½®ã«ã‚ã‚‹ã€‚
 			return false;
 		}
 		vWk.Normalize();
-		//ƒŒƒC‚ğì¬‚·‚é
+		// ãƒ¬ã‚¤ä½œæˆ
 		SConvexSweepCallback callback(vWk);
 		//	callback.m_collisionFilterGroup = 
 		PhysicsWorld::Get().ConvexSweepTest(m_collider, target, position, callback);
