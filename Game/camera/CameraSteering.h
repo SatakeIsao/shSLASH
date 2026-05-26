@@ -24,6 +24,10 @@ namespace app
 				float height = 10.0f;
 				float rotationSpeedX = 1.0f;
 				float rotationSpeedY = 1.0f;
+				/** 見下ろし制限 */
+				float pitchMin = Math::DegToRad(10.0f);
+				/** 見上げ制限 */
+				float pitchMax = Math::DegToRad(60.0f);
 			};
 
 

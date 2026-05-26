@@ -11,13 +11,13 @@ namespace app
 
         CameraManager::CameraManager()
         {
-            //‚Î‚ËƒJƒƒ‰‚Ì‰Šú‰»
+            // ãƒãƒã‚«ãƒ¡ãƒ©ã®åˆæœŸåŒ–
             springCamera_ = std::make_unique<SpringCamera>();
             springCamera_->Init(
-                *g_camera3D,	//‚Î‚ËƒJƒƒ‰‚Ìˆ—‚ğs‚¤ƒJƒƒ‰‚ğw’è‚·‚é
-                1000.0f,		//ƒJƒƒ‰‚ÌˆÚ“®‘¬“x‚ÌÅ‘å’l
-                true,			//ƒJƒƒ‰‚Æ’nŒ`‚Æ‚Ì‚ ‚½‚è”»’è‚ğæ‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒOBtrue‚¾‚Æ‚ ‚½‚è”»’è‚ğs‚¤
-                5.0f			//ƒJƒƒ‰‚Éİ’è‚³‚ê‚é‹…‘ÌƒRƒŠƒWƒ‡ƒ“‚Ì”¼ŒaB‘æ3ˆø”‚ªtrue‚Ì‚É—LŒø‚É‚È‚é
+                *g_camera3D,	// ãƒãƒã‚«ãƒ¡ãƒ©ã®åˆæœŸåŒ–ã‚’è¡Œã†ã‚«ãƒ¡ãƒ©ã‚’æŒ‡å®šã™ã‚‹
+                1000.0f,		// ã‚«ãƒ¡ãƒ©ã®ç§»å‹•é€Ÿåº¦ã®æœ€å¤§å€¤
+                true,			// ã‚«ãƒ¡ãƒ©ã¨åœ°å½¢ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’è¡Œã†ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°ã€‚trueã«ã™ã‚‹ã¨å½“ãŸã‚Šåˆ¤å®šã‚’è¡Œã†
+                5.0f			// ã‚«ãƒ¡ãƒ©ã«è¨­å®šã•ã‚Œã‚‹çƒã®ã‚³ãƒªã‚¸ãƒ§ãƒ³ã®åŠå¾„ã€‚ç¬¬3å¼•æ•°ãŒtrueã®æ™‚ã«æœ‰åŠ¹ã«ãªã‚‹
             );
         }
 
@@ -36,7 +36,7 @@ namespace app
         void CameraManager::Register(const uint32_t nameHash, RefCameraController controller)
         {
             if (controllers_.find(nameHash) != controllers_.end()) {
-				// ‚·‚Å‚É“o˜^‚³‚ê‚Ä‚¢‚éê‡‚Í–³‹
+				// æ—¢ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ç„¡è¦–
                 return;
             }
             controllers_[nameHash] = controller;
@@ -46,7 +46,7 @@ namespace app
         void CameraManager::Unregister(const uint32_t nameHash)
         {
             if (controllers_.find(nameHash) == controllers_.end()) {
-				// “o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í–³‹
+				// ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ç„¡è¦–
 				return;
             }
             controllers_.erase(nameHash);
@@ -67,18 +67,19 @@ namespace app
             prev_ = current_;
 #endif
             if (!current_ || blendTime <= 0.0f) {
-                // ‘¦Ø‚è‘Ö‚¦
+                // å³æ™‚åˆ‡ã‚Šæ›¿ãˆï¼šæ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã§æ­£ã—ã„ä½ç½®ãŒæƒã£ã¦ã‹ã‚‰Refreshã™ã‚‹
                 current_ = controller;
                 current_->OnEnter();
                 next_ = nullptr;
                 isBlending_ = false;
+                pendingRefreshFrames_ = 2;
             } else {
-                // ƒuƒŒƒ“ƒhŠJn
+                // ãƒ–ãƒ¬ãƒ³ãƒ‰é–‹å§‹
                 if (current_ != controller) {
                     next_ = controller;
                     next_->OnEnter();
 
-                    // Œ»İ‚ÌƒGƒ“ƒWƒ“ƒJƒƒ‰‚Ìó‘Ô‚ğƒuƒŒƒ“ƒhŠJn’n“_‚Æ‚µ‚Ä•Û‘¶
+                    // ç¾åœ¨ã®ã‚¨ãƒ³ã‚¸ãƒ³ã‚«ãƒ¡ãƒ©ã®çŠ¶æ…‹ã‚’ãƒ–ãƒ¬ãƒ³ãƒ‰é–‹å§‹åœ°ç‚¹ã¨ã—ã¦ä¿å­˜
                     blendStartData_.position = engineCamera_->GetPosition();
                     blendStartData_.target = engineCamera_->GetTarget();
                     blendStartData_.up = engineCamera_->GetUp();
@@ -100,7 +101,7 @@ namespace app
 
             CameraData applyData;
 
-            // ŠeƒRƒ“ƒgƒ[ƒ‰[‚ÌUpdate
+            // å„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®Update
             if (current_) {
                 current_->Update();
             }
@@ -108,18 +109,18 @@ namespace app
                 next_->Update();
             }
 
-            // î•ñ‚ÌŒˆ’è
+            // è£œé–“ã®è¨ˆç®—
             if (isBlending_ && next_) {
                 blendTimer_ += deltaTime;
                 const float t = blendTimer_ / blendDuration_;
-                // •ÛŠÇI—¹
+                // è£œé–“çµ‚äº†
                 if (t >= 1.0f) {
                     isBlending_ = false;
                     current_ = next_;
                     next_ = nullptr;
                     applyData = current_->GetCameraData();
                 } else {
-                    // SmoothStep‚È‚Ç‚ÅŠŠ‚ç‚©‚É‚·‚é‚Æ‚æ‚è—Ç‚¢
+                    // SmoothStepãªã©ã§æ»‘ã‚‰ã‹ã«ã™ã‚‹ã¨è‰¯ã„
                     // t = t * t * (3.0f - 2.0f * t); 
                     applyData = CameraData::Lerp(t, blendStartData_, next_->GetCameraData());
                 }
@@ -127,17 +128,24 @@ namespace app
                 applyData = current_->GetCameraData();
             }
 
-            // 3. ƒGƒ“ƒWƒ“ƒJƒƒ‰‚Ö‚Ì”½‰f
-            engineCamera_->SetPosition(applyData.position);
-            engineCamera_->SetTarget(applyData.target);
+            if (isSpringCameraEnabled_) {
+                // ãƒãƒã‚«ãƒ¡ãƒ©ï¼‹å½“ãŸã‚Šåˆ¤å®šã‚ã‚Š
+                springCamera_->SetTarget(applyData.target);
+                springCamera_->SetPosition(applyData.position);
+                if (pendingRefreshFrames_ > 0 && --pendingRefreshFrames_ == 0) {
+                    springCamera_->Refresh();
+                }
+                springCamera_->Update();
+            } else {
+                // ç›´æ¥åæ˜ ï¼ˆãƒãƒãªã—ãƒ»å½“ãŸã‚Šåˆ¤å®šãªã—ï¼‰
+                engineCamera_->SetPosition(applyData.position);
+                engineCamera_->SetTarget(applyData.target);
+            }
+
             engineCamera_->SetUp(applyData.up);
             engineCamera_->SetViewAngle(applyData.fov);
             engineCamera_->SetNear(applyData.nearClip);
             engineCamera_->SetFar(applyData.farClip);
-
-            // •K—v‚È‚çUpdate‚ğŒÄ‚Ô
-            // m_engineCamera->Update(); 
-            springCamera_->Update();
         }
 	}
 }
