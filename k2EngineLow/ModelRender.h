@@ -52,7 +52,8 @@ namespace nsK2EngineLow
 			int numAnimationClips = 0,
 			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
 			bool m_isShadowCaster = true,
-			bool m_isShadowReceiver = true
+			bool m_isShadowReceiver = true,
+			const char* fxFilePath = nullptr
 			);
 
 		void InitShadowModel(

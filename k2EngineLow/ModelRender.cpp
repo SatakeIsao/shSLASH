@@ -17,9 +17,10 @@ namespace nsK2EngineLow {
         const char* tkmFilePath,
         AnimationClip* animationClips,
         int numAnimationClips,
-        EnModelUpAxis enModelUpAxis, // タイポ修正
+        EnModelUpAxis enModelUpAxis,
         bool isShadowCaster,
-        bool isShadowReceiver)
+        bool isShadowReceiver,
+        const char* fxFilePath)
     {
         m_isShadowCaster = isShadowCaster; // メンバ変数への保存漏れを修正
 
@@ -30,7 +31,7 @@ namespace nsK2EngineLow {
         // 2. モデル初期化データのセットアップ
         ModelInitData initData;
         initData.m_tkmFilePath = tkmFilePath;
-        initData.m_fxFilePath = "Assets/Shader/model.fx";
+        initData.m_fxFilePath = (fxFilePath != nullptr) ? fxFilePath : "Assets/Shader/model.fx";
 
         // ライト情報のセットアップ
         // NOTE: Init内でカメラをNewするのは不自然なので、
