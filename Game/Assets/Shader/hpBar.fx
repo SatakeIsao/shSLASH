@@ -70,4 +70,5 @@ else
 float4 tex = colorTexture.Sample(Sampler, In.uv);
 return float4(hpColor * tex.rgb, tex.a * mulColor.w);
     //return colorTexture.Sample(Sampler, In.uv) * float4(1, 1, 1, mulColor.w);
+    //return colorTexture.Sample(Sampler, In.uv) * float4(1, 1, 1, mulColor.w);
 }

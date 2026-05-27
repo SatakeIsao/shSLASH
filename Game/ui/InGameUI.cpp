@@ -790,7 +790,7 @@ namespace app
 					float dmgRatio = (currentRatio * lerpVal_) + (damagePosX_ * (1.0f - lerpVal_));
 					enemyDmgHP->color.x = dmgRatio;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = dmgRatio;
+					enemyDmgHP->color.z = 0.0f;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				else if (damageDelayTimer_ >= 0.0f)
@@ -798,14 +798,14 @@ namespace app
 					damageDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
 					enemyDmgHP->color.x = damagePosX_;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = damagePosX_;
+					enemyDmgHP->color.z = 0.0f;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				else
 				{
 					enemyDmgHP->color.x = currentRatio;
 					enemyDmgHP->color.y = HP_BAR_LEFT_W;
-					enemyDmgHP->color.z = currentRatio;
+					enemyDmgHP->color.z = 0.0f;
 					enemyDmgHP->color.w = 1.0f;
 				}
 				enemyDmgHP->transform.localPosition.x = screenPos.x + 5.0f;
@@ -994,14 +994,17 @@ namespace app
 				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpDefault")),    Hash32("LevelUp_ExitFadeOut"));
 				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("levelUpBloom")),      Hash32("LevelUp_ExitFadeOut"));
 
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")),    Hash32("AtkUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")),    Hash32("AtkUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
-				playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")),   Hash32("AtkUp_ExitX_Left"));
-				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")),    Hash32("AtkUp_ExitFadeOut"));
-				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")),    Hash32("AtkUp_ExitFadeOut"));
-				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitFadeOut"));
-				playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")),   Hash32("AtkUp_ExitFadeOut"));
+				if (isAtkUpLevel_)
+				{
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")),    Hash32("AtkUp_ExitX_Left"));
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")),    Hash32("AtkUp_ExitX_Left"));
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitX_Left"));
+					playSlideAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")),   Hash32("AtkUp_ExitX_Left"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("outerBarOrange")),    Hash32("AtkUp_ExitFadeOut"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("innerBarOrange")),    Hash32("AtkUp_ExitFadeOut"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpDefault")), Hash32("AtkUp_ExitFadeOut"));
+					playColorAnim(menu->GetUI<app::ui::UIIcon>(Hash32("atkPowerUpBloom")),   Hash32("AtkUp_ExitFadeOut"));
+				}
 
 				isExitLeftPlayed_ = true;
 				exitLeftTimer_ = 0.0f;
@@ -1011,7 +1014,7 @@ namespace app
 			if (isExitLeftPlayed_)
 			{
 				exitLeftTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (exitLeftTimer_ >= 0.75f)
+				if (exitLeftTimer_ >= 1.25f)
 				{
 					ResetAnimation(menu);
 				}
