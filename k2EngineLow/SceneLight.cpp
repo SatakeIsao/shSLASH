@@ -67,11 +67,9 @@ namespace nsK2EngineLow {
 		//正規化する
 		m_light.dirDirection.Normalize();
 
-		//ライトのカラーは灰色(0.6f),bloom(5.8f)
-		//ライトを強めに設定
-		m_light.color.x = 0.6f;
-		m_light.color.y = 0.6f;
-		m_light.color.z = 0.6f;
+		m_light.color.x = 0.4f;
+		m_light.color.y = 0.4f;
+		m_light.color.z = 0.4f;
 
 		//視点
 		m_light.eyePos = g_camera3D->GetPosition();
@@ -133,9 +131,9 @@ namespace nsK2EngineLow {
 		m_light.groundColor.z = 0.3f;
 
 		//天球色
-		m_light.skyColor.x = 0.15f;
-		m_light.skyColor.y = 0.7f;
-		m_light.skyColor.z = 0.95f;
+		m_light.skyColor.x = 0.1f;
+		m_light.skyColor.y = 0.4f;
+		m_light.skyColor.z = 0.5f;
 
 		//地面の法線を設定
 		m_light.groundNormal.x = 0.0f;

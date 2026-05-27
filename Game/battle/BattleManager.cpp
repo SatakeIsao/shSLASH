@@ -449,7 +449,7 @@ namespace app
 					testGimmickList_[0] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
 					testGimmickList_[0]->transform.position = Vector3(0.0f, -50.0f, 0.0f);
 					testGimmickList_[0]->transform.scale = Vector3(5.0f, 5.0f, 5.0f);
-					testGimmickList_[0]->Initialize("Assets/ModelData/stage/stage.tkm");
+					testGimmickList_[0]->Initialize("Assets/ModelData/stage/stage.tkm", "Assets/Shader/modelWall.fx");
 					//  const int gimmickNum = 100;
 					//  const int gimmickRowNum = 10;
 					//  const int gimmickColNum = 10;
@@ -810,7 +810,7 @@ namespace app
 					// チャージエフェクトの再生判定
 					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
 					{
-						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection());
 						effectPos.y += 30.0f;
 
 						effectManagerObject_->PlayEffect(
@@ -836,6 +836,10 @@ namespace app
 						{
 							float yaw = atan2f(forward.x, forward.z) + Math::PI / 2.0f;
 							effectRot.SetRotationY(yaw);
+
+							Quaternion tilt;
+							tilt.SetRotationX(Math::DegToRad(-45.0f));
+							effectRot = effectRot * tilt;
 						}
 
 						Vector3 effectPos = battleCharacter_->transform.position + (forward * 30.0f);
@@ -845,7 +849,7 @@ namespace app
 							enEffectKind_PlayerAttackCharge_End,
 							effectPos,
 							effectRot,
-							Vector3::One
+							Vector3::One * 1.2f
 						);
 					}
 

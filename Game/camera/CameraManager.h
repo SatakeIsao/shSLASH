@@ -23,7 +23,7 @@ namespace app
 
             std::unique_ptr<SpringCamera> springCamera_;
             /** バネカメラ＋当たり判定のON/OFF */
-            bool isSpringCameraEnabled_ = true;
+            bool isSpringCameraEnabled_ = false;
             /** Refresh遅延カウンター（0になったフレームでRefreshを実行） */
             int pendingRefreshFrames_ = 0;
 
