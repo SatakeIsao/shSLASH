@@ -860,7 +860,7 @@ namespace app
 						effectPos.y += 30.0f;
 
 						effectManagerObject_->PlayEffect(
-							enEffectKind_SlimeAttack,
+							enEffectKind_PlayerKnockBack,
 							effectPos,
 							Quaternion::Identity,
 							Vector3::One
@@ -872,13 +872,6 @@ namespace app
 					{
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
 						effectPos.y += 30.0f;
-
-						effectManagerObject_->PlayEffect(
-							enEffectKind_SlimeAttack,
-							effectPos,
-							Quaternion::Identity,
-							Vector3::One
-						);
 					}
 				
 					/** ストーンの攻撃判定 */
