@@ -89,7 +89,7 @@ namespace
         const Vector3 position = ParseVector3(item["position"]);
         const Vector3 scale = ParseVector3(item["scale"]);
         const Quaternion rotation = ParseRotation(item["rotation"].get<float>());
-        const Vector4 color = ParseVector3(item["color"]);
+        const Vector4 color = ParseVector4(item["color"]);
 
         // shaderフィールドがあればカスタムシェーダーで初期化
         if (item.contains("shader"))
