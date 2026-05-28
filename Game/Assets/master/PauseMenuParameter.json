@@ -2,10 +2,10 @@
     {
         "comment": "ポーズメニューのパラメータ",
         
-        "cursolPositionXA": -500.0,
-        "cursolPositionXB": -560.0,
+        "cursolPositionXA": 625.0,
+        "cursolPositionXB": 625.0,
 
-        "cursolPositionYA": 50.0,
-        "cursolPositionYB": -200.0
+        "cursolPositionYA": -125.0,
+        "cursolPositionYB": -247.0
     }
 ]

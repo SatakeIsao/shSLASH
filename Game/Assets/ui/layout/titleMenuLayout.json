@@ -1,17 +1,7 @@
 {
     "canvas": {
         "elements": [
-            {
-                "type": "UIIcon",
-                "name": "Highlight",
-                "asset": "Assets/ui/word/highlight.DDS",
-                "width": 210,
-                "height": 53,
-                "position": [0.0, 0.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
-                "rotation": 0.0,
-                "color": [1.0, 1.0, 1.0, 1.0]
-            },
+            
             {
                 "type": "UIIcon",
                 "name": "TitleText_Start",
@@ -44,7 +34,51 @@
                 "scale": [1.0, 1.0, 1.0],
                 "rotation": 0.0,
                 "color": [1.0, 1.0, 1.0, 1.0]
-            } 
+            },
+	    {
+                "type": "UIIcon",
+                "name": "Highlight",
+                "asset": "Assets/ui/highlight.DDS",
+                "width": 330,
+                "height": 47,
+                "position": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.8]
+            },
+	    {
+                "type": "UIIcon",
+                "name": "Line1",
+                "asset": "Assets/ui/Line.DDS",
+                "width": 290,
+                "height": 3,
+                "position": [0.0, -250.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.6]
+            },
+	    {
+                "type": "UIIcon",
+                "name": "Line2",
+                "asset": "Assets/ui/Line.DDS",
+                "width": 290,
+                "height": 3,
+                "position": [0.0, -330.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.6]
+            },
+	    {
+                "type": "UIIcon",
+                "name": "Line3",
+                "asset": "Assets/ui/Line.DDS",
+                "width": 290,
+                "height": 3,
+                "position": [0.0, -410.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 0.6]
+            }
         ]
     }
 }

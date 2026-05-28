@@ -1,0 +1,34 @@
+[
+    {
+        "comment": "カメラメニューのパラメータ",
+        
+        "cursolPositionXA": 165.0,
+        "cursolPositionXB": 165.0,
+        "cursolPositionXC": 165.0,        
+
+        "cursolPositionYA": 15.0,
+        "cursolPositionYB": -130.0,
+        "cursolPositionYC": -265.0,
+
+        
+        "highlightPositionXA": -280.0,
+        "highlightPositionXB": -280.0,
+        "highlightPositionXC": -280.0,        
+
+        "highlightPositionYA": 10.0,
+        "highlightPositionYB": -135.0,
+        "highlightPositionYC": -270.0,
+
+        "barScaleXA": 0.0,
+        "barScaleXB": 0.11,
+        "barScaleXC": 0.2,
+        "barScaleXD": 0.3,
+        "barScaleXE": 0.39,
+        "barScaleXF": 0.49,
+        "barScaleXG": 0.58,
+        "barScaleXH": 0.68,
+        "barScaleXI": 0.77,
+        "barScaleXJ": 0.87,
+        "barScaleXK": 0.97
+    }
+]

@@ -1,61 +1,71 @@
 {
   "canvas": {
     "elements": [
-
-      {
-        "type": "UIIcon",
-        "name": "BaseFog",
-        "asset": "Assets/ui/pause/volume/Base_Fog.DDS",
-        "width": 1860,
-        "height": 1185,
-        "position": [0, 0, 0],
-        "scale": [1, 1, 1],
-        "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
-      },
       {
         "type": "UIIcon",
         "name": "Cursol",
         "asset": "Assets/ui/highlight.DDS",
-        "width": 500,
-        "height": 150,
+        "width": 350,
+        "height": 30,
         "position": [0, 0, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0 ,1.0, 1.0, 0.8]
       },
       {
         "type": "UIIcon",
-        "name": "text_ReturnTitle",
-        "asset": "Assets/ui/pause/returnTitle/text_ReturnTitle.DDS",
-        "width": 944,
-        "height": 121,
-        "position": [0, 300, 0],
+        "name": "Ward_Return",
+        "asset": "Assets/ui/pause/returnTitle/RETURN.DDS",
+        "width": 190,
+        "height": 35,
+        "position": [-385, 250, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0 ,1.0, 1.0, 0.8]
       },
       {
         "type": "UIIcon",
-        "name": "text_Yes",
-        "asset": "Assets/ui/pause/returnTitle/text_Yes.DDS",
-        "width": 250,
-        "height": 100,
-        "position": [0, 25, 0],
+        "name": "Ward_Title",
+        "asset": "Assets/ui/pause/returnTitle/BACK TITLE.DDS",
+        "width": 270,
+        "height": 34,
+        "position": [0, -35, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0 ,1.0, 1.0, 0.8]
       },
       {
         "type": "UIIcon",
-        "name": "text_No",
-        "asset": "Assets/ui/pause/returnTitle/text_No.DDS",
-        "width": 220,
-        "height": 100,
-        "position": [0, -250, 0],
+        "name": "Ward_Game",
+        "asset": "Assets/ui/pause/returnTitle/RETRY GAME.DDS",
+        "width": 280,
+        "height": 34,
+        "position": [0, -215, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0 ,1.0, 1.0, 0.8]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line1",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 600,
+        "height": 3,
+        "position": [0, -60, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.6]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line2",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 600,
+        "height": 3,
+        "position": [0, -240.5, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.6]
       }
     ]
   }
