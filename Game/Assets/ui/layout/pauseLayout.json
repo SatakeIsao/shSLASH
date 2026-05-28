@@ -10,7 +10,7 @@
         "position": [0, 0, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.8]
+        "color": [1.0 ,1.0, 1.0, 0.0]
       },
       {
         "type": "UIIcon",
@@ -25,66 +25,22 @@
       },
       {
         "type": "UIIcon",
-        "name": "Window",
-        "asset": "Assets/ui/pause/main/pauseWindow.DDS",
-        "width": 450,
-        "height": 300,
-        "position": [650, -175, 0],
-        "scale": [1, 1, 1],
-        "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.2]
-      },
-      {
-        "type": "UIIcon",
-        "name": "WhiteFilter_1",
-        "asset": "Assets/ui/white.DDS",
-        "width": 350,
-        "height": 5,
-        "position": [625, -160, 0],
+        "name": "text_ChangeTheOption",
+        "asset": "Assets/ui/optionBase/OPTION.DDS",
+        "width": 140,
+        "height": 28,
+        "position": [500, -410, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 0.6]
       },
       {
         "type": "UIIcon",
-        "name": "WhiteFilter_2 ",
-        "asset": "Assets/ui/white.DDS",
-        "width": 350,
-        "height": 5,
-        "position": [625, -283, 0],
-        "scale": [1, 1, 1],
-        "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.6]
-      },
-      {
-        "type": "UIIcon",
-        "name": "Cursol",
-        "asset": "Assets/ui/highlight_2.DDS",
-        "width": 400,
-        "height": 50,
-        "position": [0, 0, 0],
-        "scale": [1, 1, 1],
-        "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
-      },
-      {
-        "type": "UIIcon",
-        "name": "text_ChangeTheSound",
-        "asset": "Assets/ui/pause/volume/text_Sound.DDS",
-        "width": 180,
+        "name": "buttonY",
+        "asset": "Assets/ui/pause/main/button_Y.DDS",
+        "width": 40,
         "height": 40,
-        "position": [620, -115, 0],
-        "scale": [1, 1, 1],
-        "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
-      },
-      {
-        "type": "UIIcon",
-        "name": "text_ReturnToTitle",
-        "asset": "Assets/ui/pause/main/text_ReturnToTitle.DDS",
-        "width": 248,
-        "height": 40,
-        "position": [620, -235, 0],
+        "position": [395, -410, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
@@ -95,18 +51,18 @@
         "asset": "Assets/ui/pause/main/text_ReturnToGame.DDS",
         "width": 120,
         "height": 25,
-        "position": [725, -380, 0],
+        "position": [715, -410, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0 ,1.0, 1.0, 0.8]
       },
       {
         "type": "UIIcon",
         "name": "buttonStart",
         "asset": "Assets/ui/pause/main/buttonStart.DDS",
-        "width": 35,
-        "height": 25,
-        "position": [635, -380, 0],
+        "width": 40,
+        "height": 30,
+        "position": [620, -410, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]

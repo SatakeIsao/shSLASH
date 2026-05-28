@@ -1,0 +1,215 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Word_CAMERA",
+        "asset": "Assets/ui/pause/camera/CAMERA.DDS",
+        "width": 200,
+        "height": 35,
+        "position": [-385, 250, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Cursor",
+        "asset": "Assets/ui/pause/camera/cursor.DDS",
+        "width": 500,
+        "height": 34,
+        "position": [0,0,0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Highlight",
+        "asset": "Assets/ui/highlight.DDS",
+        "width": 300,
+        "height": 34,
+        "position": [0,0,0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_UD",
+        "asset": "Assets/ui/pause/camera/UP_DOWN.DDS",
+        "width": 180,
+        "height": 34,
+        "position": [-280,15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_LR",
+        "asset": "Assets/ui/pause/camera/LEFT_RIGHT.DDS",
+        "width": 240,
+        "height": 34,
+        "position": [-280,-130, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_Speed",
+        "asset": "Assets/ui/pause/camera/SPEED.DDS",
+        "width": 140,
+        "height": 34,
+        "position": [-280,-265, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_Normal_UD",
+        "asset": "Assets/ui/pause/camera/NORMAL.DDS",
+        "width": 180,
+        "height": 34,
+        "position": [165,15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_Reverse_UD",
+        "asset": "Assets/ui/pause/camera/REVERSE.DDS",
+        "width": 200,
+        "height": 34,
+        "position": [165, 15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_Normal_LR",
+        "asset": "Assets/ui/pause/camera/NORMAL.DDS",
+        "width": 180,
+        "height": 34,
+        "position": [165, -130, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_Reverse_LR",
+        "asset": "Assets/ui/pause/camera/REVERSE.DDS",
+        "width": 200,
+        "height": 34,
+        "position": [165, -130, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "SpeedBar",
+        "asset": "Assets/ui/pause/volume/volume_bar.DDS",
+        "width": 400,
+        "height": 23,
+        "position": [-30, -265, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "SpeedFlame",
+        "asset": "Assets/ui/pause/volume/volume_Floame.DDS",
+        "width": 400,
+        "height": 58,
+        "position": [165, -265, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_default",
+        "asset": "Assets/ui/pause/volume/text_default.DDS",
+        "width": 149,
+        "height": 35,
+        "position": [22.5, -340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Button_default",
+        "asset": "Assets/ui/pause/main/button_Y.DDS",
+        "width":40,
+        "height": 40,
+        "position": [-77.5, -340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line1",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 300,
+        "height": 3,
+        "position": [-280, -10, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.6]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line2",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 300,
+        "height": 3,
+        "position": [-280, -155.5, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.6]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line3",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 300,
+        "height": 3,
+        "position": [-280, -290.5, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.6]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line4",
+        "asset": "Assets/ui/pause/camera/Line2.DDS",
+        "width": 370,
+        "height": 3,
+        "position": [165, -10, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line5",
+        "asset": "Assets/ui/pause/camera/Line2.DDS",
+        "width": 370,
+        "height": 3,
+        "position": [165, -155.5, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

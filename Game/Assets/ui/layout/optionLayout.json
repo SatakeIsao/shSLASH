@@ -1,0 +1,204 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Option_Base",
+        "asset": "Assets/ui/optionBase/baseAll.DDS",
+        "width": 1920,
+        "height": 1080,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Option_Fog",
+        "asset": "Assets/ui/optionBase/Sound_Fog.DDS",
+        "width": 400,
+        "height": 100,
+        "position": [-600, 360, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Option_Icon",
+        "asset": "Assets/ui/optionBase/optionIcon.DDS",
+        "width": 50,
+        "height": 50,
+        "position": [-740, 360, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Option_Ward",
+        "asset": "Assets/ui/optionBase/OPTION.DDS",
+        "width": 192,
+        "height": 40,
+        "position": [-600, 360, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Tab_Base",
+        "asset": "Assets/ui/optionBase/tab.DDS",
+        "width": 1050,
+        "height": 710,
+        "position": [0, -45, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.8]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Tab_Line",
+        "asset": "Assets/ui/pause/camera/Line2.DDS",
+        "width": 950,
+        "height": 3,
+        "position": [0, 220, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.8]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Tab_Line2",
+        "asset": "Assets/ui/pause/camera/Line2.DDS",
+        "width": 950,
+        "height": 3,
+        "position": [0, 213, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 0.8]
+      },
+      {
+        "type": "UIIcon",
+        "name": "IconBase_1",
+        "asset": "Assets/ui/optionBase/icon_Base.DDS",
+        "width": 60,
+        "height": 80,
+        "position": [-350, 125, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "IconBase_2",
+        "asset": "Assets/ui/optionBase/icon_Base.DDS",
+        "width": 60,
+        "height": 80,
+        "position": [-283, 125, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "IconBase_3",
+        "asset": "Assets/ui/optionBase/icon_Base.DDS",
+        "width": 60,
+        "height": 80,
+        "position": [-216, 125, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Icon_Vol",
+        "asset": "Assets/ui/optionBase/iconVolume.DDS",
+        "width": 30,
+        "height": 40,
+        "position": [-350, 134, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Icon_Camera",
+        "asset": "Assets/ui/optionBase/camera_Icon.DDS",
+        "width": 40,
+        "height": 40,
+        "position": [-283, 134, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Icon_Return",
+        "asset": "Assets/ui/optionBase/return_Icon.DDS",
+        "width": 40,
+        "height": 40,
+        "position": [-216, 134, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Tab",
+        "asset": "Assets/ui/optionBase/tab_2.DDS",
+        "width": 990,
+        "height": 580,
+        "position": [0, -150, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "ReturnMenu",
+        "asset": "Assets/ui/optionBase/text_backToMenu.DDS",
+        "width": 140,
+        "height": 35,
+        "position": [710, -415, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "ButtonB",
+        "asset": "Assets/ui/optionBase/buttunB.DDS",
+        "width": 40,
+        "height": 40,
+        "position": [610, -415, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BUTTUN_LB",
+        "asset": "Assets/ui/optionBase/button_LB.DDS",
+        "width": 80,
+        "height": 30,
+        "position": [-430, 145, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "BUTTUN_RB",
+        "asset": "Assets/ui/optionBase/button_RB.DDS",
+        "width": 80,
+        "height": 30,
+        "position": [-137, 145, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}
