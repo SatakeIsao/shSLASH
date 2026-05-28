@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-
+#include "ui/Layout.h"
 
 namespace app
 {
@@ -73,27 +73,20 @@ namespace app
 		};
 
 
-		class PhaseUI : public IGameObject
+		class PhaseUI:public IGameObject
 		{
 		private:
-			FontRender fontRender_;		// フォントレンダラー
-			int currentPhase_ = -1;		// 現在のフェーズ
+			std::unique_ptr<app::ui::Layout> layout_;
+			int currentPhase_ = 1;
 
 		public:
 			PhaseUI();
-			~PhaseUI() {}
+
+			void SetPhaseCount(int phaseCount);
+			// フェーズ番号を受け取ってUIを更新するように変更
 			void Update();
+
 			void Render(RenderContext& rc);
-
-			void SetPhaseCount(int count) 
-			{ 
-				if (currentPhase_ == count) return;
-				currentPhase_ = count;
-
-				std::wstring wstr = L"Phase " + std::to_wstring(count);
-				fontRender_.SetText(wstr.c_str());	
-			}
-
 		};
 	}
 }
