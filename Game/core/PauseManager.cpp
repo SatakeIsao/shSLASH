@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "PauseManager.h"
-#include "ui/SoundOptionMenu.h"
+#include "ui/OptionMenu.h"
 #include "ui/PauseMenu.h"
-#include "ui/ReturnToTitleMenu.h"
 #include "ui/Layout.h"
 #include "sound/SoundManager.h"
+
 
 
 /** デバッグ用処理 */
@@ -37,18 +37,12 @@ namespace app
                 delete pauseLayout_;
                 pauseLayout_ = nullptr;
             }
-            if (returnToTitleLayout_)
-            {
-                delete returnToTitleLayout_;
-                returnToTitleLayout_ = nullptr;
-            }
         }
 
         void PauseManager::Update()
         {
-            app::ui::SoundOptionMenu* menu = dynamic_cast<app::ui::SoundOptionMenu*>(layout_->GetMenu());
+            app::ui::OptionMenu* menu = dynamic_cast<app::ui::OptionMenu*>(layout_->GetMenu());
             app::ui::PauseMenu* pause = dynamic_cast<app::ui::PauseMenu*>(pauseLayout_->GetMenu());
-            title_ = dynamic_cast<app::ui::ReturnToTitleMenu*>(returnToTitleLayout_->GetMenu());
 
             if (isPlayingAnimation_)
             {
@@ -68,23 +62,12 @@ namespace app
                     }
                     break;
 
-                case PauseState::enSound:
+                case PauseState::enOption:
                     if (layout_)
                     {
                         layout_->Update();
                     }
                     if (menu && !menu->IsPause())
-                    {
-                        isAnimationFinished = true;
-                    }
-                    break;
-
-                case PauseState::enTitle:
-                    if (returnToTitleLayout_)
-                    {
-                        returnToTitleLayout_->Update();
-                    }
-                    if (title_ && !title_->IsPause())
                     {
                         isAnimationFinished = true;
                     }
@@ -111,19 +94,13 @@ namespace app
                         }
                         break;
 
-                    case PauseState::enSound:
+                    case PauseState::enOption:
                         if (menu)
                         {
                             menu->OnOpen();
                         }
                         break;
 
-                    case PauseState::enTitle:
-                        if (title_)
-                        {
-                            title_->OnOpen();
-                        }
-                        break;
 
                     case PauseState::enClosed:
                         isPause_ = false; // 完全にポーズが終了した
@@ -151,13 +128,9 @@ namespace app
                     {
                         pause->OnClose();
                     }
-                    if (currentState_ == PauseState::enSound && menu)
+                    if (currentState_ == PauseState::enOption && menu)
                     {
                         menu->OnClose();
-                    }
-                    if (currentState_ == PauseState::enTitle && title_)
-                    {
-                        title_->OnClose();
                     }
 
                     nextState_ = PauseState::enClosed;
@@ -175,30 +148,20 @@ namespace app
             case PauseState::enPause:
                 if (pauseLayout_) pauseLayout_->Update();
 
-                // Aボタン&& インデックスが0のとき
-                if (g_pad[0]->IsTrigger(enButtonA)
-                    && pause->GerCurrentIndex() == 0)
+                if (g_pad[0]->IsTrigger(enButtonY))
                 {
                     app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-                    pause->OnClose();
-                    nextState_ = PauseState::enSound;
-                    isPlayingAnimation_ = true;
-                }
-                // Aボタン&& インデックスが1の時
-                else if (g_pad[0]->IsTrigger(enButtonA)
-                    && pause->GerCurrentIndex() == 1)
-                {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-                    pause->OnClose();
-                    nextState_ = PauseState::enTitle;
+                    if (pause) pause->OnClose();
+                    nextState_ = PauseState::enOption;
                     isPlayingAnimation_ = true;
                 }
                 break;
 
-            case PauseState::enSound:
+            case PauseState::enOption:
                 if (layout_) layout_->Update();
 
-                // Bボタンでメインのポーズメニューへ「戻る」
+
+                // Bボタンでメインのポーズメニューへ
                 if (g_pad[0]->IsTrigger(enButtonB))
                 {
                     app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
@@ -207,29 +170,22 @@ namespace app
                     isPlayingAnimation_ = true;
                 }
                 break;
-
-            case PauseState::enTitle:
-                if (returnToTitleLayout_) returnToTitleLayout_->Update();
-                // ポーズ画面に遷移。
-                if (title_->IsDecidedNo())
-                {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-                    title_->OnClose();
-                    nextState_ = PauseState::enPause;
-                    isPlayingAnimation_ = true;
-                }
-                /** タイトル */
-                if (title_->IsDecidedYes())
-                {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-                    title_->OnClose();
-                    nextState_ = PauseState::enClosed;
-                    isPlayingAnimation_ = true;
-                }
-                break;
             }
         }
 
+        bool PauseManager::IsReturnToTitleRequested() const
+        {
+            if (!layout_) return false;
+            auto* menu = dynamic_cast<app::ui::OptionMenu*>(layout_->GetMenu());
+            return menu ? menu->IsReturnTitleDecided() : false;
+        }
+
+        bool PauseManager::IsRetryRequested() const
+        {
+            if (!layout_) return false;
+            auto* menu = dynamic_cast<app::ui::OptionMenu*>(layout_->GetMenu());
+            return menu ? menu->IsRetryDecided() : false;
+        }
 
         void PauseManager::Render(RenderContext& rc)
         {
@@ -248,18 +204,11 @@ namespace app
                 }
                 break;
 
-            case PauseState::enSound:
+            case PauseState::enOption:
                 if (layout_)
                 {
                     layout_->Render(rc);
                 }
-                break;
-
-            case PauseState::enTitle:
-               if (returnToTitleLayout_)
-               {
-                   returnToTitleLayout_->Render(rc);
-               }
                 break;
             }
         }
@@ -267,30 +216,16 @@ namespace app
 
         void PauseManager::CreateMenu()
         {
-            /** サウンドオプションレイアウト */
+            /** プションレイアウト */
             {
                 layout_ = new app::ui::Layout();
-                layout_->Initialize<app::ui::SoundOptionMenu>("Assets/ui/layout/pauseMenuLayout.json");
+                layout_->Initialize<app::ui::OptionMenu>("Assets/ui/layout/optionLayout.json");
             }
             /** ポーズレイアウト */
             {
                 pauseLayout_ = new app::ui::Layout();
                 pauseLayout_->Initialize<app::ui::PauseMenu>("Assets/ui/layout/pauseLayout.json");
             }
-            /** タイトルに戻るレイアウト */
-            {
-                returnToTitleLayout_ = new app::ui::Layout();
-                returnToTitleLayout_->Initialize<app::ui::ReturnToTitleMenu>("Assets/ui/layout/returnToTitleMenuLayout.json");
-            }
-        }
-        bool PauseManager::IsReturnToTitleRequested() const
-        {
-            if (title_
-                && title_->IsDecidedYes())
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

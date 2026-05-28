@@ -48,6 +48,8 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		 */
 		struct IParameter 
 		{
+			virtual ~IParameter() = default;
+
 		#ifdef APP_ENABLE_PARAM_HOT_RELOAD
 			std::string m_path;								//パラメーターのファイルパス
 			time_t m_lastWriteTime;							//最終更新時刻
@@ -195,6 +197,19 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float cursolPositionY[2]; //
 		};
 
+		/** カメラオプションメニュー */
+		struct CameraOptionMenuParameter : public IParameter
+		{
+			appParameter(CameraOptionMenuParameter);
+
+			float cursolPositionX[3];
+			float cursolPositionY[3];
+
+			float highlightPositionX[3];
+			float highlightPositionY[3];
+
+			float barScaleX[11];
+		};
 
 		/** PlayerのHPUI */
 		struct MasterHpUIParameter : public IParameter
@@ -256,6 +271,10 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			template<typename T>
 			void LoadParameter(const char* path, const std::function<void(const nlohmann::json& json, T& p)>& func)
 			{
+				if (m_parameterMap.find(T::ID()) != m_parameterMap.end())
+				{
+					return;
+				}
 				//ファイルを開く
 				std::ifstream file(path);
 				if (!file.is_open())

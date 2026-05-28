@@ -5,7 +5,7 @@
 #include "ui/TitleMenu.h"   
 #include "ui/TitleSubMenu.h"
 #include "sound/SoundManager.h"
-#include "ui/SoundOptionMenu.h"
+#include "ui/OptionMenu.h"
 
 namespace app {
     namespace core {
@@ -18,7 +18,7 @@ namespace app {
         TitleMenuManager::~TitleMenuManager() {
             if (pressAnyButtonLayout_) delete pressAnyButtonLayout_;
             if (mainMenuLayout_) delete mainMenuLayout_;
-            if (soundMenuLayout_) delete soundMenuLayout_; 
+            if (optionMenuLayout_) delete optionMenuLayout_; 
         }
 
         void TitleMenuManager::CreateMenu() {
@@ -29,8 +29,8 @@ namespace app {
             mainMenuLayout_->Initialize<app::ui::TitleSubMenu>("Assets/ui/layout/titleMenuLayout.json");
 
             // サウンドメニューのレイアウト初期化
-            soundMenuLayout_ = new app::ui::Layout();
-            soundMenuLayout_->Initialize<app::ui::SoundOptionMenu>("Assets/ui/layout/pauseMenuLayout.json");
+            optionMenuLayout_ = new app::ui::Layout();
+            optionMenuLayout_->Initialize<app::ui::OptionMenu>("Assets/ui/layout/optionLayout.json");
         }
 
         void TitleMenuManager::Update() {
@@ -52,17 +52,17 @@ namespace app {
                 if (currentState_ == TitleMenuState::enMainMenu) {
                     if (mainMenuLayout_) mainMenuLayout_->Update();
                 }
-                else if (currentState_ == TitleMenuState::enSoundMenu) {
-                    if (soundMenuLayout_) soundMenuLayout_->Update();
+                else if (currentState_ == TitleMenuState::enOptionMenu) {
+                    if (optionMenuLayout_) optionMenuLayout_->Update();
                 }
 
                 // 状態の切り替えが確定した瞬間
                 if (isAnimationFinished) {
                     isPlayingAnimation_ = false;
                     currentState_ = nextState_;
-                    if (currentState_ == TitleMenuState::enSoundMenu) {
-                        auto* soundMenu = dynamic_cast<app::ui::SoundOptionMenu*>(soundMenuLayout_->GetMenu());
-                        if (soundMenu) soundMenu->OnOpen();
+                    if (currentState_ == TitleMenuState::enOptionMenu) {
+                        auto* optionMenu = dynamic_cast<app::ui::OptionMenu*>(optionMenuLayout_->GetMenu());
+                        if (optionMenu) optionMenu->OnOpen();
                     }
                     else if (currentState_ == TitleMenuState::enMainMenu) {
                         auto* subMenu = dynamic_cast<app::ui::TitleSubMenu*>(mainMenuLayout_->GetMenu());
@@ -105,6 +105,17 @@ namespace app {
                         isGameStartDecided_ = true;
                     }
 
+                    else if (subMenu && subMenu->IsSystemDecided()) {
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+
+                        subMenu->ResetSystemDecided(); // フラグを元に戻す
+                        subMenu->OnClose();            // メインメニューを閉じる演出
+
+                        // マネージャー側で正しく遷移とアニメーションのフラグを立てる
+                        nextState_ = TitleMenuState::enOptionMenu;
+                        isPlayingAnimation_ = true; // ★これがtrueになることで、OptionMenuのOnOpen()が呼ばれて画面に表示される！
+                    }
+
                     if (g_pad[0]->IsTrigger(enButtonB)) {
                         app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
 
@@ -116,18 +127,18 @@ namespace app {
                     break;
                 }
 
-                case TitleMenuState::enSoundMenu:
+                case TitleMenuState::enOptionMenu:
                 { 
-                    if (soundMenuLayout_) {
-                        soundMenuLayout_->Update(); // サウンドメニュー（カーソル移動など）の更新処理を実行
+                    if (optionMenuLayout_) {
+                        optionMenuLayout_->Update(); // サウンドメニュー（カーソル移動など）の更新処理を実行
                     }
 
                     // Bボタンが押されたら、元のメニュー（MainMenu）に戻る
                     if (g_pad[0]->IsTrigger(enButtonB)) {
                         app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
 
-                        auto* soundMenu = dynamic_cast<app::ui::SoundOptionMenu*>(soundMenuLayout_->GetMenu());
-                        if (soundMenu) soundMenu->OnClose(); // サウンドメニューを閉じる演出
+                        auto* optionMenu = dynamic_cast<app::ui::OptionMenu*>(optionMenuLayout_->GetMenu());
+                        if (optionMenu) optionMenu->OnClose(); // サウンドメニューを閉じる演出
 
                         nextState_ = TitleMenuState::enMainMenu;
                         isPlayingAnimation_ = true;
@@ -154,9 +165,9 @@ namespace app {
                     mainMenuLayout_->Render(rc);
                 }
             }
-            else if (currentState_ == TitleMenuState::enSoundMenu) {
-                if (soundMenuLayout_) {
-                    soundMenuLayout_->Render(rc);
+            else if (currentState_ == TitleMenuState::enOptionMenu) {
+                if (optionMenuLayout_) {
+                    optionMenuLayout_->Render(rc);
                 }
             }
         }

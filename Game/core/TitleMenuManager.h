@@ -13,14 +13,14 @@ namespace app {
             enClosed,
             enPressAnyButton,
             enMainMenu,
-            enSoundMenu,
+            enOptionMenu,
         };
 
         class TitleMenuManager {
         private:
             app::ui::Layout* pressAnyButtonLayout_ = nullptr;
             app::ui::Layout* mainMenuLayout_ = nullptr; 
-            app::ui::Layout* soundMenuLayout_ = nullptr;
+            app::ui::Layout* optionMenuLayout_ = nullptr;
 
             TitleMenuState currentState_ = TitleMenuState::enPressAnyButton;
             TitleMenuState nextState_ = TitleMenuState::enClosed;

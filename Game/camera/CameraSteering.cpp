@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CameraSteering.h"
 #include "actor/Actor.h"
-
+#include "CameraManager.h"
 
 namespace
 {
@@ -29,8 +29,25 @@ namespace app
 			nextData.position = position;
 			nextData.target = targetPosition;
 
-			// 右スティックで回転
-			Vector3 rotationVector = Vector3(g_pad[0]->GetRStickXF(), g_pad[0]->GetRStickYF(), 0.0f);
+			float stickX = g_pad[0]->GetRStickXF();
+			float stickY = g_pad[0]->GetRStickYF();
+
+			// CameraManagerから設定を取得し、trueなら入力を反転させる
+			if (CameraManager::Get().IsReverseX()) {
+				stickX *= -1.0f;
+			}
+			if (CameraManager::Get().IsReverseY()) {
+				stickY *= -1.0f;
+			}
+
+			//カメラ感度を適用する
+			float sensitivityMultiplier = CameraManager::Get().GetSensitivity() * 2.0f;
+			stickX *= sensitivityMultiplier;
+			stickY *= sensitivityMultiplier;
+
+			// 反転を適用した入力値(stickX, stickY)でVector3を作る
+			Vector3 rotationVector = Vector3(stickX, stickY, 0.0f);
+
 			if (rotationVector.LengthSq() > MOVE_MIN_FLOAT) {
 				rotationVector.x *= config_.rotationSpeedX;
 				rotationVector.y *= config_.rotationSpeedY;

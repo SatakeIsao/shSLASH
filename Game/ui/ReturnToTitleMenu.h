@@ -8,38 +8,27 @@ namespace app
 		class ReturnToTitleMenu : public MenuBase
 		{
 		private:
-			int cursolIndex_ = 0;
 
-			bool isPause_ = false;
-			bool isDecidedYes_ = false;
-			bool isDecidedNo_ = false;
+			UIIcon* cursol_ = nullptr;
+			int currentIndex_ = 0;
+			const int maxIndex_ = 1;
+
+			bool isReturnTitleDecided_ = false;
+			bool isRetryDecided_ = false;
 
 		public:
 			ReturnToTitleMenu();
 			virtual ~ReturnToTitleMenu();
+
+			void InitializeLogic() override;
 			void Update() override;
+			
+			void SetDraw(bool isDraw);
 
-			void OnOpen();
-			void OnClose();
-			void PlaySelectedAnimation();
-
-		public:
-			virtual void InitializeLogic();
-
-
-		public:
-			bool IsPause()
-			{
-				return isPause_;
-			}
-			bool IsDecidedYes()
-			{
-				return isDecidedYes_;
-			}
-			bool IsDecidedNo()
-			{
-				return isDecidedNo_;
-			}
+			// マネージャーからフラグを確認するための関数
+			bool IsReturnTitleDecided() const { return isReturnTitleDecided_; }
+			bool IsRetryDecided() const { return isRetryDecided_; }
+			void ResetFlags() { isReturnTitleDecided_ = false; isRetryDecided_ = false; }
 		};
 	}
 }
