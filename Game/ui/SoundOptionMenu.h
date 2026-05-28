@@ -14,29 +14,17 @@ namespace app
 		private:
 			int volumeCursolIndex_ = 0;
 
-			bool isPause_ = false;
-			bool isVolume_ = false;
-
+			app::ui::UIAnimationSequence* seq_ = nullptr;
 
 		public:
 			SoundOptionMenu();
 			virtual ~SoundOptionMenu();
 			void Update() override;
-
-			void OnOpen();
-			void OnClose();
-			void PlaySelectedAnimation();
+			void SetDraw(bool isDraw);
 
 
 		public:
 			virtual void InitializeLogic();
-
-
-		public:
-			bool IsPause()
-			{
-				return isPause_;
-			}
 		};
 	}
 }

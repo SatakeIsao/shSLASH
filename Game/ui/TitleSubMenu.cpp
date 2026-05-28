@@ -47,8 +47,7 @@ namespace app {
                     break;
                 case 1: // SYSTEM
                     // TODO: 
-                    OnClose();
-                    app::core::TitleMenuManager::Get().ChangeState(app::core::TitleMenuState::enSoundMenu);
+                    isSystemDecided_ = true;
                     break;
                 case 2: // EXIT
                     // TODO: 

@@ -20,11 +20,8 @@ namespace app
 			void OnOpen();
 			void OnClose();
 
-			int GerCurrentIndex() const
-			{
-				return cursolIndex_;
-			}
-		public:
+			bool IsPause() const { return false; }
+
 			virtual void InitializeLogic();
 
 		public:

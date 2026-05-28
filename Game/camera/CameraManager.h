@@ -36,6 +36,9 @@ namespace app
             /** 描画で使用されるカメラ */
             nsK2EngineLow::Camera* engineCamera_ = nullptr;
 
+            bool isReverseX_ = false;
+            bool isReverseY_ = false;
+            float sensitivity_ = 0.5f;
 
         private:
             CameraManager();
@@ -97,6 +100,15 @@ namespace app
         private:
 			static CameraManager* instance_;
 
+
+        public:
+            // 外部からフラグを読み書きするための関数
+            void SetReverseX(bool isReverse) { isReverseX_ = isReverse; }
+            void SetReverseY(bool isReverse) { isReverseY_ = isReverse; }
+            bool IsReverseX() const { return isReverseX_; }
+            bool IsReverseY() const { return isReverseY_; }
+            void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
+            float GetSensitivity() const { return sensitivity_; }
 
         public:
             static void Initialize()

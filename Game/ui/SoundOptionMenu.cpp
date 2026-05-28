@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "SoundOptionMenu.h"
-#include "battle/BattleManager.h"
 #include "sound/SoundManager.h"
 #include "core/ParameterManager.h"
 #include "ui/UIAnimationFactory.h"
@@ -17,13 +16,10 @@ namespace
 	constexpr float VOLUME_MIN = 0.0f;
 	/** デフォルト音量 */
 	constexpr float VOLUME_DEFAULT_MASTER = 0.50f;
-	constexpr float VOLUME_DEFAULT_BGM = 0.20f;
+	constexpr float VOLUME_DEFAULT_BGM = 0.50f;
 	constexpr float VOLUME_DEFAULT_SE = 0.50f;
 	/** 数値表示用に0.0～1.0の音量を0～10に変換するための乗数 */
 	constexpr float VOLUME_DISPLAY_MULTIPLIER = 10.0f;
-
-	// @todo for test
-	static app::ui::UIAnimationSequence* seq = nullptr;
 }
 
 
@@ -71,324 +67,224 @@ namespace app
 		SoundOptionMenu::~SoundOptionMenu()
 		{
 			app::core::ParameterManager::Get().UnloadParameter<app::core::MasterSoundOptionMenuParameter>();
-		}
-
-
-		void SoundOptionMenu::Update()
-		{
-			auto* canvas = GetCanvas();
-			if (canvas)
-			{
-				//閉じる
-				{
-					auto* closeAnim = canvas->FindAnimation(Hash32("ScaleDown_SoundMenu"));
-					if (closeAnim && !closeAnim->IsPlay())
-					{
-						canvas->RemoveAnimation(Hash32("ScaleDown_SoundMenu"));
-						closeAnim = nullptr;
-						isPause_ = false;
-
-						//ForEachUI([](app::ui::UIBase* ui)
-						//	{
-						//		ui->RemoveAnimation(Hash32("FadeOutPauseMenu"));
-						//	});
-					}
-				}
-				//開く
-				{
-					auto* openAnim = canvas->FindAnimation(Hash32("ScaleUp_SoundMenu"));
-					if (openAnim && !openAnim->IsPlay())
-					{
-						canvas->RemoveAnimation(Hash32("ScaleUp_SoundMenu"));
-
-						//ForEachUI([](app::ui::UIBase* ui) {
-						//	ui->RemoveAnimation(Hash32("FadeInPauseMenu"));
-						//	});
-					}
-				}
-			}
-
-			if (isPause_)
-			{
-				if (g_pad[0]->IsTrigger(enButtonUp))
-				{
-					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-
-					volumeCursolIndex_--;
-
-					if (volumeCursolIndex_ < static_cast<int>(app::SoundManager::SoundVolumeType::Master))
-					{
-						volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::Master);
-					}
-				}
-				else if (g_pad[0]->IsTrigger(enButtonDown))
-				{
-					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-
-					volumeCursolIndex_++;
-
-					if (volumeCursolIndex_ >= static_cast<int>(app::SoundManager::SoundVolumeType::Max))
-					{
-						volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::SE);
-					}
-				}
-
-
-				/** 左右キーで音量調整 */
-				bool isVolumeChanged = false;
-
-				auto currentVolumeType = static_cast<app::SoundManager::SoundVolumeType>(volumeCursolIndex_);
-				float targetVolume = app::SoundManager::Get().GetVolume(currentVolumeType);
-
-				if (g_pad[0]->IsTrigger(enButtonY))
-				{
-					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-					targetVolume = 0.5f;
-					isVolumeChanged = true;
-				}
-				if (g_pad[0]->IsTrigger(enButtonRight))
-				{
-					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-					targetVolume += VOLUME_STEP;
-					if (targetVolume > VOLUME_MAX)
-					{
-						targetVolume = VOLUME_MAX;
-					}
-					isVolumeChanged = true;
-				}
-				else if (g_pad[0]->IsTrigger(enButtonLeft))
-				{
-					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
-					targetVolume -= VOLUME_STEP;
-					if (targetVolume < VOLUME_MIN)
-					{
-						targetVolume = VOLUME_MIN;
-					}
-					isVolumeChanged = true;
-				}
-
-				if (isVolumeChanged)
-				{
-					app::SoundManager::Get().SetVolume(currentVolumeType, targetVolume);
-
-					//if (app::ui::AwardManager::IsAvailable()) {
-					//	app::ui::AwardManager::Get().OnSoundAdjusted();
-					//}
-				}
-
-				// 動的に数値をUIに設定
-				auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterSoundOptionMenuParameter>();
-
-				// MASTER/BGM/SEの場所
-				{
-					const float y = parameter->gaugeBarY[volumeCursolIndex_];
-					auto cursol = GetUI<UIIcon>(Hash32("Cursol"));
-					cursol->transform.localPosition.y = y;
-				}
-				// --- MASTERのUI更新
-				{
-					const float volumeMaster = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::Master);
-					
-					int volIndex = static_cast<int>(std::round(volumeMaster * VOLUME_DISPLAY_MULTIPLIER));
-					if (volIndex < 0) volIndex = 0;
-					if (volIndex > 10) volIndex = 10;
-
-					// ゲージの大きさ
-					auto gaugeMASTER = GetUI<UIIcon>(Hash32("VolumeBar_MASTER"));
-					if (gaugeMASTER) {
-						gaugeMASTER->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
-					}
-					auto knobBackGroundMASTER = GetUI<UIIcon>(Hash32("KnobBackground_MASTER"));
-					if (knobBackGroundMASTER) {
-						knobBackGroundMASTER->transform.localPosition.x = parameter->knobX[volIndex];
-					}
-					//数値表示
-					{
-						auto digitMASTER = GetUI<UIDigit>(Hash32("VolumeDigit_MASTER"));
-						if (digitMASTER) {
-							digitMASTER->SetNumber(static_cast<int>(std::round(volumeMaster * VOLUME_DISPLAY_MULTIPLIER)));
-						}
-					}
-				}
-
-				// --- BGMのUI更新
-				{
-					const float volumeBGM = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::BGM);
-					int volIndex = static_cast<int>(std::round(volumeBGM * VOLUME_DISPLAY_MULTIPLIER));
-					if (volIndex < 0) volIndex = 0;
-					if (volIndex > 10) volIndex = 10;
-
-					auto gaugeBGM = GetUI<UIIcon>(Hash32("VolumeBar_BGM"));
-					if (gaugeBGM) {
-						gaugeBGM->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
-					}
-
-					auto knobBackGroundBGM = GetUI<UIIcon>(Hash32("KnobBackground_BGM"));
-					if (knobBackGroundBGM) {
-						knobBackGroundBGM->transform.localPosition.x = parameter->knobX[volIndex];
-					}
-
-					auto digitBGM = GetUI<UIDigit>(Hash32("VolumeDigit_BGM"));
-					if (digitBGM) {
-						digitBGM->SetNumber(volIndex);
-					}
-				}
-
-				// --- SEのUI更新
-				{
-					const float volumeSE = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::SE);
-					int volIndex = static_cast<int>(std::round(volumeSE * VOLUME_DISPLAY_MULTIPLIER));
-					if (volIndex < 0) volIndex = 0;
-					if (volIndex > 10) volIndex = 10;
-
-					auto gaugeScaleSE = GetUI<UIIcon>(Hash32("VolumeBar_SE"));
-					if (gaugeScaleSE) {
-						gaugeScaleSE->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
-					}
-
-					auto knobBackGroundSE = GetUI<UIIcon>(Hash32("KnobBackground_SE"));
-					if (knobBackGroundSE) {
-						knobBackGroundSE->transform.localPosition.x = parameter->knobX[volIndex];
-					}
-
-					auto digitSE = GetUI<UIDigit>(Hash32("VolumeDigit_SE"));
-					if (digitSE) {
-						digitSE->SetNumber(volIndex);
-					}
-				}
-			}
-
-			seq->Update(g_gameTime->GetFrameDeltaTime());
-
-			MenuBase::Update();
-		}
-
-
-		void SoundOptionMenu::OnOpen()
-		{
-			isPause_ = true;
-
-			//キャンバス
-			{
-				auto* canvas = GetCanvas();
-				if (canvas)
-				{
-					canvas->RemoveAnimation(Hash32("ScaleUp_SoundMenu"));
-					canvas->RemoveAnimation(Hash32("ScaleDown_SoundMenu"));
-					//アニメーションをアタッチ
-					app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(canvas, Hash32("ScaleUp_SoundMenu"));
-					auto* openAnim = canvas->FindAnimation(Hash32("ScaleUp_SoundMenu"));
-					if (openAnim) openAnim->Play();
-				}
-			}
-
-			//各UIパーツの一斉フェードイン
-			{
-				ForEachUI([](app::ui::UIBase* ui)
-					{
-						ui->RemoveAnimation(Hash32("FadeInPauseMenu"));
-						ui->RemoveAnimation(Hash32("FadeOutPauseMenu"));
-						app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(ui, Hash32("FadeInPauseMenu"));
-						auto* openAnim = ui->FindAnimation(Hash32("FadeInPauseMenu"));
-						//if (openAnim) openAnim->Play();
-					});
+			if (seq_) {
+				delete seq_;
+				seq_ = nullptr;
 			}
 		}
-
-
-		void SoundOptionMenu::OnClose()
-		{
-			// キャンバス
-			{
-				auto* canvas = GetCanvas();
-				if (canvas)
-				{
-					canvas->RemoveAnimation(Hash32("ScaleUp_SoundMenu"));
-					canvas->RemoveAnimation(Hash32("ScaleDown_SoundMenu"));
-					//アニメーションをアタッチ
-					app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(canvas, Hash32("ScaleDown_SoundMenu"));
-					auto* closeAnim = canvas->FindAnimation(Hash32("ScaleDown_SoundMenu"));
-					if (closeAnim) closeAnim->Play();
-				}
-			}
-
-			//各UIパーツの一斉フェードアウト
-			{
-				ForEachUI([](app::ui::UIBase* ui) {
-					ui->RemoveAnimation(Hash32("FadeInPauseMenu"));
-					ui->RemoveAnimation(Hash32("FadeOutPauseMenu"));
-					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(ui, Hash32("FadeOutPauseMenu"));
-					auto* closeAnim = ui->FindAnimation(Hash32("FadeOutPauseMenu"));
-					//if (closeAnim) closeAnim->Play();
-					});
-			}
-
-		}
-
-
-		void SoundOptionMenu::PlaySelectedAnimation()
-		{
-		}
-
 
 		void SoundOptionMenu::InitializeLogic()
 		{
 			// サウンドバーの位置情報設定
 			// アニメーションとかいれたり
 			/** キャンバス（UI全体) */
+			auto* canvas = GetCanvas();
+			if (canvas)
 			{
-				auto* canvas = GetCanvas();
-				if (canvas)
-				{
-					canvas->transform.localScale = Vector3::Zero;
-				}
+				canvas->transform.localScale = Vector3::One;
+				canvas->transform.UpdateTransform();
 			}
 
-			/** カーソルUI */
+			ForEachUI([](app::ui::UIBase* ui) {
+				ui->color.w = 1.0f; // 透明度100%
+				ui->isDraw = true;  // 描画オン
+			});
+
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (cursol)
 			{
-				auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
-				if (cursol)
+				if (seq_ == nullptr)
 				{
-					// アニメーションをアタッチ
 					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeIn"));
 					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeOut"));
-					app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(cursol, Hash32("ScaleUp"));
+
+					seq_ = new app::ui::UIAnimationSequence();
+					seq_->Add(Hash32("FadeIn"));
+				}
+
+				seq_->Play(cursol);
+			}
 
 
-					seq = new app::ui::UIAnimationSequence();
-					seq->Add(Hash32("FadeIn"));
-					//.Add(Hash32("ScaleUp"))
-					//.Add(Hash32("FadeOut"));
+			auto* gaugeMaster = GetUI<app::ui::UIIcon>(Hash32("VolumeBar_MASTER"));
+			if (gaugeMaster) gaugeMaster->SetPivot(Vector2(0.0f, 0.5f));
 
+			auto* gaugeBgm = GetUI<app::ui::UIIcon>(Hash32("VolumeBar_BGM"));
+			if (gaugeBgm) gaugeBgm->SetPivot(Vector2(0.0f, 0.5f));
 
-				// アニメーションを再生
-					seq->Play(cursol);
+			auto* gaugeSe = GetUI<app::ui::UIIcon>(Hash32("VolumeBar_SE"));
+			if (gaugeSe) gaugeSe->SetPivot(Vector2(0.0f, 0.5f));
+
+			app::SoundManager::Get().SetVolume(app::SoundManager::SoundVolumeType::Master, VOLUME_DEFAULT_MASTER);
+			app::SoundManager::Get().SetVolume(app::SoundManager::SoundVolumeType::BGM, VOLUME_DEFAULT_BGM);
+			app::SoundManager::Get().SetVolume(app::SoundManager::SoundVolumeType::SE, VOLUME_DEFAULT_SE);
+
+		}
+
+		void SoundOptionMenu::SetDraw(bool isDraw)
+		{
+			auto* canvas = GetCanvas();
+			if (canvas) {
+				canvas->isDraw = isDraw;
+			}
+		}
+
+		void SoundOptionMenu::Update()
+		{
+			auto* canvas = GetCanvas();
+			if (!canvas || !canvas->isDraw) return;
+
+			if (seq_) {
+				seq_->Update(g_gameTime->GetFrameDeltaTime());
+			}
+
+			MenuBase::Update();
+
+			if (g_pad[0]->IsTrigger(enButtonUp))
+			{
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+
+				volumeCursolIndex_--;
+
+				if (volumeCursolIndex_ < static_cast<int>(app::SoundManager::SoundVolumeType::Master))
+				{
+					volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::Master);
+				}
+			}
+			else if (g_pad[0]->IsTrigger(enButtonDown))
+			{
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+
+				volumeCursolIndex_++;
+
+				if (volumeCursolIndex_ >= static_cast<int>(app::SoundManager::SoundVolumeType::Max))
+				{
+					volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::SE);
 				}
 			}
 
-			// バー
+
+			/** 左右キーで音量調整 */
+			bool isVolumeChanged = false;
+			auto currentVolumeType = static_cast<app::SoundManager::SoundVolumeType>(volumeCursolIndex_);
+			float targetVolume = app::SoundManager::Get().GetVolume(currentVolumeType);
+
+			if (g_pad[0]->IsTrigger(enButtonY))
 			{
-				// MASTER
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+				targetVolume = 0.5f;
+				isVolumeChanged = true;
+			}
+			if (g_pad[0]->IsTrigger(enButtonRight))
+			{
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+				targetVolume += VOLUME_STEP;
+				if (targetVolume > VOLUME_MAX)
 				{
-					auto* gauge = GetUI<app::ui::UIIcon>(Hash32("VolumeBar_MASTER"));
-					gauge->SetPivot(Vector2(0.0f, 0.5f));
+					targetVolume = VOLUME_MAX;
 				}
-				// BGM
+				isVolumeChanged = true;
+			}
+			else if (g_pad[0]->IsTrigger(enButtonLeft))
+			{
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+				targetVolume -= VOLUME_STEP;
+				if (targetVolume < VOLUME_MIN)
 				{
-					auto* gauge = GetUI<app::ui::UIIcon>(Hash32("VolumeBar_BGM"));
-					gauge->SetPivot(Vector2(0.0f, 0.5f));
+					targetVolume = VOLUME_MIN;
 				}
-				// SE
+				isVolumeChanged = true;
+			}
+
+			if (isVolumeChanged)
+			{
+				app::SoundManager::Get().SetVolume(currentVolumeType, targetVolume);
+
+				//if (app::ui::AwardManager::IsAvailable()) {
+				//	app::ui::AwardManager::Get().OnSoundAdjusted();
+				//}
+			}
+
+			// 動的に数値をUIに設定
+			auto* parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterSoundOptionMenuParameter>();
+			if (!parameter) return;
+
+			// MASTER/BGM/SEの場所
+			{
+				const float y = parameter->gaugeBarY[volumeCursolIndex_];
+				auto cursol = GetUI<UIIcon>(Hash32("Cursol"));
+				if (cursol) cursol->transform.localPosition.y = y;
+			}
+			// --- MASTERのUI更新
+			{
+				const float volumeMaster = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::Master);
+
+				int volIndex = static_cast<int>(std::round(volumeMaster * VOLUME_DISPLAY_MULTIPLIER));
+				if (volIndex < 0) volIndex = 0;
+				if (volIndex > 10) volIndex = 10;
+
+				// ゲージの大きさ
+				auto gaugeMASTER = GetUI<UIIcon>(Hash32("VolumeBar_MASTER"));
+				if (gaugeMASTER) {
+					gaugeMASTER->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
+				}
+				auto knobBackGroundMASTER = GetUI<UIIcon>(Hash32("KnobBackground_MASTER"));
+				if (knobBackGroundMASTER) {
+					knobBackGroundMASTER->transform.localPosition.x = parameter->knobX[volIndex];
+				}
+				//数値表示
 				{
-					auto* gauge = GetUI<app::ui::UIIcon>(Hash32("VolumeBar_SE"));
-					gauge->SetPivot(Vector2(0.0f, 0.5f));
+					auto digitMASTER = GetUI<UIDigit>(Hash32("VolumeDigit_MASTER"));
+					if (digitMASTER) {
+						digitMASTER->SetNumber(static_cast<int>(std::round(volumeMaster * VOLUME_DISPLAY_MULTIPLIER)));
+					}
 				}
 			}
-			//初期位置
+
+			// --- BGMのUI更新
 			{
-				app::SoundManager::Get().SetVolume(app::SoundManager::SoundVolumeType::Master, VOLUME_DEFAULT_MASTER);
-				app::SoundManager::Get().SetVolume(app::SoundManager::SoundVolumeType::BGM, VOLUME_DEFAULT_BGM);
-				app::SoundManager::Get().SetVolume(app::SoundManager::SoundVolumeType::SE, VOLUME_DEFAULT_SE);
+				const float volumeBGM = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::BGM);
+				int volIndex = static_cast<int>(std::round(volumeBGM * VOLUME_DISPLAY_MULTIPLIER));
+				if (volIndex < 0) volIndex = 0;
+				if (volIndex > 10) volIndex = 10;
+
+				auto gaugeBGM = GetUI<UIIcon>(Hash32("VolumeBar_BGM"));
+				if (gaugeBGM) {
+					gaugeBGM->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
+				}
+
+				auto knobBackGroundBGM = GetUI<UIIcon>(Hash32("KnobBackground_BGM"));
+				if (knobBackGroundBGM) {
+					knobBackGroundBGM->transform.localPosition.x = parameter->knobX[volIndex];
+				}
+
+				auto digitBGM = GetUI<UIDigit>(Hash32("VolumeDigit_BGM"));
+				if (digitBGM) {
+					digitBGM->SetNumber(volIndex);
+				}
+			}
+
+			// --- SEのUI更新
+			{
+				const float volumeSE = app::SoundManager::Get().GetVolume(app::SoundManager::SoundVolumeType::SE);
+				int volIndex = static_cast<int>(std::round(volumeSE * VOLUME_DISPLAY_MULTIPLIER));
+				if (volIndex < 0) volIndex = 0;
+				if (volIndex > 10) volIndex = 10;
+
+				auto gaugeScaleSE = GetUI<UIIcon>(Hash32("VolumeBar_SE"));
+				if (gaugeScaleSE) {
+					gaugeScaleSE->transform.localScale.x = parameter->gaugeBarScaleX[volIndex];
+				}
+
+				auto knobBackGroundSE = GetUI<UIIcon>(Hash32("KnobBackground_SE"));
+				if (knobBackGroundSE) {
+					knobBackGroundSE->transform.localPosition.x = parameter->knobX[volIndex];
+				}
+
+				auto digitSE = GetUI<UIDigit>(Hash32("VolumeDigit_SE"));
+				if (digitSE) {
+					digitSE->SetNumber(volIndex);
+				}
 			}
 		}
 	}

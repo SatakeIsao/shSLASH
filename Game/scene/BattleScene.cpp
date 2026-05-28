@@ -75,6 +75,22 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 		return false;
 	}
 
+	// ポーズメニューからのタイトルへ戻るリクエスト
+	if (app::core::PauseManager::Get().IsReturnToTitleRequested())
+	{
+		id = TitleScene::ID(); // タイトルシーンのIDをセット
+		waitTime = 1.0f;       // フェード時間
+		return true;           // 遷移を許可
+	}
+
+	// ポーズメニューからのリトライリクエスト
+	if (app::core::PauseManager::Get().IsRetryRequested())
+	{
+		id = BattleScene::ID(); //BattleSceneのIDをセットしてリロード
+		waitTime = 1.0f;
+		return true;
+	}
+
 	/** Playerのダウンモーションが再生終了したら */
 	if (g_pad[0]->IsPress(enButtonLB2)
 		&& g_pad[0]->IsTrigger(enButtonDown))
@@ -106,12 +122,6 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 		return true;
 	}*/
 
-	if (app::core::PauseManager::Get().IsReturnToTitleRequested())
-	{
-		id = TitleScene::ID();
-		waitTime = 3.0f;
-		return true;
-	}
 
 	if (requestSceneId_ != INVALID_SCENE_ID)
 	{

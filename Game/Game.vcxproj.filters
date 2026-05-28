@@ -201,11 +201,12 @@
     <ClCompile Include="title\TitleManager.cpp" />
     <ClCompile Include="EnemyPhase.cpp" />
     <ClCompile Include="ui\DamagePopUI.cpp" />
-    <ClCompile Include="ui\CameraOptionMenu.cpp" />
     <ClCompile Include="ui\GameOverSequence.cpp" />
-    <ClCompile Include="ui\OptionMenu.cpp" />
     <ClCompile Include="ui\ResultMenu.cpp" />
     <ClCompile Include="ui\ResultSubMenu.cpp" />
+    <ClCompile Include="effect\EffectManager2D.cpp" />
+    <ClCompile Include="ui\CameraOptionMenu.cpp" />
+    <ClCompile Include="ui\OptionMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -396,16 +397,20 @@
     <ClInclude Include="EnemyPhase.h" />
     <ClInclude Include="ui\DamagePopUI.h" />
     <ClInclude Include="battle\IDamagePopListener.h" />
-    <ClInclude Include="ui\CameraOptionMenu.h" />
     <ClInclude Include="ui\GameOverSequence.h" />
-    <ClInclude Include="ui\OptionMenu.h" />
     <ClInclude Include="ui\ResultMenu.h" />
     <ClInclude Include="ui\ResultSubMenu.h" />
+    <ClInclude Include="effect\EffectManager2D.h" />
+    <ClInclude Include="ui\CameraOptionMenu.h" />
+    <ClInclude Include="ui\OptionMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\ui\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\master\ui_animation.json" />
   </ItemGroup>
 </Project>

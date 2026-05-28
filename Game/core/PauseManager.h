@@ -20,8 +20,7 @@ namespace app
         {
             enClosed,
             enPause,
-            enSound,
-            enTitle,
+            enOption,
         };
 
         class PauseManager
@@ -30,9 +29,6 @@ namespace app
             // ここにレイアウトをもって
             app::ui::Layout* layout_ = nullptr;
             app::ui::Layout* pauseLayout_ = nullptr;
-            app::ui::Layout* returnToTitleLayout_ = nullptr;
-
-            app::ui::ReturnToTitleMenu* title_ = nullptr;
 
             PauseState currentState_ = PauseState::enClosed;
             /** 遷移先のステートを予約 */
@@ -74,6 +70,7 @@ namespace app
             bool CanPause() const { return canPause_; }
 
             bool IsReturnToTitleRequested() const;
+            bool IsRetryRequested() const;
 
             /**
              * シングルトン用
