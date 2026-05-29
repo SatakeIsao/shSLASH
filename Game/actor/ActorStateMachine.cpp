@@ -429,7 +429,7 @@ namespace app
 						{
 							RequestChangeState(InjuredIdleCharacterState::ID());
 						}
-						else{
+						else {
 							RequestChangeState(IdleCharacterState::ID());
 						}
 					}
@@ -826,6 +826,8 @@ namespace app
 			randomEngine_.seed(std::random_device{}());
 			float randomYaw = (randomEngine_() % 360) * (Math::PI / 180.0f);
 			transform.rotation.SetRotationY(randomYaw);
+
+			isReturningToWait_ = false;
 		}
 
 
@@ -840,57 +842,6 @@ namespace app
 			SuperClass::Update();
 		}
 
-
-		void StoneEventCharacterStateMachine::OnEnterDead()
-		{
-			// エフェクト再生
-			EffectManager::Get().PlayEffect(
-				enEffectKind_StoneKnockBack,
-				transform.position,
-				Quaternion::Identity,
-				Vector3::One
-			);
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead));
-			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadStone));
-		}
-
-
-		void StoneEventCharacterStateMachine::OnExitDead()
-		{
-		}
-
-
-		void StoneEventCharacterStateMachine::OnEnterKnockBack()
-		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
-			SetMoveDirection(knockBackDirection_);
-			// 溜め攻撃のときだけ吹き飛ばす
-			if (isBlowBack_)
-			{
-				Jump(80.0f);
-				isBlowBack_ = false;
-			}
-			// エフェクト再生
-			EffectManager::Get().PlayEffectFollow(
-				enEffectKind_StoneKnockBack,
-				&transform.position,
-				Quaternion::Identity,
-				Vector3::One
-			);
-
-			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
-		}
-
-
-		void StoneEventCharacterStateMachine::OnExitKnockBack()
-		{
-		}
-
-
-		uint32_t StoneEventCharacterStateMachine::GetCharacterID() const
-		{
-			return StoneEventCharacter::ID();
-		}
 
 		void StoneEventCharacterStateMachine::OnEnterAttack()
 		{
@@ -924,15 +875,130 @@ namespace app
 						Vector3::One
 					);
 				}, false);
+
+			// アタックポイントの確保。確保済みなら二重確保しない
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (stone && stone->GetCurrentAttackPoint() == nullptr)
+			{
+				auto* manager = stone->GetAttackPointManager();
+				if (manager)
+				{
+					auto* point = manager->AcquireAttackPoint(transform.position, stone);
+					stone->SetCurrentAttackPoint(point);
+				}
+			}
 		}
 
 		void StoneEventCharacterStateMachine::OnExitAttack()
 		{
+			// 攻撃ステートを正常に抜ける時はアタックポイントを解放する
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (stone)
+			{
+				auto* manager = stone->GetAttackPointManager();
+				if (manager && stone->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(stone->GetCurrentAttackPoint(), stone);
+					stone->SetCurrentAttackPoint(nullptr);
+				}
+
+				if (manager)
+				{
+					auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+					if (waitPoint != nullptr)
+					{
+						Vector3 toWait = waitPoint->position_ - transform.position;
+						toWait.Normalize();
+						SetMoveDirection(toWait);
+					}
+				}
+			}
+
+			attackCoolTimer_ = kAttackCoolTime;
+		}
+
+
+		void StoneEventCharacterStateMachine::OnEnterDead()
+		{
+			// エフェクト再生
+			EffectManager::Get().PlayEffect(
+				enEffectKind_StoneKnockBack,
+				transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Dead));
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadStone));
+
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (stone)
+			{
+				auto* manager = stone->GetAttackPointManager();
+				if (manager && stone->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(stone->GetCurrentAttackPoint(), stone);
+					stone->SetCurrentAttackPoint(nullptr);
+				}
+			}
+		}
+
+
+		void StoneEventCharacterStateMachine::OnExitDead()
+		{
+		}
+
+
+		void StoneEventCharacterStateMachine::OnEnterKnockBack()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
+			SetMoveDirection(knockBackDirection_);
+			// 溜め攻撃のときだけ吹き飛ばす
+			if (isBlowBack_)
+			{
+				Jump(80.0f);
+				isBlowBack_ = false;
+			}
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_StoneKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
+
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
+
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (stone)
+			{
+				auto* manager = stone->GetAttackPointManager();
+				if (manager && stone->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(stone->GetCurrentAttackPoint(), stone);
+					stone->SetCurrentAttackPoint(nullptr);
+				}
+			}
+		}
+
+
+		void StoneEventCharacterStateMachine::OnExitKnockBack()
+		{
+		}
+
+
+		uint32_t StoneEventCharacterStateMachine::GetCharacterID() const
+		{
+			return StoneEventCharacter::ID();
 		}
 
 
 		void StoneEventCharacterStateMachine::UpdateState()
 		{
+			if (attackCoolTimer_ > 0.0f)
+			{
+				attackCoolTimer_ -= g_gameTime->GetFrameDeltaTime();
+			}
+
 			/** スポーン直後、一定時間は他のステートに遷移不可 */
 			if (isJustSpawned_)
 			{
@@ -996,9 +1062,50 @@ namespace app
 			{
 				if (CanChangeState()) {
 					aiTimer_ = 0.0f;
+					isReturningToWait_ = true;
 					RequestChangeState(RunCharacterState::ID());
 				}
 				return;
+			}
+
+			if (isReturningToWait_)
+			{
+				auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+				if (stone && stone->GetAttackPointManager())
+				{
+					auto* waitPoint = stone->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+					if (waitPoint != nullptr)
+					{
+						Vector3 toWait = waitPoint->position_ - transform.position;
+						const float distToWait = toWait.Length();
+
+						if (distToWait > 30.0f)
+						{
+							// まだ待機ポイントに着いていない → 向かい続ける
+							toWait.Normalize();
+							SetMoveDirection(toWait);
+							RequestChangeState(RunCharacterState::ID());
+							return;
+						}
+						else
+						{
+							// 待機ポイントに到達 → 通常の追跡状態に戻す
+							isReturningToWait_ = false;
+							SetMoveDirection(Vector3::Zero);
+							RequestChangeState(IdleCharacterState::ID());
+							return;
+						}
+					}
+					else
+					{
+						// 待機ポイントが取れなければそのままフラグを解除
+						isReturningToWait_ = false;
+					}
+				}
+				else
+				{
+					isReturningToWait_ = false;
+				}
 			}
 
 			/** TODO: 敵の視野角にPlayerが入ったら追従して */
@@ -1006,22 +1113,86 @@ namespace app
 			{
 				isChasing_ = false;
 
-				if (IsEqualCurrentState(IdleCharacterState::ID())
-					&& aiTimer_ > 5.0f)
+				auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+				if (stone && stone->GetAttackPointManager())
 				{
-
+					const bool canAttack = stone->GetAttackPointManager()->IsUseable() && attackCoolTimer_ <= 0.0f;
+					if (!canAttack)
+					{
+						auto* waitPoint = stone->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+						if (waitPoint != nullptr)
+						{
+							Vector3 toWait = waitPoint->position_ - transform.position;
+							toWait.Normalize();
+							SetMoveDirection(toWait);
+						}
+					}
 				}
-				else {
+
+				if (IsEqualCurrentState(IdleCharacterState::ID()) && aiTimer_ > 5.0f) {}
+
+				else
+				{
 					Vector3 toPlayer = targetPosition_ - transform.position;
 					toPlayer.y = 0.0f;
 					float distance = toPlayer.Length();
 
-					if (distance <= 40.0f) {
-						SetMoveDirection(chaseDirection_);
-						RequestChangeState(AttackCharacterState::ID());
-						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkStone), false);
+					if (distance <= 40.0f)
+					{
+						auto* manager = stone->GetAttackPointManager();
+
+						if (attackCoolTimer_ <= 0.0f)
+						{
+							manager->RequestAttackToken(stone);
+						}
+
+						const bool isMyTurn = manager->ConsumeAttackToken(stone);
+						if (isMyTurn && manager->IsUseable())
+						{
+							SetMoveDirection(chaseDirection_);
+							RequestChangeState(AttackCharacterState::ID());
+						}
+						else
+						{
+							auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+							if (waitPoint != nullptr)
+							{
+								Vector3 toWait = waitPoint->position_ - transform.position;
+								toWait.Normalize();
+								SetMoveDirection(toWait);
+							}
+							RequestChangeState(RunCharacterState::ID());
+						}
 					}
-					else if (distance <= 200.0f) {
+					else if (distance <= 400.0f)
+					{
+						auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+						if (stone && stone->GetAttackPointManager())
+						{
+							const bool canAttack = stone->GetAttackPointManager()->IsUseable() && attackCoolTimer_ <= 0.0f;
+
+							if (!canAttack)
+							{
+								auto* waitPoint = stone->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+								if (waitPoint != nullptr)
+								{
+									Vector3 toWait = waitPoint->position_ - transform.position;
+									const float distanceToWait = toWait.Length();
+									if (distanceToWait < 30.0f)
+									{
+										SetMoveDirection(toWait);
+										RequestChangeState(IdleCharacterState::ID());
+										aiTimer_ = 0.0f;
+										return;
+									}
+									toWait.Normalize();
+									SetMoveDirection(toWait);
+								}
+								RequestChangeState(RunCharacterState::ID());
+								aiTimer_ = 5.0f;
+								return;
+							}
+						}
 						SetMoveDirection(chaseDirection_);
 						RequestChangeState(RunCharacterState::ID());
 						aiTimer_ = 5.0f;
@@ -1042,7 +1213,7 @@ namespace app
 			if (IsEqualCurrentState(IdleCharacterState::ID()))
 			{
 				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-				
+
 				/** 通常の待機 */
 				if (aiTimer_ > WAIT_TIME)
 				{
@@ -1054,7 +1225,7 @@ namespace app
 
 			if (IsEqualCurrentState(PatrolCharacterState::ID()))
 			{
-				if(CanChangeState())
+				if (CanChangeState())
 				{
 					SetMoveDirection(Vector3::Zero);
 					RequestChangeState(IdleCharacterState::ID());
@@ -1119,6 +1290,8 @@ namespace app
 			randomEngine_.seed(std::random_device{}());
 			float randomYaw = (randomEngine_() % 360) * (Math::PI / 180.0f);
 			transform.rotation.SetRotationY(randomYaw);
+
+			isReturningToWait_ = false;
 		}
 
 
@@ -1134,53 +1307,6 @@ namespace app
 
 			SuperClass::Update();
 		}
-
-
-		void MushroomEventCharacterStateMachine::OnEnterDead()
-		{
-			// エフェクト再生
-			EffectManager::Get().PlayEffectFollow(
-				enEffectKind_MushroomKnockBack,
-				&transform.position,
-				Quaternion::Identity,
-				Vector3::One
-			);
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead));
-			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadMushroom));
-		}
-
-
-		void MushroomEventCharacterStateMachine::OnExitDead()
-		{
-		}
-
-
-		void MushroomEventCharacterStateMachine::OnEnterKnockBack()
-		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
-			SetMoveDirection(knockBackDirection_);
-			// 溜め攻撃のときだけ吹き飛ばす
-			if (isBlowBack_)
-			{
-				Jump(80.0f);
-				isBlowBack_ = false;
-			}
-			// エフェクト再生
-			EffectManager::Get().PlayEffectFollow(
-				enEffectKind_MushroomKnockBack,
-				&transform.position,
-				Quaternion::Identity,
-				Vector3::One
-			);
-
-			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
-		}
-
-
-		void MushroomEventCharacterStateMachine::OnExitKnockBack()
-		{
-		}
-
 
 
 		void MushroomEventCharacterStateMachine::OnEnterAttack()
@@ -1214,10 +1340,102 @@ namespace app
 						Vector3::One
 					);
 				}, false);
+
+			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+			if (mushroom && mushroom->GetAttackPointManager())
+			{
+				auto* manager = mushroom->GetAttackPointManager();
+				if (manager)
+				{
+					auto* point = manager->AcquireAttackPoint(transform.position, mushroom);
+					mushroom->SetCurrentAttackPoint(point);
+				}
+			}
 		}
 
 
 		void MushroomEventCharacterStateMachine::OnExitAttack()
+		{
+			// 攻撃ステートを正常に抜ける時はアタックポイントを解放する
+			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+			if (mushroom)
+			{
+				auto* manager = mushroom->GetAttackPointManager();
+				if (manager && mushroom->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(mushroom->GetCurrentAttackPoint(), mushroom);
+					mushroom->SetCurrentAttackPoint(nullptr);
+				}
+			}
+
+			attackCoolTimer_ = kAttackCoolTime;
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnEnterDead()
+		{
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_MushroomKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::Dead));
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::DeadMushroom));
+
+			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+			if (mushroom)
+			{
+				auto* manager = mushroom->GetAttackPointManager();
+				if (manager && mushroom->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(mushroom->GetCurrentAttackPoint(), mushroom);
+					mushroom->SetCurrentAttackPoint(nullptr);
+				}
+			}
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnExitDead()
+		{
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnEnterKnockBack()
+		{
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
+			SetMoveDirection(knockBackDirection_);
+			// 溜め攻撃のときだけ吹き飛ばす
+			if (isBlowBack_)
+			{
+				Jump(80.0f);
+				isBlowBack_ = false;
+			}
+			// エフェクト再生
+			EffectManager::Get().PlayEffectFollow(
+				enEffectKind_MushroomKnockBack,
+				&transform.position,
+				Quaternion::Identity,
+				Vector3::One
+			);
+
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
+
+			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+			if (mushroom)
+			{
+				auto* manager = mushroom->GetAttackPointManager();
+				if (manager && mushroom->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(mushroom->GetCurrentAttackPoint(), mushroom);
+					mushroom->SetCurrentAttackPoint(nullptr);
+				}
+			}
+		}
+
+
+		void MushroomEventCharacterStateMachine::OnExitKnockBack()
 		{
 		}
 
@@ -1230,6 +1448,11 @@ namespace app
 
 		void MushroomEventCharacterStateMachine::UpdateState()
 		{
+			if (attackCoolTimer_ > 0.0f)
+			{
+				attackCoolTimer_ -= g_gameTime->GetFrameDeltaTime();
+			}
+
 			/** スポーン直後、一定時間は他のステートに遷移不可 */
 			if (isJustSpawned_)
 			{
@@ -1295,9 +1518,52 @@ namespace app
 			{
 				if (CanChangeState()) {
 					aiTimer_ = 0.0f;
+					isReturningToWait_ = true; // 攻撃後の待機ポイントへ戻るフラグ
 					RequestChangeState(RunCharacterState::ID());
 				}
 				return;
+			}
+
+			if (isReturningToWait_)
+			{
+
+
+				auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+				if (mushroom && mushroom->GetAttackPointManager())
+				{
+					auto* waitPoint = mushroom->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+					if (waitPoint != nullptr)
+					{
+						Vector3 toWait = waitPoint->position_ - transform.position;
+						const float distToWait = toWait.Length();
+
+						if (distToWait > 30.0f)
+						{
+							// まだ待機ポイントに着いていない → 向かい続ける
+							toWait.Normalize();
+							SetMoveDirection(toWait);
+							RequestChangeState(RunCharacterState::ID());
+							return;
+						}
+						else
+						{
+							// 待機ポイントに到達 → 通常の追跡状態に戻す
+							isReturningToWait_ = false;
+							SetMoveDirection(Vector3::Zero);
+							RequestChangeState(IdleCharacterState::ID());
+							return;
+						}
+					}
+					else
+					{
+						// 待機ポイントが取れなければそのままフラグを解除
+						isReturningToWait_ = false;
+					}
+				}
+				else
+				{
+					isReturningToWait_ = false;
+				}
 			}
 
 			/** TODO: 敵の視野角にPlayerが入ったら追従して */
@@ -1305,25 +1571,97 @@ namespace app
 			{
 				isChasing_ = false;
 
-				if (IsEqualCurrentState(IdleCharacterState::ID())
-					&& aiTimer_ > 5.0f)
+				auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+				if (mushroom && mushroom->GetAttackPointManager())
 				{
-
+					const bool canAttack = mushroom->GetAttackPointManager()->IsUseable() && attackCoolTimer_ <= 0.0f;
+					if (!canAttack)
+					{
+						auto* waitPoint = mushroom->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+						if (waitPoint != nullptr)
+						{
+							Vector3 toWait = waitPoint->position_ - transform.position;
+							toWait.Normalize();
+							SetMoveDirection(toWait);
+						}
+					}
 				}
-				else {
+
+				if (IsEqualCurrentState(IdleCharacterState::ID()) && aiTimer_ > 5.0f) {}
+
+				else
+				{
 					Vector3 toPlayer = targetPosition_ - transform.position;
 					toPlayer.y = 0.0f;
 					float distance = toPlayer.Length();
 
-					if (distance <= 40.0f) {
-						SetMoveDirection(chaseDirection_);
-						RequestChangeState(AttackCharacterState::ID());
-						app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkMushroom), false);
+					if (distance <= 40.0f)
+					{
+						auto* manager = mushroom->GetAttackPointManager();
+
+						if (attackCoolTimer_ <= 0.0f)
+						{
+							manager->RequestAttackToken(mushroom);
+						}
+
+						const bool isMyTurn = manager->ConsumeAttackToken(mushroom);
+						if (isMyTurn && manager->IsUseable())
+						{
+							SetMoveDirection(chaseDirection_);
+							RequestChangeState(AttackCharacterState::ID());
+							app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkMushroom), false);
+						}
+						else
+						{
+							// 自分の番じゃない → 待機ポイントで待つ
+							auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+							if (waitPoint != nullptr)
+							{
+								Vector3 toWait = waitPoint->position_ - transform.position;
+								toWait.Normalize();
+								SetMoveDirection(toWait);
+							}
+							RequestChangeState(RunCharacterState::ID());
+						}
+						return;
 					}
-					else if (distance <= 200.0f) {
+					else if (distance <= 400.0f)
+					{
+						// 待機距離内に入ったら周回待機
+						auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+						if (mushroom && mushroom->GetAttackPointManager())
+						{
+							const bool canAttack = mushroom->GetAttackPointManager()->IsUseable()
+								&& attackCoolTimer_ <= 0.0f;
+
+							if (!canAttack)
+							{
+								// 攻撃できない → 待機ポイントへ向かいながら周回
+								auto* waitPoint = mushroom->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+
+								if (waitPoint != nullptr)
+								{
+									Vector3 toWait = waitPoint->position_ - transform.position;
+									const float distanceToWait = toWait.Length();
+
+									if (distanceToWait < 30.0f)
+									{
+										SetMoveDirection(Vector3::Zero);
+										RequestChangeState(IdleCharacterState::ID());
+										aiTimer_ = 0.0f;
+										return;
+									}
+									toWait.Normalize();
+									SetMoveDirection(toWait);
+								}
+								RequestChangeState(RunCharacterState::ID());
+								aiTimer_ = 5.0f; // 追跡タイマーをリセットしない
+								return;
+							}
+						}
 						SetMoveDirection(chaseDirection_);
 						RequestChangeState(RunCharacterState::ID());
-						aiTimer_ = 5.0f;
+						aiTimer_ = 5.0f; // 追跡タイマーをリセットしない
 					}
 					/** DEBUG: いらないかも */
 					else
@@ -1335,13 +1673,11 @@ namespace app
 				}
 			}
 
-			app::actor::BattleCharacter* player = nullptr;
-
 			/** デバッグテスト: 待機⇒左に走る⇒右に走る⇒待機のモーション */
 			if (IsEqualCurrentState(IdleCharacterState::ID()))
 			{
 				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (aiTimer_ > 2.0f)
+				if (aiTimer_ > WAIT_TIME)
 				{
 					RequestChangeState(PatrolCharacterState::ID());
 					aiTimer_ = 0.0f;
@@ -1353,6 +1689,7 @@ namespace app
 			{
 				if (CanChangeState())
 				{
+					SetMoveDirection(Vector3::Zero);
 					RequestChangeState(IdleCharacterState::ID());
 				}
 				return;
@@ -1370,7 +1707,8 @@ namespace app
 				{
 					SetMoveDirection(Vector3::Right);
 				}
-				else {
+				else
+				{
 					SetMoveDirection(Vector3::Zero);
 					RequestChangeState(IdleCharacterState::ID());
 					aiTimer_ = 0.0f;

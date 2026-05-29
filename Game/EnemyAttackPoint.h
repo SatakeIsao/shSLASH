@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <array>
+#include <vector>
 
 namespace app
 {
@@ -16,17 +17,23 @@ namespace app
 				int number_ = 0;				// 攻撃ポイントの番号
 				bool use_ = false;				// 攻撃ポイントが使用されているかどうか
 				Character* useEnemy_ = nullptr;	// 攻撃ポイントを使用している敵キャラクター
+
+				float cooldownTimer_ = 0.0f;	// クールダウンタイマー
+				bool isOnCooldown_ = false;		// クールダウン中かどうか
 			};
 
 
 		private:
-			static constexpr int kAttackPointNum = 15;					// 攻撃ポイントの数
-			static constexpr int kAttackPointUseLimit = 1;				// 同時使用数の上限
-			static constexpr float kToAttackPointDistance = 200.0f;		// 攻撃ポイントまでの距離の閾値
+			static constexpr int kAttackPointNum = 13;					// 攻撃ポイントの数
+			static constexpr int kAttackPointUseLimit = 2;				// 同時使用数の上限
+			static constexpr float kToAttackPointDistance = 50.0f;		// 攻撃ポイントまでの距離の閾値
+			static constexpr float kToWaitPointDistance = 75.0f;		// 待機ポイントまでの距離の閾値
+			static constexpr float kAttackPointCooldownTime = 3.0f;		// 攻撃ポイントのクールダウン時間
 
 
 		private:
 			std::array<AttackPoint, kAttackPointNum> attackPointList_;	// 攻撃ポイントの配列
+			std::array<AttackPoint, kAttackPointNum >waitPointList_;	// 待機ポイントの配列
 			int useAttackPointNum_ = 0;									// 現在使用されている攻撃ポイントの数
 
 
@@ -61,6 +68,10 @@ namespace app
 
 			/** アタックポイントが使用可能かどうかを判定する */
 			bool IsUsableAttackPoint() const;
+
+
+			/** 近くにある待機ポイントのアドレスを取得する */
+			AttackPoint* GetNearWaitPoint(Vector3 position);
 
 
 			static constexpr int GetAttackPointNum() { return kAttackPointNum; }

@@ -109,6 +109,12 @@ namespace app
 			if (isPause_) { return; }
 			// EffectManagerの初期化完了を待つ
 			if (!EffectManager::IsAvailable()) { return; }
+
+			if (battleCharacter_ != nullptr)
+			{
+				attackPointManager_.Update(battleCharacter_->transform.position);
+			}
+
 			// 初期スポーン・敵死亡後の追加スポーンを1秒おきに1体ずつ処理
 			if (pendingSpawnCount_ > 0)
 			{
@@ -246,6 +252,7 @@ namespace app
 				if (!stone) { break; }
 
 				stone->SetBattleCharacter(battleCharacter_);
+				stone->SetAttckPointManager(&attackPointManager_);
 
 				stone->transform.position = spawnPosition;
 				stone->GetStateMachine()->transform.position = spawnPosition;
@@ -280,6 +287,9 @@ namespace app
 			{
 				auto* mushroom = mushroomPool_.Acquire();
 				if (!mushroom) { break; }
+
+				mushroom->SetBattleCharacter(battleCharacter_);
+				mushroom->SetAttckPointManager(&attackPointManager_);
 
 				mushroom->transform.position = spawnPosition;
 				mushroom->GetStateMachine()->transform.position = spawnPosition;

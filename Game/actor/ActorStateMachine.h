@@ -581,6 +581,9 @@ namespace app
 			float aiTimer_ = 0.0f;
 			/** 最初の待機時間 */
 			const float WAIT_TIME = 1.0f;
+			/** 攻撃クールタイム */
+			float attackCoolTimer_ = 0.0f;
+			static constexpr float kAttackCoolTime = 1.5f;
 			/** 死んだか */
 			bool isDead_ = false;
 			/** 踏まれたか */
@@ -597,6 +600,8 @@ namespace app
 			bool isAttackGhostCreated_ = false;
 			/** スポーン直後の待機フラグ */
 			bool isJustSpawned_ = true;
+			/** 攻撃後の待機ポイントへ戻るフラグ */
+			bool isReturningToWait_ = false;
 
 		public:
 			StoneEventCharacterStateMachine();
@@ -706,6 +711,8 @@ namespace app
 			float aiTimer_ = 0.0f;
 			/** 最初の待機時間 */
 			const float WAIT_TIME = 1.0f;
+			float attackCoolTimer_ = 0.0f;
+			static constexpr float kAttackCoolTime = 1.5f;
 			bool isDead_ = false;
 			/** 踏まれたか */
 			bool isSquashed_ = false;
@@ -721,6 +728,8 @@ namespace app
 			bool isAttackGhostCreated_ = false;
 			/** スポーン直後の待機フラグ */
 			bool isJustSpawned_ = true;
+			/** 攻撃後の待機ポイントへ戻るフラグ */
+			bool isReturningToWait_ = false;
 
 		public:
 			MushroomEventCharacterStateMachine();

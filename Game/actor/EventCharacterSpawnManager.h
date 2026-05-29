@@ -4,6 +4,7 @@
 #include "actor/types.h"
 #include "actor/EnemyPool.h"
 #include "actor/QuadrantManager.h"
+#include "EnemyAttackPointManager.h"
 #include <functional>
 #include <utility>
 
@@ -93,6 +94,7 @@ namespace app
 			/** プレイヤーレベルが上がったときに呼ばれる */
 			void OnPlayerLevelUp(int newLevel);
 
+			EnemyAttackPointManager& GetAttackPointManager() { return attackPointManager_; }
 
 		private:
 			/** スケルトンの出現確率を計算する (Lv1～Lv5 : 0% , Lv6以降:段階的に上昇) */
@@ -132,6 +134,8 @@ namespace app
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック
+
+			EnemyAttackPointManager attackPointManager_;			  // 敵の攻撃ポイント管理
 
 			EnemyPool<StoneEventCharacter, MAX_EVENT_CHARACTER> stonePool_;
 			EnemyPool<MushroomEventCharacter, MAX_EVENT_CHARACTER> mushroomPool_;

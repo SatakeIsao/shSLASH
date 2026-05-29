@@ -207,6 +207,9 @@
     <ClCompile Include="effect\EffectManager2D.cpp" />
     <ClCompile Include="ui\CameraOptionMenu.cpp" />
     <ClCompile Include="ui\OptionMenu.cpp" />
+    <ClCompile Include="effect\EffectManager2D.cpp" />
+    <ClCompile Include="EnemyAttackPoint.cpp" />
+    <ClCompile Include="EnemyAttackPointManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -400,9 +403,11 @@
     <ClInclude Include="ui\GameOverSequence.h" />
     <ClInclude Include="ui\ResultMenu.h" />
     <ClInclude Include="ui\ResultSubMenu.h" />
-    <ClInclude Include="effect\EffectManager2D.h" />
-    <ClInclude Include="ui\CameraOptionMenu.h" />
     <ClInclude Include="ui\OptionMenu.h" />
+    <ClInclude Include="effect\EffectManager2D.h" />
+    <ClInclude Include="EnemyAttackPointManager.h" />
+    <ClInclude Include="EnemyAttackPoint.h" />
+    <ClInclude Include="ui\CameraOptionMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />
