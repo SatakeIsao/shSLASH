@@ -535,5 +535,44 @@ namespace app
 
 			virtual bool CanChangeState() const;
 		};
+
+
+		class WaitingAttackCharacterState : public ICharacterState
+		{
+			appState(WaitingAttackCharacterState);
+
+
+		private:
+			enum WaitingMove
+			{
+				en_wait = 0,
+				en_forwardMove = 1,
+				en_backMove = 2,
+				en_leftMove = 3,
+				en_rightMove = 4,
+			};
+
+
+		private:
+			float randomTimer_ = 0.0f;
+			int	waitingMove_ = WaitingMove::en_wait;
+			bool isLimitOut_ = false;
+			float limitOutMoveLine_ = 0.0f;
+			float backTime_ = 0.0f;
+			bool limitOutForward_ = true;
+
+			std::mt19937 randomEngine_;
+
+
+		public:
+			WaitingAttackCharacterState(IStateMachine* owner);
+			~WaitingAttackCharacterState();
+
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+		};
 	}
 }

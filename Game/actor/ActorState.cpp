@@ -196,8 +196,10 @@ namespace app
 		void AttackCharacterState::Exit()
 		{
 			attackScheduler_.reset(nullptr);
+			CharacterStateMachine* sm = owner_->As<CharacterStateMachine>();
+			sm->OnExitAttack();
 
-			if (attackBody_ != nullptr) 
+			if (attackBody_ != nullptr)
 			{
 				delete attackBody_;
 				attackBody_ = nullptr;
@@ -209,12 +211,12 @@ namespace app
 		bool AttackCharacterState::CanChangeState() const
 		{
 			/** TODO; ある程度の距離外になったら　　アニメーション再生は廃止したいな
-			     あくまで攻撃ステートは攻撃用のゴーストオブジェクトを付与してるだけ
+				 あくまで攻撃ステートは攻撃用のゴーストオブジェクトを付与してるだけ
 				 ゴーストの付与の切り替えかな
 			 */
 
 
-			return stateTimer_ >1.3f;
+			return stateTimer_ > 1.3f;
 
 			//auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			//auto* modelRender = characterStateMachine->GetModelRender();
@@ -375,11 +377,11 @@ namespace app
 						app::collision::ghost::CollisionAttributeMask::All);
 
 					const float radius = csm->GetStatus()->GetRadius();
-					
+
 					// 常にキャラクターの向きを使用
 					Vector3 forward = Vector3::Front;
 					csm->transform.rotation.Apply(forward);
-					
+
 					attackBody_->SetPosition(
 						csm->transform.position
 						+ forward * (radius * 4)
@@ -452,7 +454,7 @@ namespace app
 			auto* csm = owner_->As<CharacterStateMachine>();
 			return !csm->GetModelRender()->IsPlayingAnimation();
 		}
-	
+
 
 
 
@@ -602,7 +604,7 @@ namespace app
 
 
 		void DeadCharacterState::Exit()
-		{ 
+		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			// DEBUG_TEST: キャラクター固有の志望解除のを実行
 			characterStateMachine->OnExitDead();
@@ -614,7 +616,7 @@ namespace app
 			return timer_ > 2.0f;
 		}
 
-		
+
 
 
 		/*************************************/
@@ -636,13 +638,13 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->OnEnterKnockBack();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
-			
+
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 				battleMachine->CheckAndConsumeKnockBack();
 			}
 			timer_ = 0.0f;
 		}
-		
+
 
 		void KnockBackCharacterState::Update()
 		{
@@ -692,7 +694,7 @@ namespace app
 
 			return ((isAnimFinished && isLanded) || timer_ > 2.0f);
 		}
-		
+
 
 
 
@@ -701,11 +703,13 @@ namespace app
 
 		GuardCharacterState::GuardCharacterState(IStateMachine* owner)
 			: ICharacterState(owner)
-		{}
+		{
+		}
 
 
 		GuardCharacterState::~GuardCharacterState()
-		{}
+		{
+		}
 
 
 		void GuardCharacterState::Enter()
@@ -774,18 +778,20 @@ namespace app
 		}
 
 
-		
+
 
 		/*************************************/
 
 
 		ChargeAttackCharacterState::ChargeAttackCharacterState(IStateMachine* owner)
 			: ICharacterState(owner)
-		{}
+		{
+		}
 
 
 		ChargeAttackCharacterState::~ChargeAttackCharacterState()
-		{}
+		{
+		}
 
 
 		void ChargeAttackCharacterState::Enter()
@@ -820,7 +826,7 @@ namespace app
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackLooping), 0.1f);
 					chargeAttackPhase_ = ChargeAttackPhase::Looping;
 				}
-					
+
 				break;
 			}
 			case ChargeAttackPhase::Looping:
@@ -875,7 +881,7 @@ namespace app
 				}
 				break;
 			}
-		}
+			}
 
 			auto* characterStatus = characterStateMachine->GetStatus();
 		}
@@ -902,7 +908,7 @@ namespace app
 				return false;
 			}
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			
+
 			if (characterStateMachine->GetModelRender()->IsPlayingAnimation()) {
 				return false;
 			}
@@ -917,11 +923,13 @@ namespace app
 
 		AvoidanceCharacterState::AvoidanceCharacterState(IStateMachine* owner)
 			: ICharacterState(owner)
-		{}
+		{
+		}
 
 
 		AvoidanceCharacterState::~AvoidanceCharacterState()
-		{}
+		{
+		}
 
 
 		void AvoidanceCharacterState::Enter()
@@ -1032,11 +1040,13 @@ namespace app
 
 		InjuredRunCharacterState::InjuredRunCharacterState(IStateMachine* owner)
 			: ICharacterState(owner)
-		{}
+		{
+		}
 
 
 		InjuredRunCharacterState::~InjuredRunCharacterState()
-		{}
+		{
+		}
 
 
 		void InjuredRunCharacterState::Enter()
@@ -1052,7 +1062,7 @@ namespace app
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			auto* characterStatus = characterStateMachine->GetStatus();
-			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed()* 0.5f);
+			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed() * 0.5f);
 
 			characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
 		}
@@ -1114,7 +1124,8 @@ namespace app
 
 
 		void KipUpCharacterState::Exit()
-		{}
+		{
+		}
 
 		bool KipUpCharacterState::CanChangeState() const
 		{
@@ -1173,7 +1184,7 @@ namespace app
 			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed());
 
 			auto speedVec = characterStateMachine->GetMoveSpeedVector();
-			if(speedVec.Length() > 0.01f)
+			if (speedVec.Length() > 0.01f)
 			{
 				characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(speedVec);
 			}
@@ -1193,5 +1204,116 @@ namespace app
 		{
 			return timer_ >= patrolTimer_;
 		}
-}
+
+
+
+		/*************************************/
+
+		WaitingAttackCharacterState::WaitingAttackCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{
+			const auto seed = static_cast<unsigned int>(reinterpret_cast<uintptr_t>(this)) ^ static_cast<unsigned int>(time(nullptr));
+			randomEngine_.seed(seed);
+		}
+
+
+		WaitingAttackCharacterState::~WaitingAttackCharacterState()
+		{
+		}
+
+
+		void WaitingAttackCharacterState::Enter()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Idle), 0.2f);
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+
+			// カメラの影響を受けないようにする
+			characterStateMachine->SetInputPower(1.0f);
+
+			randomTimer_ = 0.0f;
+			waitingMove_ = WaitingMove::en_wait;
+			isLimitOut_ = false;
+			limitOutMoveLine_ = 0.0f;
+			backTime_ = 0.0f;
+			limitOutForward_ = true;
+		}
+
+
+		void WaitingAttackCharacterState::Update()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			const Vector3 iPos = characterStateMachine->transform.position;
+			const float deltaTime = g_gameTime->GetFrameDeltaTime();
+			const Vector3 forward = characterStateMachine->GetMoveDirection();
+
+			// ランダム移動方向の抽選
+			randomTimer_ -= deltaTime;
+			if (randomTimer_ <= 0.0f)
+			{
+				std::uniform_real_distribution<float> timeDist(0.5f, 1.5f);
+				randomTimer_ = timeDist(randomEngine_);
+
+				std::uniform_int_distribution<int> moveDist(
+					static_cast<int>(WaitingMove::en_wait),
+					static_cast<int>(WaitingMove::en_rightMove));
+				waitingMove_ = moveDist(randomEngine_);
+			}
+
+			Vector3 right = Vector3::Right;
+			right.Normalize();
+			const Vector3 left = right * -1.0f;
+
+			Vector3 moveVec = Vector3::Zero;
+			switch (static_cast<WaitingMove>(waitingMove_))
+			{
+			case WaitingMove::en_forwardMove:
+				moveVec += forward * 0.6f;
+				break;
+			case WaitingMove::en_backMove:
+				moveVec -= forward * -0.8f;
+				break;
+			case WaitingMove::en_rightMove:
+				moveVec += right;
+				break;
+			case WaitingMove::en_leftMove:
+				moveVec += left;
+				break;
+			case WaitingMove::en_wait:
+			default:
+				moveVec = Vector3::Zero;
+				break;
+			}
+
+			if (moveVec.LengthSq() > 0.001f)
+			{
+				moveVec.Normalize();
+			}
+
+			characterStateMachine->SetMoveDirection(moveVec);
+			characterStateMachine->Move(deltaTime, characterStateMachine->GetStatus()->GetMoveSpeed());
+
+			//移動している場合のみ向きを更新
+			const Vector3 speedVec = characterStateMachine->GetMoveSpeedVector();
+			if (speedVec.LengthSq() > 0.01f)
+			{
+				characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(speedVec);
+			}
+		}
+
+
+		void WaitingAttackCharacterState::Exit()
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->SetMoveDirection(Vector3::Zero);
+		}
+
+		bool WaitingAttackCharacterState::CanChangeState() const
+		{
+			// 遷移条件は呼び出し元のStateMachine::Update()側で制御する
+			return true;
+		}
+	}
 }

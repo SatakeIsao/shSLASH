@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -239,6 +239,8 @@
     <ClCompile Include="actor\EventCharacterSpawnManagerObject.cpp" />
     <ClCompile Include="core\TitleMenuManager.cpp" />
     <ClCompile Include="core\TitleMenuManagerObject.cpp" />
+    <ClCompile Include="EnemyAttackPoint.cpp" />
+    <ClCompile Include="EnemyAttackPointManager.cpp" />
     <ClCompile Include="ui\CameraOptionMenu.cpp" />
     <ClCompile Include="ui\DamagePopUI.cpp" />
     <ClCompile Include="EnemyPhase.cpp" />
@@ -324,6 +326,8 @@
     <ClInclude Include="core\TitleMenuManagerObject.h" />
     <ClInclude Include="actor\EnemyPool.h" />
     <ClInclude Include="battle\IDamagePopListener.h" />
+    <ClInclude Include="EnemyAttackPoint.h" />
+    <ClInclude Include="EnemyAttackPointManager.h" />
     <ClInclude Include="ui\CameraOptionMenu.h" />
     <ClInclude Include="ui\DamagePopUI.h" />
     <ClInclude Include="EnemyPhase.h" />

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "EnemyAttackPoint.h"
+#include <deque>
 
 
 namespace app
@@ -12,6 +13,7 @@ namespace app
 		{
 		private:
 			EnemyAttackPoint attackPoint_;
+			std::deque<Character*> attackQueue_;	// 待機ポイントのキュー
 
 
 		public:
@@ -36,6 +38,22 @@ namespace app
 
 			/** 使用可能かどうか */
 			bool IsUseable() const;
+
+
+			EnemyAttackPoint::AttackPoint* GetNearWaitPoint(Vector3 position) { return attackPoint_.GetNearWaitPoint(position); }
+
+
+			/** 攻撃トークンの要求 */
+			void RequestAttackToken(Character* enemy);
+
+
+			/** キューの先頭が自分なら攻撃権を消費してtrueを返す */
+			bool ConsumeAttackToken(Character* enemy);
+
+
+			/** 攻撃トークンの解放 */
+			void RemoveFromToken(Character* enemy);
+			
 		};
 	}
 }

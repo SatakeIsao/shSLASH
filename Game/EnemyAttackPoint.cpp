@@ -22,6 +22,21 @@ namespace app
 
 		void EnemyAttackPoint::Update(Vector3 position)
 		{
+			const float deltaTime = g_gameTime->GetFrameDeltaTime();
+
+			for (AttackPoint& ap : attackPointList_)
+			{
+				if(ap.isOnCooldown_)
+				{
+					ap.cooldownTimer_ -= deltaTime;
+					if (ap.cooldownTimer_ <= 0.0f)
+					{
+						ap.cooldownTimer_ = 0.0f;
+						ap.isOnCooldown_ = false;
+					}
+				}
+			}
+
 			Vector3 direction = g_vec3Front;
 
 			Quaternion directionRot = g_quatIdentity;
@@ -31,6 +46,14 @@ namespace app
 			for(AttackPoint& attackPoint : attackPointList_)
 			{
 				attackPoint.position_ = position + direction * kToAttackPointDistance;
+				directionRot.Apply(direction);
+			}
+
+			direction = g_vec3Front;
+			directionRot.SetRotationDegY(360.0f / static_cast<float>(kAttackPointNum) * 0.5f);
+			for (AttackPoint& waitPoint : waitPointList_)
+			{
+				waitPoint.position_ = position + direction * kToWaitPointDistance;
 				directionRot.Apply(direction);
 			}
 		}
@@ -132,7 +155,14 @@ namespace app
 
 		bool EnemyAttackPoint::IsUsableAttackPoint() const
 		{
-			return useAttackPointNum_ < kAttackPointUseLimit;
+			if (useAttackPointNum_ >= kAttackPointUseLimit) { return false; }
+
+			for (const AttackPoint& ap : attackPointList_)
+			{
+				if (!ap.use_ && !ap.isOnCooldown_) { return true; }
+			}
+
+			return false;
 		}
 
 
@@ -155,6 +185,29 @@ namespace app
 			attackPointList_[number].use_ = false;
 			attackPointList_[number].useEnemy_ = nullptr;
 			useAttackPointNum_--;
+
+			if (useAttackPointNum_ < 0) { useAttackPointNum_ = 0; }
+
+			attackPointList_[number].isOnCooldown_ = true;
+			attackPointList_[number].cooldownTimer_ = kAttackPointCooldownTime;
+		}
+
+
+		EnemyAttackPoint::AttackPoint* EnemyAttackPoint::GetNearWaitPoint(Vector3 position)
+		{
+			float nearestDistance = FLT_MAX;
+			AttackPoint* nearest = nullptr;
+
+			for (AttackPoint& waitPoint : waitPointList_)
+			{
+				const float distance = (waitPoint.position_ - position).Length();
+				if (distance < nearestDistance)
+				{
+					nearestDistance = distance;
+					nearest = &waitPoint;
+				}
+			}
+			return nearest;
 		}
 	}
 }

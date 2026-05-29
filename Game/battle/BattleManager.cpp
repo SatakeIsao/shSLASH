@@ -261,6 +261,7 @@ namespace app
 							stone->AddState<app::actor::PatrolCharacterState>();
 							stone->AddState<app::actor::RunCharacterState>();
 							stone->AddState<app::actor::AttackCharacterState>();
+							stone->AddState<app::actor::WaitingAttackCharacterState>();
 							stone->AddState<app::actor::DeadCharacterState>();
 							stone->AddState <app::actor::KnockBackCharacterState>();
 							stone->GetStatus()->SetFriction(stageParam->friction);
@@ -318,6 +319,7 @@ namespace app
 							mushroom->AddState<app::actor::PatrolCharacterState>();
 							mushroom->AddState<app::actor::RunCharacterState>();
 							mushroom->AddState<app::actor::AttackCharacterState>();
+							mushroom->AddState<app::actor::WaitingAttackCharacterState>();
 							mushroom->AddState<app::actor::DeadCharacterState>();
 							mushroom->AddState <app::actor::KnockBackCharacterState>();
 							mushroom->GetStatus()->SetFriction(stageParam->friction);

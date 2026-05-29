@@ -8,6 +8,7 @@
 #include "BattleCharacter.h"
 #include "actor/Types.h"
 #include "actor/EnemyPool.h"
+#include "EnemyAttackPointManager.h"
 
 namespace app
 {
@@ -94,6 +95,8 @@ namespace app
 			bool isVisible_ = false;
 			bool justSpawned_ = false;
 
+			EnemyAttackPointManager* attackPointManager_;
+			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
 
 		public:
 			StoneEventCharacter();
@@ -153,6 +156,26 @@ namespace app
 				battleCharacter_ = battleCharacter;
 			}
 
+			void SetAttckPointManager(EnemyAttackPointManager* manager)
+			{
+				attackPointManager_ = manager;
+			}
+
+			void SetCurrentAttackPoint(EnemyAttackPoint::AttackPoint* attackPoint)
+			{
+				currentAttackPoint_ = attackPoint;
+			}
+
+			EnemyAttackPointManager* GetAttackPointManager() const
+			{
+				return attackPointManager_;
+			}
+
+			EnemyAttackPoint::AttackPoint* GetCurrentAttackPoint() const
+			{
+				return currentAttackPoint_;
+			}
+
 			void AddOnDead(std::function<void()> callback)
 			{
 				onDeadCallbacks_.push_back(std::move(callback));
@@ -190,10 +213,29 @@ namespace app
 				justSpawned_ = true;
 				isPause_ = false;
 				isVisible_ = true;
+
+				currentAttackPoint_ = nullptr;
 			}
 
 			void OnRecycle() override
 			{
+				if (attackPointManager_)
+				{
+					attackPointManager_ ->RemoveFromToken(this);
+					if (currentAttackPoint_)
+					{
+						attackPointManager_->ReleaseAttackPoint(currentAttackPoint_, this);
+						currentAttackPoint_ = nullptr;
+					}
+				}
+
+				// リサイクル時に攻撃ポイントを解放
+				if (attackPointManager_ != nullptr && currentAttackPoint_ != nullptr)
+				{
+					attackPointManager_->ReleaseAttackPoint(currentAttackPoint_, this);
+					currentAttackPoint_ = nullptr;
+				}
+
 				// 表示OFF・コリジョンOFF（DeleteGOは呼ばない！）
 				ghostBody_->SetActive(false);
 				instanceCount_--;
@@ -230,6 +272,8 @@ namespace app
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			std::vector<std::function<void()>> onDeadCallbacks_;
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;
+			EnemyAttackPointManager* attackPointManager_ = nullptr;
+			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
@@ -290,10 +334,37 @@ namespace app
 			{
 				isPause_ = isPause;
 			}
+
+			void SetBattleCharacter(app::actor::BattleCharacter* battleCharacter)
+			{
+				battleCharacter_ = battleCharacter;
+			}
+
+			void SetAttckPointManager(EnemyAttackPointManager* manager)
+			{
+				attackPointManager_ = manager;
+			}
+
+			void SetCurrentAttackPoint(EnemyAttackPoint::AttackPoint* attackPoint)
+			{
+				currentAttackPoint_ = attackPoint;
+			}
+
+			EnemyAttackPointManager* GetAttackPointManager() const
+			{
+				return attackPointManager_;
+			}
+
+			EnemyAttackPoint::AttackPoint* GetCurrentAttackPoint() const
+			{
+				return currentAttackPoint_;
+			}
+
 			void AddOnDead(std::function<void()> callback)
 			{
 				onDeadCallbacks_.push_back(std::move(callback));
 			}
+
 			void NotifyDead()
 			{
 				for (auto& cb : onDeadCallbacks_)
@@ -326,10 +397,29 @@ namespace app
 
 				isPause_ = false;
 				isVisible_ = true;
+
+				currentAttackPoint_ = nullptr;
 			}
 
 			void OnRecycle() override
 			{
+				if (attackPointManager_)
+				{
+					attackPointManager_->RemoveFromToken(this);
+					if (currentAttackPoint_)
+					{
+						attackPointManager_->ReleaseAttackPoint(currentAttackPoint_, this);
+						currentAttackPoint_ = nullptr;
+					}
+				}
+
+				// リサイクル時に攻撃ポイントを解放
+				if(attackPointManager_ && currentAttackPoint_)
+				{
+					attackPointManager_->ReleaseAttackPoint(currentAttackPoint_, this);
+					currentAttackPoint_ = nullptr;
+				}
+
 				// 表示OFF・コリジョンOFF
 				ghostBody_->SetActive(false);
 				instanceCount_--;
