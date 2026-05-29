@@ -14,7 +14,6 @@ namespace app
 		private:
 			int volumeCursolIndex_ = 0;
 
-			app::ui::UIAnimationSequence* seq_ = nullptr;
 
 		public:
 			SoundOptionMenu();

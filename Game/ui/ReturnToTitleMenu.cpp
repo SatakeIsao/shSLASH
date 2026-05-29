@@ -39,8 +39,8 @@ namespace app
 
             // JSONの座標に合わせてカーソルを移動
             if (cursol_) {
-                if (currentIndex_ == 0) cursol_->transform.localPosition.y = -35.0f;
-                else if (currentIndex_ == 1) cursol_->transform.localPosition.y = -215.0f;
+                if (currentIndex_ == 0) cursol_->transform.localPosition.y = -45.0f;
+                else if (currentIndex_ == 1) cursol_->transform.localPosition.y = -225.0f;
             }
 
             // Aボタンで決定処理

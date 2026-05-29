@@ -67,10 +67,6 @@ namespace app
 		SoundOptionMenu::~SoundOptionMenu()
 		{
 			app::core::ParameterManager::Get().UnloadParameter<app::core::MasterSoundOptionMenuParameter>();
-			if (seq_) {
-				delete seq_;
-				seq_ = nullptr;
-			}
 		}
 
 		void SoundOptionMenu::InitializeLogic()
@@ -93,16 +89,7 @@ namespace app
 			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
 			if (cursol)
 			{
-				if (seq_ == nullptr)
-				{
-					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeIn"));
-					app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeOut"));
-
-					seq_ = new app::ui::UIAnimationSequence();
-					seq_->Add(Hash32("FadeIn"));
-				}
-
-				seq_->Play(cursol);
+				app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(cursol, Hash32("FadeIn"));
 			}
 
 
@@ -127,16 +114,22 @@ namespace app
 			if (canvas) {
 				canvas->isDraw = isDraw;
 			}
+			auto* cursol = GetUI<app::ui::UIIcon>(Hash32("Cursol"));
+			if (isDraw) {
+				if (cursol) {
+					auto* anim = cursol->FindAnimation(Hash32("FadeIn"));
+					if (anim) anim->Play();
+				}
+			}
+			else {
+				if (cursol) cursol->StopSpriteAnimation();
+			}
 		}
 
 		void SoundOptionMenu::Update()
 		{
 			auto* canvas = GetCanvas();
 			if (!canvas || !canvas->isDraw) return;
-
-			if (seq_) {
-				seq_->Update(g_gameTime->GetFrameDeltaTime());
-			}
 
 			MenuBase::Update();
 
