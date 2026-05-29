@@ -91,6 +91,12 @@ namespace app
             isXReverse_ = app::camera::CameraManager::Get().IsReverseX();
             isYReverse_ = app::camera::CameraManager::Get().IsReverseY();
             // TODO: 初期化時に ParameterManager 等から現在のカメラ設定を読み込んで isXReverse_, isYReverse_ にセットする
+
+            auto* highlight = GetUI<app::ui::UIIcon>(Hash32("Highlight"));
+            if (highlight)
+            {
+                app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(highlight, Hash32("FadeIn"));
+            }
         }
 
         void CameraOptionMenu::OnOpen()
@@ -108,6 +114,17 @@ namespace app
             auto* canvas = GetCanvas();
             if (canvas) {
                 canvas->isDraw = isDraw;
+            }
+
+            auto* highlight = GetUI<app::ui::UIIcon>(Hash32("Highlight"));
+            if (isDraw) {
+                if (highlight) {
+                    auto* anim = highlight->FindAnimation(Hash32("FadeIn"));
+                    if (anim) anim->Play();
+                }
+            }
+            else {
+                if (highlight) highlight->StopSpriteAnimation();
             }
         }
 
