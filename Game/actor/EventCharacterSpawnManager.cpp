@@ -262,7 +262,7 @@ namespace app
 				stone->SetPause(isPause_);
 
 				auto* hpUI = hpUIPool_.Acquire();
-				hpUI->OnSpawn();
+				if (!hpUI) { break; }
 				hpUI->SetTargetEnemy(stone);
 				hpUI->SetPlayer(battleCharacter_);
 
@@ -300,7 +300,7 @@ namespace app
 				mushroom->SetPause(isPause_);
 
 				auto* hpUI = hpUIPool_.Acquire();
-				hpUI->OnSpawn();
+				if (!hpUI) { break; }
 				hpUI->SetTargetEnemy(mushroom);
 				hpUI->SetPlayer(battleCharacter_);
 

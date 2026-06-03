@@ -15,6 +15,7 @@ enum class ObjectPriority : uint8_t
 	Character = 10,
 	EnemyUI = 90,
 	PlayerUI = 100,
+	SequenceUI = 190,
 	Pause = 200,
 	Fade = 250,
 };

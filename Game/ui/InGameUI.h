@@ -177,6 +177,7 @@ namespace app
 			float dmgHpOffsetX_ = 0.0f;
 
 			int hpIndex_ = 0;
+			float hpRatio_ = 1.0f;
 			/** 表示フラグ */
 			bool isVisible_ = false;
 		public:
@@ -211,8 +212,10 @@ namespace app
 				isDead_ = false;
 				isVisible_ = false;
 				hpIndex_ = 10;
+				hpRatio_ = 1.0f;
 				damagePosX_ = 1.0f;
 				damageDelayTimer_ = 0.0f;
+				lerpVal_ = 1.0f;
 				curHpOffsetX_ = 0.0f;
 				dmgHpOffsetX_ = 0.0f;
 				stoneTarget_ = nullptr;
