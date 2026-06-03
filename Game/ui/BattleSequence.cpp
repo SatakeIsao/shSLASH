@@ -3,11 +3,6 @@
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
 
-namespace
-{
-	static app::ui::UIAnimationSequence* seq = nullptr;
-}
-
 namespace app
 {
 	namespace ui
@@ -17,106 +12,190 @@ namespace app
 			layout_ = std::make_unique<app::ui::Layout>();
 			layout_->Initialize<app::ui::MenuBase>("Assets/ui/layout/BattleSequenceMenuLayout.json");
 			currentDown_ = SequenceName::Wait;
+		}
 
-			auto* menu = layout_->GetMenu();
-			if (menu)
+		BattleSequence::~BattleSequence() {}
+
+		void BattleSequence::ShowCountIcon(UIIcon* icon)
+		{
+			if (!icon) return;
+			icon->color = Vector4::White;
+			app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(icon, Hash32("CountDown_ScaleIn"));
+			auto* anim = icon->FindAnimation(Hash32("CountDown_ScaleIn"));
+			if (anim) anim->Play();
+			fadeOutStarted_ = false;
+		}
+
+		void BattleSequence::ShowStartIcon(UIIcon* icon)
+		{
+			if (!icon) return;
+			icon->color = Vector4::White;
+			app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(icon, Hash32("Start_ScaleIn"));
+			auto* anim = icon->FindAnimation(Hash32("Start_ScaleIn"));
+			if (anim) anim->Play();
+			fadeOutStarted_ = false;
+		}
+
+		void BattleSequence::TryStartFadeOut(UIIcon* icon, bool isStart)
+		{
+			if (!icon || fadeOutStarted_) return;
+			fadeOutStarted_ = true;
+
+			if (isStart)
 			{
-				auto* readyIcon = menu->GetUI<UIIcon>(Hash32("Ready"));
-				if (readyIcon)
-				{
-					app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(readyIcon, Hash32("ScaleUp_Ready"));
-				}
+				icon->RemoveAnimation(Hash32("Start_ScaleIn"));
+
+				app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(icon, Hash32("Start_ScaleExpand"));
+				auto* scaleAnim = icon->FindAnimation(Hash32("Start_ScaleExpand"));
+				if (scaleAnim) scaleAnim->Play();
+
+				app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(icon, Hash32("Start_FadeOut"));
+				auto* fadeAnim = icon->FindAnimation(Hash32("Start_FadeOut"));
+				if (fadeAnim) fadeAnim->Play();
+			}
+			else
+			{
+				icon->RemoveAnimation(Hash32("CountDown_ScaleIn"));
+
+				app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(icon, Hash32("CountDown_ScaleOut"));
+				auto* scaleAnim = icon->FindAnimation(Hash32("CountDown_ScaleOut"));
+				if (scaleAnim) scaleAnim->Play();
+
+				app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(icon, Hash32("CountDown_FadeOut"));
+				auto* fadeAnim = icon->FindAnimation(Hash32("CountDown_FadeOut"));
+				if (fadeAnim) fadeAnim->Play();
 			}
 		}
 
-		BattleSequence::~BattleSequence()
+		void BattleSequence::PlayTimeUp()
 		{
+			if (currentDown_ == SequenceName::TimeUp) return;
+			currentDown_ = SequenceName::TimeUp;
+
+			auto* menu = layout_->GetMenu();
+			if (!menu) return;
+
+			auto* icon = menu->GetUI<UIIcon>(Hash32("TimeUp"));
+			if (!icon) return;
+
+			icon->color = Vector4::White;
+			icon->transform.localPosition = Vector3(1000.0f, 0.0f, 0.0f);
+
+			app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(icon, Hash32("TimeUpSlideIn"));
+			app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(icon, Hash32("TimeUpSlideBack"));
+
+			timeUpHoldTimer_ = kTimeUpHoldDuration;
+
+			timeUpSequence_.Clear();
+			timeUpSequence_.Add(Hash32("TimeUpSlideIn"))
+			               .Add(Hash32("TimeUpSlideBack"));
+			timeUpSequence_.Play(icon);
 		}
 
 		void BattleSequence::Update()
 		{
-			// 【重要】先にレイアウトを更新（ここでホットリロードによるUI再生成が行われるため）
 			layout_->Update();
 			auto* menu = layout_->GetMenu();
+			if (!menu) return;
 
-			// タイマーの更新
-			if (currentDown_ == SequenceName::Wait)
+			const float dt = g_gameTime->GetFrameDeltaTime();
+
+			if (currentDown_ == SequenceName::TimeUp)
 			{
-				delayTimer_ -= g_gameTime->GetFrameDeltaTime();
+				timeUpSequence_.Update(dt);
+				if (!timeUpSequence_.IsPlaying() && timeUpHoldTimer_ > 0.0f)
+				{
+					timeUpHoldTimer_ -= dt;
+					if (timeUpHoldTimer_ < 0.0f) timeUpHoldTimer_ = 0.0f;
+				}
+			}
+
+			switch (currentDown_)
+			{
+			case SequenceName::Wait:
+				delayTimer_ -= dt;
 				if (delayTimer_ <= 0.0f)
 				{
-					currentDown_ = SequenceName::Ready;
-
-					if (menu)
-					{
-						auto* readyIcon = menu->GetUI<UIIcon>(Hash32("Ready"));
-						if (readyIcon)
-						{
-							//seq = new app::ui::UIAnimationSequence();
-							//seq->Add(Hash32("ScaleUp_Ready"));
-							//seq->Play(readyIcon);
-
-							/** DEBUG_TEST: UIAnimシーケンスで再生したい */
-							app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(readyIcon, Hash32("ScaleUp_Ready"));
-							auto* anim = readyIcon->FindAnimation(Hash32("ScaleUp_Ready"));
-							if (anim) anim->Play();
-						}
-					}
+					currentDown_ = SequenceName::Count3;
+					countTimer_ = kCountDuration;
+					ShowCountIcon(menu->GetUI<UIIcon>(Hash32("Count3")));
 				}
-			}
-			else if (currentDown_ == SequenceName::Ready)
-			{
-				maxCountDownTimer_ -= g_gameTime->GetFrameDeltaTime();
-				if (maxCountDownTimer_ <= 0.0f)
+				break;
+
+			case SequenceName::Count3:
+				countTimer_ -= dt;
+				if (countTimer_ <= kFadeOutDelay)
 				{
-					currentDown_ = SequenceName::GO;
-					if (menu)
-					{
-						auto* goIcon = menu->GetUI<UIIcon>(Hash32("Go"));
-						if (goIcon)
-						{
-							app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(goIcon, Hash32("ScaleUp_Go"));
-							auto* anim = goIcon->FindAnimation(Hash32("ScaleUp_Go"));
-							if (anim) anim->Play();
-						}
-					}
-
+					TryStartFadeOut(menu->GetUI<UIIcon>(Hash32("Count3")), false);
 				}
-			}
-			else if (currentDown_ == SequenceName::GO)
-			{
-				goTimer_ -= g_gameTime->GetFrameDeltaTime();
-				if (goTimer_ <= 0.0f)
+				if (countTimer_ <= 0.0f)
+				{
+					currentDown_ = SequenceName::Count2;
+					countTimer_ = kCountDuration;
+					fadeOutStarted_ = false;
+					ShowCountIcon(menu->GetUI<UIIcon>(Hash32("Count2")));
+				}
+				break;
+
+			case SequenceName::Count2:
+				countTimer_ -= dt;
+				if (countTimer_ <= kFadeOutDelay)
+				{
+					TryStartFadeOut(menu->GetUI<UIIcon>(Hash32("Count2")), false);
+				}
+				if (countTimer_ <= 0.0f)
+				{
+					currentDown_ = SequenceName::Count1;
+					countTimer_ = kCountDuration;
+					fadeOutStarted_ = false;
+					ShowCountIcon(menu->GetUI<UIIcon>(Hash32("Count1")));
+				}
+				break;
+
+			case SequenceName::Count1:
+				countTimer_ -= dt;
+				if (countTimer_ <= kFadeOutDelay)
+				{
+					TryStartFadeOut(menu->GetUI<UIIcon>(Hash32("Count1")), false);
+				}
+				if (countTimer_ <= 0.0f)
+				{
+					currentDown_ = SequenceName::Start;
+					countTimer_ = kStartDuration;
+					fadeOutStarted_ = false;
+					ShowStartIcon(menu->GetUI<UIIcon>(Hash32("Start")));
+				}
+				break;
+
+			case SequenceName::Start:
+				countTimer_ -= dt;
+				if (countTimer_ <= kStartFadeOutDelay)
+				{
+					TryStartFadeOut(menu->GetUI<UIIcon>(Hash32("Start")), true);
+				}
+				if (countTimer_ <= 0.0f)
 				{
 					currentDown_ = SequenceName::Finished;
 				}
+				break;
+
+			default:
+				break;
 			}
 
-			// 毎フレーム安全にUIを取得し、表示状態を上書きする
-			//auto* menu = layout_->GetMenu();
-			if (menu)
-			{
-				// 事前計算したハッシュ値を使うので超高速
-				auto* readyIcon = menu->GetUI<UIIcon>(Hash32("Ready"));
-				auto* goIcon = menu->GetUI<UIIcon>(Hash32("Go"));
+			// isDraw を毎フレーム現在の状態から設定する
+			// (hot-reload でアイコンが再生成されても常に正しい表示になる)
+			auto* count3Icon = menu->GetUI<UIIcon>(Hash32("Count3"));
+			auto* count2Icon = menu->GetUI<UIIcon>(Hash32("Count2"));
+			auto* count1Icon = menu->GetUI<UIIcon>(Hash32("Count1"));
+			auto* startIcon  = menu->GetUI<UIIcon>(Hash32("Start"));
+			auto* timeUpIcon = menu->GetUI<UIIcon>(Hash32("TimeUp"));
 
-				// isDraw フラグを使って物理的に描画をON/OFFする
-				if (currentDown_ == SequenceName::Wait || currentDown_ == SequenceName::Finished)
-				{
-					if (readyIcon) readyIcon->isDraw = false;
-					if (goIcon) goIcon->isDraw = false;
-				}
-				else if (currentDown_ == SequenceName::Ready)
-				{
-					if (readyIcon) readyIcon->isDraw = true;
-					if (goIcon)    goIcon->isDraw = false;
-				}
-				else if (currentDown_ == SequenceName::GO)
-				{
-					if (readyIcon) readyIcon->isDraw = false;
-					if (goIcon)    goIcon->isDraw = true;
-				}
-			}
+			if (count3Icon) count3Icon->isDraw = (currentDown_ == SequenceName::Count3);
+			if (count2Icon) count2Icon->isDraw = (currentDown_ == SequenceName::Count2);
+			if (count1Icon) count1Icon->isDraw = (currentDown_ == SequenceName::Count1);
+			if (startIcon)  startIcon->isDraw  = (currentDown_ == SequenceName::Start);
+			if (timeUpIcon) timeUpIcon->isDraw  = (currentDown_ == SequenceName::TimeUp);
 		}
 
 		void BattleSequence::Render(RenderContext& rc)
