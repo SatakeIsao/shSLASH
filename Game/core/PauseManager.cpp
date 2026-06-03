@@ -113,7 +113,7 @@ namespace app
             if (canPause_ &&
                 g_pad[0]->IsTrigger(enButtonStart))
             {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonPause));
                 if (currentState_ == PauseState::enClosed)
                 {
                     // ポーズを開く処理
@@ -150,7 +150,7 @@ namespace app
 
                 if (g_pad[0]->IsTrigger(enButtonY))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
                     if (pause) pause->OnClose();
                     nextState_ = PauseState::enOption;
                     isPlayingAnimation_ = true;
@@ -164,7 +164,7 @@ namespace app
                 // Bボタンでメインのポーズメニューへ
                 if (g_pad[0]->IsTrigger(enButtonB))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonReturn));
                     menu->OnClose();
                     nextState_ = PauseState::enPause;
                     isPlayingAnimation_ = true;

@@ -27,12 +27,12 @@ namespace app
             if (!canvas || !canvas->isDraw) return;
 
             if (g_pad[0]->IsTrigger(enButtonUp)) {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                 currentIndex_--;
                 if (currentIndex_ < 0) currentIndex_ = maxIndex_;
             }
             else if (g_pad[0]->IsTrigger(enButtonDown)) {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                 currentIndex_++;
                 if (currentIndex_ > maxIndex_) currentIndex_ = 0;
             }
@@ -45,7 +45,7 @@ namespace app
 
             // Aボタンで決定処理
             if (g_pad[0]->IsTrigger(enButtonA)) {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
                 switch (currentIndex_) {
                 case 0:
                     isReturnTitleDecided_ = true;
