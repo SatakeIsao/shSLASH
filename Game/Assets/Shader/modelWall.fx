@@ -108,7 +108,8 @@ cbuffer LightCb : register(b1)
     float3 groundNormal;    //地面の法線
 
     float4x4 mLVP;
-	//追加予定
+
+    int ditherEnabled;
 }
 
 ////////////////////////////////////////////////
@@ -219,6 +220,7 @@ SPSOut PSMainCore(SPSIn psIn, int isShadowReceiver) : SV_Target0
     SPSOut psOut;
 
     // ディザリング：壁面のみカメラ近接時に透過（床・天井は除外）
+    if (ditherEnabled != 0)
     {
         int dx = (int)fmod(psIn.pos.x, 4.0f);
         int dy = (int)fmod(psIn.pos.y, 4.0f);
