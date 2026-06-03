@@ -5,6 +5,14 @@
 #include "EquipmentSlotManager.h"
 #include "ActorStatus.h"
 
+namespace app 
+{ 
+	namespace collision 
+	{ 
+		class GhostBody;
+	} 
+}
+
 
 namespace app
 {
@@ -73,6 +81,16 @@ namespace app
 			ModelRender* GetModelRender() { return modelRender_.get(); }
 			CharacterController* GetCharacterController() { return characterController_.get(); }
 
+			virtual app::collision::GhostBody* GetGhostBody() const { return nullptr; }
+
+			void ApplyPositionCorrection(const Vector3& delta)
+			{
+				if (!characterController_) return;
+				Vector3 newPos = characterController_->GetPosition() + delta;
+				characterController_->SetPosition(newPos);
+				OnPositionCorrected(newPos);
+			}
+
 			int GetCurrentHP() const { return currentHP_; }
 
 			float GetTotalAttackPower() const
@@ -91,6 +109,9 @@ namespace app
 					currentHP_ = 0;
 				}
 			}
+
+		protected:
+			virtual void OnPositionCorrected(const Vector3& /*newPos*/) {}
 		};
 	}
 }
