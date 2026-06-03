@@ -55,15 +55,18 @@ namespace app
 					spawnManager_->OnPlayerLevelUp(level_);
 				}
 
-				// EquipmentSlot 経由で武器のレベルを上げる
-				auto* slot = equipmentSlots_.GetSlot(EquipmentSlotType::Weapon);
-				if (slot && slot->HasEquipment())
+				// Lv.1,2,4,6,8,10 のときだけ武器の攻撃力を上げる
+				static constexpr int kAtkUpLevels[] = { 1, 2, 4, 6, 8, 10 };
+				bool shouldUpgrade = false;
+				for (int lvl : kAtkUpLevels) { if (level_ == lvl) { shouldUpgrade = true; break; } }
+
+				if (shouldUpgrade)
 				{
-					// Weapon にキャストしてLevelUp呼び出し
-					auto* weapon = dynamic_cast<Weapon*>(&slot->GetEquipment());
-					if (weapon)
+					auto* slot = equipmentSlots_.GetSlot(EquipmentSlotType::Weapon);
+					if (slot && slot->HasEquipment())
 					{
-						weapon->LevelUp();
+						auto* weapon = dynamic_cast<Weapon*>(&slot->GetEquipment());
+						if (weapon) { weapon->LevelUp(); }
 					}
 				}
 			}

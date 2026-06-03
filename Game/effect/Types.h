@@ -16,6 +16,7 @@ enum enEffectKind
 	enEffectKind_PlayerAvoidanceDust,
 	enEffectKind_PlayerAttack,
 	enEffectKind_PlayerAttackCharge_Start,
+	enEffectKind_PlayerAttackCharge_Slash,
 	enEffectKind_PlayerAttackCharge_End,
 	enEffectKind_PlayerKnockBack,
 	enEffectKind_PlayerLevelUp,
@@ -30,6 +31,9 @@ enum enEffectKind
 	enEffectKind_MushroomDead,
 	enEffectKind_MushroomKnockBack,
 	enEffectKind_MushroomSpawn,
+	enEffectKind_PlayerChargeLevel1,
+	enEffectKind_PlayerChargeLevel2,
+	enEffectKind_PlayerChargeLevel3,
 	enEffectKind_Max,
 	enEffectKind_None = enEffectKind_Max,
 };
@@ -54,6 +58,7 @@ static EffectInformation effectInformation[enEffectKind_Max] =
 	EffectInformation(u"Assets/effect/playerDefaultSlash.efk"),
 	EffectInformation(u"Assets/effect/playerChargeAtk_Start.efk"),
 	EffectInformation(u"Assets/effect/playerChargeSlash.efk"),
+	EffectInformation(u"Assets/effect/playerChargeAtk_End.efk"),
 	EffectInformation(u"Assets/effect/playerKnockback.efk"),
 	EffectInformation(u"Assets/effect/playerLevelUp.efk"),
 	EffectInformation(u"Assets/effect/playerSpawn.efk"),
@@ -67,6 +72,9 @@ static EffectInformation effectInformation[enEffectKind_Max] =
 	EffectInformation(u"Assets/effect/mushroomDead.efk"),
 	EffectInformation(u"Assets/effect/mushroomKnockBack.efk"),
 	EffectInformation(u"Assets/effect/mushroomSpawn.efk"),
+	EffectInformation(u"Assets/effect/playerChargeAtk_Level1.efk"),
+	EffectInformation(u"Assets/effect/playerChargeAtk_Level2.efk"),
+	EffectInformation(u"Assets/effect/playerChargeAtk_Level3.efk"),
 
 };
 

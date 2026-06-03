@@ -5,8 +5,9 @@
 #pragma once
 
 #include <random>
-#include "sound/SoundManager.h" 
+#include "sound/SoundManager.h"
 #include "actor/Types.h"
+#include "effect/EffectManager.h"
 
 /**
  * 当初はenumで管理しようと思ったが、
@@ -299,6 +300,9 @@ namespace app
 			ChargeAttackPhase chargeAttackPhase_ = ChargeAttackPhase::Start;
 			app::collision::GhostBody* attackBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+			float chargeTimer_ = 0.0f;
+			bool chargeLevelEffectPlayed_[3] = { false, false, false };
+			EffectEmitter* chargeLevelEmitters_[3] = { nullptr, nullptr, nullptr };
 
 
 		public:

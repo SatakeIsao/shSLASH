@@ -2,11 +2,11 @@
 
 /*
 * ParameterManager.h
-* ƒpƒ‰ƒ[ƒ^[ŠÇ—
-* ‚±‚¢‚Â‚ÉƒLƒƒƒ‰ƒNƒ^[‚ÌƒXƒe[ƒ^ƒX‚È‚ÇŠO•”ƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚Ü‚¹‚Ä•Û‚³‚¹A‚»‚ê‚ğó‚¯æ‚Á‚Äg‚¤B
-* ƒpƒ‰ƒ[ƒ^[‚Ì¯•Ê‚ğƒtƒ@ƒCƒ‹ƒpƒX‚Ås‚Á‚Ä‚¢‚é‚Ì‚ÅAƒpƒ‰ƒ[ƒ^[æ“¾A‰ğ•ú‚È‚Ç‚Å–‚ ‚é‚²‚Æ‚ÉƒpƒX‚ğ—v‹‚·‚é‚ªA
-* LoadParameterŠÖ”ˆÈŠO‚Å“Ç‚İ‚İ‚ğs‚Á‚½‚è‚Í‚µ‚È‚¢B
-* ƒVƒ“ƒOƒ‹ƒgƒ“ƒNƒ‰ƒXB
+* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ç®¡ç†
+* ä¸»ã«ï¼‘ã¤ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãªã©å¤–éƒ¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¾ã›ã¦ä¿æŒã—ãŸã‚Šã€ãã‚Œã‚’å—ã‘å–ã£ãŸã‚Šã—ã¦ä½¿ã†ã€‚
+* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®å®Ÿä½“ã¯ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã§è¡Œã£ã¦ã„ã‚‹ãŸã‚ã€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼å–å¾—ã€å‰Šé™¤ãªã©ã§å®Ÿè¡Œã™ã‚‹ã”ã¨ã«ãƒ‘ã‚¹ã‚’è¦æ±‚ã™ã‚‹ãŒã€
+* LoadParameteré–¢æ•°ä»¥å¤–ã§èª­ã¿è¾¼ã¿ãŒè¡Œã‚ã‚Œã‚‹ã“ã¨ã¯ãªã„ã€‚
+* ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¯ãƒ©ã‚¹ã€‚
 */
 
 #include <iostream>
@@ -15,7 +15,7 @@
 #include "util/CRC32.h"
 
 
-/** ƒzƒbƒgƒŠƒ[ƒh—LŒø‚© */
+/** ãƒ›ãƒƒãƒˆãƒªãƒ­ãƒ¼ãƒ‰æ©Ÿèƒ½ */
 #ifdef K2_DEBUG
 #define APP_ENABLE_PARAM_HOT_RELOAD
 #endif
@@ -44,126 +44,139 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 
 
 		/**
-		 * ƒpƒ‰ƒ[ƒ^[Šî’ê\‘¢‘Ì
+		 * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹
 		 */
-		struct IParameter 
+		struct IParameter
 		{
 			virtual ~IParameter() = default;
 
-		#ifdef APP_ENABLE_PARAM_HOT_RELOAD
-			std::string m_path;								//ƒpƒ‰ƒ[ƒ^[‚Ìƒtƒ@ƒCƒ‹ƒpƒX
-			time_t m_lastWriteTime;							//ÅIXV
-			virtual void Load(const nlohmann::json& j) {};	// “Ç‚İ‚İŠÖ”
-		#endif // APP_PARAM_HOT_RELOAD
+#ifdef APP_ENABLE_PARAM_HOT_RELOAD
+			std::string m_path;								//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+			time_t m_lastWriteTime;							//æœ€çµ‚æ›´æ–°æ™‚é–“
+			virtual void Load(const nlohmann::json& j) {};	// èª­ã¿è¾¼ã¿é–¢æ•°
+#endif // APP_PARAM_HOT_RELOAD
 		};
 
 
-		/** ƒoƒgƒ‹‘S”Ê */
+		/** ãƒãƒˆãƒ«å…¨ä½“ */
 		struct MasterBattleParameter : public IParameter
 		{
 			appParameter(MasterBattleParameter);
 
-			float battleTime;			// í“¬ŠÔ
+			float battleTime;			// æˆ¦é—˜æ™‚é–“
 		};
 
 
-		/** ƒoƒgƒ‹ƒLƒƒƒ‰ƒNƒ^[ */
+		/** ãƒãƒˆãƒ«ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ */
 		struct MasterBattleCharacterParameter : public IParameter
 		{
 			appParameter(MasterBattleCharacterParameter);
 
-			float moveSpeed;			// ˆÚ“®‘¬“x
-			float jumpMoveSpeed;		// ƒWƒƒƒ“ƒv’†‚ÌˆÚ“®‘¬“x
-			float jumpPower;			// ƒWƒƒƒ“ƒv—Í
-			float radius;				// ”¼Œa
-			float height;				// ‚‚³
-			float hp;					// HP
-			float attackPower;			// UŒ‚—Í
+			float moveSpeed;					// ç§»å‹•é€Ÿåº¦
+			float jumpMoveSpeed;				// ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã®ç§»å‹•é€Ÿåº¦
+			float jumpPower;					// ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+			float radius;						// åŠå¾„
+			float height;						// é«˜ã•
+			float hp;							// HP
+			float attackPower;					// æ”»æ’ƒåŠ›
+			float chargeAttackMultiplierLevel1;	// æºœã‚æ”»æ’ƒLv1ã®å€ç‡
+			float chargeAttackMultiplierLevel2;	// æºœã‚æ”»æ’ƒLv2ã®å€ç‡
+			float chargeAttackMultiplier;		// æºœã‚æ”»æ’ƒLv3ï¼ˆæœ€å¤§ï¼‰ã®å€ç‡
+			float criticalRate;					// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ç™ºç”Ÿç¢ºç‡ (0.0~1.0)
+			float criticalMultiplier;			// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«æ™‚ã®ãƒ€ãƒ¡ãƒ¼ã‚¸å€ç‡
 		};
 
 
-		/** •Ší */
+		/** æ­¦å™¨ */
 		struct MasterWeaponParameter : public IParameter
 		{
 			appParameter(MasterWeaponParameter);
 
-			float attackPower;			// UŒ‚—Í
+			float attackPower;			// æ”»æ’ƒåŠ›
 		};
 
 
-		/** ƒCƒxƒ“ƒgƒLƒƒƒ‰ƒNƒ^[ */
+		/** ã‚¤ãƒ™ãƒ³ãƒˆã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ */
 		struct MasterEventCharacterParameter : public IParameter
 		{
 			appParameter(MasterEventCharacterParameter);
 
-			float moveSpeed;			// ˆÚ“®‘¬“x
-			float jumpMoveSpeed;		// ƒWƒƒƒ“ƒv’†‚ÌˆÚ“®‘¬“x
-			float jumpPower;			// ƒWƒƒƒ“ƒv—Í
-			float radius;				// ”¼Œa
-			float height;				// ‚‚³
+			float moveSpeed;			// ç§»å‹•é€Ÿåº¦
+			float jumpMoveSpeed;		// ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã®ç§»å‹•é€Ÿåº¦
+			float jumpPower;			// ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+			float radius;				// åŠå¾„
+			float height;				// é«˜ã•
 		};
 
 
-		/** ‚«‚Ì‚±ƒCƒxƒ“ƒgƒLƒƒƒ‰ƒNƒ^[ */
+		/** ãƒ•ã‚§ãƒ¼ã‚ºå˜ä½ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ */
+		struct EnemyPhaseParameter
+		{
+			int requiredPlayerLevel;	// ãƒ•ã‚§ãƒ¼ã‚ºé–‹å§‹ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼Lv
+			float attackPower;			// ãƒ•ã‚§ãƒ¼ã‚ºæ¯ã®æ”»æ’ƒåŠ›
+		};
+
+
+		/** ãã®ã“ã‚¤ãƒ™ãƒ³ãƒˆã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ */
 		struct MasterMushroomEventCharacterParameter : public IParameter
 		{
 			appParameter(MasterMushroomEventCharacterParameter);
 
-			float moveSpeed;			// ˆÚ“®‘¬“x
-			float jumpMoveSpeed;		// ƒWƒƒƒ“ƒv’†‚ÌˆÚ“®‘¬“x
-			float jumpPower;			// ƒWƒƒƒ“ƒv—Í
-			float radius;				// ”¼Œa
-			float height;				// ‚‚³
+			float moveSpeed;			// ç§»å‹•é€Ÿåº¦
+			float jumpMoveSpeed;		// ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã®ç§»å‹•é€Ÿåº¦
+			float jumpPower;			// ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+			float radius;				// åŠå¾„
+			float height;				// é«˜ã•
 			float hp;					// HP
-			float attackPower;			// UŒ‚—Í
+			std::vector<EnemyPhaseParameter> phases;	// ãƒ•ã‚§ãƒ¼ã‚ºãƒ‡ãƒ¼ã‚¿
 		};
 
 
-		/** ƒXƒg[ƒ“ƒCƒxƒ“ƒgƒLƒƒƒ‰ƒNƒ^[ */
+		/** ã‚¹ãƒˆãƒ¼ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ */
 		struct MasterStoneEventCharacterParameter : public IParameter
 		{
 			appParameter(MasterStoneEventCharacterParameter);
 
-			float moveSpeed;			// ˆÚ“®‘¬“x
-			float jumpMoveSpeed;		// ƒWƒƒƒ“ƒv’†‚ÌˆÚ“®‘¬“x
-			float jumpPower;			// ƒWƒƒƒ“ƒv—Í
-			float radius;				// ”¼Œa
-			float height;				// ‚‚³
+			float moveSpeed;			// ç§»å‹•é€Ÿåº¦
+			float jumpMoveSpeed;		// ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã®ç§»å‹•é€Ÿåº¦
+			float jumpPower;			// ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+			float radius;				// åŠå¾„
+			float height;				// é«˜ã•
 			float hp;					// HP
-			float attackPower;			// UŒ‚—Í
+			std::vector<EnemyPhaseParameter> phases;	// ãƒ•ã‚§ãƒ¼ã‚ºãƒ‡ãƒ¼ã‚¿
 		};
 
 
-		/** ƒXƒe[ƒW‘S”Ê */
+		/** ã‚¹ãƒ†ãƒ¼ã‚¸å…¨ä½“ */
 		struct MasterStageParameter : public IParameter
 		{
 			appParameter(MasterStageParameter);
 
-			float gravity;				// d—Í
-			float fallLimitY;			// —‰ºƒŠƒ~ƒbƒgYÀ•W
-			float friction;				// –€CŒW”
-			float warpStartScale;		// ƒ[ƒvŠJnƒXƒP[ƒ‹
-			float warpEndScale;			// ƒ[ƒvI—¹ƒXƒP[ƒ‹
-			float warpTime;				// ƒ[ƒvŠÔ
+			float gravity;				// é‡åŠ›
+			float fallLimitY;			// è½ä¸‹ãƒªãƒŸãƒƒãƒˆYåº§æ¨™
+			float friction;				// æ‘©æ“¦ä¿‚æ•°
+			float warpStartScale;		// ãƒ¯ãƒ¼ãƒ—é–‹å§‹ã‚¹ã‚±ãƒ¼ãƒ«
+			float warpEndScale;			// ãƒ¯ãƒ¼ãƒ—çµ‚äº†ã‚¹ã‚±ãƒ¼ãƒ«
+			float warpTime;				// ãƒ¯ãƒ¼ãƒ—æ™‚é–“
 		};
 
 
-		/** ƒoƒgƒ‹ƒJƒƒ‰ */
+		/** ãƒãƒˆãƒ«ã‚«ãƒ¡ãƒ© */
 		struct MasterBattleCameraParameter : public IParameter
 		{
 			appParameter(MasterBattleCameraParameter);
-			
-			float distance;		// ƒJƒƒ‰‹——£
-			float height;			// ƒJƒƒ‰‚‚³
-			float fov;			// ƒJƒƒ‰FOV
-			float nearClip;		// ƒjƒAƒNƒŠƒbƒv
-			float farClip;		// ƒtƒ@[ƒNƒŠƒbƒv
-			float rotationX;	// ‰ñ“]X
-			float rotationY;	// ‰ñ“]Y
+
+			float distance;		// ã‚«ãƒ¡ãƒ©ã®è·é›¢
+			float height;		// ã‚«ãƒ¡ãƒ©ã®é«˜ã•
+			float fov;			// ã‚«ãƒ¡ãƒ©FOV
+			float nearClip;		// ãƒ‹ã‚¢ã‚¯ãƒªãƒƒãƒ—
+			float farClip;		// ãƒ•ã‚¡ãƒ¼ã‚¯ãƒªãƒƒãƒ—
+			float rotationX;	// å›è»¢X
+			float rotationY;	// å›è»¢Y
 		};
 
 
-		/** ‰¹—Êİ’èƒƒjƒ…[ */
+		/** éŸ³é‡è¨­å®šãƒ¡ãƒ‹ãƒ¥ãƒ¼ */
 		struct MasterSoundOptionMenuParameter : public IParameter
 		{
 			appParameter(MasterSoundOptionMenuParameter);
@@ -178,7 +191,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		};
 
 
-		/** ƒ|[ƒYƒƒjƒ…[ */
+		/** ãƒãƒ¼ã‚ºãƒ¡ãƒ‹ãƒ¥ãƒ¼ */
 		struct MasterPauseMenuParameter : public IParameter
 		{
 			appParameter(MasterPauseMenuParameter);
@@ -188,7 +201,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		};
 
 
-		/** ƒ^ƒCƒgƒ‹‚É‚à‚Ç‚éƒƒjƒ…[ */
+		/** ã‚¿ã‚¤ãƒˆãƒ«ã«æˆ»ã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼ */
 		struct ReturnToTitleMenuParameter : public IParameter
 		{
 			appParameter(ReturnToTitleMenuParameter);
@@ -197,7 +210,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float cursolPositionY[2]; //
 		};
 
-		/** ƒJƒƒ‰ƒIƒvƒVƒ‡ƒ“ƒƒjƒ…[ */
+		/** ã‚«ãƒ¡ãƒ©ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ¡ãƒ‹ãƒ¥ãƒ¼ */
 		struct CameraOptionMenuParameter : public IParameter
 		{
 			appParameter(CameraOptionMenuParameter);
@@ -211,39 +224,39 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float barScaleX[11];
 		};
 
-		/** Player‚ÌHPUI */
+		/** Playerã®HPUI */
 		struct MasterHpUIParameter : public IParameter
 		{
 			appParameter(MasterHpUIParameter);
 
-			// HPƒo[‚ÌÀ•WX
+			// HPãƒãƒ¼ã®åº§æ¨™X
 			float hpBarPositionX[11];
-			// HPƒo[‚ÌƒXƒP[ƒ‹X
+			// HPãƒãƒ¼ã®ã‚¹ã‚±ãƒ¼ãƒ«X
 			float hpBarScaleX[11];
-			// ƒŒƒxƒ‹ƒo[‚ÌÀ•WX
+			// ãƒ¬ãƒ™ãƒ«ãƒãƒ¼ã®åº§æ¨™X
 			float levelBarPositionX[11];
-			// ƒŒƒxƒ‹ƒo[‚ÌƒXƒP[ƒ‹X
+			// ãƒ¬ãƒ™ãƒ«ãƒãƒ¼ã®ã‚¹ã‚±ãƒ¼ãƒ«X
 			float levelBarScaleX[11];
 		};
 
 
-		/** Enemy‚ÌHPUI */
+		/** Enemyã®HPUI */
 		struct MasterEnemyHpUIParameter : public IParameter
 		{
 			appParameter(MasterEnemyHpUIParameter);
 
-			// HPƒo[‚ÌÀ•WX
+			// HPãƒãƒ¼ã®åº§æ¨™X
 			float enemyHpBarPositionX[11];
-			// HPƒo[‚ÌƒXƒP[ƒ‹X
+			// HPãƒãƒ¼ã®ã‚¹ã‚±ãƒ¼ãƒ«X
 			float enemyHpBarScaleX[11];
 		};
 
 
 
-		#undef appParameter
+#undef appParameter
 
 		/**
-		 * ƒpƒ‰ƒ[ƒ^[ŠÇ—ƒNƒ‰ƒX
+		 * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ç®¡ç†ã‚¯ãƒ©ã‚¹
 		 */
 		class ParameterManager
 		{
@@ -252,7 +265,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			using ParameterMap = std::map<uint32_t, ParameterVector>;
 
 		private:
-			/** ƒpƒ‰ƒ[ƒ^‚ÆID‚ÌƒŠƒXƒg */
+			/** ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼IDã®ãƒªã‚¹ãƒˆ */
 			ParameterMap m_parameterMap;
 
 		private:
@@ -262,11 +275,11 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		public:
 
 			/**
-			 * ƒpƒ‰ƒ[ƒ^[ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
-			 * ŠÖ”ƒ|ƒCƒ“ƒ^‚Å“Ç‚İ‚İˆ—‚ğó‚¯æ‚é
-			 * @typename T ƒpƒ‰ƒ[ƒ^[‚Ìí—Ş
-			 * @param path ƒtƒ@ƒCƒ‹ƒpƒX
-			 * @param func “Ç‚İ‚İˆ—
+			 * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€
+			 * é–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã§èª­ã¿è¾¼ã¿å‡¦ç†ã‚’å—ã‘å–ã‚‹
+			 * @typename T ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®ç¨®é¡
+			 * @param path ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+			 * @param func èª­ã¿è¾¼ã¿å‡¦ç†
 			 */
 			template<typename T>
 			void LoadParameter(const char* path, const std::function<void(const nlohmann::json& json, T& p)>& func)
@@ -275,42 +288,42 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 				{
 					return;
 				}
-				//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+				//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 				std::ifstream file(path);
 				if (!file.is_open())
 				{
 					return;
 				}
 
-				//jsonƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä“Ç‚İ‚ŞH
+				//jsonãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦èª­ã¿è¾¼ã‚€ï¼Ÿ
 				nlohmann::json jsonRoot;
 				file >> jsonRoot;
 
-				//“Ç‚İ‚ñ‚¾ƒpƒ‰ƒ[ƒ^[‚ğˆê“I‚É‚Âó‚¯M
+				//èª­ã¿è¾¼ã‚“ã ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’ä¸€æ™‚çš„ã«å—ã‘å–ã‚‹
 				ParameterVector parameters;
 
 				for (const auto& j : jsonRoot)
 				{
 					T* parameter = new T();
-		#ifdef APP_ENABLE_PARAM_HOT_RELOAD
+#ifdef APP_ENABLE_PARAM_HOT_RELOAD
 					parameter->m_path = std::string(path);
 					parameter->m_lastWriteTime = GetFileLastWriteTime(path);
 					parameter->load = func;
-		#endif // APP_ENABLE_PARAM_HOT_RELOAD
+#endif // APP_ENABLE_PARAM_HOT_RELOAD
 
-					//ƒpƒ‰ƒ[ƒ^“Ç‚İ‚İˆ—
+					//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼èª­ã¿è¾¼ã¿å‡¦ç†
 					func(j, *parameter);
 					parameters.push_back(static_cast<IParameter*>(parameter));
 				}
 
-				//ƒpƒ‰ƒ[ƒ^[‚ğ“o˜^
+				//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’ç™»éŒ²
 				m_parameterMap.emplace(T::ID(), parameters);
 			}
 
 			/// <summary>
-			/// ƒpƒ‰ƒ[ƒ^[‰ğ•ú
+			/// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼è§£æ”¾
 			/// </summary>
-			/// <param name="path">‰ğ•ú‚·‚éƒpƒ‰ƒ[ƒ^[‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
+			/// <param name="path">è§£æ”¾ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹</param>
 			template <typename T>
 			void UnloadParameter()
 			{
@@ -327,11 +340,11 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			}
 
 			/// <summary>
-			/// ƒpƒ‰ƒ[ƒ^[‚Ìæ“¾
+			/// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®å–å¾—
 			/// </summary>
-			/// <typeparam name="T">æ“¾‚·‚éƒpƒ‰ƒ[ƒ^[‚Ì\‘¢‘Ì</typeparam>
-			/// <param name="path">æ“¾‚·‚éƒpƒ‰ƒ[ƒ^[‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
-			/// <param name="index">ˆê‚Â‚Ìƒtƒ@ƒCƒ‹‚É•¡”‚Ìƒpƒ‰ƒ[ƒ^[‚ğ“ü‚ê‚½ê‡‚Í‰½”Ô–Ú‚©‚±‚ê‚Åw’è‚·‚é</param>
+			/// <typeparam name="T">å–å¾—ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®æ§‹é€ ä½“</typeparam>
+			/// <param name="path">å–å¾—ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹</param>
+			/// <param name="index">ï¼‘ã¤ã®ãƒ•ã‚¡ã‚¤ãƒ«ã«è¤‡æ•°ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ãŒã‚ã‚‹å ´åˆã¯ä½•ç•ªç›®ã‹ã‚’æŒ‡å®šã™ã‚‹</param>
 			/// <returns></returns>
 			template <typename T>
 			const T* GetParameter(const int index = 0) const
@@ -350,10 +363,10 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			}
 
 			/// <summary>
-			/// •¡”‚Ìƒpƒ‰ƒ[ƒ^[‚ğæ“¾‚·‚é
+			/// è¤‡æ•°ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’å–å¾—ã™ã‚‹
 			/// </summary>
-			/// <typeparam name="T">æ“¾‚·‚éƒpƒ‰ƒ[ƒ^[‚Ì\‘¢‘Ì</typeparam>
-			/// <param name="path">æ“¾‚·‚éƒpƒ‰ƒ[ƒ^[‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
+			/// <typeparam name="T">å–å¾—ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®æ§‹é€ ä½“</typeparam>
+			/// <param name="path">å–å¾—ã™ã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹</param>
 			/// <returns></returns>
 			template <typename T>
 			const std::vector<T*> GetParameters() const
@@ -372,7 +385,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			}
 
 			/// <summary>
-			/// ƒpƒ‰ƒ[ƒ^[‚ğƒ‰ƒ€ƒ_®‚Å‰ñ‚·
+			/// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’ãƒ©ãƒ ãƒ€å¼ã§å›ã™
 			/// </summary>
 			/// <typeparam name="T"></typeparam>
 			/// <param name="path"></param>
@@ -388,7 +401,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			}
 
 		public:
-		#ifdef APP_ENABLE_PARAM_HOT_RELOAD
+#ifdef APP_ENABLE_PARAM_HOT_RELOAD
 			void Update()
 			{
 				for (auto paramPair : m_parameterMap)
@@ -418,11 +431,11 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 				}
 			}
 
-			//ƒtƒ@ƒCƒ‹XV“úæ“¾
+			//ãƒ•ã‚¡ã‚¤ãƒ«æ›´æ–°æ™‚é–“å–å¾—
 			static time_t GetFileLastWriteTime(const char* path)
 			{
 				struct stat result;
-				//statŠÖ”‚Åƒtƒ@ƒCƒ‹î•ñ‚ğæ“¾(0‚È‚ç¬Œ÷)
+				//staté–¢æ•°ã§ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±ã‚’å–å¾—(0ãªã‚‰æˆåŠŸ)
 				if (stat(path, &result) == 0)
 				{
 					return result.st_mtime;
@@ -431,28 +444,28 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 				return 0;
 			}
 
-			//ƒtƒ@ƒCƒ‹XVƒ`ƒFƒbƒN
+			//ãƒ•ã‚¡ã‚¤ãƒ«æ›´æ–°ãƒã‚§ãƒƒã‚¯
 			static bool CheckFileModified(const IParameter* param)
 			{
-				//ƒtƒ@ƒCƒ‹‚ÌXV“ú‚©‚ç•ÏX‚ª‚ ‚Á‚½‚©Šm”F
+				//ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›´æ–°æ™‚é–“ãŒå¤‰æ›´ã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèª
 				if (GetFileLastWriteTime(param->m_path.c_str()) > param->m_lastWriteTime)
 				{
 					return true;
 				}
 				return false;
 			}
-		#endif // APP_ENABLE_PARAM_HOT_RELOAD
+#endif // APP_ENABLE_PARAM_HOT_RELOAD
 
 
 			/*
-			* ƒVƒ“ƒOƒ‹ƒgƒ“—pƒR[ƒh
+			* ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ç”¨ã‚³ãƒ¼ãƒ‰
 			*/
 		private:
 			static ParameterManager* m_instance;
 		public:
 
 			/// <summary>
-			/// ƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+			/// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆ
 			/// </summary>
 			static void Initialize()
 			{
@@ -463,7 +476,7 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			}
 
 			/// <summary>
-			/// ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾
+			/// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—
 			/// </summary>
 			/// <returns></returns>
 			static ParameterManager& Get()

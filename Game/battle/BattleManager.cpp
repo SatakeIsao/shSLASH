@@ -30,6 +30,9 @@
 
 namespace
 {
+	/** 敵スポーンのON/OFF */
+	constexpr bool ENABLE_ENEMY_SPAWN = true;
+
 	constexpr const char* MASTER_BATTLE_PARAM_PATH = "Assets/master/battle/MasterBattleParameter.json";
 	constexpr const char* MASTER_STAGE_PARAM_PATH = "Assets/master/battle/MasterStageParameter.json";
 	constexpr const char* MASTER_BATTLE_CAMERA_PARAM_PATH = "Assets/master/battle/MasterBattleCameraParameter.json";
@@ -177,8 +180,9 @@ namespace app
 					app::collision::CollisionHitManager::Get().RegisterHitPair(a, b);
 				});
 
-			layout_ = std::make_unique<app::ui::Layout>();
-			layout_->Initialize<app::ui::MenuBase>("Assets/ui/layout/BattleSequenceMenuLayout.json");
+			// BattleSequenceObject が同じレイアウトを内部で読み込むため、ここでの初期化は不要
+			//layout_ = std::make_unique<app::ui::Layout>();
+			//layout_->Initialize<app::ui::MenuBase>("Assets/ui/layout/BattleSequenceMenuLayout.json");
 		}
 
 
@@ -192,6 +196,7 @@ namespace app
 
 			DeleteGO(skyCube_);
 			DeleteGO(battleCharacter_);
+			DeleteGO(battleSequenceObject_);
 			DeleteGO(effectManagerObject_);
 			DeleteGO(effectManager2DObject_);
 			DeleteGO(pauseManagerObject_);
@@ -421,7 +426,10 @@ namespace app
 
 				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
 				eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
+				if (ENABLE_ENEMY_SPAWN)
+			{
 				eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
+			}
 				battleCharacter_->SetSpawnManager(&eventCharacterSpawnManagerObject_->GetManager());
 
 				// 敵キャラクター 
@@ -490,16 +498,14 @@ namespace app
 					gameCamera->SetState(initData);
 					gameCameraController_ = gameCamera;
 					app::camera::CameraManager::Get().Register(app::camera::GameCamera::ID(), gameCameraController_);
+					// blendTime なし → カメラを即座に定位置へ配置
 					app::camera::CameraManager::Get().SwitchCamera(gameCameraController_);
 				}
 				//ポーズマネージャーオブジェクト
 				{
 					pauseManagerObject_ = NewGO<app::core::PauseManagerObject>(static_cast<uint8_t>(ObjectPriority::Pause));
 				}
-				//バトルシーケンスマネージャーオブジェクト
-				{
-					//battleSequenceObject_ = NewGO<app::ui::BattleSequence>(static_cast<uint8_t>(ObjectPriority::Default));
-				}
+				// battleSequenceObject_ は Update() 内でアニメーション初期化後に生成する
 				// タイマーUI
 				{
 					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
@@ -548,13 +554,21 @@ namespace app
 
 		void BattleManager::Update()
 		{
+			// アニメーション初期化フレームを確保してからシーケンスを生成する
+			// （生成直後に SetPause するとアニメが走らず T ポーズになるため）
+			if (!battleSequenceObject_)
+			{
+				battleSequenceStartTimer_ -= g_gameTime->GetFrameDeltaTime();
+				if (battleSequenceStartTimer_ <= 0.0f)
+				{
+					battleSequenceObject_ = NewGO<app::ui::BattleSequence>(static_cast<uint8_t>(ObjectPriority::SequenceUI));
+				}
+			}
+
 			/** 現在のメニューポーズ状態 */
 			bool currentPause = app::core::PauseManager::Get().IsPause();
-			/** シーケンス中か */
-			bool isSequence = false;
-			if (battleSequenceObject_) {
-				isSequence = battleSequenceObject_->IsPlaying();
-			}
+			// シーケンスが終了していない間はポーズ・入力をすべて封印
+			bool isSequence = battleSequenceObject_ && !battleSequenceObject_->IsFinished();
 			// キャラクターたちに適用するポーズ状態（手動ポーズ中、またはシーケンス中ならポーズさせる）
 			bool targetPauseState = currentPause || isSequence;
 
@@ -593,6 +607,14 @@ namespace app
 						++it;
 					}
 				}
+			}
+
+			// デバッグ：RB2+Downでプレイヤーに1ダメージ
+			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonDown))
+			{
+				float newHp = max(battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f, 0.0f);
+				battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+				battleCharacter_->GetStateMachine()->OnKnockBack();
 			}
 
 			if (!isSequence)
@@ -844,15 +866,43 @@ namespace app
 							effectRot = effectRot * tilt;
 						}
 
-						Vector3 effectPos = battleCharacter_->transform.position + (forward * 30.0f);
-						effectPos.y += 30.0f;
+						{
+							Vector3 effectPos = battleCharacter_->transform.position + (forward * 30.0f);
+							effectPos.y += 30.0f;
 
-						effectManagerObject_->PlayEffect(
-							enEffectKind_PlayerAttackCharge_End,
-							effectPos,
-							effectRot,
-							Vector3::One * 1.2f
-						);
+							effectManagerObject_->PlayEffect(
+								enEffectKind_PlayerAttackCharge_Slash,
+								effectPos,
+								effectRot,
+								Vector3::One * 1.2f
+							);
+						}
+
+						{
+							// mixamorig:Spine1 ボーン座標を取得
+							Vector3 effectPos = battleCharacter_->transform.position;
+							effectPos.y += 30.0f;
+
+							auto* model = battleCharacter_->GetStateMachine()->GetModelRender();
+							if (model)
+							{
+								auto& skeleton = model->GetSkeleton();
+								int boneId = skeleton.FindBoneID(L"mixamorig:Spine1");
+								if (boneId != -1)
+								{
+									Quaternion boneRot;
+									Vector3 boneScale;
+									skeleton.GetBone(boneId)->CalcWorldTRS(effectPos, boneRot, boneScale);
+								}
+							}
+
+							effectManagerObject_->PlayEffect(
+								enEffectKind_PlayerAttackCharge_End,
+								effectPos,
+								Quaternion::Identity,
+								Vector3::One * 1.5f
+							);
+						}
 					}
 
 					// ノックバックエフェクトの再生判定
@@ -980,11 +1030,8 @@ namespace app
 							// defender がプレイヤー自身の場合はスキップ
 							if (dmg->defender == battleCharacter_) continue;
 
-							// 無敵中はスキップ  
-							if (isInvincible_) continue;							
-
 							// ダメージ計算・適用
-							int damage = CalcDamage(dmg->attacker, dmg->defender);
+							int damage = CalcDamage(dmg->attacker, dmg->defender, dmg->chargeLevel);
 							const float oldHp = dmg->defender->GetStatus()->GetCurrentHp();
 							float newHp = oldHp - damage;
 							newHp = max(newHp, 0.0f);
@@ -1057,6 +1104,11 @@ namespace app
 					if (!timerUIObject_) return;
 					// 残り時間が必要な取得
 					remainTime_ = timerUIObject_->GetTimer();
+
+					if (timerUIObject_->IsTimeUp() && battleSequenceObject_)
+					{
+						battleSequenceObject_->PlayTimeUp();
+					}
 				}
 
 				/** レベル */
@@ -1082,7 +1134,6 @@ namespace app
 					}
 				}
 
-				layout_->Update();
 			}
 		}
 
@@ -1124,13 +1175,37 @@ namespace app
 			}
 		}
 
-		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender) const
+		bool BattleManager::IsTimeUpFinished() const
+		{
+			return battleSequenceObject_ && battleSequenceObject_->IsTimeUpFinished();
+		}
+
+		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender, int chargeLevel) const
 		{
 			float atk = attacker->GetTotalAttack();
-			float def = defender->GetTotalDefensePower();
 
+			const auto* param = app::core::ParameterManager::Get().GetParameter<app::core::MasterBattleCharacterParameter>();
+
+			if (chargeLevel > 0 && param)
+			{
+				if (chargeLevel == 1)      atk *= param->chargeAttackMultiplierLevel1;
+				else if (chargeLevel == 2) atk *= param->chargeAttackMultiplierLevel2;
+				else                       atk *= param->chargeAttackMultiplier;
+			}
+
+			// クリティカル判定
+			if (param)
+			{
+				float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+				if (r < param->criticalRate)
+				{
+					atk *= param->criticalMultiplier;
+				}
+			}
+
+			float def = defender->GetTotalDefensePower();
 			float damage = atk - def;
-			return static_cast<int>(damage > 0.0f ? damage : 0.0f);
+			return static_cast<int>(damage > 0.0f ? roundf(damage) : 0.0f);
 		}
 
 
@@ -1172,6 +1247,11 @@ namespace app
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
 					p.attackPower = json["attackPower"].get<float>();
+					p.chargeAttackMultiplierLevel1 = json["chargeAttackMultiplierLevel1"].get<float>();
+					p.chargeAttackMultiplierLevel2 = json["chargeAttackMultiplierLevel2"].get<float>();
+					p.chargeAttackMultiplier = json["chargeAttackMultiplier"].get<float>();
+					p.criticalRate = json["criticalRate"].get<float>();
+					p.criticalMultiplier = json["criticalMultiplier"].get<float>();
 				});
 			// 武器パラメーター読み込み
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
@@ -1191,12 +1271,19 @@ namespace app
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
 				{
 					p.moveSpeed = json["moveSpeed"].get<float>();
-					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();                                                                                                                   
+					p.jumpMoveSpeed = json["jumpMoveSpeed"].get<float>();
 					p.jumpPower = json["jumpPower"].get<float>();
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
-					p.attackPower = json["attackPower"].get<float>();
+					p.phases.clear();
+					for (const auto& phase : json["phases"])
+					{
+						app::core::EnemyPhaseParameter pp;
+						pp.requiredPlayerLevel = phase["requiredPlayerLevel"].get<int>();
+						pp.attackPower = phase["attackPower"].get<float>();
+						p.phases.push_back(pp);
+					}
 				});
 			// マッシュルイベントキャラクターパラメータ読み込み
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
@@ -1207,7 +1294,14 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
-					p.attackPower = json["attackPower"].get<float>();
+					p.phases.clear();
+					for (const auto& phase : json["phases"])
+					{
+						app::core::EnemyPhaseParameter pp;
+						pp.requiredPlayerLevel = phase["requiredPlayerLevel"].get<int>();
+						pp.attackPower = phase["attackPower"].get<float>();
+						p.phases.push_back(pp);
+					}
 				});
 		}
 	}

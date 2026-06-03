@@ -1,22 +1,30 @@
 [
     {
-        "comment": "等倍の攻撃力",
-        "attackPower": 10.0
+        "comment": "Lv.0 通常10打 溜め5打",
+        "attackPower": 10
     },
     {
-        "comment": "1.1倍の攻撃力",
-        "attackPower": 20.0
+        "comment": "Lv.1 通常9打 溜め5打",
+        "attackPower": 12
     },
     {
-        "comment": "1.2倍の攻撃力",
-        "attackPower": 30.0
+        "comment": "Lv.2 通常7打 溜め4打",
+        "attackPower": 15
     },
     {
-        "comment": "1.4倍の攻撃力",
-        "attackPower": 40.0
+        "comment": "Lv.4 通常6打 溜め3打",
+        "attackPower": 17
     },
     {
-        "comment": "1.8倍の攻撃力",
-        "attackPower": 50.0
+        "comment": "Lv.6 通常5打 溜め3打",
+        "attackPower": 21
+    },
+    {
+        "comment": "Lv.8 通常4打 溜め2打",
+        "attackPower": 26
+    },
+    {
+        "comment": "Lv.10 通常3打 溜め2打",
+        "attackPower": 34
     }
 ]

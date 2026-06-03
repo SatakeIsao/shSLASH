@@ -93,6 +93,8 @@ namespace app
                 Vector3 knockBackDirection;
                 // 溜め攻撃による吹き飛ばしか
                 bool isBlowBack = false;
+                // 溜め攻撃レベル (0=通常, 1/2/3=チャージレベル)
+                int chargeLevel = 0;
                 
                 EnemyType enemyType = EnemyType::Stone;
 
@@ -140,6 +142,9 @@ namespace app
             bool hasPlayedPunchEffect_ = false;
             bool deadTest_ = false;
             bool isPause_ = false;
+
+            /** アニメーション初期化を待ってからシーケンスを起動するための遅延 */
+            float battleSequenceStartTimer_ = 0.1f;
 
             float countDownTimer_ = 3.0f;
             /** 遅延時間をカウント */
@@ -213,10 +218,11 @@ namespace app
 
             void SetPause(bool isPause);
             void SetLevelUpUIObject(app::ui::LevelUpUIObject* obj) { levelUpObject_ = obj; }
+            bool IsTimeUpFinished() const;
 
         private:
             int CalcDamage(const app::actor::BattleCharacter* attacker,
-                const app::actor::Character* defender) const;
+                const app::actor::Character* defender, int chargeLevel = 0) const;
 
         private:
             void LoadParameter();

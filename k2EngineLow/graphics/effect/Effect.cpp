@@ -1,5 +1,5 @@
 /*!
- * @brief	�G�t�F�N�g
+ * @brief	エフェクト
  */
 
 #include "k2EngineLowPreCompile.h"
@@ -23,10 +23,17 @@ namespace nsK2EngineLow {
 	}
 	void Effect::Play()
 	{
-		//�Đ����̃G�t�F�N�g���~����B
+		//再生中のエフェクトを止める
 		EffectEngine::GetInstance()->Stop(m_handle);
-		//�V�����Đ��B
+		//新規再生
 		m_handle = EffectEngine::GetInstance()->Play(m_effect);
+		// Play直後に位置・回転・スケールを即時反映（しないと初フレームに原点で描画される）
+		EffectEngine::GetInstance()->UpdateEffectWorldMatrix(
+			m_handle,
+			m_position,
+			m_rotation,
+			m_scale
+		);
 	}
 	void Effect::Update()
 	{
