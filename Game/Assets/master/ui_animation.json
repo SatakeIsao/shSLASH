@@ -1039,6 +1039,66 @@
             "duration": 1.0,
             "easing": "Linear",
             "loop": "Once"
+        },
+        {
+            "comment": "カウントダウン数字：スタンプのように大きく出て定サイズへ",
+            "key": "CountDown_ScaleIn",
+            "valueType": "Vector3",
+            "startValue": { "x": 2.5, "y": 2.5, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.35,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "カウントダウン数字：縮小しながら消える",
+            "key": "CountDown_ScaleOut",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "duration": 0.35,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "カウントダウン数字：フェードアウト（ScaleOut と同時再生）",
+            "key": "CountDown_FadeOut",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 0.35,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "START!：0から一気にスタンプ（インパクト）",
+            "key": "Start_ScaleIn",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": 0.0, "z": 1.0 },
+            "endValue":   { "x": 2.5, "y": 2.5, "z": 1.0 },
+            "duration": 0.3,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "START!：膨張しながら消える（FadeOut と同時再生）",
+            "key": "Start_ScaleExpand",
+            "valueType": "Vector3",
+            "startValue": { "x": 2.5, "y": 2.5, "z": 1.0 },
+            "endValue":   { "x": 7.0, "y": 7.0, "z": 1.0 },
+            "duration": 0.5,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "START!：フェードアウト（ScaleExpand と同時再生）",
+            "key": "Start_FadeOut",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 0.5,
+            "easing": "EaseIn",
+            "loop": "Once"
         }
     ]
 }

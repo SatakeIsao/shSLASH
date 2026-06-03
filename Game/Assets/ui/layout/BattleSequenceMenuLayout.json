@@ -1,24 +1,56 @@
-﻿{
+{
   "canvas": {
     "elements": [
       {
         "type": "UIIcon",
-        "name": "Go",
-        "asset": "Assets/ui/seq/go.DDS",
+        "name": "Count3",
+        "asset": "Assets/ui/seq/3.DDS",
         "width": 300,
-        "height": 150,
+        "height": 300,
         "position": [0, 0, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0, 1.0, 1.0, 0.0]
-
       },
       {
         "type": "UIIcon",
-        "name": "Ready",
-        "asset": "Assets/ui/seq/ready.DDS",
-        "width": 500,
-        "height": 150,
+        "name": "Count2",
+        "asset": "Assets/ui/seq/2.DDS",
+        "width": 300,
+        "height": 300,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Count1",
+        "asset": "Assets/ui/seq/1.DDS",
+        "width": 300,
+        "height": 300,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Start",
+        "asset": "Assets/ui/seq/start.DDS",
+        "width": 600,
+        "height": 200,
+        "position": [0, 0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "TimeUp",
+        "asset": "Assets/ui/seq/timeUp.DDS",
+        "width": 600,
+        "height": 200,
         "position": [0, 0, 0],
         "scale": [1, 1, 1],
         "rotation": 0,

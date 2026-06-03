@@ -106,11 +106,10 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 	}
 
 	/** タイマーが0になったら */
-	if (g_pad[0]->IsPress(enButtonLB2)
-		&& g_pad[0]->IsTrigger(enButtonRight))
+	if (app::battle::BattleManager::Get().IsTimeUpFinished())
 	{
 		id = ResultScene::ID();
-		waitTime = 3.0f;
+		waitTime = 0.5f;
 		return true;
 	}
 
