@@ -57,6 +57,11 @@ namespace app
 				return stateMachine_.get();
 			}
 
+			app::collision::GhostBody* GetGhostBody() const override
+			{
+				return ghostBody_.get();
+			}
+
 			void SetPause(bool isPause)
 			{
 				isPause_ = isPause;
@@ -64,6 +69,12 @@ namespace app
 			void AddOnDead(DeadCallback callback)
 			{
 				onDead_ = std::move(callback);
+			}
+
+		protected:
+			void OnPositionCorrected(const Vector3& newPos) override
+			{
+				stateMachine_->transform.position = newPos;
 			}
 		};
 
@@ -148,6 +159,11 @@ namespace app
 			StoneEventCharacterStateMachine* GetStateMachine()
 			{
 				return stateMachine_.get();
+			}
+
+			app::collision::GhostBody* GetGhostBody() const override
+			{
+				return ghostBody_.get();
 			}
 
 			void SetPause(bool isPause)
@@ -253,6 +269,12 @@ namespace app
 			{
 				instanceCount_ = 0;
 			}
+
+		protected:
+			void OnPositionCorrected(const Vector3& newPos) override
+			{
+				stateMachine_->transform.position = newPos;
+			}
 		};
 
 
@@ -338,6 +360,10 @@ namespace app
 				return stateMachine_.get();
 			}
 
+			app::collision::GhostBody* GetGhostBody() const override
+			{
+				return ghostBody_.get();
+			}
 
 			void SetPause(bool isPause)
 			{
@@ -441,6 +467,12 @@ namespace app
 			static void ResetInstanceCount()
 			{
 				instanceCount_ = 0;
+			}
+
+		protected:
+			void OnPositionCorrected(const Vector3& newPos) override
+			{
+				stateMachine_->transform.position = newPos;
 			}
 		};
 	}

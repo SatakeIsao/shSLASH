@@ -85,10 +85,18 @@ namespace app
 			}
 
 
-			app::collision::GhostBody* GetGhostBody() const
+			app::collision::GhostBody* GetGhostBody() const override
 			{
 				return ghostBody_.get();
 			}
+
+		protected:
+			void OnPositionCorrected(const Vector3& newPos) override
+			{
+				stateMachine_->transform.position = newPos;
+			}
+
+		public:
 
 
 			int GetCurrentHP() const

@@ -1,5 +1,5 @@
-/*!
- * @brief	ƒLƒƒƒ‰ƒNƒ^ƒRƒ“ƒgƒ[ƒ‰[B
+ï»¿/*!
+ * @brief	ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã€‚
  */
 
 #pragma once
@@ -12,32 +12,32 @@ namespace nsK2EngineLow
 	class CharacterController : public Noncopyable
 	{
 	private:
-		/** ƒLƒƒƒ‰ƒNƒ^[—p‚È‚Ì‚ÅƒJƒvƒZƒ‹‚Æ‚µ‚Ä‚¨‚­ */
+		/** ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ç”¨ãªã®ã§ã‚«ãƒ—ã‚»ãƒ«ã¨ã—ã¦ä½¿ã£ã¦ã„ã‚‹ */
 		CCapsuleCollider collider_;
-		/** •¨—‹óŠÔ‚Ìˆ—‚É•K—v */
+		/** åˆæœŸçŠ¶æ…‹ã®åˆæœŸåŒ–ã«å¿…è¦ */
 		RigidBody rigidBody_;
 
-		/** À•W */
+		/** åº§æ¨™ */
 		Vector3 position_;
-		/** ‘O‰ñ‚ÌÀ•W */
+		/** å‰å›ã®åº§æ¨™ */
 		Vector3 prevPosition_;
 
-		/** ‚’¼•ûŒü‚Ì‘¬“x */
+		/** å‚ç›´æ–¹å‘ã®é€Ÿåº¦ */
 		float verticalVelocity_ = 0.0f;
-		/** d—Í‰Á‘¬“x */
+		/** é‡åŠ›åŠ é€Ÿåº¦ */
 		float gravity_ = 0.0f;
-		/** ”¼Œa */
+		/** åŠå¾„ */
 		float radius_ = 0.0f;
-		/** ‚‚³ */
+		/** é«˜ã• */
 		float height_ = 0.0f;
 
-		/** ‰Šú‰»Ï‚İƒtƒ‰ƒO */
+		/** åˆæœŸåŒ–æ¸ˆã¿ãƒ•ãƒ©ã‚° */
 		bool isInited_ = false;
-		/** ƒWƒƒƒ“ƒv’†ƒtƒ‰ƒO */
+		/** ã‚¸ãƒ£ãƒ³ãƒ—ãƒ•ãƒ©ã‚° */
 		bool isJump_ = false;
-		/** ’n–Ê‚ÉÚ’n‚µ‚Ä‚¢‚éƒtƒ‰ƒO */
+		/** åœ°é¢ã«æ¥åœ°ã—ã¦ã„ã‚‹ãƒ•ãƒ©ã‚° */
 		bool isOnGround_ = true;
-		/** ƒeƒŒƒ|[ƒgƒŠƒNƒGƒXƒgƒtƒ‰ƒO */
+		/** ãƒ†ãƒ¬ãƒãƒ¼ãƒˆãƒªã‚¯ã‚¨ã‚¹ãƒˆãƒ•ãƒ©ã‚° */
 		bool isRequestTeleport_ = false;
 
 
@@ -48,16 +48,16 @@ namespace nsK2EngineLow
 		void Init(float radius, float height, const Vector3& position);
 
 		/*!
-		* @brief	ÀsB
-		* @details  ƒeƒŒƒ|[ƒgƒŠƒNƒGƒXƒg‚ª‚ ‚éê‡‚ÍÕ“Ë”»’è‚ğs‚í‚¸‚ÉˆÚ“®‚µ‚Ü‚·B
-		* @param[in] targetPosition	ˆÚ“®æ‚ÌÀ•WB
-		* @param[in] deltaTime		Œo‰ßŠÔB
+		* @brief	å®Ÿè¡Œã€‚
+		* @details  ãƒ†ãƒ¬ãƒãƒ¼ãƒˆãƒªã‚¯ã‚¨ã‚¹ãƒˆãŒã‚ã‚‹å ´åˆã¯è¡çªåˆ¤å®šã‚’è¡Œã‚ãšã«ç§»å‹•ã—ã¾ã™ã€‚
+		* @param[in] targetPosition	ç§»å‹•å…ˆã®åº§æ¨™ã€‚
+		* @param[in] deltaTime		çµŒéæ™‚é–“ã€‚
 		*/
 		const Vector3& Execute(const Vector3& targetPosition, float deltaTime);
 
 		/*!
-		* @brief	ƒeƒŒƒ|[ƒg‚ğƒŠƒNƒGƒXƒg‚·‚éB
-		* @details  ‚±‚ê‚ğŒÄ‚ñ‚¾Ÿ‚Ì Execute() ‚ÅAÕ“Ë”»’è‚ğs‚í‚¸‚É targetPosition ‚ÖˆÚ“®‚µ‚Ü‚·B
+		* @brief	ãƒ†ãƒ¬ãƒãƒ¼ãƒˆã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆã™ã‚‹ã€‚
+		* @details  å‘¼ã‚“ã æ¬¡ã® Execute() ã§ã€è¡çªåˆ¤å®šã‚’è¡Œã‚ãšã« targetPosition ã¸ç§»å‹•ã—ã¾ã™ã€‚
 		*/
 		void RequestTeleport()
 		{
@@ -80,9 +80,9 @@ namespace nsK2EngineLow
 
 		void Bounce(const float power)
 		{
-			// ’n–Ê‚É‚¢‚é‚©‚Ç‚¤‚©‚Ì”»’è‚ğ–³‹‚µ‚ÄA‹­§“I‚Éã•ûŒü‚Ì‘¬“x‚ğã‘‚«‚·‚éI
+			// åœ°é¢ã«ã„ã‚‹ã‹ã©ã†ã‹ã®åˆ¤å®šã‚’ç„¡è¦–ã—ã¦ã€å¼·åˆ¶çš„ã«ä¸Šæ–¹å‘ã®é€Ÿåº¦ã‚’ä¸Šæ›¸ãã™ã‚‹
 			verticalVelocity_ = power;
-			isOnGround_ = false; // ’n–Ê‚©‚ç—£‚ê‚½‚±‚Æ‚É‚·‚é
+			isOnGround_ = false; // åœ°é¢ã‹ã‚‰é›¢ã‚ŒãŸã“ã¨ã«ã™ã‚‹
 		}
 	};
 }

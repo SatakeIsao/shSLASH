@@ -58,40 +58,77 @@ namespace app
 
 		void CollisionHitManager::Update()
 		{
-			// デバッグ用 現在のヒットペアの数を出力
-			// char countBuf[256];
-			// sprintf_s(countBuf, "--- Hit Pair Count: %zu ---\n", hitPairList_.size());
-			// OutputDebugStringA(countBuf);
-
 			// GhostBodyのヒット情報を一旦ペアごとに処理
 			{
 				app::memory::StackAllocatorMarker marker;
-				app::memory::StackVector<Pair*>  eventCharacterPairList(marker);
+				app::memory::StackVector<Pair*> eventCharacterPairList(marker);
 				app::memory::StackVector<Pair*> mushroomPairList(marker);
 				for (auto& hitPair : hitPairList_) {
-					// デバッグテスト
-					//char idBuf[256];
-					//sprintf_s(idBuf, "Collision! A_ID: %u, B_ID: %u\n", hitPair.a->GetOwnerId(), hitPair.b->GetOwnerId());
-					//OutputDebugStringA(idBuf);
-
-					// イベントキャラクターのペア
+					// 全キャラクターボディペアを物理的に押し離す
+					if (ContainsCharacterBodyPair(hitPair)) {
+						SeparateCharacterBodies(hitPair);
+					}
+					// ゲームロジック（ダメージ・ノックバック）
 					if (ContainsEventCharacterPair(hitPair)) {
 						eventCharacterPairList.push_back(&hitPair);
 					}
-					// マッシュルームイベントキャラクターのペア
-					else if (ContainsMushroomEventCharacterPair(hitPair))
+					else if (ContainsMushroomEventCharacterPair(hitPair)) {
 						mushroomPairList.push_back(&hitPair);
+					}
 				}
-				// イベントキャラクター
 				for (auto* pair : eventCharacterPairList) {
 					UpdateEventCharacterPair(*pair);
 				}
-				// マッシュルーム
 				for (auto* pair : mushroomPairList) {
 					UpdateMushroomEventCharacterPair(*pair);
 				}
 			}
 			hitPairList_.clear();
+		}
+
+
+		bool CollisionHitManager::ContainsCharacterBodyPair(const Pair& hitPair)
+		{
+			auto* charA = dynamic_cast<app::actor::Character*>(hitPair.a->GetOwner());
+			auto* charB = dynamic_cast<app::actor::Character*>(hitPair.b->GetOwner());
+			if (!charA || !charB) return false;
+			if (charA->GetGhostBody() != hitPair.a) return false;
+			if (charB->GetGhostBody() != hitPair.b) return false;
+			return true;
+		}
+
+
+		void CollisionHitManager::SeparateCharacterBodies(Pair& hitPair)
+		{
+			auto* charA = dynamic_cast<app::actor::Character*>(hitPair.a->GetOwner());
+			auto* charB = dynamic_cast<app::actor::Character*>(hitPair.b->GetOwner());
+			if (!charA || !charB) return;
+
+			// 回避中のプレイヤーはすり抜ける
+			if (auto* battle = dynamic_cast<app::actor::BattleCharacter*>(charA)) {
+				if (battle->GetStateMachine()->IsAvoiding()) return;
+			}
+			if (auto* battle = dynamic_cast<app::actor::BattleCharacter*>(charB)) {
+				if (battle->GetStateMachine()->IsAvoiding()) return;
+			}
+
+			Vector3 posA = charA->GetCharacterController()->GetPosition();
+			Vector3 posB = charB->GetCharacterController()->GetPosition();
+
+			Vector3 dir = posA - posB;
+			dir.y = 0.0f;
+			float dist = dir.Length();
+			if (dist < 0.001f) { dir = Vector3::Right; dist = 1.0f; }
+			else dir /= dist;
+
+			float rA = charA->GetStatus()->GetRadius();
+			float rB = charB->GetStatus()->GetRadius();
+			float overlap = (rA + rB) - dist;
+			if (overlap <= 0.0f) return;
+
+			float push = overlap * 0.5f + 0.5f;
+			charA->ApplyPositionCorrection(dir * push);
+			charB->ApplyPositionCorrection(dir * (-push));
 		}
 
 
