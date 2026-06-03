@@ -38,6 +38,7 @@ namespace app
 		SEMax,
 		BGM = SEMax,
 		Game = BGM,
+		Title,
 		BGMMax,
 		//Title,
 		Voice = BGMMax,
@@ -88,6 +89,7 @@ namespace app
 		SoundInformation("Assets/sound/se/slide.wav"),
 		// BGM
 		SoundInformation("Assets/sound/bgm/battle.wav"),
+		SoundInformation("Assets/sound/bgm/title.wav"),
 		// Voice
 		SoundInformation("Assets/sound/voice/StartupVoice_00.wav"),
 		SoundInformation("Assets/sound/voice/StartupVoice_01.wav"),
