@@ -1,24 +1,24 @@
-/**
- * BootScene.cpp
- * ‹N“®‰æ–Ê‚ÌƒV[ƒ“
+ï»¿/**
+ * TitleScene.cpp
+ * ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³
  */
 #include "stdafx.h"
 #include "TitleScene.h"
 #include "BattleScene.h"
 #include "title/TitleManager.h"
+#include "sound/SoundManager.h"
 
 #if defined(APP_DEBUG)
 #include "DebugScene.h"
 #endif // APP_DEBUG
 
 TitleScene::TitleScene()
-{
-}
+{}
 
 
 TitleScene::~TitleScene()
 {
-	/**ƒV[ƒ“I—¹‚Éƒ}ƒl[ƒWƒƒ[‚ğ”jŠü‚·‚é*/
+	/** ã‚·ãƒ¼ãƒ³çµ‚äº†æ™‚ã«ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚’çµ‚äº† */
 	app::title::TitleManager::Finalize();
 }
 
@@ -27,6 +27,7 @@ bool TitleScene::Start()
 {
 	app::title::TitleManager::Initialize();
 	app::title::TitleManager::Get().Start();
+	app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Title));
 	return true;
 }
 
@@ -38,8 +39,7 @@ void TitleScene::Update()
 
 
 void TitleScene::Render(RenderContext& rc)
-{
-}
+{}
 
 
 bool TitleScene::RequestScene(uint32_t& id, float& waitTime)
