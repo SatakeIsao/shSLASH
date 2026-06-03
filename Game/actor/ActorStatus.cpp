@@ -77,13 +77,14 @@ namespace app
 			height_ = parameter->height;
 			hp_ = parameter->hp;
 			currentHp_ = parameter->hp;
-			attackPower_ = parameter->attackPower;
 
-			enemyPhase_.SetPhases({
-					{ 0,  parameter->hp, parameter->attackPower, parameter->moveSpeed},
-					{ 4,  parameter->hp, parameter->attackPower * 1.5f, parameter->moveSpeed},
-					{ 8,  parameter->hp, parameter->attackPower * 2.0f, parameter->moveSpeed},
-				});
+			std::vector<EnemyPhaseData> phaseData;
+			for (const auto& phase : parameter->phases)
+			{
+				phaseData.push_back({ phase.requiredPlayerLevel, parameter->hp, phase.attackPower, parameter->moveSpeed });
+			}
+			enemyPhase_.SetPhases(phaseData);
+			attackPower_ = phaseData.empty() ? 0.0f : phaseData[0].attackPower;
 		}
 
 		bool MushroomEventCharacterStatus::ApplyPhase(int playerLevel)
@@ -91,20 +92,17 @@ namespace app
 			EnemyPhaseData data;
 			if (enemyPhase_.Update(playerLevel, data))
 			{
-				// フェーズが進んだ場合
+				// フェーズが進んだ場合：攻撃力・移動速度のみ更新（HPはリセットしない）
 				hp_ = data.hp;
-				currentHp_ = data.hp;
 				attackPower_ = data.attackPower;
 				moveSpeed_ = data.moveSpeed;
 				return true;
 			}
 
-			// Reset直後(currentIndex_==-1)からの再適用時もここに来る可能性があるため
-			// Updateが false でも現在フェーズのデータを取得して反映する
+			// フェーズ遷移なし：攻撃力・移動速度のみ反映（HPはリセットしない）
 			if (enemyPhase_.TryGetCurrentPhaseData(data))
 			{
 				hp_ = data.hp;
-				currentHp_ = data.hp;
 				attackPower_ = data.attackPower;
 				moveSpeed_ = data.moveSpeed;
 				return true;
@@ -135,13 +133,14 @@ namespace app
 			height_ = parameter->height;
 			hp_ = parameter->hp;
 			currentHp_ = parameter->hp;
-			attackPower_ = parameter->attackPower;
 
-			enemyPhase_.SetPhases({
-					{ 0,  parameter->hp, parameter->attackPower, parameter->moveSpeed},
-					{ 4,  parameter->hp, parameter->attackPower * 1.5f, parameter->moveSpeed},
-					{ 8,  parameter->hp, parameter->attackPower * 2.0f, parameter->moveSpeed},
-					});
+			std::vector<EnemyPhaseData> phaseData;
+			for (const auto& phase : parameter->phases)
+			{
+				phaseData.push_back({ phase.requiredPlayerLevel, parameter->hp, phase.attackPower, parameter->moveSpeed });
+			}
+			enemyPhase_.SetPhases(phaseData);
+			attackPower_ = phaseData.empty() ? 0.0f : phaseData[0].attackPower;
 		}
 
 		bool StoneEventCharacterStatus::ApplyPhase(int playerLevel)
@@ -149,20 +148,17 @@ namespace app
 			EnemyPhaseData data;
 			if (enemyPhase_.Update(playerLevel, data))
 			{
-				// フェーズが進んだ場合
+				// フェーズが進んだ場合：攻撃力・移動速度のみ更新（HPはリセットしない）
 				hp_ = data.hp;
-				currentHp_ = data.hp;
 				attackPower_ = data.attackPower;
 				moveSpeed_ = data.moveSpeed;
 				return true;
 			}
 
-			// Reset直後(currentIndex_==-1)からの再適用時もここに来る可能性があるため
-			// Updateが false でも現在フェーズのデータを取得して反映する
+			// フェーズ遷移なし：攻撃力・移動速度のみ反映（HPはリセットしない）
 			if (enemyPhase_.TryGetCurrentPhaseData(data))
 			{
 				hp_ = data.hp;
-				currentHp_ = data.hp;
 				attackPower_ = data.attackPower;
 				moveSpeed_ = data.moveSpeed;
 				return true;

@@ -4,7 +4,7 @@
 
 namespace
 {
-    constexpr int MAX_LEVEL = 10;
+    constexpr int MAX_LEVEL = 6;
 }
 
 namespace app

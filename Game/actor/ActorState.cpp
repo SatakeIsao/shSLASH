@@ -797,6 +797,12 @@ namespace app
 		void ChargeAttackCharacterState::Enter()
 		{
 			chargeAttackPhase_ = ChargeAttackPhase::Start;
+			chargeTimer_ = 0.0f;
+			for (int i = 0; i < 3; i++)
+			{
+				chargeLevelEffectPlayed_[i] = false;
+				chargeLevelEmitters_[i] = nullptr;
+			}
 
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			auto* characterStatus = characterStateMachine->GetStatus();
@@ -831,14 +837,39 @@ namespace app
 			}
 			case ChargeAttackPhase::Looping:
 			{
-				// 地面に着地したら着地フェーズへ
-				if (!characterStateMachine->IsPressA()) {
+				static constexpr float MAX_CHARGE_TIME = 2.0f;
+				static constexpr float CHARGE_EFFECT_TIMES[3] = { 0.3f, 1.0f, 1.7f };
+				chargeTimer_ += g_gameTime->GetFrameDeltaTime();
+
+				// チャージレベルエフェクト（0.3s / 1.0s / 1.7s に生成 & 即再生）
+				if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>())
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						if (!chargeLevelEffectPlayed_[i] && chargeTimer_ >= CHARGE_EFFECT_TIMES[i])
+						{
+							chargeLevelEmitters_[i] = battleMachine->RequestChargeLevelEffect(i);
+							chargeLevelEffectPlayed_[i] = true;
+						}
+					}
+				}
+
+				// ボタン離し or チャージ上限時間で振り下ろし
+				if (!characterStateMachine->IsPressA() || chargeTimer_ >= MAX_CHARGE_TIME) {
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd), 0.1f);
 					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkCharge));
 					chargeAttackPhase_ = ChargeAttackPhase::End;
 					// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
 					if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 						battleMachine->RequestChargeAttackEffect();
+						characterStateMachine->GetModelRender()->SetAnimationSpeed(2.0f);
+
+						// チャージレベルを確定（到達した最高レベルをセット）
+						int level = 0;
+						if (chargeLevelEffectPlayed_[2])      level = 3;
+						else if (chargeLevelEffectPlayed_[1]) level = 2;
+						else if (chargeLevelEffectPlayed_[0]) level = 1;
+						battleMachine->SetChargeLevel(level);
 					}
 
 					// フェーズ遷移の瞬間に一度だけ生成
@@ -889,7 +920,25 @@ namespace app
 
 		void ChargeAttackCharacterState::Exit()
 		{
-			attackScheduler_.reset(nullptr);  // スケジューラーを破棄
+			attackScheduler_.reset(nullptr);
+
+			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>())
+			{
+				battleMachine->SetChargeLevel(0);
+			}
+
+			// チャージレベルエフェクトを停止（Play済みのものだけ Stop する）
+			for (int i = 0; i < 3; i++)
+			{
+				if (chargeLevelEmitters_[i] != nullptr)
+				{
+					if (chargeLevelEmitters_[i]->IsPlay())
+					{
+						chargeLevelEmitters_[i]->Stop();
+					}
+					chargeLevelEmitters_[i] = nullptr;
+				}
+			}
 
 			// ゴーストボディが残っていたら確実に削除
 			if (attackBody_ != nullptr) {

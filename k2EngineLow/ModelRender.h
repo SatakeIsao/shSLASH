@@ -240,6 +240,8 @@ namespace nsK2EngineLow
 
 		bool IsVisible() const { return m_isVisible_; }
 
+		Skeleton& GetSkeleton() { return m_skeleton; }
+		const Skeleton& GetSkeleton() const { return m_skeleton; }
 
 	private:
 		Model m_model;					//モデル

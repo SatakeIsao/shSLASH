@@ -3,10 +3,14 @@
         "comment": "きのこ敵キャラクター共通パラメーター",
         "moveSpeed": 100,
         "jumpMoveSpeed": 20,
-        "jumpPower":30,
+        "jumpPower": 30,
         "radius": 15,
         "height": 1,
         "hp": 50,
-        "attackPower": 2
+        "phases": [
+            { "requiredPlayerLevel": 0, "attackPower": 1.0 },
+            { "requiredPlayerLevel": 4, "attackPower": 1.5 },
+            { "requiredPlayerLevel": 8, "attackPower": 2.0 }
+        ]
     }
 ]

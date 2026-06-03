@@ -144,14 +144,16 @@ namespace app
 			{
 				// 溜め攻撃中かどうか判定
 				bool isBlowBack = battleCharacter->GetStateMachine()->IsChargeAttacking();
+				int chargeLevel = battleCharacter->GetStateMachine()->GetChargeLevel();
 				// 攻撃パーツの衝突を通知
 				auto* notify = new app::battle::BattleManager::DamageNotify();
 				notify->attacker = battleCharacter;
 				notify->defender = eventCharacter;
 				notify->knockBackDirection = knockBackDirection;
 				notify->enemyType = app::battle::BattleManager::DamageNotify::EnemyType::Stone;
-				app::battle::BattleManager::Get().AddNotify(notify);
 				notify->isBlowBack = isBlowBack;
+				notify->chargeLevel = chargeLevel;
+				app::battle::BattleManager::Get().AddNotify(notify);
 
 				//// プレイヤーからエネミーへのベクトルを計算
 				//Vector3 knockBackDirection = enemyPos - playerPos;
@@ -232,14 +234,16 @@ namespace app
 			{
 				// 溜め攻撃中かどうか判定
 				bool isBlowBack = battleCharacter->GetStateMachine()->IsChargeAttacking();
+				int chargeLevel = battleCharacter->GetStateMachine()->GetChargeLevel();
 				// 攻撃パーツの衝突を通知
 				auto* notify = new app::battle::BattleManager::DamageNotify();
 				notify->attacker = battleCharacter;
 				notify->defender = eventCharacter;
 				notify->knockBackDirection = knockBackDirection;
 				notify->enemyType = app::battle::BattleManager::DamageNotify::EnemyType::Mushroom;
-				app::battle::BattleManager::Get().AddNotify(notify);
 				notify->isBlowBack = isBlowBack;
+				notify->chargeLevel = chargeLevel;
+				app::battle::BattleManager::Get().AddNotify(notify);
 			}
 			/** プレイヤー本体のゴースト（実体）と衝突した場合 */
 			else

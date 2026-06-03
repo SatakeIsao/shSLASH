@@ -5,6 +5,8 @@
 #include <util/util.h>
 #include "ActorState.h"
 #include "sound/SoundManager.h"
+#include "effect/EffectManager.h"
+#include "effect/Types.h"
 
 
 namespace app
@@ -284,6 +286,8 @@ namespace app
 			bool isChargeEffectRequested_ = false;
 			/** チャージ攻撃エフェクト */
 			bool isChargeAttackEffectRequested_ = false;
+			/** 現在のチャージレベル (0=未チャージ, 1/2/3) */
+			int chargeLevel_ = 0;
 			/** Deadの効果音再生したか */
 			bool isDeadSEPlayed_ = false;
 
@@ -388,11 +392,49 @@ namespace app
 			{
 				isChargeEffectRequested_ = true;
 			}
+			/** チャージレベルエフェクトを直接再生する（level: 0=Level1, 1=Level2, 2=Level3） */
+			EffectEmitter* RequestChargeLevelEffect(int level)
+			{
+				if (level < 0 || level >= 3) { return nullptr; }
+				const int kinds[3] = {
+					enEffectKind_PlayerChargeLevel1,
+					enEffectKind_PlayerChargeLevel2,
+					enEffectKind_PlayerChargeLevel3
+				};
+
+				// ボーン座標を取得してエフェクト位置を決定
+				Vector3 effectPos = transform.position;
+				effectPos.y += 30.0f; // ボーンが取得できない場合のフォールバック
+
+				auto* model = GetModelRender();
+				if (model)
+				{
+					auto& skeleton = model->GetSkeleton();
+					int boneId = skeleton.FindBoneID(L"mixamorig:Spine1");
+					if (boneId != -1)
+					{
+						Quaternion boneRot;
+						Vector3 boneScale;
+						skeleton.GetBone(boneId)->CalcWorldTRS(effectPos, boneRot, boneScale);
+					}
+				}
+
+				EffectEmitter* emitter = NewGO<EffectEmitter>(0);
+				emitter->Init(kinds[level]);
+				emitter->SetPosition(effectPos);
+				emitter->SetScale(Vector3(0.5f, 0.5f, 0.5f));
+				emitter->Play();
+				return emitter;
+			}
 			/** 溜め攻撃中か */
 			bool IsChargeAttacking() const
 			{
 				return IsEqualCurrentState(ChargeAttackCharacterState::ID());
 			}
+			/** チャージレベルを設定 */
+			void SetChargeLevel(int level) { chargeLevel_ = level; }
+			/** チャージレベルを取得 */
+			int GetChargeLevel() const { return chargeLevel_; }
 
 			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
 			bool CheckAndConsumeChargeEffectRequest()

@@ -35,7 +35,6 @@ void EffectManager::Update()
 		std::remove_if(m_followEffectList.begin(), m_followEffectList.end(),
 			[](const FollowEffectEntry& entry)
 			{
-				// emitterがnullptrまたは再生終了していたら除去
 				return entry.emitter == nullptr || !entry.emitter->IsPlay();
 			}),
 		m_followEffectList.end()
