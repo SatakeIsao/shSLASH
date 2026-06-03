@@ -13,6 +13,13 @@ namespace app
 	{
 		SE = 0,
 		Button = SE,
+		ButtonDecision,
+		ButtonReturn,
+		ButtonMove,
+		ButtonPause,
+		ButtonReset,
+		TitleSlash,
+		TitleBreak,
 		AtkMushroom,
 		AtkStone,
 		AtkCharge,
@@ -65,6 +72,13 @@ namespace app
 	{
 		// SE
 		SoundInformation("Assets/sound/se/button.wav"),
+		SoundInformation("Assets/sound/se/buttonDecision.wav"),
+		SoundInformation("Assets/sound/se/buttonReturn.wav"),
+		SoundInformation("Assets/sound/se/buttonMove.wav"),
+		SoundInformation("Assets/sound/se/buttonPause.wav"),
+		SoundInformation("Assets/sound/se/buttonReset.wav"),
+		SoundInformation("Assets/sound/se/titleSlash.wav"),
+		SoundInformation("Assets/sound/se/titleBreak.wav"),
 		SoundInformation("Assets/sound/se/atkMushroom.wav"),
 		SoundInformation("Assets/sound/se/atkStone.wav"),
 		SoundInformation("Assets/sound/se/atkCharge.wav"),

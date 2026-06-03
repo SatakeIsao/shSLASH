@@ -106,7 +106,7 @@ namespace app {
                     }
 
                     else if (subMenu && subMenu->IsSystemDecided()) {
-                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
 
                         subMenu->ResetSystemDecided(); // フラグを元に戻す
                         subMenu->OnClose();            // メインメニューを閉じる演出
@@ -117,7 +117,7 @@ namespace app {
                     }
 
                     if (g_pad[0]->IsTrigger(enButtonB)) {
-                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonReturn));
 
                         if (subMenu) subMenu->OnClose();
 
@@ -135,7 +135,7 @@ namespace app {
 
                     // Bボタンが押されたら、元のメニュー（MainMenu）に戻る
                     if (g_pad[0]->IsTrigger(enButtonB)) {
-                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonReturn));
 
                         auto* optionMenu = dynamic_cast<app::ui::OptionMenu*>(optionMenuLayout_->GetMenu());
                         if (optionMenu) optionMenu->OnClose(); // サウンドメニューを閉じる演出

@@ -140,13 +140,13 @@ namespace app
             // ==========================================
             if (g_pad[0]->IsTrigger(enButtonDown))
             {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                 cursorIndex_++;
                 if (cursorIndex_ >= MAX_ITEMS) cursorIndex_ = 0;
             }
             else if (g_pad[0]->IsTrigger(enButtonUp))
             {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                 cursorIndex_--;
                 if (cursorIndex_ < 0) cursorIndex_ = MAX_ITEMS - 1;
             }
@@ -185,7 +185,7 @@ namespace app
             {
                 if (g_pad[0]->IsTrigger(enButtonLeft) || g_pad[0]->IsTrigger(enButtonRight))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                     if (cursorIndex_ == 0) isXReverse_ = !isXReverse_;
                     if (cursorIndex_ == 1) isYReverse_ = !isYReverse_;
                     isSettingsChanged = true;
@@ -196,14 +196,14 @@ namespace app
                 // 感度の調整処理
                 if (g_pad[0]->IsTrigger(enButtonRight))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                     currentSensitivity += 0.1f;
                     if (currentSensitivity > 1.0f) currentSensitivity = 1.0f;
                     isSettingsChanged = true;
                 }
                 else if (g_pad[0]->IsTrigger(enButtonLeft))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                     currentSensitivity -= 0.1f;
                     // 完全に0になるとカメラが動かなくなるので最低0.1でストップ
                     if (currentSensitivity < 0.0f) currentSensitivity = 0.0f;
@@ -217,7 +217,7 @@ namespace app
 
             if (g_pad[0]->IsTrigger(enButtonY))
             {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonReset));
 
                 isXReverse_ = false;
                 isYReverse_ = false;

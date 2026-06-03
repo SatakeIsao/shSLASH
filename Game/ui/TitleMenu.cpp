@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "TitleMenu.h"
-#include "ui/UIAnimationFactory.h" 
-#include "ui/UIAnimation.h"        
+#include "ui/UIAnimationFactory.h"
+#include "ui/UIAnimation.h"
+#include "sound/SoundManager.h"
 
 namespace app {
     namespace ui {
@@ -56,6 +57,8 @@ namespace app {
                     wipeParam_.wipeSize = 1000.0f;
                     isWiping_ = false;
                     wipeTimer_ = 0.0f;
+
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::TitleBreak));
 
                     // ワイプ完了後にロゴ分割アニメーション開始
                     if (titleLeft_) {
@@ -222,6 +225,8 @@ namespace app {
 
         void TitleMenu::OnClose() {
             animState_ = AnimState::None;
+
+            app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::TitleSlash));
 
             if (pressA_) pressA_->isDraw = false;
             if (slashedEffect_) slashedEffect_->isDraw = true;

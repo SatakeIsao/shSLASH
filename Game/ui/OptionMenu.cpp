@@ -144,14 +144,14 @@ namespace app
             // ==========================================
             if (g_pad[0]->IsTrigger(enButtonLB1))
             {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                 int next = static_cast<int>(currentTab_) - 1;
                 if (next < 0) next = static_cast<int>(Tab::Max) - 1;
                 ChangeTab(static_cast<Tab>(next));
             }
             if (g_pad[0]->IsTrigger(enButtonRB1))
             {
-                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Button));
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                 int next = static_cast<int>(currentTab_) + 1;
                 if (next >= static_cast<int>(Tab::Max)) next = 0;
                 ChangeTab(static_cast<Tab>(next));
