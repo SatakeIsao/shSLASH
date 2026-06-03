@@ -38,10 +38,22 @@ void SceneManager::Update()
 {
 	if (m_currentScene) {
 		m_currentScene->Update();
-		if (m_currentScene->RequestScene(nextSceneId_, m_waitTime)) {
+
+		if (!m_isFadingOut) {
+			if (m_currentScene->RequestScene(m_pendingSceneId, m_pendingWaitTime)) {
+				m_isFadingOut = true;
+				Fade::Get().FadeOut(0.5f);
+			}
+		}
+
+		if (m_isFadingOut && Fade::Get().IsFadeOutComplete()) {
 			delete m_currentScene;
 			m_currentScene = nullptr;
-
+			m_isFadingOut = false;
+			nextSceneId_ = m_pendingSceneId;
+			m_waitTime = m_pendingWaitTime;
+			m_pendingSceneId = INVALID_SCENE_ID;
+			m_pendingWaitTime = 0.0f;
 			Fade::Get().Enable();
 		}
 	}
@@ -53,9 +65,14 @@ void SceneManager::Update()
 			m_waitTime = 0.0f;
 			m_elapsedTime = 0.0f;
 			nextSceneId_ = INVALID_SCENE_ID;
-
-			Fade::Get().Disable();
+			m_isFadingIn = true;
+			Fade::Get().FadeIn(0.5f);
 		}
+	}
+
+	if (m_isFadingIn && Fade::Get().IsFadeInComplete()) {
+		m_isFadingIn = false;
+		Fade::Get().Disable();
 	}
 }
 
