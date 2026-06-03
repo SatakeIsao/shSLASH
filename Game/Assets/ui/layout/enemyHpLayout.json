@@ -21,7 +21,7 @@
         "position": [-516, 340, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [0.0, 0.0, 0.0, 0.0]
+        "color": [0.0, 0.0, 0.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -30,7 +30,7 @@
         "shader": "Assets/Shader/hpBar.fx",
         "width": 100,
         "height": 15,
-        "position": [-516, 340, 0],
+        "position": [-518, 340, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0, 0.0, 0.0, 1.0]
@@ -42,7 +42,7 @@
         "shader": "Assets/Shader/hpBar.fx",
         "width": 100,
         "height": 15,
-        "position": [-516, 340, 0],
+        "position": [-518, 340, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [0.0, 1.0, 0.0, 1.0]

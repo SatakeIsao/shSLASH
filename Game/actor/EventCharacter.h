@@ -130,6 +130,10 @@ namespace app
 				}
 			}
 
+			void SyncCurrentHPFromStatus()
+			{
+				currentHP_ = static_cast<int>(GetStatus()->GetCurrentHp());
+			}
 
 			static int GetNum() {return instanceCount_;}
 
@@ -311,6 +315,11 @@ namespace app
 				{
 					currentHP_ = 0;
 				}
+			}
+
+			void SyncCurrentHPFromStatus()
+			{
+				currentHP_ = static_cast<int>(GetStatus()->GetCurrentHp());
 			}
 
 			static int GetNum() { return instanceCount_; }

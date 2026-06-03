@@ -340,7 +340,7 @@ namespace app
 				float curHp = player_->GetStatus()->GetCurrentHp();
 
 				int newIndex = static_cast<int>((curHp / maxHp) * static_cast<float>(MAX_LEVEL));
-				targetHpRatio_ = static_cast<float>(newIndex) / static_cast<float>(MAX_LEVEL);
+				targetHpRatio_ = curHp / maxHp;
 
 				if (newIndex < index_) // HP減少
 				{
@@ -690,9 +690,27 @@ namespace app
 
 			worldPos.y += 70.0f;
 
+			// カメラ前方チェック（背後の敵を除外）
+			Vector3 toEnemy = worldPos - g_camera3D->GetPosition();
+			float dot = toEnemy.Dot(g_camera3D->GetForward());
+			if (dot <= 0.0f)
+			{
+				isVisible_ = false;
+				return;
+			}
+
 			// ワールド座標からスクリーン座標に変換
 			Vector2 screenPos;
 			g_camera3D->CalcScreenPositionFromWorldPosition(screenPos, worldPos);
+
+			// スクリーン範囲チェック（画面外の敵を除外）
+			float half_w = static_cast<float>(g_graphicsEngine->GetFrameBufferWidth()) * 0.5f;
+			float half_h = static_cast<float>(g_graphicsEngine->GetFrameBufferHeight()) * 0.5f;
+			if (fabsf(screenPos.x) > half_w || fabsf(screenPos.y) > half_h)
+			{
+				isVisible_ = false;
+				return;
+			}
 
 			// layoutの位置を更新
 			auto menu = layout_->GetMenu();
@@ -757,6 +775,7 @@ namespace app
 						damagePosX_ = enemyDmgHP->color.x; // 現在の表示割合を保存
 					}
 					hpIndex_ = newIndex;
+					hpRatio_ = ratio;
 				}
 				// 即時反映
 				if (g_pad[0]->IsTrigger(enButtonUp))
@@ -772,7 +791,7 @@ namespace app
 					hpIndex_ = min(MAX_LEVEL, hpIndex_ + 1);
 				}
 
-				float currentRatio = static_cast<float>(hpIndex_) / static_cast<float>(MAX_LEVEL);
+				float currentRatio = hpRatio_;
 
 				// currentHP即時反映
 				enemyCurHP->color.x = currentRatio;
