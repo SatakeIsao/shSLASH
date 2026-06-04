@@ -71,19 +71,14 @@ namespace app
 				onDead_ = std::move(callback);
 			}
 
-		protected:
-			void OnPositionCorrected(const Vector3& newPos) override
-			{
-				stateMachine_->transform.position = newPos;
-			}
 		};
 
 
 
 
 		/****************************************************/
-		
-		
+
+
 		class StoneEventCharacter : public Character , public IPoolable
 		{
 			appActor(StoneEventCharacter);
@@ -268,12 +263,6 @@ namespace app
 			static void ResetInstanceCount()
 			{
 				instanceCount_ = 0;
-			}
-
-		protected:
-			void OnPositionCorrected(const Vector3& newPos) override
-			{
-				stateMachine_->transform.position = newPos;
 			}
 		};
 
@@ -467,12 +456,6 @@ namespace app
 			static void ResetInstanceCount()
 			{
 				instanceCount_ = 0;
-			}
-
-		protected:
-			void OnPositionCorrected(const Vector3& newPos) override
-			{
-				stateMachine_->transform.position = newPos;
 			}
 		};
 	}

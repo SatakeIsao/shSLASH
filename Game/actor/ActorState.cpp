@@ -134,15 +134,6 @@ namespace app
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
 
-					if (auto* m = owner_->As<app::actor::StoneEventCharacterStateMachine>())
-					{
-						m->NontifyAttackGhostCreated();
-					}
-					else if (auto* m = owner_->As<app::actor::MushroomEventCharacterStateMachine>())
-					{
-						m->NontifyAttackGhostCreated();
-					}
-
 					const float radius = characterStateMachine->GetStatus()->GetRadius();
 					Vector3 forward = characterStateMachine->GetMoveDirection();
 					if (forward.LengthSq() < 0.01f) {
@@ -989,6 +980,7 @@ namespace app
 			avoidanceDirection_ = characterStateMachine->GetMoveDirection(); // 先に確定
 			timer_ = 0.0f;
 			characterStateMachine->SetAvoiding(true);
+			characterStateMachine->GetCharacterController()->SetIgnoreCharacters(true);
 
 			characterStateMachine->OnEnterAvoidance();
 		}
@@ -1031,6 +1023,7 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			// 回避終了
 			characterStateMachine->SetAvoiding(false);
+			characterStateMachine->GetCharacterController()->SetIgnoreCharacters(false);
 			characterStateMachine->OnExitAvoidance();
 		}
 

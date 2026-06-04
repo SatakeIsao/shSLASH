@@ -83,14 +83,6 @@ namespace app
 
 			virtual app::collision::GhostBody* GetGhostBody() const { return nullptr; }
 
-			void ApplyPositionCorrection(const Vector3& delta)
-			{
-				if (!characterController_) return;
-				Vector3 newPos = characterController_->GetPosition() + delta;
-				characterController_->SetPosition(newPos);
-				OnPositionCorrected(newPos);
-			}
-
 			int GetCurrentHP() const { return currentHP_; }
 
 			float GetTotalAttackPower() const
@@ -110,8 +102,6 @@ namespace app
 				}
 			}
 
-		protected:
-			virtual void OnPositionCorrected(const Vector3& /*newPos*/) {}
 		};
 	}
 }

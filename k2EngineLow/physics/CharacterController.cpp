@@ -16,13 +16,14 @@ namespace nsK2EngineLow
             Vector3 startPos;
             Vector3 hitNormal;
             btCollisionObject* me = nullptr;
+            bool ignoreCharacters = false;
             float dist = FLT_MAX;
 
             virtual btScalar addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace) {
                 if (convexResult.m_hitCollisionObject == me || convexResult.m_hitCollisionObject->getInternalType() == btCollisionObject::CO_GHOST_OBJECT) {
                     return 1.0f;
                 }
-                if (convexResult.m_hitCollisionObject->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT) {
+                if (ignoreCharacters && (convexResult.m_hitCollisionObject->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT)) {
                     return 1.0f;
                 }
 
@@ -53,13 +54,14 @@ namespace nsK2EngineLow
             Vector3 startPos;
             Vector3 hitNormal;
             btCollisionObject* me = nullptr;
+            bool ignoreCharacters = false;
             float dist = FLT_MAX;
 
             virtual btScalar addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace) {
                 if (convexResult.m_hitCollisionObject == me || convexResult.m_hitCollisionObject->getInternalType() == btCollisionObject::CO_GHOST_OBJECT) {
                     return 1.0f;
                 }
-                if (convexResult.m_hitCollisionObject->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT) {
+                if (ignoreCharacters && (convexResult.m_hitCollisionObject->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT)) {
                     return 1.0f;
                 }
 
@@ -89,6 +91,7 @@ namespace nsK2EngineLow
             Vector3 hitPos;
             Vector3 startPos;
             btCollisionObject* me = nullptr;
+            bool ignoreCharacters = false;
             float dist = FLT_MAX;
 
             virtual	btScalar addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace)
@@ -96,7 +99,7 @@ namespace nsK2EngineLow
                 if (convexResult.m_hitCollisionObject == me || convexResult.m_hitCollisionObject->getInternalType() == btCollisionObject::CO_GHOST_OBJECT) {
                     return 0.0f;
                 }
-                if (convexResult.m_hitCollisionObject->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT) {
+                if (ignoreCharacters && (convexResult.m_hitCollisionObject->getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT)) {
                     return 0.0f;
                 }
 
@@ -219,6 +222,7 @@ namespace nsK2EngineLow
                     SweepResultWall callback;
                     callback.me = rigidBody_.GetBody();
                     callback.startPos = posTmp;
+                    callback.ignoreCharacters = ignoreCharacters_;
 
                     PhysicsWorld::Get().ConvexSweepTest(collider_, start, end, callback);
 
@@ -265,6 +269,7 @@ namespace nsK2EngineLow
                 callback.me = rigidBody_.GetBody();
                 callback.startPos = position_;
                 callback.startPos.y = checkY;
+                callback.ignoreCharacters = ignoreCharacters_;
 
                 if ((start - end).LengthSq() >= 0.01f) {
                     PhysicsWorld::Get().ConvexSweepTest(collider_, start, end, callback);
@@ -293,6 +298,7 @@ namespace nsK2EngineLow
                 SweepResultGround callback;
                 callback.me = rigidBody_.GetBody();
                 callback.startPos = Vector3(position_.x, checkY, position_.z);
+                callback.ignoreCharacters = ignoreCharacters_;
 
                 PhysicsWorld::Get().ConvexSweepTest(collider_, start, end, callback);
 
