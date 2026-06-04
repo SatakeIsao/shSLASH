@@ -90,12 +90,6 @@ namespace app
 				return ghostBody_.get();
 			}
 
-		protected:
-			void OnPositionCorrected(const Vector3& newPos) override
-			{
-				stateMachine_->transform.position = newPos;
-			}
-
 		public:
 
 

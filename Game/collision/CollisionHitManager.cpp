@@ -64,11 +64,6 @@ namespace app
 				app::memory::StackVector<Pair*> eventCharacterPairList(marker);
 				app::memory::StackVector<Pair*> mushroomPairList(marker);
 				for (auto& hitPair : hitPairList_) {
-					// 全キャラクターボディペアを物理的に押し離す
-					if (ContainsCharacterBodyPair(hitPair)) {
-						SeparateCharacterBodies(hitPair);
-					}
-					// ゲームロジック（ダメージ・ノックバック）
 					if (ContainsEventCharacterPair(hitPair)) {
 						eventCharacterPairList.push_back(&hitPair);
 					}
@@ -84,51 +79,6 @@ namespace app
 				}
 			}
 			hitPairList_.clear();
-		}
-
-
-		bool CollisionHitManager::ContainsCharacterBodyPair(const Pair& hitPair)
-		{
-			auto* charA = dynamic_cast<app::actor::Character*>(hitPair.a->GetOwner());
-			auto* charB = dynamic_cast<app::actor::Character*>(hitPair.b->GetOwner());
-			if (!charA || !charB) return false;
-			if (charA->GetGhostBody() != hitPair.a) return false;
-			if (charB->GetGhostBody() != hitPair.b) return false;
-			return true;
-		}
-
-
-		void CollisionHitManager::SeparateCharacterBodies(Pair& hitPair)
-		{
-			auto* charA = dynamic_cast<app::actor::Character*>(hitPair.a->GetOwner());
-			auto* charB = dynamic_cast<app::actor::Character*>(hitPair.b->GetOwner());
-			if (!charA || !charB) return;
-
-			// 回避中のプレイヤーはすり抜ける
-			if (auto* battle = dynamic_cast<app::actor::BattleCharacter*>(charA)) {
-				if (battle->GetStateMachine()->IsAvoiding()) return;
-			}
-			if (auto* battle = dynamic_cast<app::actor::BattleCharacter*>(charB)) {
-				if (battle->GetStateMachine()->IsAvoiding()) return;
-			}
-
-			Vector3 posA = charA->GetCharacterController()->GetPosition();
-			Vector3 posB = charB->GetCharacterController()->GetPosition();
-
-			Vector3 dir = posA - posB;
-			dir.y = 0.0f;
-			float dist = dir.Length();
-			if (dist < 0.001f) { dir = Vector3::Right; dist = 1.0f; }
-			else dir /= dist;
-
-			float rA = charA->GetStatus()->GetRadius();
-			float rB = charB->GetStatus()->GetRadius();
-			float overlap = (rA + rB) - dist;
-			if (overlap <= 0.0f) return;
-
-			float push = overlap * 0.5f + 0.5f;
-			charA->ApplyPositionCorrection(dir * push);
-			charB->ApplyPositionCorrection(dir * (-push));
 		}
 
 
@@ -175,6 +125,17 @@ namespace app
 				colliedPlayerBody = hitPair.b;
 			}
 
+			// 敵側のゴーストボディを取得（本体か攻撃ゴーストかを識別するため）
+			app::collision::GhostBody* colliedEnemyBody = nullptr;
+			if (hitPair.a->GetOwnerId() == app::actor::StoneEventCharacter::ID())
+			{
+				colliedEnemyBody = hitPair.a;
+			}
+			else if (hitPair.b->GetOwnerId() == app::actor::StoneEventCharacter::ID())
+			{
+				colliedEnemyBody = hitPair.b;
+			}
+
 			// パーツの判定処理
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
@@ -210,6 +171,9 @@ namespace app
 			/** プレイヤー本体のゴースト（実体）と衝突した場合 */
 			else
 			{
+				/** 回避中はノックバックを受けない */
+				if (battleCharacter->GetStateMachine()->IsAvoiding()) return;
+
 				/** エネミーからプレイヤーに向かうベクトル */
 				Vector3 toPlayer = playerPos - enemyPos;
 				toPlayer.Normalize();
@@ -224,6 +188,11 @@ namespace app
 				else
 				{
 					battleCharacter->GetStateMachine()->OnKnockBack();
+					// 攻撃ゴーストが実際に当たった時だけHPダメージを通知
+					if (colliedEnemyBody != nullptr && colliedEnemyBody != eventCharacter->GetGhostBody())
+					{
+						eventCharacter->GetStateMachine()->NontifyAttackGhostCreated();
+					}
 				}
 			}
 		}
@@ -265,6 +234,17 @@ namespace app
 				colliedPlayerBody = hitPair.b;
 			}
 
+			// 敵側のゴーストボディを取得（本体か攻撃ゴーストかを識別するため）
+			app::collision::GhostBody* colliedEnemyBody = nullptr;
+			if (hitPair.a->GetOwnerId() == app::actor::MushroomEventCharacter::ID())
+			{
+				colliedEnemyBody = hitPair.a;
+			}
+			else if (hitPair.b->GetOwnerId() == app::actor::MushroomEventCharacter::ID())
+			{
+				colliedEnemyBody = hitPair.b;
+			}
+
 			// パーツの判定処理
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
@@ -285,6 +265,9 @@ namespace app
 			/** プレイヤー本体のゴースト（実体）と衝突した場合 */
 			else
 			{
+				/** 回避中はノックバックを受けない */
+				if (battleCharacter->GetStateMachine()->IsAvoiding()) return;
+
 				/** エネミーからプレイヤーに向かうベクトル */
 				Vector3 toPlayer = playerPos - enemyPos;
 				toPlayer.Normalize();
@@ -299,6 +282,11 @@ namespace app
 				else
 				{
 					battleCharacter->GetStateMachine()->OnKnockBack();
+					// 攻撃ゴーストが実際に当たった時だけHPダメージを通知
+					if (colliedEnemyBody != nullptr && colliedEnemyBody != eventCharacter->GetGhostBody())
+					{
+						eventCharacter->GetStateMachine()->NontifyAttackGhostCreated();
+					}
 				}
 			}
 		}

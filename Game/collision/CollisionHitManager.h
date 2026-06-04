@@ -48,10 +48,6 @@ namespace app
 
 
 		private:
-			/** 2体のキャラクターボディ同士のペアか（攻撃判定を除く） */
-			bool ContainsCharacterBodyPair(const Pair& hitPair);
-			/** キャラクターボディ同士を押し離す */
-			void SeparateCharacterBodies(Pair& hitPair);
 			/** スライムを含むペアか */
 			bool ContainsEventCharacterPair(const Pair& hitPair);
 			void UpdateEventCharacterPair(Pair& hitPair);

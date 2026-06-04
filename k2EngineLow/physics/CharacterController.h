@@ -39,6 +39,8 @@ namespace nsK2EngineLow
 		bool isOnGround_ = true;
 		/** テレポートリクエストフラグ */
 		bool isRequestTeleport_ = false;
+		/** 他キャラクターとの衝突を無視するフラグ（回避中すり抜け用） */
+		bool ignoreCharacters_ = false;
 
 
 	public:
@@ -84,5 +86,7 @@ namespace nsK2EngineLow
 			verticalVelocity_ = power;
 			isOnGround_ = false; // 地面から離れたことにする
 		}
+
+		void SetIgnoreCharacters(bool ignore) { ignoreCharacters_ = ignore; }
 	};
 }
