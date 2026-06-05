@@ -55,6 +55,8 @@ namespace app
 		k2EngineLow_->Init(hwnd, FRAME_BUFFER_W, FRAME_BUFFER_H);
 		g_camera3D->SetPosition(Vector3(0.0f, 100.0f, -200.0f));
 		g_camera3D->SetTarget(Vector3(0.0f, 50.0f, 0.0f));
+		g_camera3D->SetNear(0.1f);
+		g_camera3D->SetFar(50000.0f);
 
 		//シーンライト初期化
 		sceneLight_.Init();

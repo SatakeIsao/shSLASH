@@ -459,7 +459,7 @@ namespace app
 					testGimmickList_[0] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
 					testGimmickList_[0]->transform.position = Vector3(0.0f, -50.0f, 0.0f);
 					testGimmickList_[0]->transform.scale = Vector3(5.0f, 5.0f, 5.0f);
-					testGimmickList_[0]->Initialize("Assets/ModelData/stage/stage.tkm", "Assets/Shader/modelWall.fx");
+					testGimmickList_[0]->Initialize("Assets/ModelData/stage/stage.tkm", "Assets/Shader/modelWall.fx", "Assets/Shader/model_gbuffer_wall.fx");
 					//  const int gimmickNum = 100;
 					//  const int gimmickRowNum = 10;
 					//  const int gimmickColNum = 10;
