@@ -3,6 +3,7 @@
  */
 #include "stdafx.h"
 #include "EventCharacter.h"
+#include "core/ParameterManager.h"
 
 namespace app
 {
@@ -334,6 +335,7 @@ namespace app
 			}
 			modelRender_ = std::make_unique<ModelRender>();
 			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false);
+
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
 		}

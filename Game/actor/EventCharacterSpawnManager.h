@@ -10,7 +10,7 @@
 
 namespace
 {
-	constexpr int MAX_EVENT_CHARACTER = 10;
+	constexpr int MAX_EVENT_CHARACTER = 20;
 }
 
 namespace app
@@ -125,6 +125,8 @@ namespace app
 			float fieldEdge_ = 20000.0f;							  // 原点からスポーン地点までの距離（フィールド端寄り）
 
 			int playerLevel_ = 1;
+			int maxEnemyCount_ = 10;                                  // 現在フェーズの最大敵数
+			int currentPhaseIndex_ = 1;                               // 現在のフェーズ番号（1始まり）
 			float spawnInterval_ = 5.0f;                              // スポーン間隔（秒）
 			float spawnTimer_ = 0.0f;                                 // スポーンタイマー
 			int pendingSpawnCount_ = 0;                               // 次フレームでスポーンする残数

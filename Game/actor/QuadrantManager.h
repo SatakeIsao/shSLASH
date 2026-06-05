@@ -23,13 +23,28 @@ namespace app
 			// 4辺の中央
 			NORTH,
 			SOUTH,
-			WEST, 
-			EAST, 
+			WEST,
+			EAST,
 			// 北辺の1/4・3/4地点
-			NORTH_WEST_MID, 
-			NORTH_EAST_MID, 
+			NORTH_WEST_MID,
+			NORTH_EAST_MID,
+			// 南辺の1/4・3/4地点
+			SOUTH_WEST_MID,
+			SOUTH_EAST_MID,
+			// 西辺の1/4・3/4地点
+			WEST_NORTH_MID,
+			WEST_SOUTH_MID,
+			// 東辺の1/4・3/4地点
+			EAST_NORTH_MID,
+			EAST_SOUTH_MID,
+			// 北辺の外寄り中間点（1/8・7/8地点）
+			NORTH_FAR_WEST,
+			NORTH_FAR_EAST,
+			// 南辺の外寄り中間点（1/8・7/8地点）
+			SOUTH_FAR_WEST,
+			SOUTH_FAR_EAST,
 
-			MAX             
+			MAX
 		};
 
 
@@ -68,6 +83,16 @@ namespace app
 					SpawnDirection::EAST,
 					SpawnDirection::NORTH_WEST_MID,
 					SpawnDirection::NORTH_EAST_MID,
+					SpawnDirection::SOUTH_WEST_MID,
+					SpawnDirection::SOUTH_EAST_MID,
+					SpawnDirection::WEST_NORTH_MID,
+					SpawnDirection::WEST_SOUTH_MID,
+					SpawnDirection::EAST_NORTH_MID,
+					SpawnDirection::EAST_SOUTH_MID,
+					SpawnDirection::NORTH_FAR_WEST,
+					SpawnDirection::NORTH_FAR_EAST,
+					SpawnDirection::SOUTH_FAR_WEST,
+					SpawnDirection::SOUTH_FAR_EAST,
 				};
 
 				std::shuffle(directions.begin(), directions.end(), std::mt19937(std::random_device{}()));

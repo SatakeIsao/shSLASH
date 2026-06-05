@@ -4,46 +4,46 @@
       {
         "type": "UIIcon",
         "name": "Phase",
-        "asset": "Assets/ui/word/Phase1.DDS",
+        "asset": "Assets/ui/word/PHASE.DDS",
         "width": 100,
         "height": 35,
         "position": [690, 240, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0, 1.0, 1.0, 1.0]
       },
       {
         "type": "UIIcon",
-        "name": "PhaseNumber1",
+        "name": "PhaseNum1",
         "asset": "Assets/ui/numbers/1.dds",
-        "width": 25,
+        "width": 35,
         "height": 35,
         "position": [767, 240, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0, 1.0, 1.0, 1.0]
       },
       {
         "type": "UIIcon",
-        "name": "PhaseNumber2",
+        "name": "PhaseNum2",
         "asset": "Assets/ui/numbers/2.dds",
-        "width": 220,
-        "height": 0,
-        "position": [690, 0, 0],
-        "scale": [1, 1, 1],
+        "width": 35,
+        "height": 35,
+        "position": [767, 240, 0],
+        "scale": [0, 0, 0],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0, 1.0, 1.0, 1.0]
       },
       {
         "type": "UIIcon",
-        "name": "PhaseNumber3",
+        "name": "PhaseNum3",
         "asset": "Assets/ui/numbers/3.dds",
-        "width": 220,
-        "height": 0,
-        "position": [690, 0, 0],
-        "scale": [1, 1, 1],
+        "width": 35,
+        "height": 35,
+        "position": [767, 240, 0],
+        "scale": [0, 0, 0],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 1.0]
+        "color": [1.0, 1.0, 1.0, 1.0]
       }
     ]
   }
