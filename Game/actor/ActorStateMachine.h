@@ -198,6 +198,9 @@ namespace app
 
 			virtual uint32_t GetCharacterID() const { return 0; }
 
+			/** 攻撃アニメーション開始からゴーストボディを生成するまでの遅延秒数 */
+			virtual float GetGhostBodyDelay() const { return 0.1f; }
+
 			Character* GetCharacter();
 			app::actor::CharacterStatus* GetStatus();
 			CharacterController* GetCharacterController();
@@ -661,6 +664,9 @@ namespace app
 			virtual void OnEnterKnockBack() override;
 			virtual void OnExitKnockBack() override;
 
+			/** 顔を突き出すフレームに合わせた遅延秒数（要アニメーション確認で調整） */
+			virtual float GetGhostBodyDelay() const override { return 0.35f; }
+
 		private:
 			void UpdateState();
 
@@ -670,6 +676,7 @@ namespace app
 			{
 				isDead_ = true;
 			}
+			bool IsDeadState() const { return isDead_; }
 			/** 外から踏まれたことを教える */
 			void OnSquashed()
 			{
@@ -789,6 +796,9 @@ namespace app
 			virtual void OnEnterKnockBack() override;
 			virtual void OnExitKnockBack() override;
 
+			/** 攻撃アニメーション開始からゴーストボディを生成するまでの遅延秒数（要アニメーション確認で調整） */
+			virtual float GetGhostBodyDelay() const override { return 0.35f; }
+
 		private:
 			void UpdateState();
 
@@ -798,6 +808,7 @@ namespace app
 			{
 				isDead_ = true;
 			}
+			bool IsDeadState() const { return isDead_; }
 			/** 外から踏まれたことを教える */
 			void OnSquashed()
 			{
@@ -810,7 +821,7 @@ namespace app
 			void OnViewAngle(const Vector3& targetPos) {
 				/** スポーン直後は視野角に反応しない */
 				if (isJustSpawned_) return;
-				
+
 				isViewAngle_ = true;
 				targetPosition_ = targetPos;
 			}

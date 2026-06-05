@@ -106,29 +106,19 @@ namespace app
 		{
 			stateTimer_ = 0.0f;
 
-			// StoneかMushroomかでタイマーを切り替える
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
-			// StoneかMushroomかでゴースト生成タイミングを切り替える
-			const bool isStone = (characterStateMachine->As<app::actor::StoneEventCharacterStateMachine>() != nullptr);
-			// StoneかMushroomかでゴースト生成タイミングを切り替える
-			float ghostDelay = 0.1f;
-			if (characterStateMachine->As<app::actor::StoneEventCharacterStateMachine>() != nullptr)
-			{
-				ghostDelay = 1.0f;
-			}
-			else if (characterStateMachine->As<app::actor::MushroomEventCharacterStateMachine>() != nullptr)
-			{
-				ghostDelay = 1.0f;
-			}
+			// アニメーション即時再生（各エネミーの OnEnterAttack に委譲）
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			characterStateMachine->OnEnterAttack();
+
+			// ゴーストボディ生成タイミングはエネミーごとに GetGhostBodyDelay() で決まる
+			const float ghostDelay = characterStateMachine->GetGhostBodyDelay();
 
 			attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
 			attackScheduler_->AddTimer(ghostDelay, [&]()
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::SlimeAnimationKind::Attack));
-					characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
-					characterStateMachine->OnEnterAttack();
 
 					attackBody_ = new app::collision::GhostBody();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);

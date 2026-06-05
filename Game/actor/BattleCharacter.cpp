@@ -34,6 +34,10 @@ namespace app
 			stateMachine_->Setup(this);
 			status_->Setup();
 
+			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
+			ghostBody_->SetPosition(transform.position);
+			stateMachine_->transform.position = transform.position;
+
 			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
 			characterController_->SetGravity(status_->GetGravity());
 
@@ -88,8 +92,6 @@ namespace app
 			transform.position = Vector3(0.0f,-354.0f,-500.0f);
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
-
-			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Player, app::collision::ghost::CollisionAttributeMask::All);
 		}
 
 

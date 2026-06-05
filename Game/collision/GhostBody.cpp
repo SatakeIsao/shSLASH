@@ -54,12 +54,31 @@ namespace app
 		}
 
 
+		void GhostBody::SetActive(bool active)
+		{
+			isActive_ = active;
+			if (bulletObject_)
+			{
+				int flags = bulletObject_->getCollisionFlags();
+				if (!active)
+				{
+					flags |= btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT;
+				}
+				else
+				{
+					flags &= ~btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT;
+				}
+				bulletObject_->setCollisionFlags(flags);
+			}
+		}
+
+
 		void GhostBody::SetPosition(const Vector3& pos)
 		{
 			if (!position_.IsEqual(pos)) {
 				position_ = pos;
 				isDirty_ = true;
-				// BulletObject������
+				// BulletObjectも同期
 				if (bulletObject_) {
 					bulletObject_->setWorldTransform(GetBtTransform());
 				}
@@ -104,8 +123,7 @@ namespace app
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setWorldTransform(GetBtTransform());
-			// Bullet����Collision�̃t���O���K�v�Ȃ炱���Őݒ�
-			// m_bulletObject->setCollisionFlags(m_bulletObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+			// Bullet側でCollisionのフラグが必要ならここで設定する
 		}
 	}
 }

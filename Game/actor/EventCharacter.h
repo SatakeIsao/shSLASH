@@ -292,6 +292,7 @@ namespace app
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
+			bool justSpawned_ = false;
 			/** 表示フラグ */
 			bool isVisible_ = false;
 
@@ -419,6 +420,7 @@ namespace app
 				instanceCount_++;
 				stateMachine_->Initialize();
 
+				justSpawned_ = true;
 				isPause_ = false;
 				isVisible_ = true;
 
