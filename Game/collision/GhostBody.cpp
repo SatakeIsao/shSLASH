@@ -78,7 +78,7 @@ namespace app
 			if (!position_.IsEqual(pos)) {
 				position_ = pos;
 				isDirty_ = true;
-				// BulletObject������
+				// BulletObjectも同期
 				if (bulletObject_) {
 					bulletObject_->setWorldTransform(GetBtTransform());
 				}
@@ -123,8 +123,7 @@ namespace app
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setWorldTransform(GetBtTransform());
-			// Bullet����Collision�̃t���O���K�v�Ȃ炱���Őݒ�
-			// m_bulletObject->setCollisionFlags(m_bulletObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+			// Bullet側でCollisionのフラグが必要ならここで設定する
 		}
 	}
 }
