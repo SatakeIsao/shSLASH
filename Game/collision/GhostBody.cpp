@@ -54,12 +54,31 @@ namespace app
 		}
 
 
+		void GhostBody::SetActive(bool active)
+		{
+			isActive_ = active;
+			if (bulletObject_)
+			{
+				int flags = bulletObject_->getCollisionFlags();
+				if (!active)
+				{
+					flags |= btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT;
+				}
+				else
+				{
+					flags &= ~btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT;
+				}
+				bulletObject_->setCollisionFlags(flags);
+			}
+		}
+
+
 		void GhostBody::SetPosition(const Vector3& pos)
 		{
 			if (!position_.IsEqual(pos)) {
 				position_ = pos;
 				isDirty_ = true;
-				// BulletObject‚à“¯Šú
+				// BulletObjectï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				if (bulletObject_) {
 					bulletObject_->setWorldTransform(GetBtTransform());
 				}
@@ -104,7 +123,7 @@ namespace app
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setWorldTransform(GetBtTransform());
-			// Bullet‘¤‚ÅCollision‚Ìƒtƒ‰ƒO‚ª•K—v‚È‚ç‚±‚±‚ÅÝ’è
+			// Bulletï¿½ï¿½ï¿½ï¿½Collisionï¿½Ìƒtï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Kï¿½vï¿½È‚ç‚±ï¿½ï¿½ï¿½ÅÝ’ï¿½
 			// m_bulletObject->setCollisionFlags(m_bulletObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		}
 	}

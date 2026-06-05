@@ -128,11 +128,13 @@ namespace app
 			stateMachine_->Setup(this);
 			status_->Setup();
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
-			
-			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
+			ghostBody_->SetActive(false);
+
+			// プール待機中は原点に剛体が残らないよう、ステージ外の位置で初期化する
+			characterController_->Init(status_->GetRadius(), status_->GetHeight(), Vector3(0.0f, -99999.0f, 0.0f));
 			characterController_->SetGravity(status_->GetGravity());
 			stateMachine_->transform.position = transform.position;
-			
+
 			currentHP_ = static_cast<int>(status_->GetMaxHp());
 
 			return true;
@@ -144,11 +146,33 @@ namespace app
 
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
-			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
-			if (justSpawned_)
+
+			Vector3 nextPosition = stateMachine_->transform.position;
+
+			// 死亡中はRequestTeleport+Executeで地下へ退避（AABBも含めて正しく更新するため）
+			if (stateMachine_->IsDeadState())
 			{
-				justSpawned_ = false;
-				nextPosition = stateMachine_->transform.position; // コントローラーの古い位置を無視
+				static const Vector3 undergroundPos(0.0f, -99999.0f, 0.0f);
+				characterController_->RequestTeleport();
+				characterController_->Execute(undergroundPos, deltaTime);
+			}
+			else
+			{
+				if (justSpawned_)
+				{
+					// 地下から復帰する初回フレームはテレポートでsweep testをスキップ
+					characterController_->RequestTeleport();
+				}
+				nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
+				if (justSpawned_)
+				{
+					justSpawned_ = false;
+					nextPosition = stateMachine_->transform.position; // コントローラーの古い位置を無視
+
+					// 死亡時に非表示にしたCharacterControllerの剛体を再表示する
+					btRigidBody* ccBody = characterController_->GetRigidBody()->GetBody();
+					ccBody->setCollisionFlags(ccBody->getCollisionFlags() & ~btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+				}
 			}
 
 			transform.localPosition = nextPosition;
@@ -230,7 +254,10 @@ namespace app
 			stateMachine_->Setup(this);
 			status_->Setup();
 			ghostBody_->CreateCapsule(this, ID(), status_->GetRadius(), status_->GetHeight(), app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
-			characterController_->Init(status_->GetRadius(), status_->GetHeight(), transform.position);
+			ghostBody_->SetActive(false);
+
+			// プール待機中は原点に剛体が残らないよう、ステージ外の位置で初期化する
+			characterController_->Init(status_->GetRadius(), status_->GetHeight(), Vector3(0.0f, -99999.0f, 0.0f));
 			characterController_->SetGravity(status_->GetGravity());
 			stateMachine_->transform.position = transform.position;
 
@@ -245,16 +272,46 @@ namespace app
 
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
-			auto nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
+
+			Vector3 nextPosition = stateMachine_->transform.position;
+
+			// 死亡中はRequestTeleport+Executeで地下へ退避（AABBも含めて正しく更新するため）
+			if (stateMachine_->IsDeadState())
+			{
+				static const Vector3 undergroundPos(0.0f, -99999.0f, 0.0f);
+				characterController_->RequestTeleport();
+				characterController_->Execute(undergroundPos, deltaTime);
+			}
+			else
+			{
+				if (justSpawned_)
+				{
+					// 地下から復帰する初回フレームはテレポートでsweep testをスキップ
+					characterController_->RequestTeleport();
+				}
+				nextPosition = characterController_->Execute(stateMachine_->transform.position, deltaTime);
+				if (justSpawned_)
+				{
+					justSpawned_ = false;
+					nextPosition = stateMachine_->transform.position; // コントローラーの古い位置を無視
+
+					// 死亡時に非表示にしたCharacterControllerの剛体を再表示する
+					btRigidBody* ccBody = characterController_->GetRigidBody()->GetBody();
+					ccBody->setCollisionFlags(ccBody->getCollisionFlags() & ~btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+				}
+			}
+
 			transform.localPosition = nextPosition;
 			transform.localScale = stateMachine_->transform.scale;
 			transform.localRotation = stateMachine_->transform.rotation;
 			transform.UpdateTransform();
 			stateMachine_->transform.position = nextPosition;
+
 			// ゴーストボディ
 			Vector3 centerPos = transform.position;
 			centerPos.y += status_->GetRadius() * 2.0f;
 			ghostBody_->SetPosition(centerPos);
+
 			SuperClass::Update();
 		}
 

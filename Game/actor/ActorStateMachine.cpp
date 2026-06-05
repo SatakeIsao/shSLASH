@@ -933,6 +933,12 @@ namespace app
 			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
 			if (stone)
 			{
+				stone->GetGhostBody()->SetActive(false);
+
+				// CharacterControllerの剛体もデバッグ描画から隠す
+				btRigidBody* ccBody = stone->GetCharacterController()->GetRigidBody()->GetBody();
+				ccBody->setCollisionFlags(ccBody->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+
 				auto* manager = stone->GetAttackPointManager();
 				if (manager && stone->GetCurrentAttackPoint() != nullptr)
 				{
@@ -999,19 +1005,7 @@ namespace app
 				attackCoolTimer_ -= g_gameTime->GetFrameDeltaTime();
 			}
 
-			/** スポーン直後、一定時間は他のステートに遷移不可 */
-			if (isJustSpawned_)
-			{
-				/** スポーン直後の待機時間 */
-				static const float SPAWN_WAIT_TIME = 1.5f;
-				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (aiTimer_ > SPAWN_WAIT_TIME)
-				{
-					isJustSpawned_ = false;
-					aiTimer_ = 0.0f;
-				}
-				return;
-			}
+			// 死亡は最優先（スポーン猶予中でも即処理）
 			if (isDead_)
 			{
 				RequestChangeState(DeadCharacterState::ID());
@@ -1023,6 +1017,19 @@ namespace app
 					isDead_ = false;
 					auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
 					if (stone) { stone->NotifyDead(); }
+				}
+				return;
+			}
+
+			/** スポーン直後、一定時間はAIを停止 */
+			if (isJustSpawned_)
+			{
+				static const float SPAWN_WAIT_TIME = 1.5f;
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (aiTimer_ > SPAWN_WAIT_TIME)
+				{
+					isJustSpawned_ = false;
+					aiTimer_ = 0.0f;
 				}
 				return;
 			}
@@ -1387,6 +1394,12 @@ namespace app
 			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
 			if (mushroom)
 			{
+				mushroom->GetGhostBody()->SetActive(false);
+
+				// CharacterControllerの剛体もデバッグ描画から隠す
+				btRigidBody* ccBody = mushroom->GetCharacterController()->GetRigidBody()->GetBody();
+				ccBody->setCollisionFlags(ccBody->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+
 				auto* manager = mushroom->GetAttackPointManager();
 				if (manager && mushroom->GetCurrentAttackPoint() != nullptr)
 				{
@@ -1453,19 +1466,7 @@ namespace app
 				attackCoolTimer_ -= g_gameTime->GetFrameDeltaTime();
 			}
 
-			/** スポーン直後、一定時間は他のステートに遷移不可 */
-			if (isJustSpawned_)
-			{
-				/** スポーン直後の待機時間 */
-				static const float SPAWN_WAIT_TIME = 1.5f;
-				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (aiTimer_ > SPAWN_WAIT_TIME)
-				{
-					isJustSpawned_ = false;
-					aiTimer_ = 0.0f;
-				}
-				return;
-			}
+			// 死亡は最優先（スポーン猶予中でも即処理）
 			if (isDead_)
 			{
 				RequestChangeState(DeadCharacterState::ID());
@@ -1477,6 +1478,19 @@ namespace app
 					isDead_ = false;
 					auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
 					if (mushroom) { mushroom->NotifyDead(); }
+				}
+				return;
+			}
+
+			/** スポーン直後、一定時間はAIを停止 */
+			if (isJustSpawned_)
+			{
+				static const float SPAWN_WAIT_TIME = 1.5f;
+				aiTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (aiTimer_ > SPAWN_WAIT_TIME)
+				{
+					isJustSpawned_ = false;
+					aiTimer_ = 0.0f;
 				}
 				return;
 			}

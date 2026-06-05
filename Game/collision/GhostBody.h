@@ -70,7 +70,7 @@ namespace app
 			uint32_t GetAttribute() const { return attribute_; }
 			uint32_t GetMask() const { return mask_; }
 			bool IsActive() const { return isActive_; }
-			void SetActive(bool active) { isActive_ = active; }
+			void SetActive(bool active);
 
 			GhostShapeType GetShapeType() const { return shape_ ? shape_->GetType() : GhostShapeType::Sphere; }
 			float GetBoundingRadius() const { return shape_ ? shape_->GetBoundingRadius() : 0.0f; }
