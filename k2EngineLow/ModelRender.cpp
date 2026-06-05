@@ -20,7 +20,8 @@ namespace nsK2EngineLow {
         EnModelUpAxis enModelUpAxis,
         bool isShadowCaster,
         bool isShadowReceiver,
-        const char* fxFilePath)
+        const char* fxFilePath,
+        const char* gbufferFxFilePath)
     {
         m_isShadowCaster = isShadowCaster; // メンバ変数への保存漏れを修正
 
@@ -67,7 +68,34 @@ namespace nsK2EngineLow {
 
         m_model.Init(initData);
 
-        // 3. シャドウキャスター（影を落とす側）なら影専用モデルも初期化
+        // 3. G-Buffer用モデルの初期化（ディファードレンダリング用）
+        {
+            ModelInitData gbufferInitData;
+            gbufferInitData.m_tkmFilePath          = tkmFilePath;
+            gbufferInitData.m_fxFilePath = (gbufferFxFilePath != nullptr)
+                                           ? gbufferFxFilePath
+                                           : (isShadowReceiver
+                                               ? "Assets/Shader/model_gbuffer.fx"
+                                               : "Assets/Shader/model_gbuffer_ns.fx");
+            gbufferInitData.m_vsEntryPointFunc     = "VSMain";
+            gbufferInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
+            gbufferInitData.m_psEntryPointFunc     = "PSMain";
+            // ディザリング等でシーンライトデータ（eyePos, ditherEnabled）が必要なシェーダーのために渡す
+            gbufferInitData.m_expandConstantBuffer     = &g_sceneLight->GetLightData();
+            gbufferInitData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
+            // G-Bufferの各RTフォーマット
+            gbufferInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R8G8B8A8_UNORM;      // albedo
+            gbufferInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;  // normal
+            gbufferInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;  // worldPos
+            gbufferInitData.m_cullMode             = D3D12_CULL_MODE_BACK;
+            if (animationClips != nullptr)
+            {
+                gbufferInitData.m_skeleton = &m_skeleton;
+            }
+            m_renderToGBufferModel.Init(gbufferInitData);
+        }
+
+        // 4. シャドウキャスター（影を落とす側）なら影専用モデルも初期化
         if (m_isShadowCaster)
         {
             InitShadowModel(tkmFilePath, enModelUpAxis);
@@ -117,6 +145,7 @@ namespace nsK2EngineLow {
     {
         // ワールド行列の更新
         m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+        m_renderToGBufferModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 
         if (m_isShadowCaster) {
             m_shadowModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
@@ -148,5 +177,11 @@ namespace nsK2EngineLow {
         // 非表示なら描画しない
         if (!m_isVisible_) return;
         m_model.Draw(rc);
+    }
+
+    void ModelRender::OnRenderToGBuffer(RenderContext& rc)
+    {
+        if (!m_isVisible_) return;
+        m_renderToGBufferModel.Draw(rc);
     }
 }

@@ -53,7 +53,8 @@ namespace nsK2EngineLow
 			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
 			bool m_isShadowCaster = true,
 			bool m_isShadowReceiver = true,
-			const char* fxFilePath = nullptr
+			const char* fxFilePath = nullptr,
+			const char* gbufferFxFilePath = nullptr
 			);
 
 		void InitShadowModel(
@@ -73,6 +74,10 @@ namespace nsK2EngineLow
 		/// </summary>
 		/// <param name="rc">RenderContext</param>
 		void OnRenderModel(RenderContext& rc)override;
+		/// <summary>
+		/// G-Bufferへの描画（ディファードレンダリング用）
+		/// </summary>
+		void OnRenderToGBuffer(RenderContext& rc)override;
 		//void DirLigMove();
 		//void PtLigMove();
 		//座標を更新

@@ -98,11 +98,11 @@ namespace app
 		}
 
 
-        void StaticGimmick::Initialize(const char* path, const char* fxFilePath)
+        void StaticGimmick::Initialize(const char* path, const char* fxFilePath, const char* gbufferFxFilePath)
         {
             // モデル読み込み
             modelRender_ = std::make_unique<ModelRender>();
-            modelRender_->Init(path, nullptr, 0, enModelUpAxisY, false, true, fxFilePath);
+            modelRender_->Init(path, nullptr, 0, enModelUpAxisY, false, true, fxFilePath, gbufferFxFilePath);
             modelRender_->SetTRS(transform.position, transform.rotation, transform.scale);
             modelRender_->Update();
 

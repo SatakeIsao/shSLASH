@@ -31,7 +31,7 @@ namespace app
 			void Update() override;
 			void Render(RenderContext& rc) override;
 
-			virtual void Initialize(const char* path, const char* fxFilePath = nullptr) = 0;
+			virtual void Initialize(const char* path, const char* fxFilePath = nullptr, const char* gbufferFxFilePath = nullptr) = 0;
 
 			ModelRender* GetModelRender() { return modelRender_.get(); }
 			//app::collision::PhysicalBody* GetPhysicalBody() { return physicalBody_.get(); }
@@ -60,7 +60,7 @@ namespace app
 			void Update() override;
 			void Render(RenderContext& rc) override;
 
-			virtual void Initialize(const char* path, const char* fxFilePath = nullptr) override;
+			virtual void Initialize(const char* path, const char* fxFilePath = nullptr, const char* gbufferFxFilePath = nullptr) override;
 		};
 
 
