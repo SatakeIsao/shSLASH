@@ -410,7 +410,6 @@ namespace app
 					s->ApplyPhase(battleCharacter_->GetLevel());
 				}
 
-
 				// 表示ON・コリジョンON・ステートマシン初期化
 				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
 				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());

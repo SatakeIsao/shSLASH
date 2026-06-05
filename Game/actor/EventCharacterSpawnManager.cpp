@@ -10,7 +10,8 @@
 namespace
 {
 	//const int MAX_EVENT_CHARACTER = 10;                   // 同時に存在できるイベントキャラクターの最大数
-	const int INITIAL_SPAWN_COUNT = 10;                   // 初期スポーン数
+	const int INITIAL_SPAWN_COUNT = 10;                   // 初期スポーン数（フェーズ1）
+	const int PHASE_MAX_ENEMIES[] = { 10, 15, 20 };       // フェーズ1/2/3の最大敵数
 	const int MAX_PLAYER_LEVEL = 10;                      // プレイヤーレベルの最大値
 	const int SKELETON_SPAWN_LEVEL = 6;                   // スケルトンがスポーンし始めるプレイヤーレベル
 	const float SKELETON_BASE_PROBABILITY = 0.1f;         // スケルトンの基本出現確率 (Lv6で10%)
@@ -123,7 +124,7 @@ namespace app
 
 				if (pendingSpawnTimer_ >= PENDING_SPAWN_INTERVAL)
 				{
-					if (GetCurrentEnemyCount() < MAX_EVENT_CHARACTER)
+					if (GetCurrentEnemyCount() < maxEnemyCount_)
 					{
 						pendingSpawnTimer_ = 0.0f;
 						--pendingSpawnCount_;
@@ -133,7 +134,7 @@ namespace app
 				return;
 			}
 
-			if (GetCurrentEnemyCount() >= MAX_EVENT_CHARACTER)
+			if (GetCurrentEnemyCount() >= maxEnemyCount_)
 			{
 				spawnTimer_ = 0.0f;
 				return;
@@ -195,10 +196,29 @@ namespace app
 			case SpawnDirection::WEST:          return Vector3(-e, spawnPosY_, 0.0f);
 			case SpawnDirection::EAST:          return Vector3(e, spawnPosY_, 0.0f);
 
-			// 北辺・南辺の1/4地点
-			// 北辺を3分割した中間2点
+			// 北辺の1/4・3/4地点
 			case SpawnDirection::NORTH_WEST_MID: return Vector3(-h, spawnPosY_, -e);
 			case SpawnDirection::NORTH_EAST_MID: return Vector3(h, spawnPosY_, -e);
+
+			// 南辺の1/4・3/4地点
+			case SpawnDirection::SOUTH_WEST_MID: return Vector3(-h, spawnPosY_, e);
+			case SpawnDirection::SOUTH_EAST_MID: return Vector3(h, spawnPosY_, e);
+
+			// 西辺の1/4・3/4地点
+			case SpawnDirection::WEST_NORTH_MID: return Vector3(-e, spawnPosY_, -h);
+			case SpawnDirection::WEST_SOUTH_MID: return Vector3(-e, spawnPosY_, h);
+
+			// 東辺の1/4・3/4地点
+			case SpawnDirection::EAST_NORTH_MID: return Vector3(e, spawnPosY_, -h);
+			case SpawnDirection::EAST_SOUTH_MID: return Vector3(e, spawnPosY_, h);
+
+			// 北辺の外寄り中間点（fieldEdge_ の 3/4 地点）
+			case SpawnDirection::NORTH_FAR_WEST: return Vector3(-e * 0.75f, spawnPosY_, -e);
+			case SpawnDirection::NORTH_FAR_EAST: return Vector3(e * 0.75f, spawnPosY_, -e);
+
+			// 南辺の外寄り中間点
+			case SpawnDirection::SOUTH_FAR_WEST: return Vector3(-e * 0.75f, spawnPosY_, e);
+			case SpawnDirection::SOUTH_FAR_EAST: return Vector3(e * 0.75f, spawnPosY_, e);
 
 			default:
 				return Vector3::Zero;
@@ -233,7 +253,12 @@ namespace app
 			const char* dirNames[] = {
 				"NORTH_WEST", "NORTH_EAST", "SOUTH_WEST", "SOUTH_EAST",
 				"NORTH", "SOUTH", "WEST", "EAST",
-				"NORTH_WEST_MID", "NORTH_EAST_MID"
+				"NORTH_WEST_MID", "NORTH_EAST_MID",
+				"SOUTH_WEST_MID", "SOUTH_EAST_MID",
+				"WEST_NORTH_MID", "WEST_SOUTH_MID",
+				"EAST_NORTH_MID", "EAST_SOUTH_MID",
+				"NORTH_FAR_WEST", "NORTH_FAR_EAST",
+				"SOUTH_FAR_WEST", "SOUTH_FAR_EAST"
 			};
 			OutputDebugStringA(
 				(std::string("Spawn direction: ") +
@@ -371,6 +396,8 @@ namespace app
 		{
 			playerLevel_ = newLevel;
 
+			int newPhaseIndex = currentPhaseIndex_;
+
 			for (auto& entry : activeEntries_)
 			{
 				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
@@ -378,31 +405,41 @@ namespace app
 					auto* s = stone->GetStatus()->As<StoneEventCharacterStatus>();
 					if (s)
 					{
-						s->ApplyPhase(newLevel); // 戻り値に関わらず実行
-
-						// phaseUIは常に現在のフェーズで更新する
+						s->ApplyPhase(newLevel);
+						newPhaseIndex = s->GetCurrentPhaseIndex();
 						if (phaseUI_)
 						{
-							phaseUI_->SetPhaseCount(s->GetCurrentPhaseIndex());
+							phaseUI_->SetPhaseCount(newPhaseIndex);
 						}
 					}
 				}
-
-
 				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
 				{
 					auto* s = mushroom->GetStatus()->As<MushroomEventCharacterStatus>();
 					if (s)
 					{
-						s->ApplyPhase(newLevel); // 戻り値に関わらず実行
-						// phaseUIは常に現在のフェーズで更新する
+						s->ApplyPhase(newLevel);
+						newPhaseIndex = s->GetCurrentPhaseIndex();
 						if (phaseUI_)
 						{
-							phaseUI_->SetPhaseCount(s->GetCurrentPhaseIndex());
+							phaseUI_->SetPhaseCount(newPhaseIndex);
 						}
 					}
 				}
-				
+			}
+
+			// フェーズが上がった場合、最大敵数を増やして追加スポーンを予約する
+			if (newPhaseIndex > currentPhaseIndex_)
+			{
+				currentPhaseIndex_ = newPhaseIndex;
+				const int phaseIdx = (std::min)(newPhaseIndex - 1, 2); // 配列範囲クランプ
+				const int newMax = PHASE_MAX_ENEMIES[phaseIdx];
+				const int delta = newMax - maxEnemyCount_;
+				if (delta > 0)
+				{
+					maxEnemyCount_ = newMax;
+					pendingSpawnCount_ += delta;
+				}
 			}
 		}
 
