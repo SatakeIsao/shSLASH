@@ -22,6 +22,8 @@ ResultScene:: ~ResultScene()
 
 bool ResultScene::Start()
 {
+	g_sceneLight->SetResultLighting();
+
 	layout_.Initialize<app::ui::ResultMenu>("Assets/ui/layout/resultLayout.json");
 
 

@@ -32,6 +32,8 @@ BattleScene::~BattleScene()
 
 bool BattleScene::Start()
 {
+	g_sceneLight->SetBattleLighting();
+
 	app::battle::BattleManager::Initialize();
 	app::battle::BattleManager::Get().Start();
 

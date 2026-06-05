@@ -330,9 +330,12 @@ namespace app
 				break;
 			}
 
-			if (onSpawned_ && result.IsValid())
+			if (result.IsValid())
 			{
-				onSpawned_(result);
+				if (onSpawned_) onSpawned_(result);
+
+				// スポーン位置にポイントライトフラッシュを発動
+				g_sceneLight->TriggerSpawnLight(spawnPosition);
 			}
 
 			//  // スポーンエフェクト再生

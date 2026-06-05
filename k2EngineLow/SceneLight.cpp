@@ -3,6 +3,8 @@
 #include "SceneLight.h"
 
 namespace nsK2EngineLow {
+	const Vector3 SceneLight::SPAWN_LIGHT_PEAK_COLOR = { 2.5f, 1.5f, 0.3f };  // orange-yellow
+	const Vector3 SceneLight::SPAWN_SPOT_PEAK_COLOR  = { 2.0f, 1.8f, 1.2f };  // warm white
 	SceneLight::SceneLight()
 	{
 
@@ -49,10 +51,44 @@ namespace nsK2EngineLow {
 
 	void SceneLight::Update()
 	{
-		m_light.mLVP = g_renderingEngine->GetLigCameraViewProjection();
+		m_light.mLVP   = g_renderingEngine->GetLigCameraViewProjection();
 		m_light.eyePos = g_camera3D->GetPosition();
 
-		//DirRot();
+		// スポーンフラッシュライト（イージング）
+		if (spawnLightTimer_ > 0.0f)
+		{
+			spawnLightTimer_ -= g_gameTime->GetFrameDeltaTime();
+			const float t        = max(0.0f, spawnLightTimer_ / SPAWN_LIGHT_DURATION);  // 1→0
+			const float progress = 1.0f - t;                                             // 0→1
+
+			// 強度: √t（明るさを長く保ち、終盤でスムーズに消える）
+			const float intensity = sqrtf(t);
+
+			// 高さ: スポーン直後から即座に拡大（easeOutCubic: 1.0x → 1.95x）
+			const float easeOut     = 1.0f - powf(1.0f - progress, 3.0f);
+			const float heightFactor = 1.0f + easeOut * (SPAWN_SPOT_MAX_MULT - 1.0f);
+			const float spotHeight   = SPAWN_SPOT_HEIGHT * heightFactor;
+
+			// ポイントライト（近距離グロー）
+			m_light.ptPosition = spawnLightPosition_;
+			m_light.ptColor    = SPAWN_LIGHT_PEAK_COLOR * intensity;
+			m_light.ptRange    = SPAWN_LIGHT_RANGE;
+
+			// スポットライト（天空から降下しながら照らす）
+			m_light.spPosition  = spawnLightPosition_ + Vector3(0.0f, spotHeight, 0.0f);
+			m_light.spDirection = Vector3(0.0f, -1.0f, 0.0f);
+			m_light.spColor     = SPAWN_SPOT_PEAK_COLOR * intensity;
+			m_light.spRange     = SPAWN_SPOT_RANGE;
+			m_light.spAngle     = SPAWN_SPOT_ANGLE;
+		}
+		else
+		{
+			// 非アクティブ時は両ライトを無効化
+			m_light.ptColor = Vector3::Zero;
+			m_light.ptRange = 1.0f;  // 0除算を防ぐ
+			m_light.spColor = Vector3::Zero;
+			m_light.spRange = 1.0f;
+		}
 	}
 
 	void SceneLight::InitDirectionLight()
@@ -67,9 +103,9 @@ namespace nsK2EngineLow {
 		//正規化する
 		m_light.dirDirection.Normalize();
 
-		m_light.color.x = 0.4f;
-		m_light.color.y = 0.4f;
-		m_light.color.z = 0.4f;
+		m_light.color.x = 0.3f;
+		m_light.color.y = 0.3f;
+		m_light.color.z = 0.3f;
 
 		//視点
 		m_light.eyePos = g_camera3D->GetPosition();
@@ -118,27 +154,49 @@ namespace nsK2EngineLow {
 	void SceneLight::InitAmbientLight()
 	{
 		//環境光
-		m_light.ambientLight.x = 0.4f;
-		m_light.ambientLight.y = 0.4f;
-		m_light.ambientLight.z = 0.4f;
+		m_light.ambientLight.x = 0.25f;
+		m_light.ambientLight.y = 0.25f;
+		m_light.ambientLight.z = 0.25f;
 	}
 
 	void SceneLight::InitHemisphereLight()
 	{
 		//地面色
-		m_light.groundColor.x = 0.7f;
-		m_light.groundColor.y = 0.5f;
-		m_light.groundColor.z = 0.3f;
+		m_light.groundColor.x = 0.5f;
+		m_light.groundColor.y = 0.35f;
+		m_light.groundColor.z = 0.2f;
 
 		//天球色
-		m_light.skyColor.x = 0.1f;
-		m_light.skyColor.y = 0.4f;
-		m_light.skyColor.z = 0.5f;
+		m_light.skyColor.x = 0.08f;
+		m_light.skyColor.y = 0.3f;
+		m_light.skyColor.z = 0.4f;
 
 		//地面の法線を設定
 		m_light.groundNormal.x = 0.0f;
 		m_light.groundNormal.y = 1.0f;
 		m_light.groundNormal.z = 0.0f;
+	}
+
+	void SceneLight::TriggerSpawnLight(const Vector3& position)
+	{
+		spawnLightPosition_ = position;
+		spawnLightTimer_    = SPAWN_LIGHT_DURATION;
+	}
+
+	void SceneLight::SetBattleLighting()
+	{
+		m_light.color      = { 0.3f, 0.3f, 0.3f };
+		m_light.ambientLight  = { 0.25f, 0.25f, 0.25f };
+		m_light.groundColor   = { 0.5f, 0.35f, 0.2f };
+		m_light.skyColor      = { 0.08f, 0.3f, 0.4f };
+	}
+
+	void SceneLight::SetResultLighting()
+	{
+		m_light.color      = { 0.4f, 0.4f, 0.4f };
+		m_light.ambientLight  = { 0.4f, 0.4f, 0.4f };
+		m_light.groundColor   = { 0.7f, 0.5f, 0.3f };
+		m_light.skyColor      = { 0.1f, 0.4f, 0.5f };
 	}
 
 	void SceneLight::DirRot()

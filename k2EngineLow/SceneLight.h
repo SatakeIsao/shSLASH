@@ -139,9 +139,34 @@ namespace nsK2EngineLow {
 			m_light.ditherEnabled = enabled ? 1 : 0;
 		}
 
+		// バトルシーン用のライト設定（減光）
+		void SetBattleLighting();
+		// リザルトシーン用のライト設定（明るめ）
+		void SetResultLighting();
+
+		// 指定座標にスポーンフラッシュライトを発動する（フェードアウトあり）
+		void TriggerSpawnLight(const Vector3& position);
+
 	private:
 		Light m_light;			// シーンライトの構造体データ
 		Camera m_lightCamera;	// シャドウマップ描画時などに使用する光源視点のカメラ
+
+		// スポーンフラッシュライト（ポイントライト + スポットライト）
+		float   spawnLightTimer_    = 0.0f;
+		Vector3 spawnLightPosition_ = Vector3::Zero;
+
+		static constexpr float SPAWN_LIGHT_DURATION = 3.0f;
+
+		// ポイントライト（近距離グロー）
+		static constexpr float SPAWN_LIGHT_RANGE    = 150.0f;
+		static const     Vector3 SPAWN_LIGHT_PEAK_COLOR;   // warm orange-yellow
+
+		// スポットライト（真上から円錐状に照らす）
+		static constexpr float SPAWN_SPOT_HEIGHT    = 300.0f;   // スポーン位置からの基準高さ
+		static constexpr float SPAWN_SPOT_MAX_MULT  = 1.95f;   // 最大高さ倍率（1.5 × 1.3）
+		static constexpr float SPAWN_SPOT_RANGE     = 5000.0f; // 距離減衰を抑えるため大きめ
+		static constexpr float SPAWN_SPOT_ANGLE     = 0.1309f; // 7.5度（旧15度の半分）
+		static const     Vector3 SPAWN_SPOT_PEAK_COLOR;        // bright warm white
 		//Shadow m_shadow; // シャドウマップ生成・管理用オブジェクト
 		//ModelInitData bgModelInitData;	// 影を受ける背景モデルの初期化データ
 		//DirectionLight m_dirLight; // ディレクショナルライトの個別データ
