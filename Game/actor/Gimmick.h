@@ -67,5 +67,25 @@ namespace app
 
 
 		/******************************************/
+
+
+		class MoonGimmick : public IGimmick
+		{
+			appActor(MoonGimmick);
+
+
+		public:
+			MoonGimmick();
+			virtual ~MoonGimmick();
+
+			bool Start() override;
+			void Update() override;
+			void Render(RenderContext& rc) override;
+
+			virtual void Initialize(const char* path, const char* fxFilePath = nullptr, const char* gbufferFxFilePath = nullptr) override;
+		};
+
+
+		/******************************************/
 	}
 }
