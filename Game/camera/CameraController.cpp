@@ -7,6 +7,71 @@ namespace app
 {
 	namespace camera
 	{
+		// ShakeSize ã”ã¨ã® { duration, intensity } ãƒ—ãƒªã‚»ãƒƒãƒˆï¼ˆSmall/Medium/Large ã®é †ï¼‰
+		static constexpr struct { float duration; float intensity; }
+		kShakePreset[] = {
+			{ 0.15f, 1.5f },  // Small
+			{ 0.25f, 4.0f },  // Medium
+			{ 0.35f, 8.0f },  // Large
+		};
+
+
+		void GameCamera::StartShake(ShakeSize size)
+		{
+			if (!isShakeEnabled_) return;
+			const auto& p   = kShakePreset[static_cast<int>(size)];
+			shakeDuration_  = p.duration;
+			shakeTimer_     = p.duration;
+			shakeIntensity_ = p.intensity;
+			shakeElapsed_   = 0.0f;
+			isUpwardShake_  = false;
+		}
+
+
+		void GameCamera::StartShakeUpward(ShakeSize size)
+		{
+			if (!isShakeEnabled_) return;
+			const auto& p   = kShakePreset[static_cast<int>(size)];
+			shakeDuration_  = p.duration;
+			shakeTimer_     = p.duration;
+			shakeIntensity_ = p.intensity;
+			shakeElapsed_   = 0.0f;
+			isUpwardShake_  = true;
+		}
+
+
+		void GameCamera::Update()
+		{
+			if (shakeTimer_ <= 0.0f) return;
+
+			const float dt = g_gameTime->GetFrameDeltaTime();
+			shakeTimer_   -= dt;
+			shakeElapsed_ += dt;
+
+			const float decay = max(shakeTimer_ / shakeDuration_, 0.0f);
+			const Vector3 up  = g_camera3D->GetUp();
+			Vector3 offset;
+
+			if (isUpwardShake_)
+			{
+				// -cos(t) ã§å§‹ã¾ã‚Šï¼šæœ€åˆã«ä¸‹ã¸æŠ¼ã—è¾¼ã¾ã‚Œã€æ¬¡ç¬¬ã«ä¸Šã¸æƒãä¸ŠãŒã‚‹
+				const float offsetV = -cosf(shakeElapsed_ * 10.0f) * shakeIntensity_ * decay;
+				offset = up * offsetV;
+			}
+			else
+			{
+				// é€šå¸¸ï¼šæ¨ªï¼‹ç¸¦ã®éˆã„æºã‚Œ
+				const float offsetH = sinf(shakeElapsed_ * 10.0f) * shakeIntensity_ * decay;
+				const float offsetV = cosf(shakeElapsed_ *  8.0f) * shakeIntensity_ * decay;
+				const Vector3 right = g_camera3D->GetRight();
+				offset = right * offsetH + up * offsetV;
+			}
+
+			data_.position += offset;
+			data_.target   += offset;
+		}
+
+
 #if defined(APP_DEBUG)
 		void DebugCamera::OnEnter()
 		{
@@ -15,57 +80,57 @@ namespace app
 
 
 		void DebugCamera::Update()
-        {
-			// fov’²®
+		{
+			// fovå¤‰æ›´
 			if (g_pad[0]->IsPress(enButtonRB1)) {
 				float value = g_pad[0]->GetLStickYF();
 				cameraData_.fov += value * 0.05f;
 				return;
 			}
-            // ¶ƒXƒeƒBƒbƒN‚ÅˆÚ“®
+			// å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã§ç§»å‹•
 			{
 				Vector3 inputDirection;
 				inputDirection.x = g_pad[0]->GetLStickXF();
 				inputDirection.z = g_pad[0]->GetLStickYF();
 
-				// ƒJƒƒ‰‚Ì‘O•ûŒü‚Æ‰E•ûŒü‚ÌƒxƒNƒgƒ‹‚ğæ“¾
+				// ã‚«ãƒ¡ãƒ©ã®å‰æ–¹å‘ã¨å³æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—
 				Vector3 forward = g_camera3D->GetForward();
 				Vector3 right = g_camera3D->GetRight();
 
-				// y•ûŒü‚É‚ÍˆÚ“®‚µ‚È‚¢
+				// yæ–¹å‘ã«ã¯ç§»å‹•ã•ã›ãªã„
 				forward.y = 0.0f;
 				right.y = 0.0f;
 
-				// ¶ƒXƒeƒBƒbƒN‚Ì“ü—Í—Ê‚ğ‰ÁZ
+				// å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›é‡ã‚’ä¹—ç®—
 				right *= inputDirection.x;
 				forward *= inputDirection.z;
 
 				Vector3 direction = right + forward;
 				direction.Normalize();
-				// ˆÚ“®‘¬“x’²®
+				// ç§»å‹•é€Ÿåº¦ã‚’ä¹—ç®—
 				direction.Scale(10.0f);
 
-				// •½sˆÚ“®
+				// å¹³è¡Œç§»å‹•
 				cameraData_.position += direction;
 				cameraData_.target += direction;
 			}
-			// ‰EƒXƒeƒBƒbƒN‚Å‰ñ“]
+			// å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã§å›è»¢
 			{
 				float rotX = g_pad[0]->GetRStickXF() * 0.05f;
 				float rotY = g_pad[0]->GetRStickYF() * 0.05f;
 
-				// rotX‚ÅY²‰ñ“]
+				// rotXã¯Yè»¸å›è»¢
 				Quaternion yRotation;
 				yRotation.SetRotationY(-rotX);
 				Vector3 toVector = cameraData_.position - cameraData_.target;
 				yRotation.Apply(toVector);
-				// rotY‚ÅXZ²‰ñ“]
+				// rotYã¯XZè»¸å›è»¢
 				Quaternion xzRotation;
 				xzRotation.SetRotation(g_camera3D->GetRight(), -rotY);
 				xzRotation.Apply(toVector);
 				cameraData_.position = cameraData_.target + toVector;
 			}
-        }
+		}
 #endif
 	}
 }

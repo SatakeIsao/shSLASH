@@ -195,6 +195,7 @@ namespace app
 			}
 
 			DeleteGO(skyCube_);
+			DeleteGO(moon_);
 			DeleteGO(battleCharacter_);
 			DeleteGO(battleSequenceObject_);
 			DeleteGO(effectManagerObject_);
@@ -236,14 +237,21 @@ namespace app
 			// スカイキューブ
 			{
 				skyCube_ = NewGO<nsK2EngineLow::SkyCube>(0, "skycube");
-				//明るさを設定
+				// 明るさを設定
 				skyCube_->SetLuminance(1.0f);
 				skyCube_->SetScale(300.0f);
 				skyCube_->SetPosition({ 1000.0f,0.0f,1000.0f });
-				//スカイキューブの種類を設定
+				// スカイキューブの種類を設定
 				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_NightToon_2);
 			}
-			//エフェクトマネージャーオブジェクト
+			// 月オブジェクト
+			{
+				moon_ = NewGO<app::actor::MoonGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "moon");
+				moon_->transform.position = Vector3(1000.0f, 1800.0f, 5000.0f);
+				moon_->transform.scale = Vector3(26.0f, 26.0f, 26.0f);
+				moon_->Initialize("Assets/ModelData/stage/moon.tkm");
+			}
+			// エフェクトマネージャーオブジェクト
 			{
 				effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				effectManager2DObject_ = NewGO<EffectManager2DObject>(static_cast<uint8_t>(ObjectPriority::Default));
@@ -410,8 +418,10 @@ namespace app
 						entry.scale = Vector3::One;
 						entry.timer = 0.1f;
 						pendingSpawnEffects_.push_back(entry);
+						// スポットライトも同タイミングで発火（シーケンス終了時にポーズが解けてから計測開始）
+						pendingPlayerSpawnLightTimer_ = 0.1f;
 					}
-					// TODO: ステージによって変えたいので、ステージクラスが作られたら委嘱する
+					// TODO: ステージによって変えたいので、ステージクラスが作られたら移譲する
 					{
 						auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
 						// 摩擦設定
@@ -609,7 +619,17 @@ namespace app
 				}
 			}
 
-			// デバッグ：RB2+Downでプレイヤーに1ダメージ
+			// プレイヤースポーン時のスポットライト（シーケンス終了時に発火）
+			if (pendingPlayerSpawnLightTimer_ >= 0.0f)
+			{
+				pendingPlayerSpawnLightTimer_ -= g_gameTime->GetFrameDeltaTime();
+				if (pendingPlayerSpawnLightTimer_ <= 0.0f)
+				{
+					g_sceneLight->TriggerSpawnLight(battleCharacter_->transform.position);
+					pendingPlayerSpawnLightTimer_ = -1.0f;
+				}
+			}
+			// デバッグ機能：LB1+Downでプレイヤーに1ダメージ
 			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonDown))
 			{
 				float newHp = max(battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f, 0.0f);
@@ -1037,6 +1057,27 @@ namespace app
 							newHp = max(newHp, 0.0f);
 							dmg->defender->GetStatus()->SetCurrentHp(newHp);
 							dmg->defender->TakeDamage(damage);
+
+							// カメラシェイク
+							if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
+							{
+								if (dmg->chargeLevel > 0)
+								{
+									// 溜め攻撃：Lv1=Small / Lv2=Medium / Lv3=Large
+									const auto size = static_cast<app::camera::ShakeSize>(min(dmg->chargeLevel - 1, 2));
+									gameCamera->StartShake(size);
+								}
+								else if (dmg->comboIndex == 1)
+								{
+									// 通常2コンボ目：上方向への打ち上げ（Small）
+									gameCamera->StartShakeUpward(app::camera::ShakeSize::Small);
+								}
+								else
+								{
+									// 通常攻撃（1・3コンボ目）
+									gameCamera->StartShake(app::camera::ShakeSize::Small);
+								}
+							}
 
 							/** ダメージポップ通知 */
 							if (damagePopListener_ && oldHp > 0.0f)

@@ -25,6 +25,7 @@ namespace app
         class CharacterSteering;
         class StaticGimmick;
         class PipeGimmick;
+        class MoonGimmick;
 		class EventCharacterSpawnManager;
 		class EventCharacterSpawnManagerObject;
     }
@@ -95,6 +96,8 @@ namespace app
                 bool isBlowBack = false;
                 // 溜め攻撃レベル (0=通常, 1/2/3=チャージレベル)
                 int chargeLevel = 0;
+                // コンボの何発目か (0=1発目, 1=2発目, 2=3発目)
+                int comboIndex = 0;
                 
                 EnemyType enemyType = EnemyType::Stone;
 
@@ -136,6 +139,8 @@ namespace app
 			app::actor::PhaseUI* phaseUI_ = nullptr;
             /** スカイキューブのオブジェクト */
             nsK2EngineLow::SkyCube* skyCube_ = nullptr;
+            /** 月のオブジェクト */
+            app::actor::MoonGimmick* moon_ = nullptr;
             /** 通知リスト */
 			std::vector<std::unique_ptr<INotify>> notifyList_;
 
@@ -173,6 +178,7 @@ namespace app
             };
             std::vector<PendingSpawnEffect> pendingSpawnEffects_;
             Vector3 playerSpawnEffectPos_ = Vector3::Zero;
+            float pendingPlayerSpawnLightTimer_ = -1.0f;
 
 
         private:
