@@ -145,15 +145,17 @@ namespace nsK2EngineLow {
 		void SetResultLighting();
 
 		// 指定座標にスポーンフラッシュライトを発動する（フェードアウトあり）
-		void TriggerSpawnLight(const Vector3& position);
+		// intensityMultiplier: ピーク輝度の倍率（デフォルト1.0f = 敵スポーン標準）
+		void TriggerSpawnLight(const Vector3& position, float intensityMultiplier = 1.0f);
 
 	private:
 		Light m_light;			// シーンライトの構造体データ
 		Camera m_lightCamera;	// シャドウマップ描画時などに使用する光源視点のカメラ
 
 		// スポーンフラッシュライト（ポイントライト + スポットライト）
-		float   spawnLightTimer_    = 0.0f;
-		Vector3 spawnLightPosition_ = Vector3::Zero;
+		float   spawnLightTimer_       = 0.0f;
+		float   spawnLightIntensity_   = 1.0f;
+		Vector3 spawnLightPosition_    = Vector3::Zero;
 
 		static constexpr float SPAWN_LIGHT_DURATION = 3.0f;
 

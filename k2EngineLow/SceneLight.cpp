@@ -71,13 +71,13 @@ namespace nsK2EngineLow {
 
 			// ポイントライト（近距離グロー）
 			m_light.ptPosition = spawnLightPosition_;
-			m_light.ptColor    = SPAWN_LIGHT_PEAK_COLOR * intensity;
+			m_light.ptColor    = SPAWN_LIGHT_PEAK_COLOR * intensity * spawnLightIntensity_;
 			m_light.ptRange    = SPAWN_LIGHT_RANGE;
 
 			// スポットライト（天空から降下しながら照らす）
 			m_light.spPosition  = spawnLightPosition_ + Vector3(0.0f, spotHeight, 0.0f);
 			m_light.spDirection = Vector3(0.0f, -1.0f, 0.0f);
-			m_light.spColor     = SPAWN_SPOT_PEAK_COLOR * intensity;
+			m_light.spColor     = SPAWN_SPOT_PEAK_COLOR * intensity * spawnLightIntensity_;
 			m_light.spRange     = SPAWN_SPOT_RANGE;
 			m_light.spAngle     = SPAWN_SPOT_ANGLE;
 		}
@@ -177,10 +177,11 @@ namespace nsK2EngineLow {
 		m_light.groundNormal.z = 0.0f;
 	}
 
-	void SceneLight::TriggerSpawnLight(const Vector3& position)
+	void SceneLight::TriggerSpawnLight(const Vector3& position, float intensityMultiplier)
 	{
-		spawnLightPosition_ = position;
-		spawnLightTimer_    = SPAWN_LIGHT_DURATION;
+		spawnLightPosition_  = position;
+		spawnLightTimer_     = SPAWN_LIGHT_DURATION;
+		spawnLightIntensity_ = intensityMultiplier;
 	}
 
 	void SceneLight::SetBattleLighting()
