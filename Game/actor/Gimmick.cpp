@@ -158,5 +158,43 @@ namespace app
                 }
             }
         }
+
+
+
+
+		/************************************/
+
+
+		MoonGimmick::MoonGimmick() {}
+
+
+		MoonGimmick::~MoonGimmick() {}
+
+
+		bool MoonGimmick::Start()
+		{
+			return true;
+		}
+
+
+		void MoonGimmick::Update()
+		{
+			IGimmick::Update();
+		}
+
+
+		void MoonGimmick::Render(RenderContext& rc)
+		{
+			IGimmick::Render(rc);
+		}
+
+
+		void MoonGimmick::Initialize(const char* path, const char* fxFilePath, const char* gbufferFxFilePath)
+		{
+			modelRender_ = std::make_unique<ModelRender>();
+			modelRender_->Init(path, nullptr, 0, enModelUpAxisY, false, true, fxFilePath, gbufferFxFilePath);
+			modelRender_->SetTRS(transform.position, transform.rotation, transform.scale);
+			modelRender_->Update();
+		}
 	}
 }
