@@ -7,6 +7,20 @@ namespace nsK2EngineLow {
 	static const int MAX_POINT_LIGHT = 32;       // ポイントライトの最大数
 	static const int MAX_SPOT_LIGHT = 32;        // スポットライトの最大数
 
+	// TBDR（タイルベースディファードレンダリング）用定数
+	static const int MAX_TBDR_POINT_LIGHT = 1000; // TBDRポイントライトの最大数
+	static const int TBDR_TILE_WIDTH  = 16;        // タイル幅（ピクセル）
+	static const int TBDR_TILE_HEIGHT = 16;        // タイル高さ（ピクセル）
+
+	// TBDRポイントライト構造体（StructuredBuffer 経由でシェーダーへ渡す）
+	struct alignas(16) TBDRPointLight
+	{
+		Vector3 position;   // ワールド座標
+		float   pad0 = 0.f;
+		Vector3 color;      // カラー・輝度
+		float   range = 0.f; // 影響範囲
+	};
+
 	//// ディレクショナルライトの構造体
 	//struct DirectionLight
 	//{
@@ -148,9 +162,31 @@ namespace nsK2EngineLow {
 		// intensityMultiplier: ピーク輝度の倍率（デフォルト1.0f = 敵スポーン標準）
 		void TriggerSpawnLight(const Vector3& position, float intensityMultiplier = 1.0f);
 
+		// ---- TBDR ポイントライト管理 ----
+		TBDRPointLight& GetTBDRPointLight(int index)
+		{
+			return m_tbdrPointLights[index];
+		}
+		const TBDRPointLight* GetTBDRPointLightsData() const
+		{
+			return m_tbdrPointLights;
+		}
+		int GetNumTBDRPointLights() const
+		{
+			return m_numTBDRPointLights;
+		}
+		void SetNumTBDRPointLights(int num)
+		{
+			m_numTBDRPointLights = (num < MAX_TBDR_POINT_LIGHT) ? num : MAX_TBDR_POINT_LIGHT;
+		}
+
 	private:
 		Light m_light;			// シーンライトの構造体データ
 		Camera m_lightCamera;	// シャドウマップ描画時などに使用する光源視点のカメラ
+
+		// TBDRポイントライトデータ（StructuredBuffer 用。SceneLight::Light とは独立）
+		TBDRPointLight m_tbdrPointLights[MAX_TBDR_POINT_LIGHT] = {};
+		int m_numTBDRPointLights = 0;
 
 		// スポーンフラッシュライト（ポイントライト + スポットライト）
 		float   spawnLightTimer_       = 0.0f;

@@ -49,8 +49,14 @@ namespace nsK2EngineLow {
 		//シャドウのための初期化
 		InitShadowMap();
 
+		// TBDR バッファを先に初期化（InitGBuffer がスプライトに参照させるため）
+		InitTBDRBuffers();
+
 		//G-Bufferの初期化（ディファードレンダリング用）
 		InitGBuffer();
+
+		// TBDR ディスクリプタヒープ初期化（m_worldPosRT が確定した後）
+		InitTBDRDescriptorHeap();
 	}
 
 
@@ -97,7 +103,115 @@ namespace nsK2EngineLow {
 		spriteInitData.m_expandConstantBufferSize  = sizeof(g_sceneLight->GetLightData());
 		spriteInitData.m_colorBufferFormat[0]      = m_mainRenderingTarget.GetColorBufferFormat();
 
+		// TBDR: タイルインデックスリストとライトデータを expand SRV として登録
+		// t20 = タイル別ライトインデックス, t21 = ライトデータ
+		spriteInitData.m_expandShaderResoruceView[0] = &m_tileIndexUAV;
+		spriteInitData.m_expandShaderResoruceView[1] = &m_tbdrLightBuffer;
+
 		m_deferredLightingSprite.Init(spriteInitData);
+	}
+
+	void RenderingEngine::InitTBDRBuffers()
+	{
+		const int W = g_graphicsEngine->GetFrameBufferWidth();
+		const int H = g_graphicsEngine->GetFrameBufferHeight();
+		const int tilesX = (W + MAX_TBDR_TILE_WIDTH  - 1) / MAX_TBDR_TILE_WIDTH;
+		const int tilesY = (H + MAX_TBDR_TILE_HEIGHT - 1) / MAX_TBDR_TILE_HEIGHT;
+		const int numTiles = tilesX * tilesY;
+
+		// ポイントライトデータ用 StructuredBuffer（CPU 毎フレーム更新）
+		m_tbdrLightBuffer.Init(
+			sizeof(TBDRPointLight),
+			MAX_TBDR_POINT_LIGHT,
+			nullptr);
+
+		// タイル別ライトインデックス用 RWStructuredBuffer（コンピュートシェーダー出力）
+		m_tileIndexUAV.Init(
+			sizeof(uint32_t),
+			MAX_TBDR_POINT_LIGHT * numTiles,
+			nullptr);
+
+		// カメラデータ CB（b0）
+		m_tbdrCameraDataCB.Init(sizeof(TBDRCameraData), nullptr);
+
+		// ライト数 CB（b1）
+		TBDRParams params = { 0, { 0.f, 0.f, 0.f } };
+		m_tbdrParamsCB.Init(sizeof(TBDRParams), &params);
+
+		// コンピュートシェーダーロード
+		m_lightCullingCS.LoadCS("Assets/Shader/lightCulling.fx", "CSMain");
+
+		// ルートシグネチャ
+		m_lightCullingRS.Init(
+			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+			D3D12_TEXTURE_ADDRESS_MODE_WRAP);
+
+		// コンピュートパイプラインステート
+		D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.pRootSignature = m_lightCullingRS.Get();
+		psoDesc.CS             = CD3DX12_SHADER_BYTECODE(m_lightCullingCS.GetCompiledBlob());
+		psoDesc.Flags          = D3D12_PIPELINE_STATE_FLAG_NONE;
+		psoDesc.NodeMask       = 0;
+		m_lightCullingPSO.Init(psoDesc);
+	}
+
+	void RenderingEngine::InitTBDRDescriptorHeap()
+	{
+		// コンピュートシェーダー用ディスクリプタヒープを構築
+		// SRV: t0=worldPosRT, t1=lightBuffer
+		// UAV: u0=tileIndexUAV
+		// CBV: b0=cameraData, b1=params
+		m_lightCullingDescHeap.RegistShaderResource(0, m_worldPosRT.GetRenderTargetTexture());
+		m_lightCullingDescHeap.RegistShaderResource(1, m_tbdrLightBuffer);
+		m_lightCullingDescHeap.RegistUnorderAccessResource(0, m_tileIndexUAV);
+		m_lightCullingDescHeap.RegistConstantBuffer(0, m_tbdrCameraDataCB);
+		m_lightCullingDescHeap.RegistConstantBuffer(1, m_tbdrParamsCB);
+		m_lightCullingDescHeap.Commit();
+	}
+
+	void RenderingEngine::ExecuteTBDR(RenderContext& rc)
+	{
+		const int W = g_graphicsEngine->GetFrameBufferWidth();
+		const int H = g_graphicsEngine->GetFrameBufferHeight();
+
+		// --- ライトデータを GPU へコピー ---
+		m_tbdrLightBuffer.Update(
+			const_cast<TBDRPointLight*>(g_sceneLight->GetTBDRPointLightsData()));
+
+		// --- カメラデータ CB を更新 ---
+		TBDRCameraData camData;
+		camData.mView = g_camera3D->GetViewMatrix();
+		camData.mProj = g_camera3D->GetProjectionMatrix();
+		camData.mProjInv.Inverse(camData.mProj);
+		camData.screenParam = Vector4(
+			g_camera3D->GetNear(),
+			g_camera3D->GetFar(),
+			static_cast<float>(W),
+			static_cast<float>(H));
+		m_tbdrCameraDataCB.CopyToVRAM(camData);
+
+		// --- ライト数 CB を更新 ---
+		TBDRParams params;
+		params.numPointLight = g_sceneLight->GetNumTBDRPointLights();
+		params._pad[0] = params._pad[1] = params._pad[2] = 0.f;
+		m_tbdrParamsCB.CopyToVRAM(params);
+
+		// --- コンピュートシェーダーをディスパッチ ---
+		rc.SetComputeRootSignature(m_lightCullingRS);
+		rc.SetComputeDescriptorHeap(m_lightCullingDescHeap);
+		rc.SetPipelineState(m_lightCullingPSO);
+
+		const int tilesX = (W + MAX_TBDR_TILE_WIDTH  - 1) / MAX_TBDR_TILE_WIDTH;
+		const int tilesY = (H + MAX_TBDR_TILE_HEIGHT - 1) / MAX_TBDR_TILE_HEIGHT;
+		rc.Dispatch(tilesX, tilesY, 1);
+
+		// UAV → SRV 状態遷移（ディファードライティングパスで読み取れるようにする）
+		rc.TransitionResourceState(
+			m_tileIndexUAV.GetD3DResoruce(),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 
 	void RenderingEngine::InitBloom()
@@ -176,12 +290,21 @@ namespace nsK2EngineLow {
 		GBufferDraw(rc);
 		rc.WaitUntilFinishDrawingToRenderTargets(3, gBufferRTs);
 
-		// 4. ディファードライティングパス（メインRTへ、クリアしない）
+		// 4a. TBDR ライトカリング（コンピュートシェーダー）
+		ExecuteTBDR(rc);
+
+		// 4b. ディファードライティングパス（メインRTへ、クリアしない）
 		//    ジオメトリ画素 → ライティング結果で上書き
 		//    スカイ画素    → discard によりフォワードパスのスカイキューブが透過
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderingTarget);
 		rc.SetRenderTargetAndViewport(m_mainRenderingTarget);
 		m_deferredLightingSprite.Draw(rc);
+
+		// タイルインデックス UAV を元の状態に戻す（次フレームのコンピュートシェーダー用）
+		rc.TransitionResourceState(
+			m_tileIndexUAV.GetD3DResoruce(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
 		// 4. エフェクト描画（フォワードレンダリングとして合成）
 		EffectEngine::GetInstance()->Draw();

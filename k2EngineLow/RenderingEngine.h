@@ -1,6 +1,13 @@
 #pragma once
 #include "Shadow.h"
 #include "Bloom.h"
+#include "graphics/RootSignature.h"
+#include "graphics/PipelineState.h"
+#include "graphics/DescriptorHeap.h"
+#include "graphics/StructuredBuffer.h"
+#include "graphics/RWStructuredBuffer.h"
+#include "graphics/ConstantBuffer.h"
+#include "graphics/Shader.h"
 
 namespace nsK2EngineLow {
 
@@ -22,6 +29,9 @@ namespace nsK2EngineLow {
 		//void InitBloomBoke();
 		void Init2DSprite();
 		void InitGBuffer();
+		void InitTBDRBuffers();          // TBDR バッファ初期化（InitGBuffer より前に呼ぶ）
+		void InitTBDRDescriptorHeap();   // TBDR ディスクリプタヒープ初期化（InitGBuffer より後に呼ぶ）
+		void ExecuteTBDR(RenderContext& rc); // ライトカリング ディスパッチ
 
 		void AddRenderObject(IRenderer* renderObject)
 		{
@@ -67,6 +77,9 @@ namespace nsK2EngineLow {
 		//{
 		//	m_sceneLight.SetLVP(mat);
 		//}
+		void SetTBDREnabled(bool enabled) { m_tbdrEnabled = enabled; }
+		bool IsTBDREnabled() const { return m_tbdrEnabled; }
+
 		// ゲッター系の関数
 		SceneLight& GetLightingCB()
 		{
@@ -125,6 +138,37 @@ namespace nsK2EngineLow {
 		Matrix m_viewProjectionMatrix;
 		std::vector<ModelRender*> m_modelRenderObject;
 		std::vector<IRenderer* > m_renderObjects;	// 描画オブジェクトのリスト
+
+		// ---- TBDR（タイルベースディファードレンダリング）----
+		static const int MAX_TBDR_POINT_LIGHT  = 1000;
+		static const int MAX_TBDR_TILE_WIDTH   = 16;
+		static const int MAX_TBDR_TILE_HEIGHT  = 16;
+
+		// コンピュートシェーダー用カメラデータ（b0）
+		struct alignas(16) TBDRCameraData
+		{
+			Matrix  mView;
+			Matrix  mProj;
+			Matrix  mProjInv;
+			Vector4 screenParam; // near, far, width, height
+		};
+
+		// コンピュートシェーダー用ライト数パラメーター（b1）
+		struct TBDRParams
+		{
+			int   numPointLight;
+			float _pad[3];
+		};
+
+		bool               m_tbdrEnabled = false;		// TBDR ON/OFF フラグ
+		StructuredBuffer   m_tbdrLightBuffer;			// ポイントライトデータ（TBDRPointLight 配列）
+		RWStructuredBuffer m_tileIndexUAV;				// タイル別ライトインデックスリスト（UAV）
+		ConstantBuffer     m_tbdrCameraDataCB;			// カメラデータ CB（b0）
+		ConstantBuffer     m_tbdrParamsCB;				// ライト数 CB（b1）
+		Shader             m_lightCullingCS;			// コンピュートシェーダー
+		PipelineState      m_lightCullingPSO;			// コンピュートパイプラインステート
+		RootSignature      m_lightCullingRS;			// ルートシグネチャ
+		DescriptorHeap     m_lightCullingDescHeap;		// ディスクリプタヒープ
 	};
 
 }

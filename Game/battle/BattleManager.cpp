@@ -26,6 +26,7 @@
 #include "core/PauseManagerObject.h"
 #include "EnemyPhase.h"
 #include "sound/SoundManager.h"
+#include "GameResultData.h"
 
 
 namespace
@@ -188,6 +189,15 @@ namespace app
 
 		BattleManager::~BattleManager()
 		{
+			// リザルト用データを保存（playerHpUIObject_ 削除前に取得する）
+			{
+				auto& result = app::GameResultData::Get();
+				result.Reset();
+				result.level = playerHpUIObject_ ? playerHpUIObject_->GetLevel() : 0;
+				result.stoneKillCount = stoneKillCount_;
+				result.mushroomKillCount = mushroomKillCount_;
+			}
+
 			// スポーン済み敵とHPバーを先にクリーンアップ
 			if (eventCharacterSpawnManagerObject_)
 			{
@@ -293,6 +303,10 @@ namespace app
 									Quaternion::Identity,
 									Vector3::One
 								);
+								{
+									const auto& sp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>();
+									TriggerTBDRSpawnLight(spawnEffectPos, Vector3(sp.spawnLightColorR, sp.spawnLightColorG, sp.spawnLightColorB), 250.f, 2.5f);
+								}
 							}
 
 							// 死亡時のコールバックをセット
@@ -319,7 +333,8 @@ namespace app
 									playerHpUIObject_->AddLevelUpGauge(3);
 									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
 								}
-							});		
+								stoneKillCount_++;
+							});
 							break;
 						}
 						case app::actor::EnemyType::MUSHROOM:
@@ -352,6 +367,10 @@ namespace app
 									Quaternion::Identity,
 									Vector3(1.2f,1.2f,1.2f)
 								);
+								{
+									const auto& mp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterMushroomEventCharacterParameter>();
+									TriggerTBDRSpawnLight(spawnEffectPos, Vector3(mp.spawnLightColorR, mp.spawnLightColorG, mp.spawnLightColorB), 250.f, 2.5f);
+								}
 							}
 							//死亡時のコールバックをセット
 							mushroom->AddOnDead([this, mushroom]()
@@ -379,6 +398,7 @@ namespace app
 									playerHpUIObject_->AddLevelUpGauge(5);
 									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
 								}
+								mushroomKillCount_++;
 							});
 							break;
 						}
@@ -564,6 +584,8 @@ namespace app
 
 		void BattleManager::Update()
 		{
+			UpdateTBDRSpawnLights();
+
 			// アニメーション初期化フレームを確保してからシーケンスを生成する
 			// （生成直後に SetPause するとアニメが走らず T ポーズになるため）
 			if (!battleSequenceObject_)
@@ -626,9 +648,17 @@ namespace app
 				if (pendingPlayerSpawnLightTimer_ <= 0.0f)
 				{
 					g_sceneLight->TriggerSpawnLight(battleCharacter_->transform.position);
+					{
+						const auto& bp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterBattleCharacterParameter>();
+						TriggerTBDRSpawnLight(
+							battleCharacter_->transform.position + Vector3(0.f, 80.f, 0.f),
+							Vector3(bp.spawnLightColorR, bp.spawnLightColorG, bp.spawnLightColorB),
+							bp.spawnLightRange, bp.spawnLightDuration);
+					}
 					pendingPlayerSpawnLightTimer_ = -1.0f;
 				}
 			}
+
 			// デバッグ機能：LB1+Downでプレイヤーに1ダメージ
 			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonDown))
 			{
@@ -1250,6 +1280,64 @@ namespace app
 		}
 
 
+		void BattleManager::TriggerTBDRSpawnLight(const Vector3& pos, const Vector3& color, float range, float duration)
+		{
+			TBDRSpawnLightEntry entry;
+			entry.position  = pos;
+			entry.peakColor = color;
+			entry.range     = range;
+			entry.timer     = duration;
+			entry.duration  = duration;
+			tbdrSpawnLights_.push_back(entry);
+		}
+
+
+		void BattleManager::UpdateTBDRSpawnLights()
+		{
+			const float dt = g_gameTime->GetFrameDeltaTime();
+			int idx = 0;
+
+			// ---- 松明ライト（壁沿いに 8本）----
+			// TBDR が無効のときはスキップ（スポーンライトは常に動く）
+			if (torchLightsEnabled_ && g_renderingEngine->IsTBDREnabled() && battleCharacter_ != nullptr)
+			{
+				const float HEIGHT = battleCharacter_->transform.position.y + 80.f;
+				constexpr float RADIUS = 650.f;
+				constexpr float RANGE  = 200.f; // √(80²+250²)≈263 より小 → 中心に届かない
+				for (int i = 0; i < 16; i++)
+				{
+					if (idx >= MAX_TBDR_POINT_LIGHT) break;
+					const float angle = (3.14159265f * 2.f / 16.f) * static_cast<float>(i);
+					auto& lig = g_sceneLight->GetTBDRPointLight(idx++);
+					lig.position = Vector3(sinf(angle) * RADIUS, HEIGHT, cosf(angle) * RADIUS);
+					lig.color    = Vector3(1.0f, 0.75f, 0.1f);
+					lig.range    = RANGE;
+				}
+			}
+
+			// スポーンライト（動的・フェードアウト）
+			for (auto it = tbdrSpawnLights_.begin(); it != tbdrSpawnLights_.end(); )
+			{
+				it->timer -= dt;
+				if (it->timer <= 0.0f)
+					it = tbdrSpawnLights_.erase(it);
+				else
+					++it;
+			}
+			for (auto& e : tbdrSpawnLights_)
+			{
+				if (idx >= MAX_TBDR_POINT_LIGHT) break;
+				const float t    = e.timer / e.duration;
+				auto& lig        = g_sceneLight->GetTBDRPointLight(idx++);
+				lig.position     = e.position;
+				lig.color        = e.peakColor * t;
+				lig.range        = e.range;
+			}
+
+			g_sceneLight->SetNumTBDRPointLights(idx);
+		}
+
+
 		void BattleManager::LoadParameter()
 		{
 			// バトル共通パラメーター読み込み
@@ -1293,6 +1381,11 @@ namespace app
 					p.chargeAttackMultiplier = json["chargeAttackMultiplier"].get<float>();
 					p.criticalRate = json["criticalRate"].get<float>();
 					p.criticalMultiplier = json["criticalMultiplier"].get<float>();
+					p.spawnLightColorR   = json["spawnLightColorR"].get<float>();
+					p.spawnLightColorG   = json["spawnLightColorG"].get<float>();
+					p.spawnLightColorB   = json["spawnLightColorB"].get<float>();
+					p.spawnLightRange    = json["spawnLightRange"].get<float>();
+					p.spawnLightDuration = json["spawnLightDuration"].get<float>();
 				});
 			// 武器パラメーター読み込み
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
@@ -1317,6 +1410,9 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
+					p.spawnLightColorR = json["spawnLightColorR"].get<float>();
+					p.spawnLightColorG = json["spawnLightColorG"].get<float>();
+					p.spawnLightColorB = json["spawnLightColorB"].get<float>();
 					p.phases.clear();
 					for (const auto& phase : json["phases"])
 					{
@@ -1335,6 +1431,9 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
+					p.spawnLightColorR = json["spawnLightColorR"].get<float>();
+					p.spawnLightColorG = json["spawnLightColorG"].get<float>();
+					p.spawnLightColorB = json["spawnLightColorB"].get<float>();
 					p.phases.clear();
 					for (const auto& phase : json["phases"])
 					{

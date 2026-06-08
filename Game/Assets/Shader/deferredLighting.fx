@@ -3,11 +3,12 @@
  * G-Bufferを読み込んで全光源のライティングを計算する
  */
 
-// スプライト用定数バッファ (b0)
+// スプライト用定数バッファ (b0) — Sprite クラスが mvp/mulColor/screenParam を自動設定
 cbuffer cb : register(b0)
 {
     float4x4 mvp;
     float4   mulColor;
+    float4   screenParam; // x=near, y=far, z=width, w=height（タイルインデックス計算用）
 };
 
 // ライト定数バッファ (b1) — SceneLight::Light に完全対応
@@ -39,6 +40,23 @@ Texture2D<float4> normalTexture   : register(t1);   // 法線（0〜1エンコ�
 Texture2D<float4> worldPosTexture : register(t2);   // ワールド座標
 Texture2D<float2> shadowTexture   : register(t3);   // シャドウマップ（R32G32_FLOAT VSM）
 sampler           Sampler         : register(s0);
+
+// TBDR（タイルベースディファードレンダリング）用リソース
+// t20, t21 は SpriteInitData::m_expandShaderResoruceView[0], [1] に対応
+#define TILE_WIDTH  16
+#define TILE_HEIGHT 16
+#define MAX_TBDR_POINT_LIGHT 1000
+
+// TBDRポイントライトデータ（CPU 側の TBDRPointLight に対応）
+struct TBDRPointLight
+{
+    float4 position; // xyz=ワールド座標, w=pad0（C++ alignas(16) の 4byte パディング）
+    float3 color;
+    float  range;
+};
+
+StructuredBuffer<uint>          pointLightListInTile : register(t20); // タイル別ライトインデックスリスト
+StructuredBuffer<TBDRPointLight> tbdrLightBuffer     : register(t21); // ライトデータ
 
 struct VSInput
 {
@@ -173,8 +191,32 @@ float4 PSMain(PSInput In) : SV_Target0
     // シャドウ（shadowReceiver=0のモデルは影を受けない）
     float shadowAttn = lerp(1.0f, CalcShadow(worldPos, normal), shadowReceiver);
 
+    // ---- TBDR ポイントライト（タイル別カリング済み）----
+    float3 tbdrLig = 0.0f;
+    {
+        uint2  viewportPos = (uint2)In.pos.xy;
+        uint   numCellX    = ((uint)screenParam.z + TILE_WIDTH  - 1) / TILE_WIDTH;
+        uint   tileIndex   = viewportPos.x / TILE_WIDTH + (viewportPos.y / TILE_HEIGHT) * numCellX;
+        uint   lightStart  = tileIndex * MAX_TBDR_POINT_LIGHT;
+        uint   lightEnd    = lightStart + MAX_TBDR_POINT_LIGHT;
+
+        for (uint li = lightStart; li < lightEnd; li++)
+        {
+            uint ligNo = pointLightListInTile[li];
+            if (ligNo == 0xffffffff) break;
+
+            TBDRPointLight lig    = tbdrLightBuffer[ligNo];
+            float3         ligDir = normalize(worldPos - lig.position.xyz);
+            float          dist   = length(worldPos - lig.position.xyz);
+            float          affect = max(0.0f, 1.0f - dist / lig.range);
+
+            tbdrLig += CalcLamberDiffuse(ligDir, lig.color, normal) * affect;
+            tbdrLig += CalcPhongSpecular(ligDir, lig.color, worldPos, normal, specPower) * affect;
+        }
+    }
+
     // ライト合算
-    float3 totalLig = dirLig + ptLig + spLig + hemiLig + ambientLight;
+    float3 totalLig = dirLig + ptLig + spLig + hemiLig + ambientLight + tbdrLig;
 
     float4 finalColor  = albedo;
     finalColor.xyz    *= totalLig * shadowAttn;
