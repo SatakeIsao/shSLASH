@@ -12,6 +12,11 @@
         "chargeAttackMultiplierLevel2": 1.6,
         "chargeAttackMultiplier": 2.0,
         "criticalRate": 0.15,
-        "criticalMultiplier": 2.0
+        "criticalMultiplier": 2.0,
+        "spawnLightColorR": 1.0,
+        "spawnLightColorG": 0.9,
+        "spawnLightColorB": 0.6,
+        "spawnLightRange": 350.0,
+        "spawnLightDuration": 3.0
     }
 ]

@@ -7,6 +7,9 @@
         "radius": 15,
         "height": 1,
         "hp": 50,
+        "spawnLightColorR": 1.0,
+        "spawnLightColorG": 0.35,
+        "spawnLightColorB": 0.05,
         "phases": [
             { "requiredPlayerLevel": 0, "attackPower": 2.0 },
             { "requiredPlayerLevel": 4, "attackPower": 3.0 },

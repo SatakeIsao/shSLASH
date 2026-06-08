@@ -144,6 +144,9 @@ namespace app
             /** 通知リスト */
 			std::vector<std::unique_ptr<INotify>> notifyList_;
 
+            int stoneKillCount_ = 0;
+            int mushroomKillCount_ = 0;
+
             bool hasPlayedPunchEffect_ = false;
             bool deadTest_ = false;
             bool isPause_ = false;
@@ -179,6 +182,8 @@ namespace app
             std::vector<PendingSpawnEffect> pendingSpawnEffects_;
             Vector3 playerSpawnEffectPos_ = Vector3::Zero;
             float pendingPlayerSpawnLightTimer_ = -1.0f;
+            /** 松明用のライト有無 */
+            bool torchLightsEnabled_ = false;
 
 
         private:
@@ -222,6 +227,8 @@ namespace app
             }
 
 
+            void SetTorchLightsEnabled(bool enabled) { torchLightsEnabled_ = enabled; }
+            bool IsTorchLightsEnabled() const { return torchLightsEnabled_; }
             void SetPause(bool isPause);
             void SetLevelUpUIObject(app::ui::LevelUpUIObject* obj) { levelUpObject_ = obj; }
             bool IsTimeUpFinished() const;
@@ -232,6 +239,18 @@ namespace app
 
         private:
             void LoadParameter();
+            void TriggerTBDRSpawnLight(const Vector3& pos, const Vector3& color, float range, float duration);
+            void UpdateTBDRSpawnLights();
+
+            struct TBDRSpawnLightEntry
+            {
+                Vector3 position;
+                Vector3 peakColor;
+                float   range    = 0.f;
+                float   timer    = 0.f;
+                float   duration = 1.f;
+            };
+            std::vector<TBDRSpawnLightEntry> tbdrSpawnLights_;
 
 
 

@@ -84,6 +84,11 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float chargeAttackMultiplier;		// 溜め攻撃Lv3（最大）の倍率
 			float criticalRate;					// クリティカル発生確率 (0.0~1.0)
 			float criticalMultiplier;			// クリティカル時のダメージ倍率
+			float spawnLightColorR = 1.0f;		// スポーンライト色 R
+			float spawnLightColorG = 0.9f;		// スポーンライト色 G
+			float spawnLightColorB = 0.6f;		// スポーンライト色 B
+			float spawnLightRange    = 350.f;	// スポーンライト範囲
+			float spawnLightDuration = 3.0f;	// スポーンライト持続時間
 		};
 
 
@@ -128,6 +133,9 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float radius;				// 半径
 			float height;				// 高さ
 			float hp;					// HP
+			float spawnLightColorR = 0.2f;	// スポーンライト色 R
+			float spawnLightColorG = 1.0f;	// スポーンライト色 G
+			float spawnLightColorB = 0.35f;	// スポーンライト色 B
 			std::vector<EnemyPhaseParameter> phases;	// フェーズデータ
 		};
 
@@ -143,6 +151,9 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float radius;				// 半径
 			float height;				// 高さ
 			float hp;					// HP
+			float spawnLightColorR = 1.0f;	// スポーンライト色 R
+			float spawnLightColorG = 0.35f;	// スポーンライト色 G
+			float spawnLightColorB = 0.05f;	// スポーンライト色 B
 			std::vector<EnemyPhaseParameter> phases;	// フェーズデータ
 		};
 
