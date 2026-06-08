@@ -140,6 +140,7 @@ namespace app
 			/** BattleCharacterから level を受け取って表示 */
 			void SetLevel(int level) { level_ = min(level, 10);}
 			void AddLevelUpGauge(int exp) { levelUpIndex_ = min(levelUpIndex_ + exp, 10); }
+			int GetLevel() const { return level_; }
 
 			bool IsLevelUp() const { return isLevelUpPending_; }
 			void ClearLevelUp() { isLevelUpPending_ = false; }

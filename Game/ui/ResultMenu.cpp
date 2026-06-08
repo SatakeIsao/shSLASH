@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "ResultMenu.h"   
+#include "ResultMenu.h"
 #include "ResultSubMenu.h"
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
+#include "GameResultData.h"
 
 namespace app {
     namespace ui {
@@ -22,35 +23,40 @@ namespace app {
             enemyDigit2_ = GetUI<UIDigit>(Hash32("EnemyDigit_2"));
             enemyDigit3_ = GetUI<UIDigit>(Hash32("EnemyDigit_3"));
             scoreDigit_ = GetUI<UIDigit>(Hash32("ScoreDigit"));
-            rankS_ = GetUI<UIIcon>(Hash32("Rank_S"));
-            rankSFog_ = GetUI<UIIcon>(Hash32("Rank_S_Fog"));
-            rankA_ = GetUI<UIIcon>(Hash32("Rank_A"));
-            rankB_ = GetUI<UIIcon>(Hash32("Rank_B"));
+            rankMaster_ = GetUI<UIIcon>(Hash32("Rank_S"));
+            rankMasterFog_ = GetUI<UIIcon>(Hash32("Rank_S_Fog"));
+            rankElite_ = GetUI<UIIcon>(Hash32("Rank_A"));
+            rankBeginner_ = GetUI<UIIcon>(Hash32("Rank_B"));
             skipIcon_ = GetUI<UIIcon>(Hash32("Skip"));
             nextIcon_ = GetUI<UIIcon>(Hash32("Next"));
 
-            // ==========================================
-            // 最初は全て非表示にしておく
-            // ==========================================
-            if (scoreBoard_)  scoreBoard_->isDraw = false;
-            if (enemyIcon1_) enemyIcon1_->isDraw = false;
-            if (enemyIcon2_) enemyIcon2_->isDraw = false;
-            if (enemyIcon3_) enemyIcon3_->isDraw = false;
-            if (levelDigit_)  levelDigit_->isDraw = false;
-            if (enemyDigit1_) enemyDigit1_->isDraw = false;
-            if (enemyDigit2_) enemyDigit2_->isDraw = false;
-            if (enemyDigit3_) enemyDigit3_->isDraw = false;
-            if (scoreDigit_)  scoreDigit_->isDraw = false;
-            if (rankS_)    rankS_->transform.localScale = Vector3::Zero;
-            if (rankSFog_) rankSFog_->transform.localScale = Vector3::Zero;
-            if (rankA_)    rankA_->transform.localScale = Vector3::Zero;
-            if (rankB_)    rankB_->transform.localScale = Vector3::Zero;
+            const app::GameResultData& rd = app::GameResultData::Get();
+            currentRank_ = static_cast<int>(rd.CalcRank());
+            if (levelDigit_)  levelDigit_->SetNumber(rd.level);
+            if (enemyDigit1_) enemyDigit1_->SetNumber(rd.stoneKillCount);
+            if (enemyDigit2_) enemyDigit2_->SetNumber(rd.mushroomKillCount);
+            if (enemyDigit3_) enemyDigit3_->SetNumber(0);
+            if (scoreDigit_)  scoreDigit_->SetNumber(rd.CalcTotalScore());
+
+            if (scoreBoard_)    scoreBoard_->isDraw = false;
+            if (enemyIcon1_)    enemyIcon1_->isDraw = false;
+            if (enemyIcon2_)    enemyIcon2_->isDraw = false;
+            if (enemyIcon3_)    enemyIcon3_->isDraw = false;
+            if (levelDigit_)    levelDigit_->isDraw = false;
+            if (enemyDigit1_)   enemyDigit1_->isDraw = false;
+            if (enemyDigit2_)   enemyDigit2_->isDraw = false;
+            if (enemyDigit3_)   enemyDigit3_->isDraw = false;
+            if (scoreDigit_)    scoreDigit_->isDraw = false;
+            if (rankMaster_)    rankMaster_->transform.localScale = Vector3::Zero;
+            if (rankMasterFog_) rankMasterFog_->transform.localScale = Vector3::Zero;
+            if (rankElite_)     rankElite_->transform.localScale = Vector3::Zero;
+            if (rankBeginner_)  rankBeginner_->transform.localScale = Vector3::Zero;
 
             auto attachStamp = [&](UIDigit* digit) {
                 if (!digit) return;
                 app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(digit, Hash32("DigitStamp"));
                 digit->transform.localScale = Vector3::Zero;
-                };
+            };
             attachStamp(levelDigit_);
             attachStamp(enemyDigit1_);
             attachStamp(enemyDigit2_);
@@ -66,20 +72,14 @@ namespace app {
             if (skipIcon_) skipIcon_->isDraw = true;
             if (nextIcon_) nextIcon_->isDraw = false;
 
-            // ==========================================
-            // アニメーションをアタッチ
-            // ==========================================
             if (enemyIcon1_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(enemyIcon1_, Hash32("EnemyIcon1Slide"));
             if (enemyIcon2_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(enemyIcon2_, Hash32("EnemyIcon2Slide"));
             if (enemyIcon3_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(enemyIcon3_, Hash32("EnemyIcon3Slide"));
             if (scoreBoard_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(scoreBoard_, Hash32("ScoreBoardSlideIn"));
-            if (rankS_) app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankS_, Hash32("RankStamp"));
-            if (rankA_) app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankA_, Hash32("RankStamp"));
-            if (rankB_) app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankB_, Hash32("RankStamp"));
+            if (rankMaster_)   app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankMaster_, Hash32("RankStamp"));
+            if (rankElite_)    app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankElite_, Hash32("RankStamp"));
+            if (rankBeginner_) app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankBeginner_, Hash32("RankStamp"));
 
-            // ==========================================
-            // 最初の状態をセット
-            // ==========================================
             currentState_ = SequenceState::ShowResult;
             stateTimer_ = 2.0f;
         }
@@ -87,9 +87,6 @@ namespace app {
         void ResultMenu::Update() {
             MenuBase::Update();
 
-            // ==========================================
-            // 演出スキップ処理
-            // ==========================================
             if (currentState_ >= SequenceState::ShowResult && currentState_ <= SequenceState::ShowDigits) {
                 if (g_pad[0]->IsTrigger(enButtonA)) {
                     if (scoreBoard_)  scoreBoard_->isDraw = true;
@@ -103,21 +100,26 @@ namespace app {
                             digits[i]->isDraw = true;
                             digits[i]->transform.localScale = Vector3::One;
                             digits[i]->transform.localPosition = initialDigitPositions_[i];
-                            digits[i]->transform.UpdateTransform(); 
+                            digits[i]->transform.UpdateTransform();
                         }
                     }
 
-                    if (rankA_) rankA_->transform.localScale = Vector3::Zero;
-                    if (rankB_) rankB_->transform.localScale = Vector3::Zero;
-                    if (rankS_) {
-                        rankS_->transform.localScale = Vector3::One;
-                        rankS_->transform.localRotation = Quaternion::Identity;
+                    if (rankElite_)     rankElite_->transform.localScale = Vector3::Zero;
+                    if (rankBeginner_)  rankBeginner_->transform.localScale = Vector3::Zero;
+                    if (rankMasterFog_) rankMasterFog_->transform.localScale = Vector3::Zero;
+                    if (currentRank_ == 0 && rankMaster_) {
+                        rankMaster_->transform.localScale = Vector3::One;
+                        rankMaster_->transform.localRotation = Quaternion::Identity;
                     }
-                    if (rankSFog_) {
-                        rankSFog_->transform.localScale = Vector3::One;
+                    else if (currentRank_ == 1 && rankElite_) {
+                        rankElite_->transform.localScale = Vector3::One;
+                        rankElite_->transform.localRotation = Quaternion::Identity;
                     }
-                    debugCurrentRank_ = 0;
-                    sFogTimer_ = 0.0f;
+                    else if (currentRank_ == 2 && rankBeginner_) {
+                        rankBeginner_->transform.localScale = Vector3::One;
+                        rankBeginner_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 0.0f);
+                    }
+                    masterFogTimer_ = 0.0f;
 
                     if (skipIcon_) skipIcon_->isDraw = false;
                     if (nextIcon_) nextIcon_->isDraw = true;
@@ -128,9 +130,6 @@ namespace app {
                 }
             }
 
-            // ==========================================
-            // 状態（ステート）ごとの処理
-            // ==========================================
             switch (currentState_) {
 
             case SequenceState::ShowResult:
@@ -178,11 +177,11 @@ namespace app {
             case SequenceState::ShowDigits:
             {
                 UIDigit* currentDigit = nullptr;
-                if (currentDigitStep_ == 0)currentDigit = levelDigit_;
-                else if (currentDigitStep_ == 1)currentDigit = enemyDigit1_;
-                else if (currentDigitStep_ == 2)currentDigit = enemyDigit2_;
-                else if (currentDigitStep_ == 3)currentDigit = enemyDigit3_;
-                else if (currentDigitStep_ == 4)currentDigit = scoreDigit_;
+                if (currentDigitStep_ == 0)      currentDigit = levelDigit_;
+                else if (currentDigitStep_ == 1) currentDigit = enemyDigit1_;
+                else if (currentDigitStep_ == 2) currentDigit = enemyDigit2_;
+                else if (currentDigitStep_ == 3) currentDigit = enemyDigit3_;
+                else if (currentDigitStep_ == 4) currentDigit = scoreDigit_;
 
                 if (currentDigit) {
                     if (!currentDigit->isDraw) {
@@ -205,10 +204,8 @@ namespace app {
                 if (stateTimer_ > 0.0f) {
                     stateTimer_ -= g_gameTime->GetFrameDeltaTime();
                     if (stateTimer_ <= 0.0f) {
-                        // 最後の数字まで出し終わった
                         if (currentDigitStep_ == 4) {
                             currentState_ = SequenceState::ShowRank;
-
                             stateTimer_ = 1.0f;
                         }
                         else {
@@ -225,35 +222,45 @@ namespace app {
                 stateTimer_ -= g_gameTime->GetFrameDeltaTime();
 
                 if (currentDigitStep_ == 4 && stateTimer_ <= 0.0f) {
-                    if (rankA_) rankA_->transform.localScale = Vector3::Zero;
-                    if (rankB_) rankB_->transform.localScale = Vector3::Zero;
-                    if (rankSFog_) rankSFog_->transform.localScale = Vector3::Zero;
-                    if (rankS_) {
-                        rankS_->transform.localScale = Vector3::One;
-                        rankS_->transform.localRotation = Quaternion::Identity;
-                        auto* anim = rankS_->FindAnimation(Hash32("RankStamp"));
+                    if (rankElite_)     rankElite_->transform.localScale = Vector3::Zero;
+                    if (rankBeginner_)  rankBeginner_->transform.localScale = Vector3::Zero;
+                    if (rankMasterFog_) rankMasterFog_->transform.localScale = Vector3::Zero;
+                    if (currentRank_ == 0 && rankMaster_) {
+                        rankMaster_->transform.localScale = Vector3::One;
+                        rankMaster_->transform.localRotation = Quaternion::Identity;
+                        auto* anim = rankMaster_->FindAnimation(Hash32("RankStamp"));
                         if (anim) anim->Play();
                     }
-                    debugCurrentRank_ = 0;
-                    sFogTimer_ = 0.0f;
-
+                    else if (currentRank_ == 1 && rankElite_) {
+                        rankElite_->transform.localScale = Vector3::One;
+                        rankElite_->transform.localRotation = Quaternion::Identity;
+                        auto* anim = rankElite_->FindAnimation(Hash32("RankStamp"));
+                        if (anim) anim->Play();
+                    }
+                    else if (currentRank_ == 2 && rankBeginner_) {
+                        rankBeginner_->transform.localScale = Vector3::One;
+                        rankBeginner_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 0.0f);
+                        auto* anim = rankBeginner_->FindAnimation(Hash32("RankStamp"));
+                        if (anim) anim->Play();
+                        beginnerRankTimer_ = 0.0f;
+                        isBeginnerRankTilted_ = false;
+                    }
+                    masterFogTimer_ = 0.0f;
                     stateTimer_ = 1.5f;
-                    currentDigitStep_ = 5; 
+                    currentDigitStep_ = 5;
                     break;
                 }
 
-                // ランク表示中の霧
-                if (currentDigitStep_ == 5 && debugCurrentRank_ == 0 && rankSFog_ && rankS_) {
-                    sFogTimer_ += g_gameTime->GetFrameDeltaTime();
-                    float fogScale = 1.0f + 0.1f * sinf(sFogTimer_ * 5.0f);
-                    rankSFog_->transform.localScale = rankS_->transform.localScale * fogScale;
-                    rankSFog_->color.w = 0.6f + 0.4f * sinf(sFogTimer_ * 5.0f);
+                if (currentDigitStep_ == 5 && currentRank_ == 0 && rankMasterFog_ && rankMaster_) {
+                    masterFogTimer_ += g_gameTime->GetFrameDeltaTime();
+                    float fogScale = 1.0f + 0.1f * sinf(masterFogTimer_ * 5.0f);
+                    rankMasterFog_->transform.localScale = rankMaster_->transform.localScale * fogScale;
+                    rankMasterFog_->color.w = 0.6f + 0.4f * sinf(masterFogTimer_ * 5.0f);
                 }
 
                 if (currentDigitStep_ == 5 && stateTimer_ <= 0.0f) {
                     if (skipIcon_) skipIcon_->isDraw = false;
                     if (nextIcon_) nextIcon_->isDraw = true;
-
                     currentState_ = SequenceState::Finished;
                 }
                 break;
@@ -272,67 +279,33 @@ namespace app {
                     }
                 }
 
-                // デバッグ用:他ランクの処理】
-                if (g_pad[0]->IsTrigger(enButtonB)) {
-                    if (rankS_) rankS_->transform.localScale = Vector3::Zero;
-                    if (rankSFog_) rankSFog_->transform.localScale = Vector3::Zero;
-                    if (rankB_) rankB_->transform.localScale = Vector3::Zero;
-
-                    if (rankA_) {
-                        rankA_->transform.localScale = Vector3::One;
-                        rankA_->transform.localRotation = Quaternion::Identity;
-                        auto* anim = rankA_->FindAnimation(Hash32("RankStamp"));
-                        if (anim) anim->Play();
-                    }
-                    debugCurrentRank_ = 1;
+                if (currentRank_ == 0 && rankMasterFog_ && rankMaster_) {
+                    masterFogTimer_ += g_gameTime->GetFrameDeltaTime();
+                    float fogScale = 1.0f + 0.1f * sinf(masterFogTimer_ * 5.0f);
+                    rankMasterFog_->transform.localScale = rankMaster_->transform.localScale * fogScale;
+                    rankMasterFog_->color.w = 0.6f + 0.4f * sinf(masterFogTimer_ * 5.0f);
                 }
 
-                if (g_pad[0]->IsTrigger(enButtonX)) {
-                    if (rankS_) rankS_->transform.localScale = Vector3::Zero;
-                    if (rankSFog_) rankSFog_->transform.localScale = Vector3::Zero;
-                    if (rankA_) rankA_->transform.localScale = Vector3::Zero;
-
-                    if (rankB_) {
-                        rankB_->transform.localScale = Vector3::One;
-                        rankB_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 0.0f);
-
-                        auto* anim = rankB_->FindAnimation(Hash32("RankStamp"));
-                        if (anim) anim->Play();
-                    }
-                    debugCurrentRank_ = 2;
-                    bRankTimer_ = 0.0f;
-                    isBRankTilted_ = false;
-                }
-
-                if (debugCurrentRank_ == 0 && rankSFog_ && rankS_) {
-                    sFogTimer_ += g_gameTime->GetFrameDeltaTime();
-                    float fogScale = 1.0f + 0.1f * sinf(sFogTimer_ * 5.0f);
-                    rankSFog_->transform.localScale = rankS_->transform.localScale * fogScale;
-                    rankSFog_->color.w = 0.6f + 0.4f * sinf(sFogTimer_ * 5.0f);
-                }
-
-                if (debugCurrentRank_ == 2 && rankB_ && !isBRankTilted_) {
-                    bRankTimer_ += g_gameTime->GetFrameDeltaTime();
-                    if (bRankTimer_ >= 1.5f) {
-                        float t = (bRankTimer_ - 1.5f) / 0.2f;
+                if (currentRank_ == 2 && rankBeginner_ && !isBeginnerRankTilted_) {
+                    beginnerRankTimer_ += g_gameTime->GetFrameDeltaTime();
+                    if (beginnerRankTimer_ >= 1.5f) {
+                        float t = (beginnerRankTimer_ - 1.5f) / 0.2f;
                         Vector3 startPos = Vector3(-470.0f, -360.0f, 0.0f);
                         Vector3 targetPos = Vector3(-470.0f, -370.0f, 0.0f);
-
                         if (t < 1.0f) {
                             float currentAngle = -7.5f * t;
-                            rankB_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), currentAngle);
-
+                            rankBeginner_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), currentAngle);
                             Vector3 currentPos;
                             currentPos.x = startPos.x + (targetPos.x - startPos.x) * t;
                             currentPos.y = startPos.y + (targetPos.y - startPos.y) * t;
                             currentPos.z = startPos.z;
-                            rankB_->transform.localPosition = currentPos;
+                            rankBeginner_->transform.localPosition = currentPos;
                         }
                         else {
-                            rankB_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), -7.5f);
-                            isBRankTilted_ = true;
+                            rankBeginner_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), -7.5f);
+                            isBeginnerRankTilted_ = true;
                         }
-                        rankB_->transform.UpdateTransform();
+                        rankBeginner_->transform.UpdateTransform();
                     }
                 }
                 break;
@@ -345,26 +318,23 @@ namespace app {
                 }
                 break;
             }
+
             }
 
-            // ==========================================
-            // 数字のシェイク処理
-            // ==========================================
             if (shakeTimer_ > 0.0f && shakingDigitIndex_ >= 0 && shakingDigitIndex_ <= 4) {
                 shakeTimer_ -= g_gameTime->GetFrameDeltaTime();
 
                 UIDigit* targetDigit = nullptr;
-                if (shakingDigitIndex_ == 0)targetDigit = levelDigit_;
-                else if (shakingDigitIndex_ == 1)targetDigit = enemyDigit1_;
-                else if (shakingDigitIndex_ == 2)targetDigit = enemyDigit2_;
-                else if (shakingDigitIndex_ == 3)targetDigit = enemyDigit3_;
-                else if (shakingDigitIndex_ == 4)targetDigit = scoreDigit_;
+                if (shakingDigitIndex_ == 0)      targetDigit = levelDigit_;
+                else if (shakingDigitIndex_ == 1) targetDigit = enemyDigit1_;
+                else if (shakingDigitIndex_ == 2) targetDigit = enemyDigit2_;
+                else if (shakingDigitIndex_ == 3) targetDigit = enemyDigit3_;
+                else if (shakingDigitIndex_ == 4) targetDigit = scoreDigit_;
 
                 if (targetDigit) {
                     if (shakeTimer_ > 0.0f) {
                         float offsetX = ((rand() % 100) / 100.0f - 0.5f) * 12.0f;
                         float offsetY = ((rand() % 100) / 100.0f - 0.5f) * 12.0f;
-
                         targetDigit->transform.localPosition = initialDigitPositions_[shakingDigitIndex_] + Vector3(offsetX, offsetY, 0.0f);
                     }
                     else {

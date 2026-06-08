@@ -49,21 +49,22 @@ namespace app {
             UIDigit* enemyDigit2_ = nullptr;
             UIDigit* enemyDigit3_ = nullptr;
             UIDigit* scoreDigit_ = nullptr;
-            UIIcon* rankS_ = nullptr;
-            UIIcon* rankSFog_ = nullptr;
-            UIIcon* rankA_ = nullptr;
-            UIIcon* rankB_ = nullptr;
+            UIIcon* rankMaster_ = nullptr;
+            UIIcon* rankMasterFog_ = nullptr;
+            UIIcon* rankElite_ = nullptr;
+            UIIcon* rankBeginner_ = nullptr;
             UIIcon* skipIcon_ = nullptr;
             UIIcon* nextIcon_ = nullptr;
 
-            float sFogTimer_ = 0.0f;
-            int debugCurrentRank_ = -1;
-            float bRankTimer_ = 0.0f;
-            bool isBRankTilted_ = false;
+            float masterFogTimer_ = 0.0f;
+            int currentRank_ = -1;   // 0=MASTER, 1=ELITE, 2=BEGINNER
+            float beginnerRankTimer_ = 0.0f;
+            bool isBeginnerRankTilted_ = false;
 
             float shakeTimer_ = 0.0f;           // 揺れている時間を計る
             int shakingDigitIndex_ = -1;        // 今どの数字が揺れているか
             Vector3 initialDigitPositions_[5];  // 5つの数字の「元の座標」を記憶
+
         };
     }
 }
