@@ -1,5 +1,5 @@
-/*!
- *@brief	ƒ}ƒbƒvƒ`ƒbƒv
+ï»¿/*!
+ *@brief	ãƒãƒƒãƒ—ãƒãƒƒãƒ—
  */
 #include "k2EngineLowPreCompile.h"
 #include "MapChipRender.h"
@@ -9,10 +9,10 @@ namespace nsK2EngineLow {
 
 	MapChipRender::MapChipRender(const LevelObjectData& objData, const char* filePath)
 	{
-		//ƒ‚ƒfƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğæ“¾B
+		// ãƒ¢ãƒ‡ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã€‚
 		m_filePath = std::make_unique<const char*>(filePath);
 
-		//ƒ}ƒbƒvƒ`ƒbƒvƒf[ƒ^‚ğ’Ç‰Á‚·‚éB
+		// ãƒãƒƒãƒ—ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ã‚’è¿½åŠ ã™ã‚‹ã€‚
 		AddMapChipData(objData);
 	}
 
@@ -35,21 +35,21 @@ namespace nsK2EngineLow {
 			m_modelRender.SetTRS(mapChipData.position, mapChipData.rotation, mapChipData.scale);
 			m_modelRender.Update();
 			auto p = std::make_unique<PhysicsStaticObject>();
-			//Ã“I•¨—ƒIƒuƒWƒFƒNƒg‚ğì¬B
+			// é™çš„ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã€‚
 			p->CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
 			m_physicsStaticObjectPtrVector.push_back(std::move(p));
 			return;
 		}
 
-		//ƒCƒ“ƒXƒ^ƒ“ƒVƒ“ƒO•`‰æ—p‚Éƒ‚ƒfƒ‹‚ğ‰Šú‰»B
+		// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚·ãƒ³ã‚°æç”»ç”¨ã«ãƒ¢ãƒ‡ãƒ«ã‚’åˆæœŸåŒ–ã€‚
 		m_modelRender.Init(*m_filePath.get(), nullptr, 0, enModelUpAxisZ, true, m_mapChipDataNum);
 
 		for (auto& mapChipData : m_mapChipDataVector)
 		{
-			//ƒ[ƒ‹ƒhs—ñ‚ğŒvZ‚·‚éB
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 			Matrix worldMatrix = m_modelRender.GetModel().CalcWorldMatrix(mapChipData.position, mapChipData.rotation, mapChipData.scale);
 			auto p = std::make_unique<PhysicsStaticObject>();
-			//Ã“I•¨—ƒIƒuƒWƒFƒNƒg‚ğì¬B
+			// é™çš„ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã€‚
 			p->CreateFromModel(m_modelRender.GetModel(), worldMatrix);
 			m_physicsStaticObjectPtrVector.push_back(std::move(p));
 		}
@@ -66,7 +66,7 @@ namespace nsK2EngineLow {
 			int instanceNo = 0;
 			for (auto& mapChipData : m_mapChipDataVector)
 			{
-				//ƒ‚ƒfƒ‹ƒŒƒ“ƒ_[‚ÌƒCƒ“ƒXƒ^ƒ“ƒVƒ“ƒO—p‚Ìƒf[ƒ^‚ğXVB
+				// ãƒ¢ãƒ‡ãƒ«ãƒ¬ãƒ³ãƒ€ãƒ¼ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚·ãƒ³ã‚°ç”¨ã®ãƒ‡ãƒ¼ã‚¿ã‚’æ›´æ–°ã€‚
 				m_modelRender.UpdateInstancingData(instanceNo, mapChipData.position, mapChipData.rotation, mapChipData.scale);
 				instanceNo++;
 			}
