@@ -5,6 +5,12 @@
 #include "EventCharacter.h"
 #include "core/ParameterManager.h"
 
+namespace
+{
+	constexpr float SPAWN_FADE_DURATION = 0.5f;
+	constexpr float DEATH_FADE_DURATION = 0.5f;
+}
+
 namespace app
 {
 	namespace actor
@@ -148,6 +154,25 @@ namespace app
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
 
+			// --- フェード更新 ---
+			if (isFadingIn_)
+			{
+				fadeTimer_ += deltaTime;
+				cbData_.fadeRatio = fadeTimer_ / SPAWN_FADE_DURATION;
+				if (cbData_.fadeRatio >= 1.0f)
+				{
+					cbData_.fadeRatio = 1.0f;
+					isFadingIn_ = false;
+				}
+			}
+			if (isFadingOut_)
+			{
+				fadeTimer_ += deltaTime;
+				cbData_.fadeRatio = 1.0f - fadeTimer_ / DEATH_FADE_DURATION;
+				if (cbData_.fadeRatio < 0.0f) cbData_.fadeRatio = 0.0f;
+			}
+			// ------------------
+
 			Vector3 nextPosition = stateMachine_->transform.position;
 
 			// 死亡中はRequestTeleport+Executeで地下へ退避（AABBも含めて正しく更新するため）
@@ -210,7 +235,9 @@ namespace app
 			}
 
 			modelRender_ = std::make_unique<ModelRender>();
-			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false);
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false,
+				nullptr, "Assets/Shader/model_enemy_fade.fx",
+				&cbData_, static_cast<int>(sizeof(cbData_)));
 
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;
@@ -274,6 +301,25 @@ namespace app
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
 			stateMachine_->Update();
 
+			// --- フェード更新 ---
+			if (isFadingIn_)
+			{
+				fadeTimer_ += deltaTime;
+				cbData_.fadeRatio = fadeTimer_ / SPAWN_FADE_DURATION;
+				if (cbData_.fadeRatio >= 1.0f)
+				{
+					cbData_.fadeRatio = 1.0f;
+					isFadingIn_ = false;
+				}
+			}
+			if (isFadingOut_)
+			{
+				fadeTimer_ += deltaTime;
+				cbData_.fadeRatio = 1.0f - fadeTimer_ / DEATH_FADE_DURATION;
+				if (cbData_.fadeRatio < 0.0f) cbData_.fadeRatio = 0.0f;
+			}
+			// ------------------
+
 			Vector3 nextPosition = stateMachine_->transform.position;
 
 			// 死亡中はRequestTeleport+Executeで地下へ退避（AABBも含めて正しく更新するため）
@@ -334,7 +380,9 @@ namespace app
 				animationClips_[i].SetLoopFlag(param.animationDataList[i].loop);
 			}
 			modelRender_ = std::make_unique<ModelRender>();
-			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false);
+			modelRender_->Init(param.modelName, animationClips_.data(), animationClips_.size(), enModelUpAxisZ, true, false,
+				nullptr, "Assets/Shader/model_enemy_fade.fx",
+				&cbData_, static_cast<int>(sizeof(cbData_)));
 
 			transform.scale = Vector3::One;
 			transform.rotation = Quaternion::Identity;

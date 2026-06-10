@@ -1010,13 +1010,21 @@ namespace app
 			{
 				RequestChangeState(DeadCharacterState::ID());
 
-				// Dead アニメーション終了後に削除通知
+				// Dead アニメーション終了後：床デカールと同時にフェードアウト開始、完了後に削除通知
 				if (IsEqualCurrentState(DeadCharacterState::ID())
 					&& CanChangeState())
 				{
-					isDead_ = false;
 					auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
-					if (stone) { stone->NotifyDead(); }
+					if (stone)
+					{
+						stone->StartFadeOut();
+						stone->NotifyDeadEffect();
+						if (stone->IsFadeOutComplete())
+						{
+							isDead_ = false;
+							stone->NotifyDead();
+						}
+					}
 				}
 				return;
 			}
@@ -1471,13 +1479,21 @@ namespace app
 			{
 				RequestChangeState(DeadCharacterState::ID());
 
-				// Dead アニメーション終了後に削除通知
+				// Dead アニメーション終了後：床デカールと同時にフェードアウト開始、完了後に削除通知
 				if (IsEqualCurrentState(DeadCharacterState::ID())
 					&& CanChangeState())
 				{
-					isDead_ = false;
 					auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
-					if (mushroom) { mushroom->NotifyDead(); }
+					if (mushroom)
+					{
+						mushroom->StartFadeOut();
+						mushroom->NotifyDeadEffect();
+						if (mushroom->IsFadeOutComplete())
+						{
+							isDead_ = false;
+							mushroom->NotifyDead();
+						}
+					}
 				}
 				return;
 			}

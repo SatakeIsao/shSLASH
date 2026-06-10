@@ -313,7 +313,8 @@ namespace app
 							}
 
 							// 死亡時のコールバックをセット
-							stone->AddOnDead([this, stone]()
+							// フェード開始と同時：死亡エフェクト＋床デカール
+							stone->AddOnDeadEffect([this, stone]()
 							{
 								// 死亡エフェクト再生
 								if (effectManagerObject_)
@@ -336,6 +337,10 @@ namespace app
 											app::effect::SwordDecalManager::Get().SpawnDecal(
 												hit.point, hit.normal, Vector3::Front);
 								}
+							});
+							// フェード完了後：クリーンアップ
+							stone->AddOnDead([this, stone]()
+							{
 								// リストから削除
 								stoneEventCharacters_.erase(
 									std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
@@ -387,7 +392,8 @@ namespace app
 								}
 							}
 							//死亡時のコールバックをセット
-							mushroom->AddOnDead([this, mushroom]()
+							// フェード開始と同時：死亡エフェクト＋床デカール
+							mushroom->AddOnDeadEffect([this, mushroom]()
 							{
 								// 死亡エフェクト再生
 								if (effectManagerObject_)
@@ -410,12 +416,16 @@ namespace app
 											app::effect::SwordDecalManager::Get().SpawnMushroomFloorDecal(
 												hit.point, hit.normal, Vector3::Front);
 								}
+							});
+							// フェード完了後：クリーンアップ
+							mushroom->AddOnDead([this, mushroom]()
+							{
 								// リストから削除
 								mushroomEventCharacters_.erase(
 									std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
 									mushroomEventCharacters_.end()
 								);
-							
+
 								// レベルゲージを溜める
 								if (playerHpUIObject_)
 								{
