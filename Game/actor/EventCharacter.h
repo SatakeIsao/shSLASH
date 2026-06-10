@@ -14,6 +14,13 @@ namespace app
 {
 	namespace actor
 	{
+		/** 敵モデルのディザフェード用定数バッファ */
+		struct EnemyFadeCB
+		{
+			float fadeRatio = 1.0f;
+			float pad[3]    = {};
+		};
+
 		class EventCharacter : public Character
 		{
 			appActor(EventCharacter);
@@ -93,6 +100,7 @@ namespace app
 			std::unique_ptr<StoneEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			std::vector<std::function<void()>> onDeadCallbacks_;
+			std::vector<std::function<void()>> onDeadEffectCallbacks_;
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
@@ -103,6 +111,11 @@ namespace app
 
 			EnemyAttackPointManager* attackPointManager_;
 			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
+
+			EnemyFadeCB cbData_;
+			float fadeTimer_  = 0.0f;
+			bool isFadingIn_  = false;
+			bool isFadingOut_ = false;
 
 		public:
 			StoneEventCharacter();
@@ -205,6 +218,38 @@ namespace app
 				onDeadCallbacks_.clear();
 			}
 
+			/** フェード開始と同時に呼ばれるコールバック（床デカール等のエフェクト用） */
+			void AddOnDeadEffect(std::function<void()> callback)
+			{
+				onDeadEffectCallbacks_.push_back(std::move(callback));
+			}
+
+			void NotifyDeadEffect()
+			{
+				for (auto& cb : onDeadEffectCallbacks_)
+				{
+					if (cb) cb();
+				}
+				onDeadEffectCallbacks_.clear();
+			}
+
+			/** Deadアニメーション終了後にフェードアウト開始（状態機械から呼ぶ） */
+			void StartFadeOut()
+			{
+				if (!isFadingOut_)
+				{
+					isFadingOut_ = true;
+					isFadingIn_  = false;
+					fadeTimer_   = 0.0f;
+				}
+			}
+
+			/** フェードアウト完了判定 */
+			bool IsFadeOutComplete() const
+			{
+				return isFadingOut_ && cbData_.fadeRatio <= 0.0f;
+			}
+
 			void OnSpawn() override
 			{
 				StoneEventCharacterStatus* s = status_ -> As<StoneEventCharacterStatus>();
@@ -220,7 +265,8 @@ namespace app
 				GetStatus()->SetCurrentHp(GetStatus()->GetMaxHp());
 				currentHP_ = static_cast<int>(GetStatus()->GetMaxHp());
 				ghostBody_->SetActive(true);
-				onDeadCallbacks_.clear(); // 前回のコールバックをクリア
+				onDeadCallbacks_.clear();
+				onDeadEffectCallbacks_.clear();
 				instanceCount_++;
 
 				stateMachine_->Initialize();
@@ -230,6 +276,12 @@ namespace app
 				isVisible_ = true;
 
 				currentAttackPoint_ = nullptr;
+
+				// スポーン時フェードイン開始
+				cbData_.fadeRatio = 0.0f;
+				fadeTimer_        = 0.0f;
+				isFadingIn_       = true;
+				isFadingOut_      = false;
 			}
 
 			void OnRecycle() override
@@ -286,6 +338,7 @@ namespace app
 			std::unique_ptr<MushroomEventCharacterStateMachine> stateMachine_ = nullptr;
 			std::unique_ptr<app::collision::GhostBody> ghostBody_ = nullptr;
 			std::vector<std::function<void()>> onDeadCallbacks_;
+			std::vector<std::function<void()>> onDeadEffectCallbacks_;
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;
 			EnemyAttackPointManager* attackPointManager_ = nullptr;
 			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
@@ -295,6 +348,11 @@ namespace app
 			bool justSpawned_ = false;
 			/** 表示フラグ */
 			bool isVisible_ = false;
+
+			EnemyFadeCB cbData_;
+			float fadeTimer_  = 0.0f;
+			bool isFadingIn_  = false;
+			bool isFadingOut_ = false;
 
 		public:
 			MushroomEventCharacter();
@@ -399,6 +457,38 @@ namespace app
 				onDeadCallbacks_.clear();
 			}
 
+			/** フェード開始と同時に呼ばれるコールバック（床デカール等のエフェクト用） */
+			void AddOnDeadEffect(std::function<void()> callback)
+			{
+				onDeadEffectCallbacks_.push_back(std::move(callback));
+			}
+
+			void NotifyDeadEffect()
+			{
+				for (auto& cb : onDeadEffectCallbacks_)
+				{
+					if (cb) cb();
+				}
+				onDeadEffectCallbacks_.clear();
+			}
+
+			/** Deadアニメーション終了後にフェードアウト開始（状態機械から呼ぶ） */
+			void StartFadeOut()
+			{
+				if (!isFadingOut_)
+				{
+					isFadingOut_ = true;
+					isFadingIn_  = false;
+					fadeTimer_   = 0.0f;
+				}
+			}
+
+			/** フェードアウト完了判定 */
+			bool IsFadeOutComplete() const
+			{
+				return isFadingOut_ && cbData_.fadeRatio <= 0.0f;
+			}
+
 			void OnSpawn() override
 			{
 				MushroomEventCharacterStatus* s = status_->As<MushroomEventCharacterStatus>();
@@ -416,6 +506,7 @@ namespace app
 				ghostBody_->SetActive(true);
 				// 前回のコールバックをクリア
 				onDeadCallbacks_.clear();
+				onDeadEffectCallbacks_.clear();
 				instanceCount_++;
 				stateMachine_->Initialize();
 
@@ -424,6 +515,12 @@ namespace app
 				isVisible_ = true;
 
 				currentAttackPoint_ = nullptr;
+
+				// スポーン時フェードイン開始
+				cbData_.fadeRatio = 0.0f;
+				fadeTimer_        = 0.0f;
+				isFadingIn_       = true;
+				isFadingOut_      = false;
 			}
 
 			void OnRecycle() override
