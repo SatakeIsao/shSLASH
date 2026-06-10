@@ -4,6 +4,7 @@
  */
 #include "stdafx.h"
 #include "BattleManager.h"
+#include "effect/SwordDecalManager.h"
 
 #include "actor/BattleCharacter.h"
 #include "actor/EventCharacterSpawnManagerObject.h"
@@ -173,6 +174,7 @@ namespace app
 
 		BattleManager::BattleManager()
 		{
+			app::effect::SwordDecalManager::Initialize();
 			app::gimmick::WarpSystem::Initialize();
 			app::collision::CollisionHitManager::Initialize();
 			app::collision::GhostBodyManager::Get().RegisterCallback([](app::collision::GhostBody* a, app::collision::GhostBody* b)
@@ -236,6 +238,7 @@ namespace app
 			app::collision::GhostBodyManager::Get().ClearCallback();
 			app::collision::CollisionHitManager::Finalize();
 			app::gimmick::WarpSystem::Finalize();
+			app::effect::SwordDecalManager::Finalize();
 		}
 
 
@@ -322,6 +325,17 @@ namespace app
 										Vector3::One
 									);
 								}
+								// 床デカール生成
+								if (app::effect::SwordDecalManager::IsAvailable())
+								{
+									Vector3 rayStart = stone->transform.position + Vector3(0.0f, 50.0f, 0.0f);
+									Vector3 rayEnd   = stone->transform.position + Vector3(0.0f, -200.0f, 0.0f);
+									RaycastHit hit{};
+									if (PhysicsWorld::Get().Raycast(rayStart, rayEnd, hit))
+										if (hit.normal.y > 0.7f)
+											app::effect::SwordDecalManager::Get().SpawnDecal(
+												hit.point, hit.normal, Vector3::Front);
+								}
 								// リストから削除
 								stoneEventCharacters_.erase(
 									std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
@@ -385,7 +399,17 @@ namespace app
 										Vector3::One
 									);
 								}
-
+								// 床デカール生成
+								if (app::effect::SwordDecalManager::IsAvailable())
+								{
+									Vector3 rayStart = mushroom->transform.position + Vector3(0.0f, 50.0f, 0.0f);
+									Vector3 rayEnd   = mushroom->transform.position + Vector3(0.0f, -200.0f, 0.0f);
+									RaycastHit hit{};
+									if (PhysicsWorld::Get().Raycast(rayStart, rayEnd, hit))
+										if (hit.normal.y > 0.7f)
+											app::effect::SwordDecalManager::Get().SpawnMushroomFloorDecal(
+												hit.point, hit.normal, Vector3::Front);
+								}
 								// リストから削除
 								mushroomEventCharacters_.erase(
 									std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
@@ -457,9 +481,9 @@ namespace app
 				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
 				eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
 				if (ENABLE_ENEMY_SPAWN)
-			{
-				eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
-			}
+				{
+					eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
+				}
 				battleCharacter_->SetSpawnManager(&eventCharacterSpawnManagerObject_->GetManager());
 
 				// 敵キャラクター 
@@ -584,6 +608,11 @@ namespace app
 
 		void BattleManager::Update()
 		{
+			// 剣痕デカールの寿命管理
+			if (app::effect::SwordDecalManager::IsAvailable()) {
+				app::effect::SwordDecalManager::Get().Update();
+			}
+
 			UpdateTBDRSpawnLights();
 
 			// アニメーション初期化フレームを確保してからシーケンスを生成する

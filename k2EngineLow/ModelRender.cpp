@@ -21,7 +21,9 @@ namespace nsK2EngineLow {
         bool isShadowCaster,
         bool isShadowReceiver,
         const char* fxFilePath,
-        const char* gbufferFxFilePath)
+        const char* gbufferFxFilePath,
+        void* gbufferExpandCB,
+        int gbufferExpandCBSize)
     {
         m_isShadowCaster = isShadowCaster; // メンバ変数への保存漏れを修正
 
@@ -35,8 +37,6 @@ namespace nsK2EngineLow {
         initData.m_fxFilePath = (fxFilePath != nullptr) ? fxFilePath : "Assets/Shader/model.fx";
 
         // ライト情報のセットアップ
-        // NOTE: Init内でカメラをNewするのは不自然なので、
-        // 本来はシーン全体のライト管理クラスから行列をもらうのが理想的です。
         initData.m_expandConstantBuffer = &g_sceneLight->GetLightData();
         initData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
 
@@ -80,9 +80,15 @@ namespace nsK2EngineLow {
             gbufferInitData.m_vsEntryPointFunc     = "VSMain";
             gbufferInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
             gbufferInitData.m_psEntryPointFunc     = "PSMain";
-            // ディザリング等でシーンライトデータ（eyePos, ditherEnabled）が必要なシェーダーのために渡す
-            gbufferInitData.m_expandConstantBuffer     = &g_sceneLight->GetLightData();
-            gbufferInitData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
+            // G-Buffer拡張定数バッファ(CB): カスタムデータが指定されている場合はそれを使用し、
+            // そうでない場合はシーンのライトデータを使用する（ディザリングや視点位置[eyePos]用）
+            if (gbufferExpandCB != nullptr) {
+                gbufferInitData.m_expandConstantBuffer     = gbufferExpandCB;
+                gbufferInitData.m_expandConstantBufferSize = gbufferExpandCBSize;
+            } else {
+                gbufferInitData.m_expandConstantBuffer     = &g_sceneLight->GetLightData();
+                gbufferInitData.m_expandConstantBufferSize = sizeof(g_sceneLight->GetLightData());
+            }
             // G-Bufferの各RTフォーマット
             gbufferInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R8G8B8A8_UNORM;      // albedo
             gbufferInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;  // normal
@@ -182,6 +188,7 @@ namespace nsK2EngineLow {
     void ModelRender::OnRenderToGBuffer(RenderContext& rc)
     {
         if (!m_isVisible_) return;
+        if (!m_renderToGBufferModel.IsInited()) return;
         m_renderToGBufferModel.Draw(rc);
     }
 }

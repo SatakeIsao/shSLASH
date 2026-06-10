@@ -274,6 +274,9 @@
     <ClCompile Include="core\TaskSchedulerSystem.cpp" />
     <ClCompile Include="effect\EffectManager.cpp" />
     <ClCompile Include="effect\EffectManager2D.cpp" />
+    <ClCompile Include="effect\SwordDecalManager.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="scene\ResultScene.cpp" />
     <ClCompile Include="scene\GameOverScene.cpp" />
     <ClCompile Include="gimmick\WarpSystem.cpp" />
@@ -362,6 +365,7 @@
     <ClInclude Include="core\TaskSchedulerSystem.h" />
     <ClInclude Include="effect\EffectManager.h" />
     <ClInclude Include="effect\EffectManager2D.h" />
+    <ClInclude Include="effect\SwordDecalManager.h" />
     <ClInclude Include="effect\Types.h" />
     <ClInclude Include="scene\ResultScene.h" />
     <ClInclude Include="scene\GameOverScene.h" />

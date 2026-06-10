@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Actorファイル
  */
 #include "stdafx.h"
@@ -9,6 +9,7 @@
 #include "actor/Types.h"
 #include "core/ParameterManager.h"
 #include "sound/SoundManager.h"
+#include "effect/SwordDecalManager.h"
 
 
 namespace app
@@ -363,10 +364,27 @@ namespace app
 					Vector3 forward = Vector3::Front;
 					csm->transform.rotation.Apply(forward);
 
-					attackBody_->SetPosition(
+					Vector3 attackPos =
 						csm->transform.position
 						+ forward * (radius * 4)
-						+ Vector3(0.0f, radius, 0.0f));
+						+ Vector3(0.0f, radius, 0.0f);
+
+					attackBody_->SetPosition(attackPos);
+
+					/** 剣痕デカール: 壁のみ */
+					if (app::effect::SwordDecalManager::IsAvailable())
+					{
+						Vector3 wallRayStart = csm->transform.position + Vector3(0.0f, radius, 0.0f);
+						Vector3 wallRayEnd   = attackPos + forward * (radius * 1.0f);
+						RaycastHit hit{};
+						auto wallOnly = [](const btCollisionObject& obj) {
+							return obj.getUserIndex() != enCollisionAttr_Character;
+						};
+						if (PhysicsWorld::Get().Raycast(wallRayStart, wallRayEnd, hit, ALL_COLLISION_ATTRIBUTE_MASK, wallOnly))
+							if (fabsf(hit.normal.y) < 0.7f)
+								app::effect::SwordDecalManager::Get().SpawnDecal(
+									hit.point, hit.normal, forward);
+					}
 				}, false);
 			attackScheduler_->AddTimer(param.attackBodyDuration, [&]()
 				{
@@ -872,10 +890,31 @@ namespace app
 							Vector3 forward = Vector3::Front;
 							csm->transform.rotation.Apply(forward);
 
-							attackBody_->SetPosition(
+							Vector3 attackPos =
 								csm->transform.position
 								+ forward * (radius + radius)
-								+ Vector3(0.0f, radius, 0.0f));
+								+ Vector3(0.0f, radius, 0.0f);
+							attackBody_->SetPosition(attackPos);
+
+							/** 剣痕デカール: 壁のみ */
+							if (app::effect::SwordDecalManager::IsAvailable())
+							{
+								Vector3 wallRayStart = csm->transform.position + Vector3(0.0f, radius, 0.0f);
+								Vector3 wallRayEnd   = attackPos + forward * (radius * 1.0f);
+								RaycastHit hit{};
+								auto wallOnly = [](const btCollisionObject& obj) {
+									return obj.getUserIndex() != enCollisionAttr_Character;
+								};
+								if (PhysicsWorld::Get().Raycast(wallRayStart, wallRayEnd, hit, ALL_COLLISION_ATTRIBUTE_MASK, wallOnly))
+									if (fabsf(hit.normal.y) < 0.7f)
+									{
+										int lv = chargeLevelEffectPlayed_[2] ? 3
+										       : chargeLevelEffectPlayed_[1] ? 2
+										       : 1;
+										app::effect::SwordDecalManager::Get().SpawnChargeDecal(
+											hit.point, hit.normal, forward, lv);
+									}
+							}
 						}, false);
 					attackScheduler_->AddTimer(0.1f, [&]()
 						{

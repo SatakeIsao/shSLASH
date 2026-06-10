@@ -6,7 +6,7 @@
 using namespace nsK2EngineLow;
 
 
-// ©M‚Å’Ç‰Á
+// è‡ªä¿¡ã§è¿½åŠ 
 #include "Types.h"
 #include "core/TaskSchedulerSystem.h"
 #include "collision/BoundingVolume.h"

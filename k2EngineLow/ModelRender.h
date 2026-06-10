@@ -54,7 +54,9 @@ namespace nsK2EngineLow
 			bool m_isShadowCaster = true,
 			bool m_isShadowReceiver = true,
 			const char* fxFilePath = nullptr,
-			const char* gbufferFxFilePath = nullptr
+			const char* gbufferFxFilePath = nullptr,
+			void* gbufferExpandCB = nullptr,
+			int gbufferExpandCBSize = 0
 			);
 
 		void InitShadowModel(
@@ -214,6 +216,7 @@ namespace nsK2EngineLow
 		{
 			m_model.Init(initData);
 		}
+
 
 		/// <summary>
 		/// シャドウキャスターのフラグを設定する
