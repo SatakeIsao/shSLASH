@@ -21,14 +21,15 @@ namespace app
             void SetDraw(bool isDraw);
 
         private:
-            // 項目数（X軸リバース, Y軸リバースの2つ）
-            static const int MAX_ITEMS = 3;
+            // 項目数（UD, LR, SHAKE, SPEEDの4つ）
+            static const int MAX_ITEMS = 4;
 
             int cursorIndex_ = 0;
 
             // 現在の設定状態（false = ノーマル, true = リバース）
             bool isXReverse_ = false;
             bool isYReverse_ = false;
+            bool isShake_ = true;
         };
     }
 }

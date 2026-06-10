@@ -226,11 +226,11 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 		{
 			appParameter(CameraOptionMenuParameter);
 
-			float cursolPositionX[3];
-			float cursolPositionY[3];
+			float cursolPositionX[4];
+			float cursolPositionY[4];
 
-			float highlightPositionX[3];
-			float highlightPositionY[3];
+			float highlightPositionX[4];
+			float highlightPositionY[4];
 
 			float barScaleX[11];
 		};
