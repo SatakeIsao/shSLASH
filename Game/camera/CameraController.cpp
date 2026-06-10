@@ -18,7 +18,7 @@ namespace app
 
 		void GameCamera::StartShake(ShakeSize size)
 		{
-			if (!isShakeEnabled_) return;
+			if (!CameraManager::Get().IsShakeEnabled()) return;
 			const auto& p   = kShakePreset[static_cast<int>(size)];
 			shakeDuration_  = p.duration;
 			shakeTimer_     = p.duration;
@@ -30,7 +30,7 @@ namespace app
 
 		void GameCamera::StartShakeUpward(ShakeSize size)
 		{
-			if (!isShakeEnabled_) return;
+			if (!CameraManager::Get().IsShakeEnabled()) return;
 			const auto& p   = kShakePreset[static_cast<int>(size)];
 			shakeDuration_  = p.duration;
 			shakeTimer_     = p.duration;

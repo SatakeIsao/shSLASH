@@ -18,18 +18,22 @@ namespace app
                     p.cursolPositionX[0] = j["cursolPositionXA"];
                     p.cursolPositionX[1] = j["cursolPositionXB"];
                     p.cursolPositionX[2] = j["cursolPositionXC"];
+                    p.cursolPositionX[3] = j["cursolPositionXD"];
 
                     p.cursolPositionY[0] = j["cursolPositionYA"];
                     p.cursolPositionY[1] = j["cursolPositionYB"];
                     p.cursolPositionY[2] = j["cursolPositionYC"];
+                    p.cursolPositionY[3] = j["cursolPositionYD"];
 
                     p.highlightPositionX[0] = j["highlightPositionXA"];
                     p.highlightPositionX[1] = j["highlightPositionXB"];
                     p.highlightPositionX[2] = j["highlightPositionXC"];
+                    p.highlightPositionX[3] = j["highlightPositionXD"];
 
                     p.highlightPositionY[0] = j["highlightPositionYA"];
                     p.highlightPositionY[1] = j["highlightPositionYB"];
                     p.highlightPositionY[2] = j["highlightPositionYC"];
+                    p.highlightPositionY[3] = j["highlightPositionYD"];
 
                     char scaleStr[] = "barScaleXA"; 
                     for (uint32_t i = 0; i < 11; ++i) {
@@ -90,7 +94,7 @@ namespace app
 
             isXReverse_ = app::camera::CameraManager::Get().IsReverseX();
             isYReverse_ = app::camera::CameraManager::Get().IsReverseY();
-            // TODO: 初期化時に ParameterManager 等から現在のカメラ設定を読み込んで isXReverse_, isYReverse_ にセットする
+            isShake_    = app::camera::CameraManager::Get().IsShakeEnabled();
 
             auto* highlight = GetUI<app::ui::UIIcon>(Hash32("Highlight"));
             if (highlight)
@@ -186,12 +190,22 @@ namespace app
                 if (g_pad[0]->IsTrigger(enButtonLeft) || g_pad[0]->IsTrigger(enButtonRight))
                 {
                     app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
-                    if (cursorIndex_ == 0) isXReverse_ = !isXReverse_;
-                    if (cursorIndex_ == 1) isYReverse_ = !isYReverse_;
+                    if (cursorIndex_ == 0) isYReverse_ = !isYReverse_;  // UP/DOWN → 垂直軸(Y)
+                    if (cursorIndex_ == 1) isXReverse_ = !isXReverse_;  // LEFT/RIGHT → 水平軸(X)
                     isSettingsChanged = true;
                 }
             }
             else if (cursorIndex_ == 2)
+            {
+                // シェイクの ON/OFF 切り替え
+                if (g_pad[0]->IsTrigger(enButtonLeft) || g_pad[0]->IsTrigger(enButtonRight))
+                {
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
+                    isShake_ = !isShake_;
+                    isSettingsChanged = true;
+                }
+            }
+            else if (cursorIndex_ == 3)
             {
                 // 感度の調整処理
                 if (g_pad[0]->IsTrigger(enButtonRight))
@@ -221,6 +235,7 @@ namespace app
 
                 isXReverse_ = false;
                 isYReverse_ = false;
+                isShake_    = true;
                 currentSensitivity = 0.5f;
                 isSettingsChanged = true;
             }
@@ -229,20 +244,27 @@ namespace app
             {
                 app::camera::CameraManager::Get().SetReverseX(isXReverse_);
                 app::camera::CameraManager::Get().SetReverseY(isYReverse_);
+                app::camera::CameraManager::Get().SetShakeEnabled(isShake_);
                 app::camera::CameraManager::Get().SetSensitivity(currentSensitivity);
             }
 
-            // --- X軸のUI更新 ---
+            // --- UP/DOWN のUI更新 (cursor 0 が変更する isYReverse_ を表示) ---
             auto* normalX = GetUI<app::ui::UIIcon>(Hash32("Word_Normal_UD"));
             auto* reverseX = GetUI<app::ui::UIIcon>(Hash32("Word_Reverse_UD"));
-            if (normalX)  normalX->isDraw = !isXReverse_; // ノーマル(false)の時だけ表示
-            if (reverseX) reverseX->isDraw = isXReverse_;  // リバース(true)の時だけ表示
+            if (normalX)  normalX->isDraw = !isYReverse_;
+            if (reverseX) reverseX->isDraw = isYReverse_;
 
-            // --- Y軸のUI更新 ---
+            // --- LEFT/RIGHT のUI更新 (cursor 1 が変更する isXReverse_ を表示) ---
             auto* normalY = GetUI<app::ui::UIIcon>(Hash32("Word_Normal_LR"));
             auto* reverseY = GetUI<app::ui::UIIcon>(Hash32("Word_Reverse_LR"));
-            if (normalY)  normalY->isDraw = !isYReverse_;
-            if (reverseY) reverseY->isDraw = isYReverse_;
+            if (normalY)  normalY->isDraw = !isXReverse_;
+            if (reverseY) reverseY->isDraw = isXReverse_;
+
+            // --- シェイクのUI更新 ---
+            auto* shakeOn  = GetUI<app::ui::UIIcon>(Hash32("Word_Shake_ON"));
+            auto* shakeOff = GetUI<app::ui::UIIcon>(Hash32("Word_Shake_OFF"));
+            if (shakeOn)  shakeOn->isDraw  = isShake_;
+            if (shakeOff) shakeOff->isDraw = !isShake_;
 
             if (parameter)
             {

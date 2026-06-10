@@ -39,6 +39,7 @@ namespace app
             bool isReverseX_ = false;
             bool isReverseY_ = false;
             float sensitivity_ = 0.5f;
+            bool isShakeEnabled_ = true;
 
         private:
             CameraManager();
@@ -109,6 +110,8 @@ namespace app
             bool IsReverseY() const { return isReverseY_; }
             void SetSensitivity(float sensitivity) { sensitivity_ = sensitivity; }
             float GetSensitivity() const { return sensitivity_; }
+            void SetShakeEnabled(bool enabled) { isShakeEnabled_ = enabled; }
+            bool IsShakeEnabled() const { return isShakeEnabled_; }
 
         public:
             static void Initialize()

@@ -4,20 +4,23 @@
         
         "cursolPositionXA": 165.0,
         "cursolPositionXB": 165.0,
-        "cursolPositionXC": 165.0,        
+        "cursolPositionXC": 165.0,
+        "cursolPositionXD": 165.0,
 
         "cursolPositionYA": 15.0,
-        "cursolPositionYB": -130.0,
-        "cursolPositionYC": -265.0,
+        "cursolPositionYB": -78.0,
+        "cursolPositionYC": -171.0,
+        "cursolPositionYD": -265.0,
 
-        
         "highlightPositionXA": -280.0,
         "highlightPositionXB": -280.0,
-        "highlightPositionXC": -280.0,        
+        "highlightPositionXC": -280.0,
+        "highlightPositionXD": -280.0,
 
         "highlightPositionYA": 10.0,
-        "highlightPositionYB": -135.0,
-        "highlightPositionYC": -270.0,
+        "highlightPositionYB": -83.0,
+        "highlightPositionYC": -176.0,
+        "highlightPositionYD": -270.0,
 
         "barScaleXA": 0.0,
         "barScaleXB": 0.11,

@@ -20,8 +20,8 @@ namespace app
 			CameraData nextData = data;
 
 
-			// —‘z‚ÌƒJƒƒ‰ˆÊ’u‚ğŒvZiƒ^[ƒQƒbƒg‚ÌŒã‚ëEãj
-			// ¦ŠÈˆÕ“I‚ÉZ²è‘O‚Éˆø‚¢‚Ä‚¢‚Ü‚·‚ªA–{—ˆ‚Íƒ^[ƒQƒbƒg‚ÌŒü‚«(Rotation)‚àl—¶‚µ‚Ä‰ñ“]‚³‚¹‚Ü‚·
+			// ä»®æƒ³ã®ã‚«ãƒ¡ãƒ©ä½ç½®ã‚’è¨ˆç®—ï¼ˆã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¾Œæ–¹ãªã©ï¼‰
+			// ç°¡æ˜“çš„ãªè¨ˆç®—ã‚’å‰ã«ã„ã‚Œã¦ã„ã¾ã™ãŒã€æœ¬æ¥ã¯ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å›è»¢(Rotation)ã‚‚è€ƒæ…®ã—ã¦å›è»¢
 			Vector3 targetPosition = targetCharacter_->transform.position;
 			targetPosition.y += 50.0f;
 			Vector3 position = targetCharacter_->transform.position + toVector_;
@@ -32,7 +32,7 @@ namespace app
 			float stickX = g_pad[0]->GetRStickXF();
 			float stickY = g_pad[0]->GetRStickYF();
 
-			// CameraManager‚©‚çİ’è‚ğæ“¾‚µAtrue‚È‚ç“ü—Í‚ğ”½“]‚³‚¹‚é
+			// CameraManagerã‹ã‚‰è¨­å®šã‚’å–å¾—ã—ã€trueãªã‚‰å…¥åŠ›ã‚’åè»¢
 			if (CameraManager::Get().IsReverseX()) {
 				stickX *= -1.0f;
 			}
@@ -40,29 +40,29 @@ namespace app
 				stickY *= -1.0f;
 			}
 
-			//ƒJƒƒ‰Š´“x‚ğ“K—p‚·‚é
+			// ã‚«ãƒ¡ãƒ©æ„Ÿåº¦ã‚’é©ç”¨
 			float sensitivityMultiplier = CameraManager::Get().GetSensitivity() * 2.0f;
 			stickX *= sensitivityMultiplier;
 			stickY *= sensitivityMultiplier;
 
-			// ”½“]‚ğ“K—p‚µ‚½“ü—Í’l(stickX, stickY)‚ÅVector3‚ğì‚é
+			// å›è»¢ã‚’é©ç”¨ã™ã‚‹ãŸã‚å…¥åŠ›å€¤(stickX, stickY)ã‚’Vector3
 			Vector3 rotationVector = Vector3(stickX, stickY, 0.0f);
 
 			if (rotationVector.LengthSq() > MOVE_MIN_FLOAT) {
 				rotationVector.x *= config_.rotationSpeedX;
 				rotationVector.y *= config_.rotationSpeedY;
-				// rotX‚ÅY²‰ñ“]
+				// rotXã¯Yè»¸å›è»¢
 				Quaternion yRotation;
 				yRotation.SetRotationY(-rotationVector.x);
 				yRotation.Apply(toVector_);
-				// rotY‚ÅXZ²‰ñ“]
+				// rotYã¯XZè»¸å›è»¢
 				Vector3 nextToVector = toVector_;
 				Quaternion xzRotation;
-				xzRotation.SetRotation(g_camera3D->GetRight(), -rotationVector.y);
+				xzRotation.SetRotation(g_camera3D->GetRight(), rotationVector.y);
 				xzRotation.Apply(nextToVector);
 
-				// toVector_‚ÌY¬•ª‚Åã‰ºŒÀ‚ğƒ`ƒFƒbƒN
-				// ¦distanceŠî€‚Å sin(pitchMin/Max) * distance ‚ªY¬•ª‚ÌŒÀŠE
+				// toVector_ã®Yè»¸ã§ä¸Šä¸‹é™ç•Œãƒã‚§ãƒƒã‚¯
+				// å„distanceåŸºæº–ã§ sin(pitchMin/Max) * distance ãŒYåº§æ¨™ã®é™ç•Œ
 				const float len = toVector_.Length();
 				const float yMin = len * sin(config_.pitchMin);
 				const float yMax = len * sin(config_.pitchMax);
