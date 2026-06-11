@@ -25,7 +25,7 @@ namespace app
 		void Character::Update()
 		{
 			if (modelRender_ == nullptr) { return; }
-			modelRender_->SetTRS(transform.position, transform.rotation, transform.scale);
+			modelRender_->SetTRS(transform.position + renderPositionOffset_, transform.rotation, transform.scale);
 			modelRender_->Update();
 		}
 

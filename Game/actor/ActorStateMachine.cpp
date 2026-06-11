@@ -181,8 +181,21 @@ namespace app
 
 		void BattleCharacterStateMachine::Update()
 		{
-			UpdateState();
+			// ヒットストップ中は入力・ステート遷移をスキップしアニメーションを停止
+			if (hitStopTimer_ > 0.0f)
+			{
+				GetModelRender()->SetAnimationSpeed(0.0f);
+				hitStopTimer_ -= g_gameTime->GetFrameDeltaTime();
+				if (hitStopTimer_ <= 0.0f)
+				{
+					hitStopTimer_ = 0.0f;
+					GetModelRender()->SetAnimationSpeed(1.0f);
+				}
+				SuperClass::Update();
+				return;
+			}
 
+			UpdateState();
 			SuperClass::Update();
 		}
 
@@ -958,12 +971,8 @@ namespace app
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
 			SetMoveDirection(knockBackDirection_);
-			// 溜め攻撃のときだけ吹き飛ばす
-			if (isBlowBack_)
-			{
-				Jump(80.0f);
-				isBlowBack_ = false;
-			}
+			// Jump は KnockBackCharacterState のヒットストップ終了後に呼ばれる
+			isBlowBack_ = false;
 			// エフェクト再生
 			EffectManager::Get().PlayEffectFollow(
 				enEffectKind_StoneKnockBack,
@@ -1427,12 +1436,8 @@ namespace app
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::MushroomAnimationKind::KnockBack));
 			SetMoveDirection(knockBackDirection_);
-			// 溜め攻撃のときだけ吹き飛ばす
-			if (isBlowBack_)
-			{
-				Jump(80.0f);
-				isBlowBack_ = false;
-			}
+			// Jump は KnockBackCharacterState のヒットストップ終了後に呼ばれる
+			isBlowBack_ = false;
 			// エフェクト再生
 			EffectManager::Get().PlayEffectFollow(
 				enEffectKind_MushroomKnockBack,

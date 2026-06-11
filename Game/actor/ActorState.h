@@ -389,8 +389,20 @@ namespace app
 			appState(KnockBackCharacterState);
 
 
+		public:
+			static constexpr bool  VIBRATION_ENABLED = false;
+
 		private:
+			static constexpr float VIBRATION_AMPLITUDE  = 18.0f;
+			static constexpr float VIBRATION_FREQUENCY  = 45.0f;
+			static constexpr float BLOW_BACK_JUMP_POWER = 80.0f;
+
 			float timer_ = 0.0f;
+			float hitStopTimer_ = 0.0f;
+			float hitStopDuration_ = 0.0f;
+			float vibrationElapsed_ = 0.0f;
+			Vector3 vibrationAxis_ = Vector3::Zero;
+			bool jumpPending_ = false;
 
 		public:
 			KnockBackCharacterState(IStateMachine* owner);
