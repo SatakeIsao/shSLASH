@@ -635,8 +635,56 @@ namespace app
 		void KnockBackCharacterState::Enter()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			// OnEnterKnockBack の中で isBlowBack_ がリセットされるため、先にフラグを取得する
+			bool isBlowBack = false;
+			if (auto* stone = owner_->As<StoneEventCharacterStateMachine>())
+			{
+				isBlowBack = stone->IsBlowBack();
+			}
+			else if (auto* mushroom = owner_->As<MushroomEventCharacterStateMachine>())
+			{
+				isBlowBack = mushroom->IsBlowBack();
+			}
+
 			characterStateMachine->OnEnterKnockBack();
-			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(0.8f);
+
+			// 溜め攻撃ヒット時：ヒットストップ＋振動を開始
+			// Jump はヒットストップ終了後に呼ぶので、ここでは予約だけ
+			if (isBlowBack)
+			{
+				int chargeLevel = 0;
+				hitStopDuration_ = 0.0f;
+
+				if (auto* stone = owner_->As<StoneEventCharacterStateMachine>())
+				{
+					chargeLevel = stone->GetKnockBackChargeLevel();
+					if (const auto* p = app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>())
+					{
+						hitStopDuration_ = chargeLevel <= 0 ? p->hitStopDurationSmall
+						                 : chargeLevel == 1 ? p->hitStopDurationMedium
+						                                    : p->hitStopDurationLarge;
+					}
+				}
+				else if (auto* mushroom = owner_->As<MushroomEventCharacterStateMachine>())
+				{
+					chargeLevel = mushroom->GetKnockBackChargeLevel();
+					if (const auto* p = app::core::ParameterManager::Get().GetParameter<app::core::MasterMushroomEventCharacterParameter>())
+					{
+						hitStopDuration_ = chargeLevel <= 0 ? p->hitStopDurationSmall
+						                 : chargeLevel == 1 ? p->hitStopDurationMedium
+						                                    : p->hitStopDurationLarge;
+					}
+				}
+				hitStopTimer_    = hitStopDuration_;
+				vibrationElapsed_ = 0.0f;
+				jumpPending_ = true;
+				// ノックバック方向の XZ 平面 90° 回転（横揺れ）を振動軸にする
+				const Vector3 kbDir = characterStateMachine->GetMoveDirection();
+				vibrationAxis_ = Vector3(-kbDir.z, 0.0f, kbDir.x);
+				characterStateMachine->GetModelRender()->SetAnimationSpeed(0.0f);
+			}
 
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 				battleMachine->CheckAndConsumeKnockBack();
@@ -647,6 +695,39 @@ namespace app
 
 		void KnockBackCharacterState::Update()
 		{
+			// ヒットストップ中は移動・タイマー更新をスキップし、振動オフセットを更新
+			if (hitStopTimer_ > 0.0f)
+			{
+				const float dt = g_gameTime->GetFrameDeltaTime();
+				vibrationElapsed_ += dt;
+				hitStopTimer_ -= dt;
+
+				auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+				if (hitStopTimer_ <= 0.0f)
+				{
+					hitStopTimer_ = 0.0f;
+					characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
+					characterStateMachine->GetCharacter()->SetRenderPositionOffset(Vector3::Zero);
+					// ヒットストップが終わってから吹き飛ばす
+					if (jumpPending_)
+					{
+						jumpPending_ = false;
+						characterStateMachine->Jump(BLOW_BACK_JUMP_POWER);
+					}
+				}
+				else if (VIBRATION_ENABLED)
+				{
+					// 振幅は残り時間に比例して減衰（最初が大きく、だんだん小さく）
+					const float decay = hitStopTimer_ / hitStopDuration_;
+					const float wave = sinf(vibrationElapsed_ * VIBRATION_FREQUENCY);
+					characterStateMachine->GetCharacter()->SetRenderPositionOffset(
+						vibrationAxis_ * (wave * VIBRATION_AMPLITUDE * decay)
+					);
+				}
+				return;
+			}
+
 			timer_ += g_gameTime->GetFrameDeltaTime();
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
@@ -675,6 +756,7 @@ namespace app
 		void KnockBackCharacterState::Exit()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->GetCharacter()->SetRenderPositionOffset(Vector3::Zero);
 			characterStateMachine->OnExitKnockBack();
 		}
 

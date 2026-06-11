@@ -293,6 +293,8 @@ namespace app
 			int chargeLevel_ = 0;
 			/** Deadの効果音再生したか */
 			bool isDeadSEPlayed_ = false;
+			/** プレイヤー側ヒットストップの残り時間 */
+			float hitStopTimer_ = 0.0f;
 
 
 		public:
@@ -335,6 +337,9 @@ namespace app
 			void UpdateState();
 
 		public:
+			/** 溜め攻撃ヒット時にプレイヤー側のヒットストップを開始する */
+			void StartHitStop(float duration) { hitStopTimer_ = duration; }
+
 			/** 死んだことを教える */
 			void OnDead()
 			{
@@ -641,6 +646,8 @@ namespace app
 			bool isKnockBack_ = false;
 			/** 溜め攻撃による吹き飛ばしたか */
 			bool isBlowBack_ = false;
+			/** ノックバック時のチャージレベル */
+			int knockBackChargeLevel_ = 0;
 			/** 攻撃用のゴーストボディ生成したか */
 			bool isAttackGhostCreated_ = false;
 			/** スポーン直後の待機フラグ */
@@ -710,16 +717,19 @@ namespace app
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
 			 * パンチ食らったことを教える⇒ノックバックに変更したい
 			 */
-			void OnKnockBack(const Vector3& direction, bool isBlowBack = false)
+			void OnKnockBack(const Vector3& direction, bool isBlowBack = false, int chargeLevel = 0)
 			{
 				isKnockBack_ = true;
 				knockBackDirection_ = direction;
 				isBlowBack_ = isBlowBack;
+				knockBackChargeLevel_ = chargeLevel;
 			}
 			bool IsKnockBack()
 			{
 				return isKnockBack_;
 			}
+			bool IsBlowBack() const { return isBlowBack_; }
+			int GetKnockBackChargeLevel() const { return knockBackChargeLevel_; }
 
 			//ゴーストが生成されたことを通知
 			void NontifyAttackGhostCreated()
@@ -773,6 +783,8 @@ namespace app
 			bool isKnockBack_ = false;
 			/** 溜め攻撃による吹き飛ばしか */
 			bool isBlowBack_ = false;
+			/** ノックバック時のチャージレベル */
+			int knockBackChargeLevel_ = 0;
 			/** 攻撃用のゴーストボディ生成したか */
 			bool isAttackGhostCreated_ = false;
 			/** スポーン直後の待機フラグ */
@@ -842,16 +854,19 @@ namespace app
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
 			 * パンチ食らったことを教える⇒ノックバックに変更したい
 			 */
-			void OnKnockBack(const Vector3& direction, bool isBlowBack = false)
+			void OnKnockBack(const Vector3& direction, bool isBlowBack = false, int chargeLevel = 0)
 			{
 				isKnockBack_ = true;
 				knockBackDirection_ = direction;
 				isBlowBack_ = isBlowBack;
+				knockBackChargeLevel_ = chargeLevel;
 			}
 			bool IsKnockBack()
 			{
 				return isKnockBack_;
 			}
+			bool IsBlowBack() const { return isBlowBack_; }
+			int GetKnockBackChargeLevel() const { return knockBackChargeLevel_; }
 
 			//ゴーストが生成されたことを通知
 			void NontifyAttackGhostCreated()

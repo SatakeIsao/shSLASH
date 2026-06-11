@@ -1127,6 +1127,19 @@ namespace app
 							dmg->defender->GetStatus()->SetCurrentHp(newHp);
 							dmg->defender->TakeDamage(damage);
 
+							// 溜め攻撃ヒット時：プレイヤー側もヒットストップ（段階0含む）
+							if (dmg->isBlowBack)
+							{
+								float hitStopDuration = 0.0f;
+								if (const auto* p = app::core::ParameterManager::Get().GetParameter<app::core::MasterBattleCharacterParameter>())
+								{
+									hitStopDuration = dmg->chargeLevel <= 0 ? p->hitStopDurationSmall
+									                : dmg->chargeLevel == 1 ? p->hitStopDurationMedium
+									                                        : p->hitStopDurationLarge;
+								}
+								battleCharacter_->GetStateMachine()->StartHitStop(hitStopDuration);
+							}
+
 							// カメラシェイク
 							if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
 							{
@@ -1158,7 +1171,7 @@ namespace app
 							{
 								// ノックバック
 								auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
-								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack);
+								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack, dmg->chargeLevel);
 								// 死亡判定
 								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
@@ -1169,7 +1182,7 @@ namespace app
 							{
 								// ノックバック
 								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
-								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack);
+								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack, dmg->chargeLevel);
 								// 死亡判定
 								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
@@ -1420,6 +1433,9 @@ namespace app
 					p.chargeAttackMultiplier = json["chargeAttackMultiplier"].get<float>();
 					p.criticalRate = json["criticalRate"].get<float>();
 					p.criticalMultiplier = json["criticalMultiplier"].get<float>();
+					p.hitStopDurationSmall  = json["hitStopDurationSmall"].get<float>();
+					p.hitStopDurationMedium = json["hitStopDurationMedium"].get<float>();
+					p.hitStopDurationLarge  = json["hitStopDurationLarge"].get<float>();
 					p.spawnLightColorR   = json["spawnLightColorR"].get<float>();
 					p.spawnLightColorG   = json["spawnLightColorG"].get<float>();
 					p.spawnLightColorB   = json["spawnLightColorB"].get<float>();
@@ -1449,6 +1465,9 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
+					p.hitStopDurationSmall  = json["hitStopDurationSmall"].get<float>();
+					p.hitStopDurationMedium = json["hitStopDurationMedium"].get<float>();
+					p.hitStopDurationLarge  = json["hitStopDurationLarge"].get<float>();
 					p.spawnLightColorR = json["spawnLightColorR"].get<float>();
 					p.spawnLightColorG = json["spawnLightColorG"].get<float>();
 					p.spawnLightColorB = json["spawnLightColorB"].get<float>();
@@ -1470,6 +1489,9 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
+					p.hitStopDurationSmall  = json["hitStopDurationSmall"].get<float>();
+					p.hitStopDurationMedium = json["hitStopDurationMedium"].get<float>();
+					p.hitStopDurationLarge  = json["hitStopDurationLarge"].get<float>();
 					p.spawnLightColorR = json["spawnLightColorR"].get<float>();
 					p.spawnLightColorG = json["spawnLightColorG"].get<float>();
 					p.spawnLightColorB = json["spawnLightColorB"].get<float>();
