@@ -50,7 +50,28 @@ namespace
 	static constexpr float STONE_SPAWN_EFFECT_OFFSET_Y = 180.0f;
 	static constexpr float MUSHROOM_SPAWN_EFFECT_OFFSET_Y = 180.0f;
 
-	// Player用
+	/** 溜め攻撃、命中時の視野角 */
+	struct ChargeHitFovPreset
+	{
+		float fov;
+	};
+
+	/** 溜め攻撃時用のFOVプリセット */
+	constexpr ChargeHitFovPreset CHARGE_HIT_FOV_PRESETS[] = {
+		{ 55.0f },
+		{ 55.0f },
+		{ 55.0f },
+	};
+	/** ヒット時FOV縮小時間（ズームイン） */
+	constexpr float CHARGE_HIT_FOV_FADE_IN = 0.15f;
+	/** ヒット時FOV復帰時間（ズームアウト） */
+	constexpr float CHARGE_HIT_FOV_FADE_OUT = 0.12f;
+	/** 待機状態判定のしきい値 */
+	constexpr float CHARGE_HIT_FOV_IDLE_THRESHOLD = 0.01f;
+	/** プリセットの最大インデックス */
+	constexpr int CHARGE_HIT_FOV_MAX_INDEX = 2;
+
+	// Player
 	static app::actor::CharacterInitializeParameter sPlayerInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
 		{
 			parameter->modelName = "Assets/ModelData/player/player.tkm";
@@ -61,16 +82,7 @@ namespace
 
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run)].filename = "Assets/animData/player/playerRun.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::Run)].loop = true;
-			//
-			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpAscend)].filename = "Assets/animData/player/PlayerJump_Start.tka";
-			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpAscend)].loop = false;
-			//
-			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling)].filename = "Assets/animData/player/PlayerJump_Loop.tka";
-			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpFalling)].loop = false;
-			//
-			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpLand)].filename = "Assets/animData/player/PlayerJump_End.tka";
-			//parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::JumpLand)].loop = false;
-			//
+		
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashFirst)].filename = "Assets/animData/player/playerSmallAttack_First.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SlashFirst)].loop = false;
 
@@ -182,10 +194,6 @@ namespace app
 					// 衝突ペア登録
 					app::collision::CollisionHitManager::Get().RegisterHitPair(a, b);
 				});
-
-			// BattleSequenceObject が同じレイアウトを内部で読み込むため、ここでの初期化は不要
-			//layout_ = std::make_unique<app::ui::Layout>();
-			//layout_->Initialize<app::ui::MenuBase>("Assets/ui/layout/BattleSequenceMenuLayout.json");
 		}
 
 
@@ -372,7 +380,6 @@ namespace app
 							mushroom->GetStatus()->SetFriction(stageParam->friction);
 							mushroom->GetStatus()->SetGravity(stageParam->gravity);
 							mushroom->GetCharacterController()->SetGravity(stageParam->gravity);
-							///mushroom->GetStateMachine()->transform.position = mushroom->transform.position;
 
 							//　スポーンエフェクト
 							if (effectManagerObject_)
@@ -1111,15 +1118,11 @@ namespace app
 					for (auto& notify : notifyList_) {
 						if (notify->ID() == DamageNotify::StaticID())
 						{
-							/** コメントアウトすると正常に動く */
-							//int damage = CalcDamage(battleCharacter_, eventCharacter_);
-							//eventCharacter_->TakeDamage(damage);
-
 							auto* dmg = static_cast<DamageNotify*>(notify.get());
 							// defender がプレイヤー自身の場合はスキップ
 							if (dmg->defender == battleCharacter_) continue;
 
-							// ダメージ計算・適用
+							/** ダメージ計算・適用 */
 							int damage = CalcDamage(dmg->attacker, dmg->defender, dmg->chargeLevel);
 							const float oldHp = dmg->defender->GetStatus()->GetCurrentHp();
 							float newHp = oldHp - damage;
@@ -1127,7 +1130,7 @@ namespace app
 							dmg->defender->GetStatus()->SetCurrentHp(newHp);
 							dmg->defender->TakeDamage(damage);
 
-							// 溜め攻撃ヒット時：プレイヤー側もヒットストップ（段階0含む）
+							/** 溜め攻撃ヒット時：プレイヤー側もヒットストップ（段階0含む） */
 							if (dmg->isBlowBack)
 							{
 								float hitStopDuration = 0.0f;
@@ -1140,23 +1143,32 @@ namespace app
 								battleCharacter_->GetStateMachine()->StartHitStop(hitStopDuration);
 							}
 
-							// カメラシェイク
+							/** カメラシェイク＆FOV */
 							if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
 							{
 								if (dmg->chargeLevel > 0)
 								{
-									// 溜め攻撃：Lv1=Small / Lv2=Medium / Lv3=Large
+									/** 溜め攻撃：Lv1=Small / Lv2=Medium / Lv3=Large */
 									const auto size = static_cast<app::camera::ShakeSize>(min(dmg->chargeLevel - 1, 2));
 									gameCamera->StartShake(size);
+
+									/** 溜め攻撃がヒットすると、すべてのレベルにおいて視野角が55度に */
+									const int fovIndex = min(dmg->chargeLevel - 1, CHARGE_HIT_FOV_MAX_INDEX);
+									const float targetFov = CHARGE_HIT_FOV_PRESETS[fovIndex].fov;
+									gameCamera->OnAttackHit(
+										targetFov,
+										CHARGE_HIT_FOV_FADE_IN,
+										CHARGE_HIT_FOV_FADE_OUT,
+										CHARGE_HIT_FOV_IDLE_THRESHOLD);
 								}
 								else if (dmg->comboIndex == 1)
 								{
-									// 通常2コンボ目：上方向への打ち上げ（Small）
+									/** 通常2コンボ目：上方向への打ち上げ（Small） */
 									gameCamera->StartShakeUpward(app::camera::ShakeSize::Small);
 								}
 								else
 								{
-									// 通常攻撃（1・3コンボ目）
+									/** 通常攻撃（1・3コンボ目） */
 									gameCamera->StartShake(app::camera::ShakeSize::Small);
 								}
 							}
@@ -1217,10 +1229,18 @@ namespace app
 				}
 			}
 
-				auto gameCamera = gameCameraController_->As<app::camera::GameCamera>();
-				auto cameraData = gameCamera->GetCameraData();
-				cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
-				gameCamera->SetState(cameraData);
+				if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
+				{
+					// 溜め中（ボタン押下中）のみFOVを狭める。
+					// GetChargeLevel() > 0 は振り下ろし中（End フェーズ）なので呼ばない
+					auto* playerSM = battleCharacter_->GetStateMachine();
+					if (playerSM->IsChargeAttacking() && playerSM->GetChargeLevel() == 0)
+						gameCamera->OnCharging(playerSM->GetCurrentChargingLevel());
+
+					auto cameraData = gameCamera->GetCameraData();
+					cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
+					gameCamera->SetState(cameraData);
+				}
 
 				/** 制限時間の管理 */
 				{

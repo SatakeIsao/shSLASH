@@ -1,6 +1,8 @@
 #pragma once
 #include "Shadow.h"
 #include "Bloom.h"
+#include "DepthOfField.h"
+#include "MotionBlur.h"
 #include "graphics/RootSignature.h"
 #include "graphics/PipelineState.h"
 #include "graphics/DescriptorHeap.h"
@@ -24,6 +26,8 @@ namespace nsK2EngineLow {
 		void Init();
 		void InitShadowMap();
 		void InitBloom();
+		void InitDoF();
+		void InitMotionBlur();
 		//void InitBloomLumi();
 		//void InitBloomGauss();
 		//void InitBloomBoke();
@@ -108,6 +112,21 @@ namespace nsK2EngineLow {
 			return m_bloom.GetRenderTarget();
 		}
 
+		void SetDepthOfFieldEnabled(bool enabled)
+		{
+			m_dof.SetEnabled(enabled);
+		}
+
+		void SetDepthOfFieldFocusWorldPos(const Vector3& position)
+		{
+			m_dof.SetPlayerWorldPos(position);
+		}
+
+		void SetMotionBlurEnabled(bool enabled)
+		{
+			m_motionBlur.SetEnabled(enabled);
+		}
+
 		Matrix& GetViewProjectionMatrix()
 		{
 			return m_viewProjectionMatrix;
@@ -125,6 +144,10 @@ namespace nsK2EngineLow {
 		Shadow m_shadow;
 		// ブルーム用
 		Bloom m_bloom;
+		// 被写界深度用
+		DepthOfField m_dof;
+		// モーションブラー用
+		MotionBlur m_motionBlur;
 		//RenderTarget* luminanceRenderTarget;
 		Sprite m_copyToFrameBufferSprite;
 		SpriteInitData m_spriteInitData;

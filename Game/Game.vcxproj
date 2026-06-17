@@ -242,6 +242,7 @@
     <ClCompile Include="EnemyAttackPoint.cpp" />
     <ClCompile Include="EnemyAttackPointManager.cpp" />
     <ClCompile Include="ui\CameraOptionMenu.cpp" />
+    <ClCompile Include="ui\ScreenOptionMenu.cpp" />
     <ClCompile Include="ui\DamagePopUI.cpp" />
     <ClCompile Include="EnemyPhase.cpp" />
     <ClCompile Include="title\TitleManager.cpp" />
@@ -332,6 +333,7 @@
     <ClInclude Include="EnemyAttackPoint.h" />
     <ClInclude Include="EnemyAttackPointManager.h" />
     <ClInclude Include="ui\CameraOptionMenu.h" />
+    <ClInclude Include="ui\ScreenOptionMenu.h" />
     <ClInclude Include="ui\DamagePopUI.h" />
     <ClInclude Include="EnemyPhase.h" />
     <ClInclude Include="title\TitleManager.h" />

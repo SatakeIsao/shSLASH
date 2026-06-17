@@ -291,6 +291,8 @@ namespace app
 			bool isChargeAttackEffectRequested_ = false;
 			/** 現在のチャージレベル (0=未チャージ, 1/2/3) */
 			int chargeLevel_ = 0;
+			/** チャージ溜め中のリアルタイムレベル (0=未到達, 1/2/3) */
+			int currentChargingLevel_ = 0;
 			/** Deadの効果音再生したか */
 			bool isDeadSEPlayed_ = false;
 			/** プレイヤー側ヒットストップの残り時間 */
@@ -443,6 +445,10 @@ namespace app
 			void SetChargeLevel(int level) { chargeLevel_ = level; }
 			/** チャージレベルを取得 */
 			int GetChargeLevel() const { return chargeLevel_; }
+			/** 溜め中のリアルタイムレベルを設定 */
+			void SetCurrentChargingLevel(int level) { currentChargingLevel_ = level; }
+			/** 溜め中のリアルタイムレベルを取得 */
+			int GetCurrentChargingLevel() const { return currentChargingLevel_; }
 
 			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
 			bool CheckAndConsumeChargeEffectRequest()

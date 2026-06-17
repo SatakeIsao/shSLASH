@@ -255,6 +255,8 @@
     <ClCompile Include="AI\PathFinding\Path.cpp" />
     <ClCompile Include="AI\PathFinding\PathFinding.cpp" />
     <ClCompile Include="Bloom.cpp" />
+    <ClCompile Include="DepthOfField.cpp" />
+    <ClCompile Include="MotionBlur.cpp" />
     <ClCompile Include="CameraCollisionSolver.cpp" />
     <ClCompile Include="CollisionObject.cpp" />
     <ClCompile Include="FontRender.cpp" />
@@ -353,6 +355,8 @@
     <ClInclude Include="AI\PathFinding\Path.h" />
     <ClInclude Include="AI\PathFinding\PathFinding.h" />
     <ClInclude Include="Bloom.h" />
+    <ClInclude Include="DepthOfField.h" />
+    <ClInclude Include="MotionBlur.h" />
     <ClInclude Include="CameraCollisionSolver.h" />
     <ClInclude Include="CollisionObject.h" />
     <ClInclude Include="dbg\MyAssert.h" />

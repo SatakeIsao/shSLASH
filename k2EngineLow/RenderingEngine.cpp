@@ -57,6 +57,12 @@ namespace nsK2EngineLow {
 
 		// TBDR ディスクリプタヒープ初期化（m_worldPosRT が確定した後）
 		InitTBDRDescriptorHeap();
+
+		// 被写界深度初期化（m_worldPosRT が確定した後）
+		InitDoF();
+
+		// モーションブラー初期化
+		InitMotionBlur();
 	}
 
 
@@ -221,6 +227,16 @@ namespace nsK2EngineLow {
 		m_bloom.InitBoke(m_mainRenderingTarget);
 	}
 
+	void RenderingEngine::InitDoF()
+	{
+		m_dof.Init(m_mainRenderingTarget, m_worldPosRT.GetRenderTargetTexture());
+	}
+
+	void RenderingEngine::InitMotionBlur()
+	{
+		m_motionBlur.Init(m_mainRenderingTarget);
+	}
+
 	void RenderingEngine::Init2DSprite()
 	{
 		float clearColor[4] = { 0.0f,0.0f,0.0f,0.0f };
@@ -327,6 +343,12 @@ namespace nsK2EngineLow {
 		m_bloom.FinalSpriteDraw(rc);
 		//レンダリングターゲットの書き込み終了待ち
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderingTarget);
+
+		// 被写界深度（有効時のみ実行）
+		m_dof.Execute(rc);
+
+		// モーションブラー（有効時のみ実行）
+		m_motionBlur.Execute(rc);
 
 		//メインレンダリングターゲットの絵をフレームバッファにコピー
 		CopyMainRenderTargetToFrameBuffer(rc);

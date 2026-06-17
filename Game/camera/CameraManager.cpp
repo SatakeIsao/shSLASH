@@ -33,6 +33,48 @@ namespace app
         }
 
 
+        void CameraManager::ApplyScreenEffectSettings()
+        {
+            if (g_renderingEngine == nullptr) {
+                return;
+            }
+
+            g_renderingEngine->SetDepthOfFieldEnabled(isScreenEffectActive_ && isDepthOfFieldEnabled_);
+            g_renderingEngine->SetMotionBlurEnabled(isScreenEffectActive_ && isMotionBlurEnabled_);
+        }
+
+
+        void CameraManager::SetMotionBlurEnabled(bool enabled)
+        {
+            isMotionBlurEnabled_ = enabled;
+            ApplyScreenEffectSettings();
+        }
+
+
+        void CameraManager::SetDepthOfFieldEnabled(bool enabled)
+        {
+            isDepthOfFieldEnabled_ = enabled;
+            ApplyScreenEffectSettings();
+        }
+
+
+        void CameraManager::SetScreenEffectActive(bool active)
+        {
+            isScreenEffectActive_ = active;
+            ApplyScreenEffectSettings();
+        }
+
+
+        void CameraManager::SetScreenEffectFocusWorldPos(const Vector3& position)
+        {
+            if (g_renderingEngine == nullptr) {
+                return;
+            }
+
+            g_renderingEngine->SetDepthOfFieldFocusWorldPos(position);
+        }
+
+
         void CameraManager::Register(const uint32_t nameHash, RefCameraController controller)
         {
             if (controllers_.find(nameHash) != controllers_.end()) {
