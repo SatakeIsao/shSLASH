@@ -113,6 +113,17 @@
       },
       {
         "type": "UIIcon",
+        "name": "IconBase_4",
+        "asset": "Assets/ui/optionBase/icon_Base.DDS",
+        "width": 60,
+        "height": 80,
+        "position": [-149, 125, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
         "name": "Icon_Vol",
         "asset": "Assets/ui/optionBase/iconVolume.DDS",
         "width": 30,
@@ -135,11 +146,22 @@
       },
       {
         "type": "UIIcon",
+        "name": "Icon_Screen",
+        "asset": "Assets/ui/pause/screen/IconScreen.DDS",
+        "width": 40,
+        "height": 40,
+        "position": [-216, 134, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0 ,1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
         "name": "Icon_Return",
         "asset": "Assets/ui/optionBase/return_Icon.DDS",
         "width": 40,
         "height": 40,
-        "position": [-216, 134, 0],
+        "position": [-149, 134, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
@@ -194,7 +216,7 @@
         "asset": "Assets/ui/optionBase/button_RB.DDS",
         "width": 80,
         "height": 30,
-        "position": [-137, 145, 0],
+        "position": [-70, 145, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]

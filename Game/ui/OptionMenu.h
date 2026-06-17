@@ -31,14 +31,15 @@ namespace app
             {
                 Sound,
                 Camera,
+                Screen,
                 Title,
                 Max
             };
 
             Tab currentTab_ = Tab::Sound;
 
-            UIIcon* iconBases_[3] = { nullptr };
-            UIIcon* icons_[3] = { nullptr };
+            UIIcon* iconBases_[4] = { nullptr };
+            UIIcon* icons_[4] = { nullptr };
 
             UIIcon* buttonLB_ = nullptr;
             UIIcon* buttonRB_ = nullptr;
@@ -46,6 +47,7 @@ namespace app
             // 基盤クラスが子要素として各設定画面のレイアウトを自動管理する
             std::unique_ptr<app::ui::Layout> soundLayout_;
             std::unique_ptr<app::ui::Layout> cameraLayout_;
+            std::unique_ptr<app::ui::Layout> screenLayout_;
             std::unique_ptr<app::ui::Layout> titleLayout_;
 
             // タブ切り替え用の内部関数

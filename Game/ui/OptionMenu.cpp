@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "OptionMenu.h"
-#include "ui/SoundOptionMenu.h" 
+#include "ui/SoundOptionMenu.h"
 #include "ui/CameraOptionMenu.h"
+#include "ui/ScreenOptionMenu.h"
 #include "ui/ReturnToTitleMenu.h"
 #include "sound/SoundManager.h"
 
@@ -17,10 +18,12 @@ namespace app
             iconBases_[0] = GetUI<app::ui::UIIcon>(Hash32("IconBase_1"));
             iconBases_[1] = GetUI<app::ui::UIIcon>(Hash32("IconBase_2"));
             iconBases_[2] = GetUI<app::ui::UIIcon>(Hash32("IconBase_3"));
+            iconBases_[3] = GetUI<app::ui::UIIcon>(Hash32("IconBase_4"));
 
             icons_[0] = GetUI<app::ui::UIIcon>(Hash32("Icon_Vol"));
             icons_[1] = GetUI<app::ui::UIIcon>(Hash32("Icon_Camera"));
-            icons_[2] = GetUI<app::ui::UIIcon>(Hash32("Icon_Return"));
+            icons_[2] = GetUI<app::ui::UIIcon>(Hash32("Icon_Screen"));
+            icons_[3] = GetUI<app::ui::UIIcon>(Hash32("Icon_Return"));
 
             buttonLB_ = GetUI<app::ui::UIIcon>(Hash32("BUTTUN_LB"));
             buttonRB_ = GetUI<app::ui::UIIcon>(Hash32("BUTTUN_RB"));
@@ -30,6 +33,9 @@ namespace app
 
             cameraLayout_ = std::make_unique<app::ui::Layout>();
             cameraLayout_->Initialize<app::ui::CameraOptionMenu>("Assets/ui/layout/cameraMenuLayout.json");
+
+            screenLayout_ = std::make_unique<app::ui::Layout>();
+            screenLayout_->Initialize<app::ui::ScreenOptionMenu>("Assets/ui/layout/screenMenuLayout.json");
 
             titleLayout_ = std::make_unique<app::ui::Layout>();
             titleLayout_->Initialize<app::ui::ReturnToTitleMenu>("Assets/ui/layout/returnToTitleMenuLayout.json");
@@ -53,9 +59,10 @@ namespace app
             if (canvas) canvas->isDraw = false;
 
             // 基盤が閉じるときは子レイアウトも確実に非表示にする
-            if (soundLayout_ && soundLayout_->GetMenu())  dynamic_cast<SoundOptionMenu*>(soundLayout_->GetMenu())->SetDraw(false);
+            if (soundLayout_  && soundLayout_->GetMenu())  dynamic_cast<SoundOptionMenu*> (soundLayout_->GetMenu())->SetDraw(false);
             if (cameraLayout_ && cameraLayout_->GetMenu()) dynamic_cast<CameraOptionMenu*>(cameraLayout_->GetMenu())->SetDraw(false);
-            if (titleLayout_ && titleLayout_->GetMenu()) dynamic_cast<ReturnToTitleMenu*>(titleLayout_->GetMenu())->SetDraw(false);
+            if (screenLayout_ && screenLayout_->GetMenu()) dynamic_cast<ScreenOptionMenu*>(screenLayout_->GetMenu())->SetDraw(false);
+            if (titleLayout_  && titleLayout_->GetMenu())  dynamic_cast<ReturnToTitleMenu*>(titleLayout_->GetMenu())->SetDraw(false);
         }
 
         void OptionMenu::ChangeTab(Tab nextTab)
@@ -63,14 +70,16 @@ namespace app
             currentTab_ = nextTab;
 
             // 子クラスのポインタをダイナミックキャストで取得
-            auto* soundMenu = soundLayout_ ? dynamic_cast<SoundOptionMenu*>(soundLayout_->GetMenu()) : nullptr;
+            auto* soundMenu  = soundLayout_  ? dynamic_cast<SoundOptionMenu*> (soundLayout_->GetMenu())  : nullptr;
             auto* cameraMenu = cameraLayout_ ? dynamic_cast<CameraOptionMenu*>(cameraLayout_->GetMenu()) : nullptr;
-            auto* titleMenu = titleLayout_ ? dynamic_cast<ReturnToTitleMenu*>(titleLayout_->GetMenu()) : nullptr;
+            auto* screenMenu = screenLayout_ ? dynamic_cast<ScreenOptionMenu*>(screenLayout_->GetMenu()) : nullptr;
+            auto* titleMenu  = titleLayout_  ? dynamic_cast<ReturnToTitleMenu*>(titleLayout_->GetMenu()) : nullptr;
 
             // 切り替え
             if (soundMenu)  soundMenu->SetDraw(currentTab_ == Tab::Sound);
             if (cameraMenu) cameraMenu->SetDraw(currentTab_ == Tab::Camera);
-            if (titleMenu) titleMenu->SetDraw(currentTab_ == Tab::Title);
+            if (screenMenu) screenMenu->SetDraw(currentTab_ == Tab::Screen);
+            if (titleMenu)  titleMenu->SetDraw(currentTab_ == Tab::Title);
 
             for (int i = 0; i < static_cast<int>(Tab::Max); ++i)
             {
@@ -105,9 +114,10 @@ namespace app
         {
             //[TODO]：アニメーションなどはここで
             MenuBase::Update();
-            if (soundLayout_)soundLayout_->Update();
-            if (cameraLayout_)cameraLayout_->Update();
-            if (titleLayout_)titleLayout_->Update();
+            if (soundLayout_)  soundLayout_->Update();
+            if (cameraLayout_) cameraLayout_->Update();
+            if (screenLayout_) screenLayout_->Update();
+            if (titleLayout_)  titleLayout_->Update();
 
             auto* canvas = GetCanvas();
             if (!canvas || !canvas->isDraw) return;
@@ -173,6 +183,10 @@ namespace app
             else if (currentTab_ == Tab::Camera && cameraLayout_)
             {
                 cameraLayout_->Render(rc);
+            }
+            else if (currentTab_ == Tab::Screen && screenLayout_)
+            {
+                screenLayout_->Render(rc);
             }
             else if (currentTab_ == Tab::Title && titleLayout_)
             {

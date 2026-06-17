@@ -1,0 +1,171 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "Word_SCREEN",
+        "asset": "Assets/ui/pause/screen/SCREEN.DDS",
+        "width": 200,
+        "height": 35,
+        "position": [-385, 250, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Cursor",
+        "asset": "Assets/ui/pause/camera/cursor.DDS",
+        "width": 500,
+        "height": 34,
+        "position": [165, 15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Highlight",
+        "asset": "Assets/ui/highlight.DDS",
+        "width": 300,
+        "height": 34,
+        "position": [-280, 10, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_MotionBlur",
+        "asset": "Assets/ui/pause/screen/MOTION BLUR.DDS",
+        "width": 280,
+        "height": 34,
+        "position": [-280, 15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_MotionBlur_ON",
+        "asset": "Assets/ui/pause/camera/ON.DDS",
+        "width": 74,
+        "height": 34,
+        "position": [165, 15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_MotionBlur_OFF",
+        "asset": "Assets/ui/pause/camera/OFF.DDS",
+        "width": 84,
+        "height": 34,
+        "position": [165, 15, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line_MotionBlur",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 300,
+        "height": 3,
+        "position": [-280, -10, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.6]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line_MotionBlur_Value",
+        "asset": "Assets/ui/pause/camera/Line2.DDS",
+        "width": 370,
+        "height": 3,
+        "position": [165, -10, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_DepthOfField",
+        "asset": "Assets/ui/pause/screen/FOV.DDS",
+        "width": 100,
+        "height": 34,
+        "position": [-280, -78, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_DepthOfField_ON",
+        "asset": "Assets/ui/pause/camera/ON.DDS",
+        "width": 74,
+        "height": 34,
+        "position": [165, -78, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Word_DepthOfField_OFF",
+        "asset": "Assets/ui/pause/camera/OFF.DDS",
+        "width": 84,
+        "height": 34,
+        "position": [165, -78, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line_DepthOfField",
+        "asset": "Assets/ui/Line.DDS",
+        "width": 300,
+        "height": 3,
+        "position": [-280, -103, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 0.6]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Line_DepthOfField_Value",
+        "asset": "Assets/ui/pause/camera/Line2.DDS",
+        "width": 370,
+        "height": 3,
+        "position": [165, -103, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "text_default",
+        "asset": "Assets/ui/pause/volume/text_default.DDS",
+        "width": 149,
+        "height": 35,
+        "position": [22.5, -340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "Button_default",
+        "asset": "Assets/ui/pause/main/button_Y.DDS",
+        "width": 40,
+        "height": 40,
+        "position": [-77.5, -340, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

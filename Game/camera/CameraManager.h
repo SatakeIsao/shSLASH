@@ -40,10 +40,14 @@ namespace app
             bool isReverseY_ = false;
             float sensitivity_ = 0.5f;
             bool isShakeEnabled_ = true;
+            bool isMotionBlurEnabled_ = true;
+            bool isDepthOfFieldEnabled_ = true;
+            bool isScreenEffectActive_ = false;
 
         private:
             CameraManager();
             ~CameraManager();
+            void ApplyScreenEffectSettings();
 
 
         public:
@@ -112,6 +116,12 @@ namespace app
             float GetSensitivity() const { return sensitivity_; }
             void SetShakeEnabled(bool enabled) { isShakeEnabled_ = enabled; }
             bool IsShakeEnabled() const { return isShakeEnabled_; }
+            void SetMotionBlurEnabled(bool enabled);
+            bool IsMotionBlurEnabled() const { return isMotionBlurEnabled_; }
+            void SetDepthOfFieldEnabled(bool enabled);
+            bool IsDepthOfFieldEnabled() const { return isDepthOfFieldEnabled_; }
+            void SetScreenEffectActive(bool active);
+            void SetScreenEffectFocusWorldPos(const Vector3& position);
 
         public:
             static void Initialize()

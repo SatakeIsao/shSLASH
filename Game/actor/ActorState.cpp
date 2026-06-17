@@ -10,6 +10,7 @@
 #include "core/ParameterManager.h"
 #include "sound/SoundManager.h"
 #include "effect/SwordDecalManager.h"
+#include "camera/CameraManager.h"
 
 
 namespace app
@@ -877,6 +878,7 @@ namespace app
 
 		void ChargeAttackCharacterState::Enter()
 		{
+			app::camera::CameraManager::Get().SetScreenEffectActive(true);
 			chargeAttackPhase_ = ChargeAttackPhase::Start;
 			chargeTimer_ = 0.0f;
 			for (int i = 0; i < 3; i++)
@@ -892,6 +894,7 @@ namespace app
 			// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 				battleMachine->RequestChargeEffect();
+				battleMachine->SetCurrentChargingLevel(0);
 			}
 			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackStart), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Charging));
@@ -903,6 +906,8 @@ namespace app
 		void ChargeAttackCharacterState::Update()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+
+			app::camera::CameraManager::Get().SetScreenEffectFocusWorldPos(owner_->transform.position);
 
 			switch (chargeAttackPhase_)
 			{
@@ -931,6 +936,7 @@ namespace app
 						{
 							chargeLevelEmitters_[i] = battleMachine->RequestChargeLevelEffect(i);
 							chargeLevelEffectPlayed_[i] = true;
+							battleMachine->SetCurrentChargingLevel(i + 1);
 						}
 					}
 				}
@@ -940,6 +946,8 @@ namespace app
 					characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::ChargedAttackEnd), 0.1f);
 					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkCharge));
 					chargeAttackPhase_ = ChargeAttackPhase::End;
+					// 剣を振り下ろしたら被写界深度とモーションブラーを解除
+					app::camera::CameraManager::Get().SetScreenEffectActive(false);
 					// BattleCharacterStateMachineなら、チャージエフェクトの再生リクエストを出す
 					if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
 						battleMachine->RequestChargeAttackEffect();
@@ -1023,10 +1031,13 @@ namespace app
 		void ChargeAttackCharacterState::Exit()
 		{
 			attackScheduler_.reset(nullptr);
+			// 状態離脱時に被写界深度とモーションブラーを確実に解除（中断ケースのフォールバック）
+			app::camera::CameraManager::Get().SetScreenEffectActive(false);
 
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>())
 			{
 				battleMachine->SetChargeLevel(0);
+				battleMachine->SetCurrentChargingLevel(0);
 			}
 
 			// チャージレベルエフェクトを停止（Play済みのものだけ Stop する）
