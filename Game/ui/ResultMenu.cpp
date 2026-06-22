@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ResultMenu.h"
 #include "ResultSubMenu.h"
 #include "ui/UIAnimationFactory.h"
@@ -18,15 +18,16 @@ namespace app {
             enemyIcon1_ = GetUI<UIIcon>(Hash32("EnemyIcon_1"));
             enemyIcon2_ = GetUI<UIIcon>(Hash32("EnemyIcon_2"));
             enemyIcon3_ = GetUI<UIIcon>(Hash32("EnemyIcon_3"));
-            levelDigit_ = GetUI<UIDigit>(Hash32("LevelDigit"));
-            enemyDigit1_ = GetUI<UIDigit>(Hash32("EnemyDigit_1"));
-            enemyDigit2_ = GetUI<UIDigit>(Hash32("EnemyDigit_2"));
-            enemyDigit3_ = GetUI<UIDigit>(Hash32("EnemyDigit_3"));
-            scoreDigit_ = GetUI<UIDigit>(Hash32("ScoreDigit"));
+            levelDigit_ = GetUI<UINumberSprite>(Hash32("LevelDigit"));
+            enemyDigit1_ = GetUI<UINumberSprite>(Hash32("EnemyDigit_1"));
+            enemyDigit2_ = GetUI<UINumberSprite>(Hash32("EnemyDigit_2"));
+            enemyDigit3_ = GetUI<UINumberSprite>(Hash32("EnemyDigit_3"));
+            scoreDigit_ = GetUI<UINumberSprite>(Hash32("ScoreDigit"));
             rankMaster_ = GetUI<UIIcon>(Hash32("Rank_S"));
             rankMasterFog_ = GetUI<UIIcon>(Hash32("Rank_S_Fog"));
             rankElite_ = GetUI<UIIcon>(Hash32("Rank_A"));
             rankBeginner_ = GetUI<UIIcon>(Hash32("Rank_B"));
+            resultIcon_ = GetUI<UIIcon>(Hash32("Result"));
             skipIcon_ = GetUI<UIIcon>(Hash32("Skip"));
             nextIcon_ = GetUI<UIIcon>(Hash32("Next"));
 
@@ -38,6 +39,7 @@ namespace app {
             if (enemyDigit3_) enemyDigit3_->SetNumber(0);
             if (scoreDigit_)  scoreDigit_->SetNumber(rd.CalcTotalScore());
 
+            if (resultIcon_)    resultIcon_->isDraw = false;
             if (scoreBoard_)    scoreBoard_->isDraw = false;
             if (enemyIcon1_)    enemyIcon1_->isDraw = false;
             if (enemyIcon2_)    enemyIcon2_->isDraw = false;
@@ -52,7 +54,7 @@ namespace app {
             if (rankElite_)     rankElite_->transform.localScale = Vector3::Zero;
             if (rankBeginner_)  rankBeginner_->transform.localScale = Vector3::Zero;
 
-            auto attachStamp = [&](UIDigit* digit) {
+            auto attachStamp = [&](UINumberSprite* digit) {
                 if (!digit) return;
                 app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(digit, Hash32("DigitStamp"));
                 digit->transform.localScale = Vector3::Zero;
@@ -68,6 +70,7 @@ namespace app {
             if (enemyDigit2_) initialDigitPositions_[2] = enemyDigit2_->transform.localPosition;
             if (enemyDigit3_) initialDigitPositions_[3] = enemyDigit3_->transform.localPosition;
             if (scoreDigit_)  initialDigitPositions_[4] = scoreDigit_->transform.localPosition;
+            if (rankBeginner_) initialBeginnerRankPos_ = rankBeginner_->transform.localPosition;
 
             if (skipIcon_) skipIcon_->isDraw = true;
             if (nextIcon_) nextIcon_->isDraw = false;
@@ -75,6 +78,7 @@ namespace app {
             if (enemyIcon1_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(enemyIcon1_, Hash32("EnemyIcon1Slide"));
             if (enemyIcon2_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(enemyIcon2_, Hash32("EnemyIcon2Slide"));
             if (enemyIcon3_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(enemyIcon3_, Hash32("EnemyIcon3Slide"));
+            if (resultIcon_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(resultIcon_, Hash32("ResultSlide"));
             if (scoreBoard_) app::ui::UIAnimationFactory::Attach<app::ui::UITranslateAniamtion>(scoreBoard_, Hash32("ScoreBoardSlideIn"));
             if (rankMaster_)   app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankMaster_, Hash32("RankStamp"));
             if (rankElite_)    app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(rankElite_, Hash32("RankStamp"));
@@ -89,12 +93,17 @@ namespace app {
 
             if (currentState_ >= SequenceState::ShowResult && currentState_ <= SequenceState::ShowDigits) {
                 if (g_pad[0]->IsTrigger(enButtonA)) {
+                    if (resultIcon_) {
+                        resultIcon_->isDraw = true;
+                        resultIcon_->transform.localPosition = Vector3(-475.0f, 350.0f, 0.0f);
+                        resultIcon_->transform.UpdateTransform();
+                    }
                     if (scoreBoard_)  scoreBoard_->isDraw = true;
                     if (enemyIcon1_) enemyIcon1_->isDraw = true;
                     if (enemyIcon2_) enemyIcon2_->isDraw = true;
                     if (enemyIcon3_) enemyIcon3_->isDraw = true;
 
-                    UIDigit* digits[] = { levelDigit_, enemyDigit1_, enemyDigit2_, enemyDigit3_, scoreDigit_ };
+                    UINumberSprite* digits[] = { levelDigit_, enemyDigit1_, enemyDigit2_, enemyDigit3_, scoreDigit_ };
                     for (int i = 0; i < 5; ++i) {
                         if (digits[i]) {
                             digits[i]->isDraw = true;
@@ -138,6 +147,11 @@ namespace app {
                 if (stateTimer_ <= 0.0f) {
                     currentState_ = SequenceState::SlideInScoreBoardAndResult;
 
+                    if (resultIcon_) {
+                        resultIcon_->isDraw = true;
+                        auto* anim = resultIcon_->FindAnimation(Hash32("ResultSlide"));
+                        if (anim) anim->Play();
+                    }
                     if (scoreBoard_) {
                         scoreBoard_->isDraw = true;
                         auto* anim = scoreBoard_->FindAnimation(Hash32("ScoreBoardSlideIn"));
@@ -176,7 +190,7 @@ namespace app {
 
             case SequenceState::ShowDigits:
             {
-                UIDigit* currentDigit = nullptr;
+                UINumberSprite* currentDigit = nullptr;
                 if (currentDigitStep_ == 0)      currentDigit = levelDigit_;
                 else if (currentDigitStep_ == 1) currentDigit = enemyDigit1_;
                 else if (currentDigitStep_ == 2) currentDigit = enemyDigit2_;
@@ -324,7 +338,7 @@ namespace app {
             if (shakeTimer_ > 0.0f && shakingDigitIndex_ >= 0 && shakingDigitIndex_ <= 4) {
                 shakeTimer_ -= g_gameTime->GetFrameDeltaTime();
 
-                UIDigit* targetDigit = nullptr;
+                UINumberSprite* targetDigit = nullptr;
                 if (shakingDigitIndex_ == 0)      targetDigit = levelDigit_;
                 else if (shakingDigitIndex_ == 1) targetDigit = enemyDigit1_;
                 else if (shakingDigitIndex_ == 2) targetDigit = enemyDigit2_;
@@ -351,6 +365,79 @@ namespace app {
                 subMenuLayout_->Render(rc);
             }
         }
+
+        void ResultMenu::Reset(int newRank) {
+            currentRank_ = newRank;
+
+            // すべての UI を非表示・初期スケールに戻す
+            if (resultIcon_)    resultIcon_->isDraw = false;
+            if (scoreBoard_)    scoreBoard_->isDraw = false;
+            if (enemyIcon1_)    enemyIcon1_->isDraw = false;
+            if (enemyIcon2_)    enemyIcon2_->isDraw = false;
+            if (enemyIcon3_)    enemyIcon3_->isDraw = false;
+            if (levelDigit_)    levelDigit_->isDraw = false;
+            if (enemyDigit1_)   enemyDigit1_->isDraw = false;
+            if (enemyDigit2_)   enemyDigit2_->isDraw = false;
+            if (enemyDigit3_)   enemyDigit3_->isDraw = false;
+            if (scoreDigit_)    scoreDigit_->isDraw = false;
+
+            if (rankMaster_) {
+                rankMaster_->transform.localScale = Vector3::Zero;
+                rankMaster_->transform.UpdateTransform();
+            }
+            if (rankMasterFog_) {
+                rankMasterFog_->transform.localScale = Vector3::Zero;
+                rankMasterFog_->transform.UpdateTransform();
+            }
+            if (rankElite_) {
+                rankElite_->transform.localScale = Vector3::Zero;
+                rankElite_->transform.UpdateTransform();
+            }
+            if (rankBeginner_) {
+                rankBeginner_->transform.localScale = Vector3::Zero;
+                rankBeginner_->transform.localRotation.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 0.0f);
+                rankBeginner_->transform.localPosition = initialBeginnerRankPos_;
+                rankBeginner_->transform.UpdateTransform();
+            }
+
+            UINumberSprite* digits[] = { levelDigit_, enemyDigit1_, enemyDigit2_, enemyDigit3_, scoreDigit_ };
+            for (int i = 0; i < 5; ++i) {
+                if (digits[i]) {
+                    digits[i]->transform.localScale = Vector3::Zero;
+                    digits[i]->transform.localPosition = initialDigitPositions_[i];
+                    digits[i]->transform.UpdateTransform();
+                }
+            }
+
+            if (skipIcon_) skipIcon_->isDraw = true;
+            if (nextIcon_) nextIcon_->isDraw = false;
+
+            subMenuLayout_.reset();
+
+            currentState_         = SequenceState::ShowResult;
+            stateTimer_           = 2.0f;
+            currentDigitStep_     = 0;
+            masterFogTimer_       = 0.0f;
+            beginnerRankTimer_    = 0.0f;
+            isBeginnerRankTilted_ = false;
+            shakeTimer_           = 0.0f;
+            shakingDigitIndex_    = -1;
+        }
+
+
+        void ResultMenu::DebugSetNumber(int value)
+        {
+            UINumberSprite* digits[] = { levelDigit_, enemyDigit1_, enemyDigit2_, enemyDigit3_, scoreDigit_ };
+            for (auto* d : digits) {
+                if (d) {
+                    d->SetNumber(value);
+                    d->isDraw = true;
+                    d->transform.localScale = Vector3::One;
+                    d->transform.UpdateTransform();
+                }
+            }
+        }
+
 
         void ResultMenu::OnOpen() {}
         void ResultMenu::OnClose() {}

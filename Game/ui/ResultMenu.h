@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #include "ui/Menu.h"
 #include "ui/Layout.h"
 namespace app {
     namespace ui {
         class UIIcon;
-        class UIDigit;
+        class UINumberSprite;
 
         class ResultMenu : public MenuBase {
         public:
@@ -29,6 +29,11 @@ namespace app {
             void OnOpen();
             void OnClose();
 
+            /** デバッグ用: シーケンスとUIを先頭から再生しなおす */
+            void Reset(int newRank);
+            /** デバッグ用: 数値を直接セットして表示 */
+            void DebugSetNumber(int value);
+
             bool IsReturnTitleDecided() const;
             bool IsRetryDecided() const;
             bool IsExitDecided() const;
@@ -44,15 +49,16 @@ namespace app {
             UIIcon* enemyIcon1_ = nullptr;
             UIIcon* enemyIcon2_ = nullptr;
             UIIcon* enemyIcon3_ = nullptr;
-            UIDigit* levelDigit_ = nullptr;
-            UIDigit* enemyDigit1_ = nullptr;
-            UIDigit* enemyDigit2_ = nullptr;
-            UIDigit* enemyDigit3_ = nullptr;
-            UIDigit* scoreDigit_ = nullptr;
+            UINumberSprite* levelDigit_ = nullptr;
+            UINumberSprite* enemyDigit1_ = nullptr;
+            UINumberSprite* enemyDigit2_ = nullptr;
+            UINumberSprite* enemyDigit3_ = nullptr;
+            UINumberSprite* scoreDigit_ = nullptr;
             UIIcon* rankMaster_ = nullptr;
             UIIcon* rankMasterFog_ = nullptr;
             UIIcon* rankElite_ = nullptr;
             UIIcon* rankBeginner_ = nullptr;
+            UIIcon* resultIcon_ = nullptr;
             UIIcon* skipIcon_ = nullptr;
             UIIcon* nextIcon_ = nullptr;
 
@@ -64,6 +70,7 @@ namespace app {
             float shakeTimer_ = 0.0f;           // 揺れている時間を計る
             int shakingDigitIndex_ = -1;        // 今どの数字が揺れているか
             Vector3 initialDigitPositions_[5];  // 5つの数字の「元の座標」を記憶
+            Vector3 initialBeginnerRankPos_;    // Beginner ランクアイコンの初期座標
 
         };
     }
