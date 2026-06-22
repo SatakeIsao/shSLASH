@@ -178,8 +178,6 @@ namespace app
 				}
 				else
 				{
-					// AI・移動はスキップしてアニメーションのみ更新（Idle再生継続）
-					SuperClass::Update();
 					// ゴーストボディを正しい位置に維持する（SetActiveされても位置は自動更新されないため）
 					Vector3 centerPos = transform.position;
 					centerPos.y += status_->GetRadius() * 2.0f;
@@ -342,8 +340,6 @@ namespace app
 				}
 				else
 				{
-					// AI・移動はスキップしてアニメーションのみ更新（Idle再生継続）
-					SuperClass::Update();
 					// ゴーストボディを正しい位置に維持する（SetActiveされても位置は自動更新されないため）
 					Vector3 centerPos = transform.position;
 					centerPos.y += status_->GetRadius() * 2.0f;

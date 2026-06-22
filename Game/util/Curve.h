@@ -73,6 +73,8 @@ namespace app
             /** 再生 */
             void Play()
             {
+                currentTime_ = 0.0f;
+                direction_ = 1;
                 isPlaying_ = true;
             }
 
