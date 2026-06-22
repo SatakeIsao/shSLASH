@@ -5,45 +5,25 @@
         "type": "UIIcon",
         "name": "Phase",
         "asset": "Assets/ui/word/PHASE.DDS",
-        "width": 100,
-        "height": 35,
-        "position": [690, 240, 0],
+        "width": 84,
+        "height": 21,
+        "position": [700, 234, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0, 1.0, 1.0, 1.0]
       },
       {
-        "type": "UIIcon",
-        "name": "PhaseNum1",
-        "asset": "Assets/ui/numbers/1.dds",
-        "width": 35,
-        "height": 35,
+        "type": "UINumberSprite",
+        "name": "PhaseNumber",
+        "asset": "Assets/ui/numbers/numbers.DDS",
+        "digit": 1,
+        "width": 35.0,
+        "height": 35.0,
+        "uvOffsets": [0.40, 0.24, 0.12, 0.10, 0.04, 0.02, 0.001, 0.005, -0.09, -0.15],
+        "uvScales":  [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.9, 0.80, 0.9, 0.9],
         "position": [767, 240, 0],
         "scale": [1, 1, 1],
-        "rotation": 0,
-        "color": [1.0, 1.0, 1.0, 1.0]
-      },
-      {
-        "type": "UIIcon",
-        "name": "PhaseNum2",
-        "asset": "Assets/ui/numbers/2.dds",
-        "width": 35,
-        "height": 35,
-        "position": [767, 240, 0],
-        "scale": [0, 0, 0],
-        "rotation": 0,
-        "color": [1.0, 1.0, 1.0, 1.0]
-      },
-      {
-        "type": "UIIcon",
-        "name": "PhaseNum3",
-        "asset": "Assets/ui/numbers/3.dds",
-        "width": 35,
-        "height": 35,
-        "position": [767, 240, 0],
-        "scale": [0, 0, 0],
-        "rotation": 0,
-        "color": [1.0, 1.0, 1.0, 1.0]
+        "rotation": 0
       }
     ]
   }

@@ -288,8 +288,8 @@ namespace app
 			/** 数字表示に必要な画像が入った */
 			std::string assetPath_;
 
-			int w_;
-			int h_;
+			float w_;
+			float h_;
 
 
 
@@ -341,6 +341,124 @@ namespace app
 		};
 
 
+
+
+		// ============================================
+		// 数字スプライトシート表示（UVオフセット方式）
+		// ============================================
+
+		/** numberSprite.fx の b1 定数バッファ */
+		struct NumberSpriteCB {
+			float uvOffsetX; // digit / ATLAS_COLUMNS
+			float uvScaleX;  // 1 / ATLAS_COLUMNS
+			float uvOffsetY; // コンテンツY開始UV（余白カット）
+			float uvScaleY;  // コンテンツY幅UV
+		};
+
+		/**
+		 * numbers.DDS アトラスを UVオフセットで切り抜いて数字を表示するクラス
+		 * アトラスは横一列に 0〜9 が並んでいることを想定
+		 */
+		class UINumberSprite : public UIBase
+		{
+		private:
+			static constexpr int   ATLAS_COLUMNS       = 10;
+			static constexpr float UV_DIGIT_WIDTH      = 1.0f / ATLAS_COLUMNS;
+			// numbers.DDS のコンテンツ領域（ピクセル座標 592〜952 / 1536）
+			static constexpr float CONTENT_UV_OFFSET_Y = 0.3854f;
+			static constexpr float CONTENT_UV_SCALE_Y  = 0.2344f;
+			// 位置補正（per-digit UV 抽出に切り替えたため全ゼロ）
+			static constexpr float DIGIT_X_CORRECTION[10] = {
+				0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+			};
+
+			std::vector<SpriteRender*>    renderList_;
+			// Sprite が保持するポインタが安定するようにヒープ確保
+			std::vector<NumberSpriteCB*>  cbList_;
+			int    number_        = 0;
+			int    requestNumber_ = 0;
+			int    digit_         = 1;
+			int    maxDigit_      = 1;
+			bool   isZeroPadding_ = false;
+			std::string atlasPath_;
+			float  w_ = 0;
+			float  h_ = 0;
+			float  uvXBias_      = 0.0f;
+			float  uvXScaleBias_ = 0.0f;
+			float  uvYScaleBias_ = 0.0f;
+			// JSON から上書き可能な per-digit UV X 抽出範囲（セル幅に対する割合 [0,1]）
+			// offset + scale <= 1.0 を守ること（超えると隣の桁にはみ出る）
+			float  digitUVOffset_[10] = { 0.45f, 0.20f, 0.12f, 0.13f, 0.04f, 0.14f, 0.14f, 0.06f, 0.13f, 0.13f };
+			float  digitUVScale_[10]  = { 1.00f, 0.28f, 0.76f, 0.74f, 0.91f, 0.75f, 0.76f, 0.80f, 0.75f, 0.76f };
+
+
+		public:
+			UINumberSprite();
+			~UINumberSprite();
+
+
+		public:
+			virtual void Update() override;
+			virtual void Render(RenderContext& rc) override;
+
+
+		public:
+			/**
+			 * @param atlasPath  numbers.DDS のパス
+			 * @param digit      最大桁数
+			 * @param number     初期値
+			 * @param width      1桁の表示幅
+			 * @param height     1桁の表示高さ
+			 */
+			void Initialize(const char* atlasPath, int digit, int number,
+				float width, float height,
+				const Vector3& position, const Vector3& scale, const Quaternion& rotation);
+
+			void SetNumber(int number)          { requestNumber_ = number; }
+			void SetZeroPadding(bool padding)   { isZeroPadding_ = padding; }
+			void SetXBias(float bias)
+			{
+				uvXBias_ = bias;
+				for (int i = 0; i < static_cast<int>(cbList_.size()); i++) {
+					UpdateDigitUV(i);
+				}
+			}
+			void SetScaleBias(float xScale, float yScale)
+			{
+				uvXScaleBias_ = xScale;
+				uvYScaleBias_ = yScale;
+				for (int i = 0; i < static_cast<int>(cbList_.size()); i++) {
+					UpdateDigitUV(i);
+					cbList_[i]->uvScaleY = CONTENT_UV_SCALE_Y + uvYScaleBias_;
+				}
+			}
+			// JSON "uvOffsets"/"uvScales" から per-digit UV テーブルを設定する
+			// nullptr を渡した側は現在の値を維持する
+			void SetDigitUVTable(const float* offsets, const float* scales, int count = 10)
+			{
+				const int n = (count < 10) ? count : 10;
+				if (offsets) { for (int i = 0; i < n; i++) digitUVOffset_[i] = offsets[i]; }
+				if (scales)  { for (int i = 0; i < n; i++) digitUVScale_[i]  = scales[i];  }
+				for (int i = 0; i < static_cast<int>(cbList_.size()); i++) {
+					UpdateDigitUV(i);
+				}
+			}
+			std::vector<SpriteRender*>& GetSpriteRenderList() { return renderList_; }
+
+			void ForEach(const std::function<void(SpriteRender*)>& func)
+			{
+				for (auto* r : renderList_) func(r);
+			}
+
+
+		private:
+			void AddDigitSprite();
+			void UpdateDigitUV(int index);
+			void UpdatePosition(int index);
+			int  GetDigitAt(int digitPos);
+			int  ComputeDigitCount();
+		};
 
 
 		// ============================================

@@ -140,6 +140,45 @@ namespace
         // 初期値の数値は0としておく
         text->Initialize(assetName.c_str(), digitCount, 0, w, h, position, scale, rotation);
     }
+    void InitializeUIParts(app::ui::UINumberSprite* sprite, const nlohmann::json& item)
+    {
+        const std::string atlasPath = item["asset"].get<std::string>();
+        const int digitCount = item["digit"].get<int>();
+        const float w = item["width"].get<float>();
+        const float h = item["height"].get<float>();
+        const Vector3 position = ParseVector3(item["position"]);
+        const Vector3 scale = ParseVector3(item["scale"]);
+        const Quaternion rotation = ParseRotation(item["rotation"].get<float>());
+
+        sprite->Initialize(atlasPath.c_str(), digitCount, 0, w, h, position, scale, rotation);
+
+        if (item.contains("xBias")) {
+            sprite->SetXBias(item["xBias"].get<float>());
+        }
+        if (item.contains("xScaleBias") || item.contains("yScaleBias")) {
+            const float xs = item.contains("xScaleBias") ? item["xScaleBias"].get<float>() : 0.0f;
+            const float ys = item.contains("yScaleBias") ? item["yScaleBias"].get<float>() : 0.0f;
+            sprite->SetScaleBias(xs, ys);
+        }
+        if (item.contains("uvOffsets") || item.contains("uvScales")) {
+            float offsets[10] = {}, scales[10] = {};
+            const float* pOffsets = nullptr;
+            const float* pScales  = nullptr;
+            if (item.contains("uvOffsets")) {
+                const auto& arr = item["uvOffsets"];
+                for (int i = 0; i < 10 && i < static_cast<int>(arr.size()); i++)
+                    offsets[i] = arr[i].get<float>();
+                pOffsets = offsets;
+            }
+            if (item.contains("uvScales")) {
+                const auto& arr = item["uvScales"];
+                for (int i = 0; i < 10 && i < static_cast<int>(arr.size()); i++)
+                    scales[i] = arr[i].get<float>();
+                pScales = scales;
+            }
+            sprite->SetDigitUVTable(pOffsets, pScales);
+        }
+    }
 }
 
 
@@ -226,8 +265,14 @@ namespace app
                 InitializeUIParts(digit, item);
                 ui = digit;
             }
-            //if (type == "UIButton") return canvas->CreateUI<UIButton>(key);
-            //if (type == "UIGauge")  return canvas->CreateUI<UIGauge>(key);
+            else if (type == "UINumberSprite") {
+                canvas->CreateUI<UINumberSprite>(key);
+                auto* sprite = canvas->FindUI<UINumberSprite>(key);
+                InitializeUIParts(sprite, item);
+                ui = sprite;
+            }
+            //if (type == "UIButton") ...
+            //if (type == "UIGauge")  ...
 
             if (ui && item.contains("isDraw"))
                 ui->isDraw = item["isDraw"].get<bool>();
