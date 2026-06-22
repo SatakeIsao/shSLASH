@@ -2,16 +2,32 @@
   "canvas": {
     "elements": [
       {
-        "type": "UIDigit",
+        "type": "UINumberSprite",
         "name": "damageNumbers",
-        "asset": "Assets/ui/numbers",
+        "asset": "Assets/ui/numbers/numbers.DDS",
         "digit": 3,
         "width": 24.0,
         "height": 32.0,
+        "uvOffsets": [0.40, 0.24, 0.12, 0.10, 0.04, 0.02, 0.001, 0.005, -0.09, -0.15],
+        "uvScales":  [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.9, 0.80, 0.9, 0.9],
         "position": [0.0, 0.0, 0.0],
         "scale": [1.0, 1.0, 1.0],
         "rotation": 0,
         "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UINumberSprite",
+        "name": "criticalDamageNumbers",
+        "asset": "Assets/ui/numbers/numbers.DDS",
+        "digit": 3,
+        "width": 24.0,
+        "height": 32.0,
+        "uvOffsets": [0.40, 0.24, 0.12, 0.10, 0.04, 0.02, 0.001, 0.005, -0.09, -0.15],
+        "uvScales":  [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.9, 0.80, 0.9, 0.9],
+        "position": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0],
+        "rotation": 0,
+        "color": [1.0, 0.58, 0.12, 1.0]
       }
     ]
   }

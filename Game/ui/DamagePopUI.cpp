@@ -32,18 +32,28 @@ namespace app
 
         void DamagePopUIObject::ApplySpawnParams()
         {
-            worldPos_ = pendingWorldPos_;
+            worldPos_    = pendingWorldPos_;
+            isCritical_  = pendingIsCritical_;
 
-            auto* digit = layout_->GetMenu()->GetUI<UIDigit>(Hash32(DIGIT_UI_NAME));
+            auto* normal   = layout_->GetMenu()->GetUI<UINumberSprite>(Hash32(DIGIT_UI_NAME));
+            auto* critical = layout_->GetMenu()->GetUI<UINumberSprite>(Hash32(CRITICAL_DIGIT_UI_NAME));
+
+            // 使わない方を非表示
+            if (normal)   normal->isDraw   = !isCritical_;
+            if (critical) critical->isDraw =  isCritical_;
+
+            UINumberSprite* digit = isCritical_ ? critical : normal;
             if (!digit) return;
 
             digit->SetNumber(pendingDamage_);
             digit->transform.localScale = Vector3(1.0f, 1.0f, 1.0f);
-            digit->color = Vector4(1.0f, 1.0f, 1.0f, 0.0f);
+
+            const uint32_t fadeInKey  = isCritical_ ? Hash32("DamagePop_Critical_FadeIn")  : Hash32("DamagePop_FadeIn");
+            const uint32_t fadeOutKey = isCritical_ ? Hash32("DamagePop_Critical_FadeOut") : Hash32("DamagePop_FadeOut");
 
             /** 付与していたアニメーションを取り外し、再度付与 */
-            digit->RemoveAnimation(Hash32("DamagePop_FadeIn"));
-            app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(digit, Hash32("DamagePop_FadeIn"));
+            digit->RemoveAnimation(fadeInKey);
+            app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(digit, fadeInKey);
 
             digit->RemoveAnimation(Hash32("DamagePop_ScaleUp"));
             app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(digit, Hash32("DamagePop_ScaleUp"));
@@ -51,16 +61,16 @@ namespace app
             digit->RemoveAnimation(Hash32("DamagePop_ScaleDown"));
             app::ui::UIAnimationFactory::Attach<app::ui::UIScaleAnimation>(digit, Hash32("DamagePop_ScaleDown"));
 
-            digit->RemoveAnimation(Hash32("DamagePop_FadeOut"));
-            app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(digit, Hash32("DamagePop_FadeOut"));
+            digit->RemoveAnimation(fadeOutKey);
+            app::ui::UIAnimationFactory::Attach<app::ui::UIColorAnimation>(digit, fadeOutKey);
 
             /** シーケンスを生成し直して再生 */
             delete animSeq_;
             animSeq_ = new app::ui::UIAnimationSequence();
-            animSeq_->Add(Hash32("DamagePop_FadeIn"));
+            animSeq_->Add(fadeInKey);
             animSeq_->Add(Hash32("DamagePop_ScaleUp"));
             animSeq_->Add(Hash32("DamagePop_ScaleDown"));
-            animSeq_->Add(Hash32("DamagePop_FadeOut"));
+            animSeq_->Add(fadeOutKey);
             animSeq_->Play(digit);
         }
 
@@ -103,8 +113,9 @@ namespace app
             Vector2 screenPos;
             g_camera3D->CalcScreenPositionFromWorldPosition(screenPos, spawnPos);
 
-            /** UIDigit の座標・アルファを更新 */
-            auto* digit = layout_->GetMenu()->GetUI<UIDigit>(Hash32(DIGIT_UI_NAME));
+            /** UIDigit の座標を更新（表示中のスプライトのみ） */
+            const char* activeName = isCritical_ ? CRITICAL_DIGIT_UI_NAME : DIGIT_UI_NAME;
+            auto* digit = layout_->GetMenu()->GetUI<UINumberSprite>(Hash32(activeName));
             if (digit)
             {
                 digit->transform.localPosition.x = screenPos.x;
@@ -142,13 +153,13 @@ namespace app
         }
 
 
-        void DamagePopPool::OnDamageDealt(int damage, const Vector3& worldPos)
+        void DamagePopPool::OnDamageDealt(int damage, const Vector3& worldPos, bool isCritical)
         {
             auto* slot = pool_.Acquire();
             if (!slot) return;
 
             slot->SetOwnerPool(this);
-            slot->SetSpawnParams(damage, worldPos);
+            slot->SetSpawnParams(damage, worldPos, isCritical);
             slot->ApplySpawnParams();
         }
     }
