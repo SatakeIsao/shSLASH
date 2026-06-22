@@ -55,7 +55,7 @@ public:
 
 public:
     /** エフェクト再生 */
-    EffectHandle PlayEffect(const int kind, const Vector3& position, const Quaternion& rotation, const Vector3& scale);
+    EffectHandle PlayEffect(const int kind, const Vector3& position, const Quaternion& rotation, const Vector3& scale, float speed = 1.0f);
     // 追従エフェクト再生
     EffectHandle PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale);
     /** エフェクト停止 */

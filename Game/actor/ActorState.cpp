@@ -123,6 +123,11 @@ namespace app
 				{
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
+					// 既にアタックゴーストがある場合は解放してから再生成
+					if (attackBody_ != nullptr) {
+						delete attackBody_;
+						attackBody_ = nullptr;
+					}
 					attackBody_ = new app::collision::GhostBody();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
@@ -1117,7 +1122,15 @@ namespace app
 
 			avoidanceDirection_ = characterStateMachine->GetMoveDirection(); // 先に確定
 			timer_ = 0.0f;
+
+			// 被ダメージ後の回避はジャスト回避を無効にする
+			auto* battleSM = characterStateMachine->As<BattleCharacterStateMachine>();
+			const bool allowJustDodge = (battleSM == nullptr) || !battleSM->ConsumeWasRecentlyKnockedBack();
+
+			// [中フェーズ] 回避開始後にこのウィンドウ内で攻撃が当たるとジャスト回避になる
+			justDodgeWindowTimer_ = allowJustDodge ? 0.7f : 0.0f;
 			characterStateMachine->SetAvoiding(true);
+			characterStateMachine->SetJustDodgeWindow(allowJustDodge);
 			characterStateMachine->GetCharacterController()->SetIgnoreCharacters(true);
 
 			characterStateMachine->OnEnterAvoidance();
@@ -1126,8 +1139,25 @@ namespace app
 
 		void AvoidanceCharacterState::Update()
 		{
-			timer_ += g_gameTime->GetFrameDeltaTime();
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			const float realDt  = g_gameTime->GetFrameDeltaTime();
+			const float localDt = characterStateMachine->GetLocalDeltaTime();
+
+			// 回避ステート自体はローカル時間で進める（スロー中は移動が伸びる）
+			timer_ += localDt;
+
+			// ジャスト回避ウィンドウはリアルタイムで閉じる
+			if (justDodgeWindowTimer_ > 0.0f)
+			{
+				justDodgeWindowTimer_ -= realDt;
+				if (justDodgeWindowTimer_ <= 0.0f)
+				{
+					characterStateMachine->SetJustDodgeWindow(false);
+				}
+			}
+
+			// アニメーション速度をローカルスケールに合わせる（スロー中は遅く再生）
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.5f * characterStateMachine->GetLocalTimeScale());
 
 			// 回避の強さと持続時間
 			const float duration = 1.0f;
@@ -1142,7 +1172,7 @@ namespace app
 				// 保存した入力をセットし、移動を実行
 				characterStateMachine->SetMoveDirection(avoidanceDirection_);
 				characterStateMachine->SetInputPower(1.0f);
-				characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
+				characterStateMachine->Move(localDt, currentSpeed);
 
 				// Move内で計算された「実際の移動ベクトル」を取得
 				auto speedVec = characterStateMachine->GetMoveSpeedVector();
@@ -1161,6 +1191,8 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			// 回避終了
 			characterStateMachine->SetAvoiding(false);
+			characterStateMachine->SetJustDodgeWindow(false);
+			characterStateMachine->SetLocalTimeScale(1.0f); // スロー中に回避が終わった場合のリセット
 			characterStateMachine->GetCharacterController()->SetIgnoreCharacters(false);
 			characterStateMachine->OnExitAvoidance();
 		}

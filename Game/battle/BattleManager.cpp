@@ -498,6 +498,12 @@ namespace app
 						battleCharacter_->GetStatus()->SetWarpData(parameter->warpStartScale, parameter->warpEndScale, parameter->warpTime);
 					}
 				}
+				// ジャスト回避コールバックを登録（経験値ゲージを20%加算）
+				battleCharacter_->GetStateMachine()->SetJustDodgeCallback([this]()
+				{
+					AddPlayerGauge(2);
+				});
+
 				characterSteering_->Initialize(battleCharacter_, 0);
 
 				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
@@ -596,6 +602,7 @@ namespace app
 				if (!isTutorialMode_)
 				{
 					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
+					// 初回だけセット
 					timerUIObject_->SetTimer(remainTime_);
 				}
 				// HPUI
@@ -636,6 +643,20 @@ namespace app
 
 		void BattleManager::Update()
 		{
+			// タイムアップフリーズ更新（ポーズ・シーケンス状態に関係なく常に実行）
+			if (timeUpFreezeFrames_ > 0)
+			{
+				--timeUpFreezeFrames_;
+				if (timeUpFreezeFrames_ == 0)
+				{
+					g_gameTime->DisableFixedFrameDeltaTime();
+					if (battleSequenceObject_)
+					{
+						battleSequenceObject_->PlayTimeUp();
+					}
+				}
+			}
+
 			// 剣痕デカールの寿命管理
 			if (app::effect::SwordDecalManager::IsAvailable()) {
 				app::effect::SwordDecalManager::Get().Update();
@@ -747,6 +768,30 @@ namespace app
 				float newHp = max(battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f, 0.0f);
 				battleCharacter_->GetStatus()->SetCurrentHp(newHp);
 				battleCharacter_->GetStateMachine()->OnKnockBack();
+			}
+
+			// デバッグ機能：LB1+UpでタイムアップUIをトグル表示
+			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonUp))
+			{
+				if (battleSequenceObject_ && battleSequenceObject_->IsFinished())
+				{
+					battleSequenceObject_->DebugToggleTimeUp();
+				}
+			}
+
+			// デバッグ機能：LB1+RightでタイマーをX秒増加、LB1+Leftで減少
+			if (timerUIObject_)
+			{
+				constexpr float kDebugTimerStep = 5.0f;
+				if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonRight))
+				{
+					timerUIObject_->AddTimer(+kDebugTimerStep);
+					lastCountShown_ = -1;  // カウントダウン表示をリセット
+				}
+				if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonLeft))
+				{
+					timerUIObject_->AddTimer(-kDebugTimerStep);
+				}
 			}
 
 			if (!isSequence)
@@ -887,7 +932,7 @@ namespace app
 						}
 					}
 				}
-				} // if (!isTutorialMode_)
+				} // if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
 
 				// 無敵時間の更新
 				if (isInvincible_)
@@ -897,6 +942,7 @@ namespace app
 					{
 						invincibleTimer_ = 0.0f;
 						isInvincible_ = false;
+						battleCharacter_->GetStateMachine()->SetInvincible(false);
 					}
 				}
 
@@ -1068,7 +1114,7 @@ namespace app
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
 						effectPos.y += 30.0f;
 					}
-				
+
 				if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
 				{
 					/** ストーンの攻撃判定 */
@@ -1117,6 +1163,7 @@ namespace app
 							/** 無敵時間開始 */
 							isInvincible_ = true;
 							invincibleTimer_ = INVINCIBLE_TIME;
+							battleCharacter_->GetStateMachine()->SetInvincible(true);
 
 							/** UIに無敵状態を通知 */
 							if (playerHpUIObject_)
@@ -1171,13 +1218,14 @@ namespace app
 							/** 無敵開始 */
 							isInvincible_ = true;
 							invincibleTimer_ = INVINCIBLE_TIME;
+							battleCharacter_->GetStateMachine()->SetInvincible(true);
 							if (playerHpUIObject_)
 							{
 								playerHpUIObject_->StartInvincible(INVINCIBLE_TIME);
 							}
 						}
 					}
-				} // if (!isTutorialMode_)
+				} // if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
 
 				// 衝突後の処理
 				{
@@ -1189,7 +1237,8 @@ namespace app
 							if (dmg->defender == battleCharacter_) continue;
 
 							/** ダメージ計算・適用 */
-							int damage = CalcDamage(dmg->attacker, dmg->defender, dmg->chargeLevel);
+							bool isCriticalHit = false;
+							int damage = CalcDamage(dmg->attacker, dmg->defender, dmg->chargeLevel, &isCriticalHit);
 							const float oldHp = dmg->defender->GetStatus()->GetCurrentHp();
 							if (!tutorialNoDamage_)
 							{
@@ -1245,7 +1294,7 @@ namespace app
 							/** ダメージポップ通知 */
 							if (damagePopListener_ && oldHp > 0.0f)
 							{
-								damagePopListener_->OnDamageDealt(damage, dmg->defender->transform.position);
+								damagePopListener_->OnDamageDealt(damage, dmg->defender->transform.position, isCriticalHit);
 							}
 
 							if (dmg->enemyType == DamageNotify::EnemyType::Stone)
@@ -1325,9 +1374,26 @@ namespace app
 					// 残り時間が必要な取得
 					remainTime_ = timerUIObject_->GetTimer();
 
-					if (timerUIObject_->IsTimeUp() && battleSequenceObject_)
+					// 残り5〜1秒のカウントダウン表示
+					if (!timeUpTriggered_ && battleSequenceObject_)
 					{
-						battleSequenceObject_->PlayTimeUp();
+						float remaining = timerUIObject_->GetTimer();
+						if (remaining > 0.0f && remaining < 5.5f)
+						{
+							int countDown = static_cast<int>(remaining) + 1;
+							if (countDown >= 1 && countDown <= 5 && countDown != lastCountShown_)
+							{
+								lastCountShown_ = countDown;
+								battleSequenceObject_->ShowTimeUpCountdown(countDown);
+							}
+						}
+					}
+
+					if (timerUIObject_->IsTimeUp() && battleSequenceObject_ && !timeUpTriggered_)
+					{
+						timeUpTriggered_ = true;
+						timeUpFreezeFrames_ = kTimeUpFreezeFrameCount;
+						g_gameTime->EnableFixedFrameDeltaTime(0.0001f);
 					}
 				}
 
@@ -1355,15 +1421,6 @@ namespace app
 					}
 				}
 
-			}
-		}
-
-
-		void BattleManager::Render(RenderContext& rc)
-		{
-			if (app::effect::SwordDecalManager::IsAvailable())
-			{
-				app::effect::SwordDecalManager::Get().Render(rc);
 			}
 		}
 
@@ -1410,38 +1467,7 @@ namespace app
 			return battleSequenceObject_ && battleSequenceObject_->IsTimeUpFinished();
 		}
 
-		bool BattleManager::IsOpeningSequenceDone() const
-		{
-			if (isTutorialMode_) return true;
-			return battleSequenceObject_ && battleSequenceObject_->IsFinished();
-		}
-
-
-		void BattleManager::SetTutorialEnemyMoveEnabled(bool enabled)
-		{
-			tutorialEnemyMoveEnabled_ = enabled;
-			for (auto* stone : stoneEventCharacters_)
-				if (stone) stone->GetStateMachine()->SetAIEnabled(enabled);
-			for (auto* mushroom : mushroomEventCharacters_)
-				if (mushroom) mushroom->GetStateMachine()->SetAIEnabled(enabled);
-		}
-
-		int BattleManager::GetTutorialActiveEnemyCount() const
-		{
-			if (!eventCharacterSpawnManagerObject_) return 0;
-			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount();
-		}
-
-
-		bool BattleManager::IsTutorialAllEnemiesDefeated() const
-		{
-			if (!isTutorialMode_ || tutorialNeedsSpawn_) return false;
-			if (!IsOpeningSequenceDone()) return false;
-			if (!eventCharacterSpawnManagerObject_) return false;
-			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount() == 0;
-		}
-
-		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender, int chargeLevel) const
+		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender, int chargeLevel, bool* outIsCritical) const
 		{
 			float atk = attacker->GetTotalAttack();
 
@@ -1455,14 +1481,17 @@ namespace app
 			}
 
 			// クリティカル判定
+			bool isCritical = false;
 			if (param)
 			{
 				float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 				if (r < param->criticalRate)
 				{
 					atk *= param->criticalMultiplier;
+					isCritical = true;
 				}
 			}
+			if (outIsCritical) *outIsCritical = isCritical;
 
 			float def = defender->GetTotalDefensePower();
 			float damage = atk - def;
@@ -1525,6 +1554,61 @@ namespace app
 			}
 
 			g_sceneLight->SetNumTBDRPointLights(idx);
+		}
+
+
+		void BattleManager::AddPlayerGauge(int amount)
+		{
+			if (playerHpUIObject_)
+			{
+				playerHpUIObject_->AddLevelUpGauge(amount);
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
+			}
+		}
+
+
+		void BattleManager::Render(RenderContext& rc)
+		{
+			if (layout_)
+			{
+				layout_->Render(rc);
+			}
+		}
+
+
+		bool BattleManager::IsOpeningSequenceDone() const
+		{
+			if (isTutorialMode_) return true;
+			return battleSequenceObject_ && battleSequenceObject_->IsOpeningDone();
+		}
+
+
+		void BattleManager::SetTutorialEnemyMoveEnabled(bool enabled)
+		{
+			tutorialEnemyMoveEnabled_ = enabled;
+			for (auto* stone : stoneEventCharacters_)
+			{
+				if (stone) stone->GetStateMachine()->SetAIEnabled(enabled);
+			}
+			for (auto* mushroom : mushroomEventCharacters_)
+			{
+				if (mushroom) mushroom->GetStateMachine()->SetAIEnabled(enabled);
+			}
+		}
+
+
+		bool BattleManager::IsTutorialAllEnemiesDefeated() const
+		{
+			if (!isTutorialMode_ || tutorialNeedsSpawn_) return false;
+			if (!IsOpeningSequenceDone()) return false;
+			if (!eventCharacterSpawnManagerObject_) return false;
+			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount() == 0;
+		}
+
+		int BattleManager::GetTutorialActiveEnemyCount() const
+		{
+			if (!eventCharacterSpawnManagerObject_) return 0;
+			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount();
 		}
 
 

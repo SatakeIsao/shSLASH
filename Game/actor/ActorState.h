@@ -448,6 +448,7 @@ namespace app
 		private:
 			float timer_ = 0.0f;
 			Vector3 avoidanceDirection_; // 回避方向
+			float justDodgeWindowTimer_ = 0.0f; // ジャスト回避判定ウィンドウ
 
 		public:
 			AvoidanceCharacterState(IStateMachine* owner);

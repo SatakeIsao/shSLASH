@@ -167,6 +167,11 @@ namespace app
             bool tutorialFreeze_              = false;
             bool tutorialNoDamage_            = false;
             bool tutorialLevelUpNotified_     = false;
+            bool timeUpTriggered_ = false;
+            int  lastCountShown_  = -1;
+
+            int timeUpFreezeFrames_ = 0;
+            static constexpr int kTimeUpFreezeFrameCount = 10;
 
             /** アニメーション初期化を待ってからシーケンスを起動するための遅延 */
             float battleSequenceStartTimer_ = 0.1f;
@@ -251,6 +256,8 @@ namespace app
             void SetPause(bool isPause);
             void SetLevelUpUIObject(app::ui::LevelUpUIObject* obj) { levelUpObject_ = obj; }
             bool IsTimeUpFinished() const;
+            /** ジャスト回避などでプレイヤーの経験値ゲージを加算する */
+            void AddPlayerGauge(int amount);
 
             /** チュートリアルモードを有効にする（Start()の前に呼ぶこと） */
             void SetTutorialMode(bool isTutorial) { isTutorialMode_ = isTutorial; }
@@ -319,7 +326,8 @@ namespace app
 
         private:
             int CalcDamage(const app::actor::BattleCharacter* attacker,
-                const app::actor::Character* defender, int chargeLevel = 0) const;
+                const app::actor::Character* defender, int chargeLevel = 0,
+                bool* outIsCritical = nullptr) const;
 
         private:
             void LoadParameter();
