@@ -10,6 +10,7 @@
 #include "core/ParameterManager.h"
 #include "sound/SoundManager.h"
 #include "effect/SwordDecalManager.h"
+#include "battle/BattleManager.h"
 #include "camera/CameraManager.h"
 
 
@@ -439,6 +440,14 @@ namespace app
 				delete attackBody_;
 				attackBody_ = nullptr;
 			}
+		}
+
+
+		void SlashThirdCharacterState::Exit()
+		{
+			ComboAttackCharacterState::Exit();
+			if (app::battle::BattleManager::IsAvailable())
+				app::battle::BattleManager::Get().NotifyComboAttackCompleted();
 		}
 
 
@@ -1037,6 +1046,13 @@ namespace app
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>())
 			{
 				battleMachine->SetChargeLevel(0);
+
+				// 溜め攻撃が正常完了(End フェーズ)したときだけ通知
+				if (chargeAttackPhase_ == ChargeAttackPhase::End &&
+				    app::battle::BattleManager::IsAvailable())
+				{
+					app::battle::BattleManager::Get().NotifyChargeAttackCompleted();
+				}
 				battleMachine->SetCurrentChargingLevel(0);
 			}
 

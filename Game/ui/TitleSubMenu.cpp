@@ -38,9 +38,10 @@ namespace app {
             }
 
             if (highlight_) {
-                if (currentIndex_ == 0) highlight_->transform.localPosition.y = -225.0f;
-                else if (currentIndex_ == 1) highlight_->transform.localPosition.y = -305.0f;
-                else if (currentIndex_ == 2) highlight_->transform.localPosition.y = -385.0f;
+                if (currentIndex_ == 0) highlight_->transform.localPosition.y = -185.0f;
+                else if (currentIndex_ == 1) highlight_->transform.localPosition.y = -265.0f;
+                else if (currentIndex_ == 2) highlight_->transform.localPosition.y = -345.0f;
+                else if (currentIndex_ == 3) highlight_->transform.localPosition.y = -425.0f;
             }
 
             if (g_pad[0]->IsTrigger(enButtonA)) {
@@ -49,13 +50,14 @@ namespace app {
                 case 0: // GAME START
                     isGameStartDecided_ = true;
                     break;
-                case 1: // SYSTEM
-                    // TODO: 
+                case 1: // TUTORIAL
+                    isTutorialDecided_ = true;
+                    break;
+                case 2: // SYSTEM
                     isSystemDecided_ = true;
                     break;
-                case 2: // EXIT
-                    // TODO: 
-                    PostQuitMessage(0);
+                case 3: // TITLE
+                    isTitleDecided_ = true;
                     break;
                 }
             }

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow
 {
@@ -11,46 +11,46 @@ namespace nsK2EngineLow
 
 		}
 
-		//•\¦‚·‚é•¶š‚ğİ’è
+		//è¡¨ç¤ºã™ã‚‹æ–‡å­—ã‚’è¨­å®š
 		void SetText(const wchar_t* text)
 		{
-			swprintf_s(m_text, text);
+			wcscpy_s(m_text, MAX_TEXT_SIZE, text);
 		}
 
-		//•\¦‚·‚é•¶š‚ğæ“¾
+		//è¡¨ç¤ºã™ã‚‹æ–‡å­—åˆ—ã‚’å–å¾—
 		const wchar_t* GetText() const
 		{
 			return m_text;
 		}
 
-		//À•Wİ’èA‚š’l‚Í0.0f‚Å
+		//åº§æ¨™è¨­å®šAã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã¯0.0f
 		void SetPosition(float x, float y, float z)
 		{
 			SetPosition({ x,y,z });
 		}
-		//À•Wİ’èB‚š’l‚Í0.0f
+		//åº§æ¨™è¨­å®šBã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã¯0.0f
 		void SetPosition(const Vector3& position)
 		{
 			m_position = position;
 		}
-		//À•W‚ğæ“¾
+		//åº§æ¨™ã‚’å–å¾—
 		const Vector3& GetPosition() const
 		{
 			return m_position;
 		}
 
-		//‘å‚«‚³‚ğİ’è
+		//å¤§ãã•ã‚’è¨­å®š
 		void SetScale(const float scale)
 		{
 			m_scale = scale;
 		}
-		//‘å‚«‚³‚ğæ“¾
+		//å¤§ãã•ã‚’å–å¾—
 		const float GetScale() const
 		{
 			return m_scale;
 		}
 
-		//F‚ğİ’è
+		//è‰²ã‚’è¨­å®š
 		void SetColor(float r, float g, float b, float a)
 		{
 			SetColor({ r,g,b,a });
@@ -59,22 +59,22 @@ namespace nsK2EngineLow
 		{
 			m_color = color;
 		}
-		//F‚ğæ“¾
+		//è‰²ã‚’å–å¾—
 		const Vector4& GetColor() const
 		{
 			return m_color;
 		}
 
-		//‰ñ“]‚ğİ’è
+		//å›è»¢ã‚’å–å¾—
 		const float GetRotation() const
 		{
 			return m_rotation;
 		}
 
-		//ƒsƒ{ƒbƒgİ’è
-		// x = 0.5, y = 0.5 ‚Å‰æ‘œ‚Ì’†S‚ªŠî“_
-		// x = 0.0, y = 0.0 ‚Å‰æ‘œ‚Ì¶‰º
-		// x = 1.0, y = 1.0 ‚Å‰æ‘œ‚Ì‰Eã
+		//ãƒ”ãƒœãƒƒãƒˆè¨­å®š
+		// x = 0.5, y = 0.5 ã§ç”»åƒã®ä¸­å¿ƒãŒåŸç‚¹
+		// x = 0.0, y = 0.0 ã§ç”»åƒã®å·¦ä¸Š
+		// x = 1.0, y = 1.0 ã§ç”»åƒã®å³ä¸‹
 		void SetPivot(float x, float y)
 		{
 			SetPivot({ x,y });
@@ -83,25 +83,25 @@ namespace nsK2EngineLow
 		{
 			m_pivot = pivot;
 		}
-		//ƒsƒ{ƒbƒg‚Ìæ“¾
+		//ãƒ”ãƒœãƒƒãƒˆã®å–å¾—
 		const Vector2& GetPivot() const
 		{
 			return m_pivot;
 		}
 
-		//‰e‚Ìƒpƒ‰ƒ[ƒ^‚ğİ’è
-		void SetShadowParam(bool isDrawShadow,	//‰e‚ğ•`‰æ‚·‚éH
-			float shadowOffset,					//‰e‚ğ•`‰æ‚·‚é‚ÌƒsƒNƒZƒ‹‚ÌƒIƒtƒZƒbƒg—Ê
-			const Vector4& shadowColor)			//‰e‚ÌF
+		//å½±ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®š
+		void SetShadowParam(bool isDrawShadow,	//å½±ã‚’æç”»ã™ã‚‹ã‹ï¼Ÿ
+			float shadowOffset,					//å½±ã‚’æç”»ã™ã‚‹æ™‚ã®ãƒ”ã‚¯ã‚»ãƒ«ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆé‡
+			const Vector4& shadowColor)			//å½±ã®è‰²
 		{
 			m_font.SetShadowParam(isDrawShadow, shadowOffset, shadowColor);
 		}
 
-		//•`‰æˆ—
+		//æç”»å‡¦ç†
 		void Draw(RenderContext& rc);
 		void OnDraw(RenderContext& rc)
 		{
-			if (m_text == nullptr)
+			if (m_text[0] == L'\0')
 			{
 				return;
 			}
@@ -118,14 +118,12 @@ namespace nsK2EngineLow
 		}
 
 	private:
-		Vector3		 m_position = Vector3::Zero;		//À•W
-		float		 m_scale = 1.0f;					//•¶š‚Ì‘å‚«‚³
-		Vector4		 m_color = g_vec4White;				//•¶š‚ÌFAƒfƒtƒHƒ‹ƒg‚Å”’
-		float		 m_rotation = 0.0f;					//‰ñ“]
-		Vector2		 m_pivot = Sprite::DEFAULT_PIVOT;	//ƒsƒ{ƒbƒg
-		wchar_t		 m_text[MAX_TEXT_SIZE];				//•¶š
-		Font		 m_font;							//ƒtƒHƒ“ƒg
+		Vector3		 m_position = Vector3::Zero;		//åº§æ¨™
+		float		 m_scale = 1.0f;					//ãƒ•ã‚©ãƒ³ãƒˆã®å¤§ãã•
+		Vector4		 m_color = g_vec4White;				//ãƒ•ã‚©ãƒ³ãƒˆã®è‰²ã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ç™½
+		float		 m_rotation = 0.0f;					//å›è»¢
+		Vector2		 m_pivot = Sprite::DEFAULT_PIVOT;	//ãƒ”ãƒœãƒƒãƒˆ
+		wchar_t		 m_text[MAX_TEXT_SIZE]{};				//æ–‡å­—åˆ—
+		Font		 m_font;							//ãƒ•ã‚©ãƒ³ãƒˆ
 	};
 }
-
-

@@ -69,16 +69,37 @@ namespace app
 		{
 			isPause_ = isPause;
 
-			// 現在生存中の全敵にポーズ状態を伝える
+			const bool actualPause = isPause_ || tutorialEnemyFrozen_;
+
 			for (auto& entry : activeEntries_)
 			{
 				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
 				{
-					stone->SetPause(isPause);
+					stone->SetPause(actualPause);
 				}
 				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
 				{
-					mushroom->SetPause(isPause);
+					mushroom->SetPause(actualPause);
+				}
+			}
+		}
+
+
+		void EventCharacterSpawnManager::SetTutorialEnemyFrozen(bool frozen)
+		{
+			tutorialEnemyFrozen_ = frozen;
+
+			const bool actualPause = isPause_ || tutorialEnemyFrozen_;
+
+			for (auto& entry : activeEntries_)
+			{
+				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
+				{
+					stone->SetPause(actualPause);
+				}
+				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
+				{
+					mushroom->SetPause(actualPause);
 				}
 			}
 		}
@@ -108,13 +129,16 @@ namespace app
 		void EventCharacterSpawnManager::Update()
 		{
 			if (isPause_) { return; }
-			// EffectManagerの初期化完了を待つ
-			if (!EffectManager::IsAvailable()) { return; }
 
+			// チュートリアルモードでもアタック/待機ポイントの座標更新とクールダウン計算は必要
 			if (battleCharacter_ != nullptr)
 			{
 				attackPointManager_.Update(battleCharacter_->transform.position);
 			}
+
+			if (isTutorialMode_) { return; }
+			// EffectManagerの初期化完了を待つ
+			if (!EffectManager::IsAvailable()) { return; }
 
 			// 初期スポーン・敵死亡後の追加スポーンを1秒おきに1体ずつ処理
 			if (pendingSpawnCount_ > 0)
@@ -391,6 +415,158 @@ namespace app
 			//  	}
 			//  }
 		}
+
+		void EventCharacterSpawnManager::SpawnFixed(EnemyType type, Vector3 position, Quaternion rotation)
+		{
+			SpawnResult result;
+			result.type = type;
+			result.spawnPosition = position;
+
+			const bool spawnPaused = isPause_ || tutorialEnemyFrozen_;
+
+			switch (type)
+			{
+			case EnemyType::STONE:
+			{
+				auto* stone = stonePool_.Acquire();
+				if (!stone) { break; }
+
+				stone->SetBattleCharacter(battleCharacter_);
+				stone->SetAttckPointManager(&attackPointManager_);
+				stone->transform.localPosition = position;
+				stone->transform.localRotation = rotation;
+				stone->transform.localScale = Vector3::One;
+				stone->transform.position = position;
+				stone->transform.rotation = rotation;
+				stone->transform.scale = Vector3::One;
+				stone->transform.UpdateTransform();
+				stone->GetStateMachine()->transform.position = position;
+				stone->GetStateMachine()->transform.rotation = rotation;
+				stone->GetStateMachine()->transform.scale = Vector3::One;
+				stone->GetCharacterController()->SetPosition(position);
+				stone->GetCharacterController()->RequestTeleport();
+				stone->SetPause(spawnPaused);
+
+				auto* hpUI = hpUIPool_.Acquire();
+				if (!hpUI) { break; }
+				hpUI->SetTargetEnemy(stone);
+				hpUI->SetPlayer(battleCharacter_);
+
+				activeEntries_.push_back({ stone, hpUI });
+
+				stone->AddOnDead([this, stone, hpUI]()
+					{
+						hpUI->ClearTarget();
+						hpUIPool_.Release(hpUI);
+						stonePool_.Release(stone);
+						activeEntries_.erase(
+							std::remove_if(activeEntries_.begin(), activeEntries_.end(),
+								[stone](const EnemyEntry& e) { return e.enemy == stone; }),
+							activeEntries_.end());
+					});
+				result.stoneCharacter = stone;
+				break;
+			}
+			case EnemyType::MUSHROOM:
+			{
+				auto* mushroom = mushroomPool_.Acquire();
+				if (!mushroom) { break; }
+
+				mushroom->SetBattleCharacter(battleCharacter_);
+				mushroom->SetAttckPointManager(&attackPointManager_);
+				mushroom->transform.localPosition = position;
+				mushroom->transform.localRotation = rotation;
+				mushroom->transform.localScale = Vector3::One;
+				mushroom->transform.position = position;
+				mushroom->transform.rotation = rotation;
+				mushroom->transform.scale = Vector3::One;
+				mushroom->transform.UpdateTransform();
+				mushroom->GetStateMachine()->transform.position = position;
+				mushroom->GetStateMachine()->transform.rotation = rotation;
+				mushroom->GetStateMachine()->transform.scale = Vector3::One;
+				mushroom->GetCharacterController()->SetPosition(position);
+				mushroom->GetCharacterController()->RequestTeleport();
+				mushroom->SetPause(spawnPaused);
+
+				auto* hpUI = hpUIPool_.Acquire();
+				if (!hpUI) { break; }
+				hpUI->SetTargetEnemy(mushroom);
+				hpUI->SetPlayer(battleCharacter_);
+
+				activeEntries_.push_back({ mushroom, hpUI });
+
+				mushroom->AddOnDead([this, mushroom, hpUI]()
+					{
+						hpUI->ClearTarget();
+						hpUIPool_.Release(hpUI);
+						mushroomPool_.Release(mushroom);
+						activeEntries_.erase(
+							std::remove_if(activeEntries_.begin(), activeEntries_.end(),
+								[mushroom](const EnemyEntry& e) { return e.enemy == mushroom; }),
+							activeEntries_.end());
+					});
+				result.mushroomCharacter = mushroom;
+				break;
+			}
+			default:
+				break;
+			}
+
+			if (result.IsValid())
+			{
+				// onSpawned_ 内で SetGravity() が呼ばれるため、床検出より先に実行する
+				if (onSpawned_) onSpawned_(result);
+
+				// onSpawned_ で SetGravity() が確定した後、スポーンY+500 の高位置から
+				// 重力スイープして床面Y座標を正確に求める
+				auto groundSettle = [](auto* character, const Vector3& spawnPos) -> Vector3
+				{
+					auto* cc = character->GetCharacterController();
+					const Vector3 abovePos(spawnPos.x, spawnPos.y + 500.0f, spawnPos.z);
+					cc->SetPosition(abovePos);
+					cc->RequestTeleport();
+					cc->Execute(abovePos, 1.0f / 60.0f);              // テレポート処理
+					cc->ResetGroundState();
+					cc->Execute(cc->GetPosition(), 1.0f / 60.0f * 200.0f); // 重力スイープで接地
+					return cc->GetPosition();
+				};
+
+				if (result.stoneCharacter)
+				{
+					const Vector3 gp = groundSettle(result.stoneCharacter, result.spawnPosition);
+					result.stoneCharacter->transform.localPosition = gp;
+					result.stoneCharacter->transform.position = gp;
+					result.stoneCharacter->transform.UpdateTransform();
+					result.stoneCharacter->GetStateMachine()->transform.position = gp;
+					if (result.stoneCharacter->GetModelRender())
+					{
+						result.stoneCharacter->GetModelRender()->SetTRS(
+							gp,
+							result.stoneCharacter->transform.rotation,
+							result.stoneCharacter->transform.scale);
+						result.stoneCharacter->GetModelRender()->Update();
+					}
+				}
+				if (result.mushroomCharacter)
+				{
+					const Vector3 gp = groundSettle(result.mushroomCharacter, result.spawnPosition);
+					result.mushroomCharacter->transform.localPosition = gp;
+					result.mushroomCharacter->transform.position = gp;
+					result.mushroomCharacter->transform.UpdateTransform();
+					result.mushroomCharacter->GetStateMachine()->transform.position = gp;
+					if (result.mushroomCharacter->GetModelRender())
+					{
+						result.mushroomCharacter->GetModelRender()->SetTRS(
+							gp,
+							result.mushroomCharacter->transform.rotation,
+							result.mushroomCharacter->transform.scale);
+						result.mushroomCharacter->GetModelRender()->Update();
+					}
+				}
+				g_sceneLight->TriggerSpawnLight(position);
+			}
+		}
+
 
 		void EventCharacterSpawnManager::OnPlayerLevelUp(int newLevel)
 		{

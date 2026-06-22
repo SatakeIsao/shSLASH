@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BattleManager.cpp
  * バトル管理
  */
@@ -301,6 +301,8 @@ namespace app
 							stone->GetStatus()->SetFriction(stageParam->friction);
 							stone->GetStatus()->SetGravity(stageParam->gravity);
 							stone->GetCharacterController()->SetGravity(stageParam->gravity);
+							if (isTutorialMode_)
+								stone->GetStateMachine()->SetAIEnabled(false);
 							//stone->GetStateMachine()->transform.position = stone->transform.position;
 							// スポーンエフェクト
 							if (effectManagerObject_)
@@ -380,6 +382,9 @@ namespace app
 							mushroom->GetStatus()->SetFriction(stageParam->friction);
 							mushroom->GetStatus()->SetGravity(stageParam->gravity);
 							mushroom->GetCharacterController()->SetGravity(stageParam->gravity);
+							if (isTutorialMode_)
+								mushroom->GetStateMachine()->SetAIEnabled(false);
+							///mushroom->GetStateMachine()->transform.position = mushroom->transform.position;
 
 							//　スポーンエフェクト
 							if (effectManagerObject_)
@@ -497,7 +502,17 @@ namespace app
 
 				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
 				eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
-				if (ENABLE_ENEMY_SPAWN)
+
+				if (isTutorialMode_)
+				{
+					// プールだけ初期化して自動スポーンを無効化
+					// 実際の敵配置は EffectManager 初期化後に Update() 内で行う
+					eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
+					eventCharacterSpawnManagerObject_->GetManager().ResetPendingSpawn();
+					eventCharacterSpawnManagerObject_->GetManager().SetTutorialMode(true);
+					tutorialNeedsSpawn_ = true;
+				}
+				else if (ENABLE_ENEMY_SPAWN)
 				{
 					eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
 				}
@@ -577,10 +592,10 @@ namespace app
 					pauseManagerObject_ = NewGO<app::core::PauseManagerObject>(static_cast<uint8_t>(ObjectPriority::Pause));
 				}
 				// battleSequenceObject_ は Update() 内でアニメーション初期化後に生成する
-				// タイマーUI
+				// タイマーUI（チュートリアルでは不要）
+				if (!isTutorialMode_)
 				{
 					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
-					// 初回だけセット
 					timerUIObject_->SetTimer(remainTime_);
 				}
 				// HPUI
@@ -598,19 +613,15 @@ namespace app
 				{
 					app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
 				}
-				// レベルアップ
+				// レベルアップUI・フェーズUI（チュートリアルでは不要）
+				if (!isTutorialMode_)
 				{
 					levelUpObject_ = NewGO<app::ui::LevelUpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
-				}
-				// 生成後にポインタを渡す
-				if (playerHpUIObject_ && levelUpObject_)
-				{
-					playerHpUIObject_->SetLevelUpUIObject(levelUpObject_);
-				}
-				// フェーズUI
-				{
+					if (playerHpUIObject_ && levelUpObject_)
+					{
+						playerHpUIObject_->SetLevelUpUIObject(levelUpObject_);
+					}
 					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
-
 					eventCharacterSpawnManagerObject_->GetManager().SetPhaseUI(phaseUI_);
 				}
 				// ダメージポッププール
@@ -634,7 +645,32 @@ namespace app
 
 			// アニメーション初期化フレームを確保してからシーケンスを生成する
 			// （生成直後に SetPause するとアニメが走らず T ポーズになるため）
-			if (!battleSequenceObject_)
+			// チュートリアル：EffectManager の初期化完了後に敵を固定配置する
+			if (tutorialNeedsSpawn_ && EffectManager::IsAvailable() && IsOpeningSequenceDone())
+			{
+				tutorialNeedsSpawn_ = false;
+				tutorialEnemySpawnRot_.SetRotationY(Math::PI);
+				tutorialStoneSpawnPos_    = Vector3(150.0f,  -354.0f, 0.0f);
+				tutorialMushroomSpawnPos_ = Vector3(-150.0f, -354.0f, 0.0f);
+				eventCharacterSpawnManagerObject_->GetManager().SpawnFixed(
+					app::actor::EnemyType::STONE,    tutorialStoneSpawnPos_,    tutorialEnemySpawnRot_);
+				eventCharacterSpawnManagerObject_->GetManager().SpawnFixed(
+					app::actor::EnemyType::MUSHROOM, tutorialMushroomSpawnPos_, tutorialEnemySpawnRot_);
+			}
+
+			// チュートリアル練習フェーズ前：全滅時にリスポーン
+			if (tutorialRespawnEnabled_ && IsOpeningSequenceDone() && !tutorialNeedsSpawn_)
+			{
+				if (stoneEventCharacters_.empty())
+					eventCharacterSpawnManagerObject_->GetManager().SpawnFixed(
+						app::actor::EnemyType::STONE, tutorialStoneSpawnPos_, tutorialEnemySpawnRot_);
+				if (mushroomEventCharacters_.empty())
+					eventCharacterSpawnManagerObject_->GetManager().SpawnFixed(
+						app::actor::EnemyType::MUSHROOM, tutorialMushroomSpawnPos_, tutorialEnemySpawnRot_);
+			}
+
+			// カウントダウン＆スタート演出（チュートリアルでは不要）
+			if (!isTutorialMode_ && !battleSequenceObject_)
 			{
 				battleSequenceStartTimer_ -= g_gameTime->GetFrameDeltaTime();
 				if (battleSequenceStartTimer_ <= 0.0f)
@@ -647,8 +683,8 @@ namespace app
 			bool currentPause = app::core::PauseManager::Get().IsPause();
 			// シーケンスが終了していない間はポーズ・入力をすべて封印
 			bool isSequence = battleSequenceObject_ && !battleSequenceObject_->IsFinished();
-			// キャラクターたちに適用するポーズ状態（手動ポーズ中、またはシーケンス中ならポーズさせる）
-			bool targetPauseState = currentPause || isSequence;
+			// キャラクターたちに適用するポーズ状態（手動ポーズ中、シーケンス中、またはチュートリアルフリーズ中ならポーズさせる）
+			bool targetPauseState = currentPause || isSequence || tutorialFreeze_;
 
 			if (isPause_ != targetPauseState)
 			{
@@ -658,7 +694,7 @@ namespace app
 			// シーケンス中は手動ポーズ（メニュー表示）を禁止する
 			app::core::PauseManager::Get().SetCanPause(!isSequence);
 
-			if (currentPause)
+			if (currentPause || tutorialFreeze_)
 			{
 				return;
 			}
@@ -715,7 +751,10 @@ namespace app
 
 			if (!isSequence)
 			{
-				characterSteering_->Update();
+				if (playerInputEnabled_)
+					characterSteering_->Update();
+				else if (battleCharacter_)
+					battleCharacter_->GetStateMachine()->ClearInput();
 
 				// 衝突判定更新
 				if (app::collision::GhostBodyManager::IsAvailable()) {
@@ -773,6 +812,8 @@ namespace app
 				//	}
 				//}
 
+				if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
+				{
 				/** ストーンの追従処理 */
 				for (auto* stone : stoneEventCharacters_)
 				{
@@ -802,7 +843,7 @@ namespace app
 						//判定用のしきい値となるコサイン値
 						float threshold = std::cos(halfFovRadians);
 
-						if (dot > threshold)
+						if (dot > threshold || tutorialEnemyMoveEnabled_)
 						{
 							stone->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
 						}
@@ -840,12 +881,13 @@ namespace app
 						//判定用のしきい値となるコサイン値
 						float threshold = std::cos(halfFovRadians);
 
-						if (dot > threshold)
+						if (dot > threshold || tutorialEnemyMoveEnabled_)
 						{
 							mushroom->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
 						}
 					}
 				}
+				} // if (!isTutorialMode_)
 
 				// 無敵時間の更新
 				if (isInvincible_)
@@ -856,6 +898,11 @@ namespace app
 						invincibleTimer_ = 0.0f;
 						isInvincible_ = false;
 					}
+				}
+
+				if (guardSuccessCooldown_ > 0.0f)
+				{
+					guardSuccessCooldown_ -= g_gameTime->GetFrameDeltaTime();
 				}
 
 				//プレイヤーの攻撃アクション
@@ -1022,6 +1069,8 @@ namespace app
 						effectPos.y += 30.0f;
 					}
 				
+				if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
+				{
 					/** ストーンの攻撃判定 */
 					for (auto* stone : stoneEventCharacters_)
 					{
@@ -1039,6 +1088,11 @@ namespace app
 							/** ガード中はダメージを受けない */
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
+								if (guardSuccessCooldown_ <= 0.0f)
+								{
+									NotifyGuardSucceeded();
+									guardSuccessCooldown_ = 1.0f;
+								}
 								continue;
 							}
 
@@ -1049,9 +1103,12 @@ namespace app
 							}
 
 							float attackPower = stone->GetStatus()->GetAttackPower();
-							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
-							newHp = max(newHp, 0.0f);
-							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							if (!tutorialNoDamage_)
+							{
+								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
+								newHp = max(newHp, 0.0f);
+								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							}
 
 							/** ノックバック */
 							battleCharacter_->GetStateMachine()->OnKnockBack();
@@ -1085,6 +1142,11 @@ namespace app
 							/** ガード中はダメージを受けない */
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
+								if (guardSuccessCooldown_ <= 0.0f)
+								{
+									NotifyGuardSucceeded();
+									guardSuccessCooldown_ = 1.0f;
+								}
 								continue;
 							}
 
@@ -1095,9 +1157,12 @@ namespace app
 							}
 
 							float attackPower = mushroom->GetStatus()->GetAttackPower();
-							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
-							newHp = max(newHp, 0.0f);
-							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							if (!tutorialNoDamage_)
+							{
+								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
+								newHp = max(newHp, 0.0f);
+								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							}
 
 							/** ノックバック */
 							battleCharacter_->GetStateMachine()->OnKnockBack();
@@ -1112,6 +1177,7 @@ namespace app
 							}
 						}
 					}
+				} // if (!isTutorialMode_)
 
 				// 衝突後の処理
 				{
@@ -1125,10 +1191,13 @@ namespace app
 							/** ダメージ計算・適用 */
 							int damage = CalcDamage(dmg->attacker, dmg->defender, dmg->chargeLevel);
 							const float oldHp = dmg->defender->GetStatus()->GetCurrentHp();
-							float newHp = oldHp - damage;
-							newHp = max(newHp, 0.0f);
-							dmg->defender->GetStatus()->SetCurrentHp(newHp);
-							dmg->defender->TakeDamage(damage);
+							if (!tutorialNoDamage_)
+							{
+								float newHp = oldHp - damage;
+								newHp = max(newHp, 0.0f);
+								dmg->defender->GetStatus()->SetCurrentHp(newHp);
+								dmg->defender->TakeDamage(damage);
+							}
 
 							/** 溜め攻撃ヒット時：プレイヤー側もヒットストップ（段階0含む） */
 							if (dmg->isBlowBack)
@@ -1185,7 +1254,7 @@ namespace app
 								auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
 								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack, dmg->chargeLevel);
 								// 死亡判定
-								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
+								if (!tutorialNoDamage_ && dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
 									enemy->GetStateMachine()->OnDead();
 								}
@@ -1196,7 +1265,7 @@ namespace app
 								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
 								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack, dmg->chargeLevel);
 								// 死亡判定
-								if (dmg->defender->GetStatus()->GetCurrentHp() <= 0)
+								if (!tutorialNoDamage_ && dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
 									enemy->GetStateMachine()->OnDead();
 								}
@@ -1210,6 +1279,11 @@ namespace app
 							/** ガード中はダメージを受けない */
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
+								if (guardSuccessCooldown_ <= 0.0f)
+								{
+									NotifyGuardSucceeded();
+									guardSuccessCooldown_ = 1.0f;
+								}
 								continue;
 							}
 
@@ -1220,9 +1294,12 @@ namespace app
 							}
 
 							float attackPower = dmg->attacker->GetStatus()->GetAttackPower();
-							float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
-							newHp = max(newHp, 0.0f);
-							battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							if (!tutorialNoDamage_)
+							{
+								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
+								newHp = max(newHp, 0.0f);
+								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+							}
 						}
 					}
 					notifyList_.clear();
@@ -1261,6 +1338,7 @@ namespace app
 					{
 						if (battleCharacter_) {
 							battleCharacter_->LevelUp();
+							if (isTutorialMode_) NotifyTutorialLevelUp();
 							// レベルアップエフェクト再生
 							if (effectManagerObject_)
 							{
@@ -1277,6 +1355,15 @@ namespace app
 					}
 				}
 
+			}
+		}
+
+
+		void BattleManager::Render(RenderContext& rc)
+		{
+			if (app::effect::SwordDecalManager::IsAvailable())
+			{
+				app::effect::SwordDecalManager::Get().Render(rc);
 			}
 		}
 
@@ -1321,6 +1408,37 @@ namespace app
 		bool BattleManager::IsTimeUpFinished() const
 		{
 			return battleSequenceObject_ && battleSequenceObject_->IsTimeUpFinished();
+		}
+
+		bool BattleManager::IsOpeningSequenceDone() const
+		{
+			if (isTutorialMode_) return true;
+			return battleSequenceObject_ && battleSequenceObject_->IsFinished();
+		}
+
+
+		void BattleManager::SetTutorialEnemyMoveEnabled(bool enabled)
+		{
+			tutorialEnemyMoveEnabled_ = enabled;
+			for (auto* stone : stoneEventCharacters_)
+				if (stone) stone->GetStateMachine()->SetAIEnabled(enabled);
+			for (auto* mushroom : mushroomEventCharacters_)
+				if (mushroom) mushroom->GetStateMachine()->SetAIEnabled(enabled);
+		}
+
+		int BattleManager::GetTutorialActiveEnemyCount() const
+		{
+			if (!eventCharacterSpawnManagerObject_) return 0;
+			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount();
+		}
+
+
+		bool BattleManager::IsTutorialAllEnemiesDefeated() const
+		{
+			if (!isTutorialMode_ || tutorialNeedsSpawn_) return false;
+			if (!IsOpeningSequenceDone()) return false;
+			if (!eventCharacterSpawnManagerObject_) return false;
+			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount() == 0;
 		}
 
 		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender, int chargeLevel) const

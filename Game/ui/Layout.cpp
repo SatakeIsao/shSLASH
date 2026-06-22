@@ -207,27 +207,32 @@ namespace app
 
         UIBase* Layout::CreateUI(UICanvas* canvas, const std::string& type, const uint32_t key, const nlohmann::json& item)
         {
+            UIBase* ui = nullptr;
             if (type == "UIIcon") {
                 canvas->CreateUI<UIIcon>(key);
                 auto* image = canvas->FindUI<UIIcon>(key);
                 InitializeUIParts(image, item);
-                return image;
+                ui = image;
             }
-            if (type == "UIText") {
+            else if (type == "UIText") {
                 canvas->CreateUI<UIText>(key);
-                auto text = canvas->FindUI<UIText>(key);
+                auto* text = canvas->FindUI<UIText>(key);
                 InitializeUIParts(text, item);
-                return text;
+                ui = text;
             }
-            if (type == "UIDigit") {
+            else if (type == "UIDigit") {
                 canvas->CreateUI<UIDigit>(key);
                 auto* digit = canvas->FindUI<UIDigit>(key);
                 InitializeUIParts(digit, item);
-                return digit;
+                ui = digit;
             }
             //if (type == "UIButton") return canvas->CreateUI<UIButton>(key);
             //if (type == "UIGauge")  return canvas->CreateUI<UIGauge>(key);
-            return nullptr;
+
+            if (ui && item.contains("isDraw"))
+                ui->isDraw = item["isDraw"].get<bool>();
+
+            return ui;
         }
     }
 }

@@ -88,5 +88,8 @@ namespace nsK2EngineLow
 		}
 
 		void SetIgnoreCharacters(bool ignore) { ignoreCharacters_ = ignore; }
+
+		/** 接地状態をリセットする（SpawnFixed等で Execute を使って床検出する前に呼ぶ） */
+		void ResetGroundState() { isOnGround_ = false; verticalVelocity_ = 0.0f; }
 	};
 }

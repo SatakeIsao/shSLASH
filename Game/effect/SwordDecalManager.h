@@ -68,6 +68,7 @@ namespace app
                                   int chargeLevel);
 
             void Update();
+            void Render(RenderContext& rc);
 
 
         private:

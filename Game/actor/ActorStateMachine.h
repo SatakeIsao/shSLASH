@@ -254,6 +254,18 @@ namespace app
 			bool IsActionLB1() const { return isActionLB1_; }
 			void SetTriggerY(const bool isAction) { isTriggerY_ = isAction; }
 			bool IsTriggerY() const { return isTriggerY_; }
+
+			void ClearInput()
+			{
+				inputPower_  = 0.0f;
+				isActionA_   = false;
+				isPressA_    = false;
+				isActionB_   = false;
+				isActionDown_= false;
+				isActionRB1_ = false;
+				isActionLB1_ = false;
+				isTriggerY_  = false;
+			}
 		};
 
 
@@ -660,6 +672,8 @@ namespace app
 			bool isJustSpawned_ = true;
 			/** 攻撃後の待機ポイントへ戻るフラグ */
 			bool isReturningToWait_ = false;
+			/** AIの自律移動（パトロール等）を有効にするか */
+			bool isAIEnabled_ = true;
 
 		public:
 			StoneEventCharacterStateMachine();
@@ -718,6 +732,9 @@ namespace app
 				chaseDirection_ = direction;
 				targetPosition_ = targetPos;
 			}
+
+			/** AIの自律移動（パトロール等）を有効/無効にする */
+			void SetAIEnabled(bool enabled) { isAIEnabled_ = enabled; }
 
 			/**
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
@@ -797,6 +814,8 @@ namespace app
 			bool isJustSpawned_ = true;
 			/** 攻撃後の待機ポイントへ戻るフラグ */
 			bool isReturningToWait_ = false;
+			/** AIの自律移動（パトロール等）を有効にするか */
+			bool isAIEnabled_ = true;
 
 		public:
 			MushroomEventCharacterStateMachine();
@@ -855,6 +874,9 @@ namespace app
 				chaseDirection_ = direction;
 				targetPosition_ = targetPos;
 			}
+
+			/** AIの自律移動（パトロール等）を有効/無効にする */
+			void SetAIEnabled(bool enabled) { isAIEnabled_ = enabled; }
 
 			/**
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装

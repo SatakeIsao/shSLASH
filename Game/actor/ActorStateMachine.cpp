@@ -9,6 +9,7 @@
 #include "EventCharacter.h"
 #include "effect/EffectManager.h"
 #include "sound/SoundManager.h"
+#include "battle/BattleManager.h"
 
 
 namespace
@@ -258,6 +259,7 @@ namespace app
 
 		void BattleCharacterStateMachine::OnEnterAvoidance()
 		{
+
 			// スティック入力から回避方向を取得（Y成分は不要）
 			Vector3 avoidDir = GetMoveDirection();
 			avoidDir.y = 0.0f;
@@ -321,6 +323,8 @@ namespace app
 
 		void BattleCharacterStateMachine::OnExitAvoidance()
 		{
+			if (app::battle::BattleManager::IsAvailable())
+				app::battle::BattleManager::Get().NotifyAvoidSucceeded();
 		}
 
 
@@ -378,6 +382,8 @@ namespace app
 
 		void BattleCharacterStateMachine::OnExitPunchThird()
 		{
+			if (app::battle::BattleManager::IsAvailable())
+				app::battle::BattleManager::Get().NotifyComboAttackCompleted();
 		}
 
 		void BattleCharacterStateMachine::UpdateState()
@@ -1236,13 +1242,16 @@ namespace app
 			/** デバッグテスト: 待機⇒左に走る⇒右に走る⇒待機のモーション */
 			if (IsEqualCurrentState(IdleCharacterState::ID()))
 			{
-				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-
-				/** 通常の待機 */
-				if (aiTimer_ > WAIT_TIME)
+				if (isAIEnabled_)
 				{
-					RequestChangeState(PatrolCharacterState::ID());
-					aiTimer_ = 0.0f;
+					aiTimer_ += g_gameTime->GetFrameDeltaTime();
+
+					/** 通常の待機 */
+					if (aiTimer_ > WAIT_TIME)
+					{
+						RequestChangeState(PatrolCharacterState::ID());
+						aiTimer_ = 0.0f;
+					}
 				}
 				return;
 			}
@@ -1711,11 +1720,14 @@ namespace app
 			/** デバッグテスト: 待機⇒左に走る⇒右に走る⇒待機のモーション */
 			if (IsEqualCurrentState(IdleCharacterState::ID()))
 			{
-				aiTimer_ += g_gameTime->GetFrameDeltaTime();
-				if (aiTimer_ > WAIT_TIME)
+				if (isAIEnabled_)
 				{
-					RequestChangeState(PatrolCharacterState::ID());
-					aiTimer_ = 0.0f;
+					aiTimer_ += g_gameTime->GetFrameDeltaTime();
+					if (aiTimer_ > WAIT_TIME)
+					{
+						RequestChangeState(PatrolCharacterState::ID());
+						aiTimer_ = 0.0f;
+					}
 				}
 				return;
 			}

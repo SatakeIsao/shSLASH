@@ -37,9 +37,9 @@
       {
         "type": "UIIcon",
         "name": "Option_Ward",
-        "asset": "Assets/ui/optionBase/OPTION.DDS",
-        "width": 192,
-        "height": 40,
+        "asset": "Assets/ui/optionBase/option.DDS",
+        "width": 250,
+        "height": 250,
         "position": [-600, 360, 0],
         "scale": [1, 1, 1],
         "rotation": 0,

@@ -26,13 +26,13 @@
       {
         "type": "UIIcon",
         "name": "text_ChangeTheOption",
-        "asset": "Assets/ui/optionBase/OPTION.DDS",
-        "width": 140,
-        "height": 28,
-        "position": [500, -410, 0],
+        "asset": "Assets/ui/optionBase/option.DDS",
+        "width": 250,
+        "height": 250,
+        "position": [495, -415, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.6]
+        "color": [1.0 ,1.0, 1.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -40,7 +40,7 @@
         "asset": "Assets/ui/pause/main/button_Y.DDS",
         "width": 40,
         "height": 40,
-        "position": [395, -410, 0],
+        "position": [395, -412, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]
@@ -48,13 +48,13 @@
       {
         "type": "UIIcon",
         "name": "text_ReturnToGame",
-        "asset": "Assets/ui/pause/main/text_ReturnToGame.DDS",
-        "width": 120,
-        "height": 25,
-        "position": [715, -410, 0],
-        "scale": [1, 1, 1],
+        "asset": "Assets/ui/pause/main/close.DDS",
+        "width": 250,
+        "height": 250,
+        "position": [710, -415, 0],
+        "scale": [1.0, 1.0, 1],
         "rotation": 0,
-        "color": [1.0 ,1.0, 1.0, 0.8]
+        "color": [1.0 ,1.0, 1.0, 1.0]
       },
       {
         "type": "UIIcon",
@@ -62,7 +62,7 @@
         "asset": "Assets/ui/pause/main/buttonStart.DDS",
         "width": 40,
         "height": 30,
-        "position": [620, -410, 0],
+        "position": [620, -412, 0],
         "scale": [1, 1, 1],
         "rotation": 0,
         "color": [1.0 ,1.0, 1.0, 1.0]

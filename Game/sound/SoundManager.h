@@ -100,6 +100,8 @@ namespace app
         SoundHandle PlaySE(const int kind, const bool isLood = false, const bool is3D = false);
         /** SE停止 */
         void StopSE(const SoundHandle handle);
+        /** 再生中の全SE停止（シーン遷移時などに使用） */
+        void StopAllSE();
         /** SEのボリューム設定 */
         void SetVolumeSE(const SoundHandle handle, float volume);
 

@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "BattleCharacter.h"
 #include "EventCharacter.h"
+#include "battle/BattleManager.h"
 
 
 namespace
@@ -35,7 +36,10 @@ namespace app
 			inputVector.Normalize();
 
 			const bool isTriggerA = GetPad()->IsTrigger(enButtonA);
-			const bool isPressA = GetPad()->IsPress(enButtonA);
+			const bool isPressA =
+                GetPad()->IsPress(enButtonA) &&
+                !(app::battle::BattleManager::IsAvailable() &&
+                  app::battle::BattleManager::Get().IsSuppressChargeAttackInput());
 			const bool isTriggerB = GetPad()->IsTrigger(enButtonB);
 			const bool isTriggerDown = GetPad()->IsTrigger(enButtonDown);
 			const bool isPressRB1 = GetPad()->IsPress(enButtonRB1);

@@ -15,16 +15,22 @@ namespace app {
             void InitializeLogic() override;
             bool IsGameStartDecided() const { return isGameStartDecided_; }
             bool IsSystemDecided() const { return isSystemDecided_; }
+            bool IsTutorialDecided() const { return isTutorialDecided_; }
+            bool IsTitleDecided() const { return isTitleDecided_; }
             void ResetSystemDecided() { isSystemDecided_ = false; }
+            void ResetTutorialDecided() { isTutorialDecided_ = false; }
+            void ResetTitleDecided() { isTitleDecided_ = false; }
 
             void OnOpen();
             void OnClose();
 
         private:
             int currentIndex_ = 0;
-            const int maxIndex_ = 2;
+            const int maxIndex_ = 3;
             bool isGameStartDecided_ = false;
             bool isSystemDecided_ = false;
+            bool isTutorialDecided_ = false;
+            bool isTitleDecided_ = false;
 
             app::ui::UIIcon* highlight_ = nullptr;
         };

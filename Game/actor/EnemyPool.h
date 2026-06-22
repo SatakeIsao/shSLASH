@@ -54,9 +54,9 @@ namespace app
 
             void Finalize()
             {
-                for (auto* obj : pool_)
+                for (auto*& obj : pool_)
                 {
-                    if (obj) { DeleteGO(obj); }
+                    if (obj) { DeleteGO(obj); obj = nullptr; }
                 }
             }
 
