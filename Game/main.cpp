@@ -1,31 +1,31 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "system/system.h"
 #include "Application.h"
 
 
 /// <summary>
-/// ƒƒCƒ“ŠÖ”
+/// ãƒ¡ã‚¤ãƒ³é–¢æ•°
 /// </summary>
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
-	// ƒQ[ƒ€‚Ì‰Šú‰»B
-	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Bario"));
+	// ã‚²ãƒ¼ãƒ ã®åˆæœŸåŒ–ã€‚
+	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("SLASH"));
 	
 	IApplication* application = new app::Application();
 	application->Initialize(g_hWnd);
 	
-	// ‚±‚±‚©‚çƒQ[ƒ€ƒ‹[ƒvB
+	// ã“ã“ã‹ã‚‰ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—ã€‚
 	while (DispatchWindowMessage())
 	{
-		// ƒtƒŒ[ƒ€‚ÌŠJn‚ÉŒÄ‚Ño‚·•K—v‚ª‚ ‚éˆ—‚ğÀs
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ã®é–‹å§‹æ™‚ã«å‘¼ã³å‡ºã™å¿…è¦ãŒã‚ã‚‹å‡¦ç†ã‚’å®Ÿè¡Œ
 		application->BeginFrame();
-		// XV
+		// æ›´æ–°
 		application->Update();
-		// •`‰æ
+		// æç”»
 		application->Render(g_graphicsEngine->GetRenderContext());
-		// ƒfƒoƒbƒO•`‰æ
+		// ãƒ‡ãƒãƒƒã‚°æç”»
 		application->RenderDebug(g_graphicsEngine->GetRenderContext());
-		// ƒtƒŒ[ƒ€‚ÌI—¹‚ÉŒÄ‚Ño‚·•K—v‚ª‚ ‚éˆ—‚ğÀsB
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ã®çµ‚äº†æ™‚ã«å‘¼ã³å‡ºã™å¿…è¦ãŒã‚ã‚‹å‡¦ç†ã‚’å®Ÿè¡Œã€‚
 		application->EndFrame();
 	}
 
