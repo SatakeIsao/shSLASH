@@ -44,27 +44,11 @@ void app::actor::PhaseUI::Update()
     if (layout_ && layout_->GetMenu())
     {
         auto* menu = layout_->GetMenu();
-
-        // 全てのフェーズ数字画像を非表示にする
-        const int MAX_PHASE = 5;
-        for (int i = 1; i <= MAX_PHASE; ++i)
+        auto* numSprite = menu->GetUI<app::ui::UINumberSprite>(Hash32("PhaseNumber"));
+        if (numSprite)
         {
-            std::string name = "PhaseNum" + std::to_string(i);
-            auto* numIcon = menu->GetUI<app::ui::UIIcon>(Hash32(name.c_str()));
-            if (numIcon)
-            {
-                numIcon->transform.localScale = Vector3::Zero;
-            }
+            numSprite->SetNumber(currentPhase_);
         }
-
-        // 現在のフェーズの数字画像だけを表示にする
-        std::string currentName = "PhaseNum" + std::to_string(currentPhase_);
-        auto* currentNumIcon = menu->GetUI<app::ui::UIIcon>(Hash32(currentName.c_str()));
-        if (currentNumIcon)
-        {
-            currentNumIcon->transform.localScale = Vector3::One;
-        }
-
         layout_->Update();
     }
 }
