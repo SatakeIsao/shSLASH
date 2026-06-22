@@ -1,7 +1,6 @@
 /*!
-* @brief	ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶ƒRƒ“ƒgƒ[ƒ‰B
-*/
-
+ * @brief ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã€‚
+ */
 #include "k2EngineLowPreCompile.h"
 #include "AnimationPlayController.h"
 #include "AnimationClip.h"
@@ -13,7 +12,7 @@ namespace nsK2EngineLow {
 	{
 		m_footstepBoneNo = footStepBoneNo;
 		int numBones = skeleton->GetNumBones();
-		//ƒ{[ƒ“s—ñ‚ðƒoƒVƒb‚ÆŠm•ÛB
+		// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã®ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã€‚
 		m_boneMatrix.resize(numBones);
 		m_skeleton = skeleton;
 	}
@@ -25,7 +24,7 @@ namespace nsK2EngineLow {
 		m_isPlaying = true;
 		m_footstepPos = g_vec3Zero;
 		m_footstepDeltaValue = g_vec3Zero;
-		//ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚Ì”­¶ƒtƒ‰ƒO‚ð‚·‚×‚Äfalse‚É‚·‚éB
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã®ç™ºç«ãƒ•ãƒ©ã‚°ã‚’ã™ã¹ã¦falseã«ã™ã‚‹ã€‚
 		auto& animEventArray = m_animationClip->GetAnimationEvent();
 		for (auto i = 0; i < m_animationClip->GetNumAnimationEvent(); i++) {
 			animEventArray[i].SetInvokedFlag(false);
@@ -37,7 +36,7 @@ namespace nsK2EngineLow {
 		for (auto i = 0; i < m_animationClip->GetNumAnimationEvent(); i++) {
 			if (m_time > animEventArray[i].GetInvokeTime()
 				&& animEventArray[i].IsInvoked() == false) {
-				//ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‹N“®ŽžŠÔ‚ð‰ß‚¬‚Ä‚¢‚éŠŽ‚ÂA‚Ü‚¾ƒCƒxƒ“ƒg‹N“®‚µ‚Ä‚¢‚È‚¢B
+				// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®èµ·å‹•æ™‚é–“ã‚’è¶…ãˆã¦ã„ã‚‹ã€ã‹ã¤ã€ã¾ã ã‚¤ãƒ™ãƒ³ãƒˆãŒç™ºç«ã—ã¦ã„ãªã„ã€‚
 				animation->NotifyAnimationEventToListener(
 					m_animationClip->GetName(), animEventArray[i].GetEventName()
 				);
@@ -46,12 +45,25 @@ namespace nsK2EngineLow {
 		}
 	}
 
+	void AnimationPlayController::SetCurrentTime(float time)
+	{
+		if (m_animationClip == nullptr) return;
+		m_time = time;
+		const auto& topBoneKeyFrameList = m_animationClip->GetTopBoneKeyFrameList();
+		m_currentKeyFrameNo = 0;
+		for (int i = 0; i < (int)topBoneKeyFrameList.size(); i++) {
+			if (topBoneKeyFrameList.at(i)->time >= time) {
+				m_currentKeyFrameNo = i;
+				break;
+			}
+		}
+	}
+
 	void AnimationPlayController::StartLoop()
 	{
 		m_footstepPos = g_vec3Zero;
-		m_currentKeyFrameNo = 0;
-		m_time = 0.0f;
-		//ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚ð‚·‚×‚Ä–¢”­¶‚É‚·‚éB
+		SetCurrentTime(m_loopStartTime);
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã‚’ã™ã¹ã¦æœªç™ºç«ã«ã™ã‚‹ã€‚
 		auto& animEventArray = m_animationClip->GetAnimationEvent();
 		for (auto i = 0; i < m_animationClip->GetNumAnimationEvent(); i++) {
 			animEventArray[i].SetInvokedFlag(false);
@@ -59,13 +71,13 @@ namespace nsK2EngineLow {
 	}
 	void AnimationPlayController::CalcBoneMatrixInRootBoneSpace(Bone& bone, Matrix parentMatrix)
 	{
-		//ƒ[ƒ‹ƒhs—ñ‚ðŒvŽZ‚·‚éB
+		// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		auto& mBoneInRootSpace = m_boneMatrix[bone.GetNo()];
 		Matrix localMatrix = m_boneMatrix[bone.GetNo()];
-		//e‚Ìs—ñ‚Æƒ[ƒJƒ‹s—ñ‚ðæŽZ‚µ‚ÄAƒ[ƒ‹ƒhs—ñ‚ðŒvŽZ‚·‚éB
+		// è¦ªã®è¡Œåˆ—ã¨ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‚’ä¹—ç®—ã—ã¦ã€ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		mBoneInRootSpace = localMatrix * parentMatrix;
 
-		//Žq‹Ÿ‚Ìƒ[ƒ‹ƒhs—ñ‚àŒvŽZ‚·‚éB
+		// å­ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		for (auto& childBone : bone.GetChildren()) {
 			CalcBoneMatrixInRootBoneSpace(*childBone, mBoneInRootSpace);
 		}
@@ -73,20 +85,58 @@ namespace nsK2EngineLow {
 	void AnimationPlayController::SamplingBoneMatrixFromAnimationClip()
 	{
 		const auto& keyFramePtrListArray = m_animationClip->GetKeyFramePtrListArray();
+		const auto& topBoneKeyFrameList = m_animationClip->GetTopBoneKeyFrameList();
+
+		// m_currentKeyFrameNo ã¯ time >= m_time ã¨ãªã‚‹ã€Œæ¬¡ã€ãƒ•ãƒ¬ãƒ¼ãƒ ã€‚
+		// è£œé–“ã¯ã€Œå‰ãƒ•ãƒ¬ãƒ¼ãƒ (prev)â†’ç¾ãƒ•ãƒ¬ãƒ¼ãƒ (current)ã€ã®é–“ã§è¡Œã†ã€‚
+		float interpT = 0.0f;
+		const int prevFrameNo = m_currentKeyFrameNo - 1;
+		if (prevFrameNo >= 0 && m_currentKeyFrameNo < (int)topBoneKeyFrameList.size()) {
+			const float prevTime = topBoneKeyFrameList.at(prevFrameNo)->time;
+			const float curTime = topBoneKeyFrameList.at(m_currentKeyFrameNo)->time;
+			const float duration = curTime - prevTime;
+			if (duration > 0.0f) {
+				interpT = max(0.0f, min(1.0f, (m_time - prevTime) / duration));
+			}
+		}
+
 		for (const auto& keyFrameList : keyFramePtrListArray) {
 			if (keyFrameList.size() == 0) {
 				continue;
 			}
-			//Œ»ÝÄ¶’†‚ÌƒL[ƒtƒŒ[ƒ€‚ðŽæ‚Á‚Ä‚­‚éB
-			KeyFrame* keyframe = keyFrameList.at(m_currentKeyFrameNo);
-			m_boneMatrix[keyframe->boneIndex] = keyframe->transform;
+
+			const int safeFrameNo = min(m_currentKeyFrameNo, (int)keyFrameList.size() - 1);
+			KeyFrame* cur = keyFrameList.at(safeFrameNo);
+
+			if (interpT <= 0.0f || prevFrameNo < 0) {
+				m_boneMatrix[cur->boneIndex] = cur->transform;
+			}
+			else {
+				KeyFrame* prev = keyFrameList.at(prevFrameNo);
+
+				DirectX::XMVECTOR s0, r0, t0;
+				DirectX::XMVECTOR s1, r1, t1;
+				DirectX::XMMatrixDecompose(&s0, &r0, &t0, prev->transform);
+				DirectX::XMMatrixDecompose(&s1, &r1, &t1, cur->transform);
+
+				const DirectX::XMVECTOR sOut = DirectX::XMVectorLerp(s0, s1, interpT);
+				const DirectX::XMVECTOR rOut = DirectX::XMQuaternionSlerp(r0, r1, interpT);
+				const DirectX::XMVECTOR tOut = DirectX::XMVectorLerp(t0, t1, interpT);
+
+				const DirectX::XMMATRIX result =
+					DirectX::XMMatrixScalingFromVector(sOut)
+					* DirectX::XMMatrixRotationQuaternion(rOut)
+					* DirectX::XMMatrixTranslationFromVector(tOut);
+
+				DirectX::XMStoreFloat4x4(&m_boneMatrix[cur->boneIndex].mat, result);
+			}
 		}
 	}
 	void AnimationPlayController::CalcBoneMatrixInRootBoneSpace()
 	{
 		int numBone = m_skeleton->GetNumBones();
 		for (int boneNo = 0; boneNo < numBone; boneNo++) {
-			//ƒ‹[ƒg‚Ìœ‚ðŒŸõ‚·‚éB
+			// ãƒ«ãƒ¼ãƒˆã®è¦ªãªã—ãƒœãƒ¼ãƒ³ã‚’æŽ¢ã™ã€‚
 			auto bone = m_skeleton->GetBone(boneNo);
 			if (bone->GetParentBoneNo() != -1) {
 				continue;
@@ -97,7 +147,7 @@ namespace nsK2EngineLow {
 	void AnimationPlayController::SamplingDeltaValueFootstepBone()
 	{
 		if (m_currentKeyFrameNoLastFrame == m_currentKeyFrameNo) {
-			//ƒL[ƒtƒŒ[ƒ€‚ªi‚ñ‚Å‚¢‚È‚¢B
+			// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ãŒé€²ã‚“ã§ã„ãªã„ã€‚
 			return;
 		}
 		if (m_footstepBoneNo == -1) {
@@ -113,9 +163,9 @@ namespace nsK2EngineLow {
 				footstepBonePos.x = mat.m[3][0];
 				footstepBonePos.y = mat.m[3][1];
 				footstepBonePos.z = mat.m[3][2];
-				//‚±‚ÌƒtƒŒ[ƒ€‚Å‚Ìfootstep‚ÌˆÚ“®—Ê‚ðŒvŽZ‚·‚éB
+				// ä»Šã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã®footstepã®ç§»å‹•é‡ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 				m_footstepDeltaValue = footstepBonePos - m_footstepPos;
-				//‚±‚ÌƒtƒŒ[ƒ€‚Å‚Ìfootstep‚ÌÀ•W‚ðXV‚·‚éB
+				// ä»Šã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã®footstepã®åº§æ¨™ã‚’æ›´æ–°ã™ã‚‹ã€‚
 				m_footstepPos = footstepBonePos;
 				break;
 			}
@@ -137,32 +187,32 @@ namespace nsK2EngineLow {
 	}
 	void AnimationPlayController::ProgressKeyframeNo(float deltaTime)
 	{
-		//1ƒtƒŒ[ƒ€‘O‚ÌƒL[ƒtƒŒ[ƒ€”Ô†‚ð‹L˜^‚µ‚Ä‚¨‚­B
+		// 1ãƒ•ãƒ¬ãƒ¼ãƒ å‰ã®ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·ã‚’è¨˜éŒ²ã—ã¦ãŠãã€‚
 		m_currentKeyFrameNoLastFrame = m_currentKeyFrameNo;
 
 		const auto& topBoneKeyFrameList = m_animationClip->GetTopBoneKeyFrameList();
 
-		//•âŠ®ŽžŠÔ‚ài‚ß‚Ä‚¢‚­B
-		m_interpolateTime = min(1.0f, m_interpolateTime + deltaTime);
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰é€²è¡Œã¯å®Ÿæ™‚é–“ã§è¡Œã†ï¼ˆã‚¢ãƒ‹ãƒ¡é€Ÿåº¦ã«é–¢ä¿‚ãªãå¸¸ã«ä¸€å®šæ™‚é–“ã§ãƒ–ãƒ¬ãƒ³ãƒ‰å®Œäº†ï¼‰
+		m_interpolateTime = min(1.0f, m_interpolateTime + g_gameTime->GetFrameDeltaTime());
 		while (true) {
 			if (m_currentKeyFrameNo >= (int)topBoneKeyFrameList.size()) {
-				//I’[‚Ü‚Ås‚Á‚½B
+				// æœ«å°¾ã¾ã§é€²è¡Œã—ãŸã€‚
 				if (m_animationClip->IsLoop()) {
-					//ƒ‹[ƒvB
+					// ãƒ«ãƒ¼ãƒ—ã€‚
 					StartLoop();
 				}
 				else {
-					//ƒƒ“ƒVƒ‡ƒbƒgÄ¶B
+					// ãƒ¯ãƒ³ã‚·ãƒ§ãƒƒãƒˆå†ç”Ÿã€‚
 					m_currentKeyFrameNo--;
-					m_isPlaying = false;	//Ä¶I‚í‚èB
+					m_isPlaying = false;	// å†ç”Ÿçµ‚äº†ã€‚
 				}
 				break;
 			}
 			if (topBoneKeyFrameList.at(m_currentKeyFrameNo)->time >= m_time) {
-				//I‚í‚èB
+				// çµ‚äº†ã€‚
 				break;
 			}
-			//ŽŸ‚ÖB
+			// æ¬¡ã¸ã€‚
 			m_currentKeyFrameNo++;
 		}
 	}
@@ -178,25 +228,25 @@ namespace nsK2EngineLow {
 		m_time += deltaTime;
 
 		if (isInvokeAnimationEvent) {
-			//ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚Ì”­¶B
+			// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã®ç™ºç«ã€‚
 			InvokeAnimationEvent(animation);
 		}
-		//ƒL[ƒtƒŒ[ƒ€”Ô†‚ði‚ß‚éB
+		// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·ã‚’é€²ã‚ã‚‹ã€‚
 		ProgressKeyframeNo(deltaTime);
 
-		//ƒ{[ƒ“s—ñ‚ðƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚©‚çƒTƒ“ƒvƒŠƒ“ƒO‚µ‚Ä‚¢‚­B
+		// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã‹ã‚‰ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã—ã¦ã„ãã€‚
 		SamplingBoneMatrixFromAnimationClip();
 
-		//e‚ÌœÀ•WŒn‚É‚È‚Á‚Ä‚¢‚éƒ{[ƒ“s—ñ‚ðƒ‹[ƒg‚Ìƒ{[ƒ“‚Ì‹óŠÔ‚É•ÏŠ·‚µ‚Ä‚¢‚­B
+		// è¦ªã®ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™ç³»ã«ãªã£ã¦ã„ã‚‹ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’ãƒ«ãƒ¼ãƒˆã®ãƒœãƒ¼ãƒ³ç©ºé–“ï¼ˆãƒ¢ãƒ‡ãƒ«ç©ºé–“ï¼‰ã«å¤‰æ›ã—ã¦ã„ãã€‚
 		CalcBoneMatrixInRootBoneSpace();
 
-		//footstepƒ{[ƒ“‚ÌˆÚ“®—Ê‚ðŽæ“¾‚·‚éB
+		// footstepãƒœãƒ¼ãƒ³ã®ç§»å‹•é‡ã‚’å–å¾—ã™ã‚‹ã€‚
 		SamplingDeltaValueFootstepBone();
 
-		//footstepƒ{[ƒ“‚ÌˆÚ“®—Ê‚ð‘S‘Ì‚Ìœ‚©‚çŒ¸ŽZ‚·‚éB
+		// footstepãƒœãƒ¼ãƒ³ã®ç§»å‹•é‡ã‚’å…¨ä½“ã®åº§æ¨™ã‹ã‚‰æ¸›ç®—ã™ã‚‹ã€‚
 		SubtractFootstepbonePosFromAllBone();
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‚µ‚½ˆó‚ðƒXƒPƒ‹ƒgƒ“‚É‚Â‚¯‚éB
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿä¸­ã§ã‚ã‚‹ã“ã¨ã‚’ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã«é€šçŸ¥ã€‚
 		m_skeleton->SetMarkPlayAnimation();
 	}
 }

@@ -1,60 +1,57 @@
 /*!
-* @brief	ƒAƒjƒ[ƒVƒ‡ƒ“
-*/
-
+ * @brief ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
+ */
 #pragma once
-
 #include "AnimationClip.h"
 #include "AnimationPlayController.h"
-
 
 namespace nsK2EngineLow {
 	class Skeleton;
 	using AnimationEventListener = std::function<void(const wchar_t* clipName, const wchar_t* eventName)>;
 
 	/// <summary>
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒ‰ƒXB
+	/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒ©ã‚¹ã€‚
 	/// </summary>
 	/// <remarks>
-	/// ’ñ‹Ÿ‚·‚é‹@”\
-	/// ‚P. ƒVƒ“ƒvƒ‹‚ÈƒAƒjƒ[ƒVƒ‡ƒ“Ä¶B
-	/// ‚Q. ƒAƒjƒ[ƒVƒ‡ƒ“•âŠÔB
-	/// ‚R. footstepƒ{[ƒ“‚ğŠˆ—p‚µ‚½ƒAƒjƒ[ƒVƒ‡ƒ“ˆÚ“®—Ê‚ÌŒvZB
-	///		ƒXƒPƒ‹ƒgƒ“‚Éfootstepƒ{[ƒ“‚ğ’Ç‰Á‚·‚é‚ÆA‘S‘Ì‚Ìƒ{[ƒ“‚©‚çA
-	///		footstepƒ{[ƒ“‚Ì•½sˆÚ“®—Ê‚ğœŠO‚µ‚½ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‚ªs‚í‚ê‚Ü‚·B
-	///		œŠO‚³‚ê‚½ˆÚ“®—Ê‚ÍCalcFootstepDeltaValueInWorldSpaceŠÖ”‚ğ—˜—p‚·‚é‚±‚Æ‚Å
-	///		ŒvZ‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
-	///		‚±‚Ì‹@”\‚ğŠˆ—p‚·‚é‚±‚Æ‚ÅAƒAƒjƒ[ƒ^‚ªì¬‚µ‚½•à‚«ƒAƒjƒ[ƒVƒ‡ƒ“‚È‚Ç‚ÉˆÚ“®—Ê‚ğ
-	///		ŠÜ‚Ş‚±‚Æ‚ª‚Å‚«AƒAƒjƒ[ƒ^‚ªˆÓ}‚µ‚½ˆÚ“®‚ğs‚¤‚±‚Æ‚ª‚Å‚«‚Ü‚·B
+	/// æä¾›ã•ã‚Œã‚‹æ©Ÿèƒ½
+	/// 1. ã‚·ãƒ³ãƒ—ãƒ«ãªã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿã€‚
+	/// 2. ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è£œé–“ã€‚
+	/// 3. footstepãƒœãƒ¼ãƒ³ã‚’åˆ©ç”¨ã—ãŸã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç§»å‹•é‡ã®è¨ˆç®—ã€‚
+	///		ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã«footstepãƒœãƒ¼ãƒ³ã‚’è¿½åŠ ã™ã‚‹ã¨ã€å…¨ä½“ã®ãƒœãƒ¼ãƒ³ã‹ã‚‰
+	///		footstepãƒœãƒ¼ãƒ³ã®ä¸¦é€²ç§»å‹•é‡ãŒæŠ½å‡ºã•ã‚Œã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿã‚’è¡Œã„ã¾ã™ã€‚
+	///		æŠ½å‡ºã•ã‚ŒãŸç§»å‹•é‡ã¯CalcFootstepDeltaValueInWorldSpaceé–¢æ•°ã‚’åˆ©ç”¨ã™ã‚‹ã“ã¨ã§
+	///		è¨ˆç®—ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
+	///		ã“ã®æ©Ÿèƒ½ã‚’åˆ©ç”¨ã™ã‚‹ã“ã¨ã§ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãŒä½œæˆã—ãŸã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãªã©ã«ç§»å‹•é‡ã‚’
+	///		ä»»ã›ã‚‹ã“ã¨ãŒã§ãã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãŒæ„å›³ã—ãŸç§»å‹•ã‚’è¡Œã†ã“ã¨ãŒã§ãã¾ã™ã€‚
 	/// </remarks>
 	class Animation : public Noncopyable {
 	public:
-		
+
 		/// <summary>
-		/// ‰Šú‰»Ï‚İ‚©”»’èB
+		/// åˆæœŸåŒ–æ¸ˆã¿ã‹å–å¾—ã€‚
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚ç‰Šú‰»Ï‚İB</returns>
+		/// <returns>trueã‚’è¿”ã—ã¦ã„ãŸã‚‰åˆæœŸåŒ–æ¸ˆã¿ã€‚</returns>
 		bool IsInited() const
 		{
 			return m_isInited;
 		}
 
 		/// <summary>
-		/// ‰Šú‰»B
+		/// åˆæœŸåŒ–ã€‚
 		/// </summary>
-		/// <param name="skeleton">ƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚éƒXƒPƒ‹ƒgƒ“</param>
-		/// <param name="animClips">ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì”z—ñ</param>
-		/// <param name="numAnimClip">ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì”</param>
+		/// <param name="skeleton">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é©ç”¨ã™ã‚‹ã‚¹ã‚±ãƒ«ãƒˆãƒ³</param>
+		/// <param name="animClips">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®é…åˆ—</param>
+		/// <param name="numAnimClip">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®æ•°</param>
 		void Init(
 			Skeleton& skeleton,
 			AnimationClip* animClips,
 			int numAnimClip
 		);
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÄ¶B
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿã€‚
 		/// </summary>
-		/// <param name="clipNo">ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì”Ô†BInitŠÖ”‚É“n‚µ‚½animClipList‚Ì•À‚Ñ‚Æ‚È‚éB</param>
-		/// <param name="interpolateTime">•âŠ®ŠÔ(’PˆÊF•b)</param>
+		/// <param name="clipNo">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®ç•ªå·ã€‚Inité–¢æ•°ã«æ¸¡ã—ãŸanimClipListã®ä¸¦ã³ã¨ãªã‚‹ã€‚</param>
+		/// <param name="interpolateTime">è£œé–“æ™‚é–“ï¼ˆå˜ä½ï¼šç§’ï¼‰</param>
 		void Play(int clipNo, float interpolateTime = 0.0f)
 		{
 			if (clipNo < m_animationClips.size()) {
@@ -62,10 +59,10 @@ namespace nsK2EngineLow {
 			}
 		}
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ìƒ‹[ƒvƒtƒ‰ƒO‚ğİ’è‚µ‚Ü‚·B
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®ãƒ«ãƒ¼ãƒ—ãƒ•ãƒ©ã‚°ã‚’è¨­å®šã—ã¾ã™ã€‚
 		/// </summary>
-		/// <param name="clipName">ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì–¼‘O</param>
-		/// <param name="flag">ƒtƒ‰ƒO</param>
+		/// <param name="clipName">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®åå‰</param>
+		/// <param name="flag">ãƒ•ãƒ©ã‚°</param>
 		void SetAnimationClipLoopFlag(const wchar_t* clipName, bool flag)
 		{
 			auto it = std::find_if(
@@ -74,13 +71,13 @@ namespace nsK2EngineLow {
 				[clipName](auto& clip) {return clip->GetName() == clipName; }
 			);
 			if (it == m_animationClips.end()) {
-				//Œ©‚Â‚©‚ç‚È‚©‚Á‚½B
+				// è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚
 				return;
 			}
 			(*it)->SetLoopFlag(flag);
 		}
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÄ¶’†H
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿä¸­ã‹ï¼Ÿ
 		/// </summary>
 		/// <returns></returns>
 		bool IsPlaying() const
@@ -90,34 +87,34 @@ namespace nsK2EngineLow {
 		}
 
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚éB
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹ã€‚
 		/// </summary>
 		/// <remarks>
-		/// ƒGƒ“ƒWƒ““à•”‚©‚çŒÄ‚Î‚ê‚Ü‚·B
-		/// ƒ†[ƒU[‚Íg—p‚µ‚È‚¢‚Å‚­‚¾‚³‚¢B
+		/// ã‚¨ãƒ³ã‚¸ãƒ³ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚
+		/// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¯ä½¿ç”¨ã—ãªã„ã§ãã ã•ã„ã€‚
 		/// </remarks>
-		/// <param name="deltaTime">ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚éŠÔ(’PˆÊF•b)</param>
+		/// <param name="deltaTime">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹æ™‚é–“ï¼ˆå˜ä½ï¼šç§’ï¼‰</param>
 		void Progress(float deltaTime);
+
 		/*!
-		*@brief	ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒgƒŠƒXƒi[‚ğ“o˜^B
-		*@return
-		* “o˜^‚³‚ê‚½ƒŠƒXƒi[B
-		*/
-		
-		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒgƒŠƒXƒi[‚ğ“o˜^B
-		/// </summary>
-		/// <param name="eventListener">“o˜^‚·‚éƒŠƒXƒi[B</param>
+		 * @brief ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒŠãƒ¼ã‚’ç™»éŒ²ã€‚
+		 * @return ç™»éŒ²ã•ã‚ŒãŸãƒªã‚¹ãƒŠãƒ¼ã€‚
+		 */
+
+		 /// <summary>
+		 /// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒŠãƒ¼ã‚’ç™»éŒ²ã€‚
+		 /// </summary>
+		 /// <param name="eventListener">ç™»éŒ²ã™ã‚‹ãƒªã‚¹ãƒŠãƒ¼ã€‚</param>
 		void AddAnimationEventListener(AnimationEventListener eventListener)
 		{
 			m_animationEventListeners.push_back(eventListener);
 		}
 
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚ğƒŠƒXƒi[‚É’Ê’mB
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã‚’ãƒªã‚¹ãƒŠãƒ¼ã«é€šçŸ¥ã€‚
 		/// </summary>
-		/// <param name="clipName">ƒCƒxƒ“ƒg‚ğ‹N‚±‚µ‚½ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì–¼‘O</param>
-		/// <param name="eventName">ƒCƒxƒ“ƒg–¼B</param>
+		/// <param name="clipName">ã‚¤ãƒ™ãƒ³ãƒˆãŒç™ºç”Ÿã—ãŸã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®åå‰</param>
+		/// <param name="eventName">ã‚¤ãƒ™ãƒ³ãƒˆåã€‚</param>
 		void NotifyAnimationEventToListener(const wchar_t* clipName, const wchar_t* eventName)
 		{
 			for (auto& listener : m_animationEventListeners) {
@@ -125,31 +122,43 @@ namespace nsK2EngineLow {
 			}
 		}
 		/// <summary>
-		/// ƒ[ƒ‹ƒh‹óŠÔ‚Å‚ÌƒtƒbƒgƒXƒeƒbƒv‚ÌˆÚ“®—Ê‚ğŒvZ‚·‚éB
+		/// ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã§ã®ãƒ•ãƒƒãƒˆã‚¹ãƒ†ãƒƒãƒ—ã®ç§»å‹•é‡ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		/// </summary>
 		/// <remarks>
-		/// ƒtƒbƒgƒXƒeƒbƒv‚ÌˆÚ“®—Ê‚ÍAƒ‚ƒfƒ‹‚Ìƒ‹[ƒg‚©‚ç‚Ì‘Š‘ÎˆÚ“®—Ê‚Å‚·B
-		/// ‚»‚Ì‚½‚ßAƒ[ƒ‹ƒh‹óŠÔ‚É•ÏŠ·‚·‚é‚Ì‚É•½sˆÚ“®—Ê‚Í•s—v‚Å‚·B
-		/// ƒ‚ƒfƒ‹‚Ì‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“‚ÆŠg‘å—¦‚Ì‚İw’è‚µ‚Ä‚­‚¾‚³‚¢B
+		/// ãƒ•ãƒƒãƒˆã‚¹ãƒ†ãƒƒãƒ—ã®ç§»å‹•é‡ã¯ã€ãƒ¢ãƒ‡ãƒ«ã®ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ã‹ã‚‰ã®ç›¸å¯¾ç§»å‹•é‡ã§ã™ã€‚
+		/// ãã®ãŸã‚ã€ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã«å¤‰æ›ã™ã‚‹ã®ã«ä¸¦é€²ç§»å‹•é‡ã¯ä¸è¦ã§ã™ã€‚
+		/// ãƒ¢ãƒ‡ãƒ«ã®å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ã¨æ‹¡å¤§ç‡ã®ã¿æŒ‡å®šã—ã¦ãã ã•ã„ã€‚
 		/// </remarks>
-		/// <param name="rotation">ƒ‚ƒfƒ‹‚Ì‰ñ“]</param>
-		/// <param name="scale">ƒ‚ƒfƒ‹‚ÌŠg‘å—¦</param>
-		/// <returns>ƒ[ƒ‹ƒh‹óŠÔ‚Å‚ÌƒtƒbƒgƒXƒeƒbƒv‚ÌˆÚ“®—ÊB</returns>
+		/// <param name="rotation">ãƒ¢ãƒ‡ãƒ«ã®å›è»¢</param>
+		/// <param name="scale">ãƒ¢ãƒ‡ãƒ«ã®æ‹¡å¤§ç‡</param>
+		/// <returns>ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã§ã®ãƒ•ãƒƒãƒˆã‚¹ãƒ†ãƒƒãƒ—ã®ç§»å‹•é‡ã€‚</returns>
 		Vector3 CalcFootstepDeltaValueInWorldSpace(Quaternion rotation, Vector3 scale) const;
 
+	public:
+		void SetLoopStartTime(float time)
+		{
+			int lastIndex = GetLastAnimationControllerIndex();
+			m_animationPlayController[lastIndex].SetLoopStartTime(time);
+		}
+		void SetCurrentTime(float time)
+		{
+			int lastIndex = GetLastAnimationControllerIndex();
+			m_animationPlayController[lastIndex].SetCurrentTime(time);
+		}
 	private:
 		void PlayCommon(AnimationClip* nextClip, float interpolateTime)
 		{
 			int index = GetLastAnimationControllerIndex();
-			if (m_animationPlayController[index].GetAnimClip() == nextClip) {
+			if (m_animationPlayController[index].GetAnimClip() == nextClip
+				&& m_animationPlayController[index].IsPlaying()) {
 				return;
 			}
 			if (interpolateTime == 0.0f) {
-				//•âŠ®‚È‚µB
+				// è£œé–“ãªã—ã€‚
 				m_numAnimationPlayController = 1;
 			}
 			else {
-				//•âŠ®‚ ‚èB
+				// è£œé–“ã‚ã‚Šã€‚
 				m_numAnimationPlayController++;
 			}
 			index = GetLastAnimationControllerIndex();
@@ -159,18 +168,18 @@ namespace nsK2EngineLow {
 			m_interpolateTimeEnd = interpolateTime;
 		}
 		/// <summary>
-		/// ƒ[ƒJƒ‹ƒ|[ƒY‚ÌXVB
+		/// ãƒ­ãƒ¼ã‚«ãƒ«ãƒãƒ¼ã‚ºã®æ›´æ–°ã€‚
 		/// </summary>
-		/// <param name="deltaTime">ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚éŠÔB’PˆÊF•bB</param>
+		/// <param name="deltaTime">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹æ™‚é–“ã€‚å˜ä½ï¼šç§’ã€‚</param>
 		void UpdateLocalPose(float deltaTime);
 		/// <summary>
-		/// ƒOƒ[ƒoƒ‹ƒ|[ƒY‚ÌXVB
+		/// ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒãƒ¼ã‚ºã®æ›´æ–°ã€‚
 		/// </summary>
 		void UpdateGlobalPose();
 	private:
 
 		/// <summary>
-		/// ÅIƒ|[ƒY‚É‚È‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒŠƒ“ƒOƒoƒbƒtƒ@ã‚Å‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾B
+		/// æœ€çµ‚ãƒãƒ¼ã‚ºã«ãªã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒªãƒ³ã‚°ãƒãƒƒãƒ•ã‚¡å†…ã§ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		int GetLastAnimationControllerIndex() const
@@ -178,10 +187,10 @@ namespace nsK2EngineLow {
 			return GetAnimationControllerIndex(m_startAnimationPlayController, m_numAnimationPlayController - 1);
 		}
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰[‚ÌƒŠƒ“ƒOƒoƒbƒtƒ@ã‚Å‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®ãƒªãƒ³ã‚°ãƒãƒƒãƒ•ã‚¡å†…ã§ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 		/// </summary>
-		/// <param name="startIndex">ŠJnƒCƒ“ƒfƒbƒNƒX</param>
-		/// <param name="localIndex">ƒ[ƒJƒ‹ƒCƒ“ƒfƒbƒNƒX</param>
+		/// <param name="startIndex">é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹</param>
+		/// <param name="localIndex">ãƒ­ãƒ¼ã‚«ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹</param>
 		/// <returns></returns>
 		int GetAnimationControllerIndex(int startIndex, int localIndex) const
 		{
@@ -189,18 +198,18 @@ namespace nsK2EngineLow {
 		}
 
 	private:
-		static const int ANIMATION_PLAY_CONTROLLER_NUM = 32;	//!<ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚Ì”B
-		std::vector<AnimationClip*>	m_animationClips;	//!<ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì”z—ñB
-		Skeleton* m_skeleton = nullptr;	//!<ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ“K—p‚·‚éƒXƒPƒ‹ƒgƒ“B
-		AnimationPlayController	m_animationPlayController[ANIMATION_PLAY_CONTROLLER_NUM];	//!<ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰BƒŠƒ“ƒOƒoƒbƒtƒ@B
-		int m_numAnimationPlayController = 0;		//!<Œ»İg—p’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“Ä¶ƒRƒ“ƒgƒ[ƒ‰‚Ì”B
-		int m_startAnimationPlayController = 0;		//!<ƒAƒjƒ[ƒVƒ‡ƒ“ƒRƒ“ƒgƒ[ƒ‰‚ÌŠJnƒCƒ“ƒfƒbƒNƒXB
+		static const int ANIMATION_PLAY_CONTROLLER_NUM = 32;								//!< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®æ•°ã€‚
+		std::vector<AnimationClip*>	m_animationClips;										//!< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®é…åˆ—ã€‚
+		Skeleton* m_skeleton = nullptr;														//!< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é©ç”¨ã™ã‚‹ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã€‚
+		AnimationPlayController	m_animationPlayController[ANIMATION_PLAY_CONTROLLER_NUM];	//!< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã€‚ãƒªãƒ³ã‚°ãƒãƒƒãƒ•ã‚¡ã€‚
+		int m_numAnimationPlayController = 0;												//!< ç¾åœ¨ä½¿ç”¨ä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®æ•°ã€‚
+		int m_startAnimationPlayController = 0;												//!< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã€‚
 		float m_interpolateTime = 0.0f;
 		float m_interpolateTimeEnd = 0.0f;
-		bool m_isInterpolate = false;								//!<•âŠÔ’†H
-		std::vector<AnimationEventListener>	m_animationEventListeners;	//!<ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒgƒŠƒXƒi[‚ÌƒŠƒXƒgB
-		Vector3 m_footstepDeltaValue = g_vec3Zero;					//footstepƒ{[ƒ“‚ÌˆÚ“®—ÊB
+		bool m_isInterpolate = false;														//!< è£œé–“ä¸­ã‹ï¼Ÿ
+		std::vector<AnimationEventListener>	m_animationEventListeners;						//!< ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒŠãƒ¼ã®ãƒªã‚¹ãƒˆã€‚
+		Vector3 m_footstepDeltaValue = g_vec3Zero;											// footstepãƒœãƒ¼ãƒ³ã®ç§»å‹•é‡ã€‚
 		bool m_isInited = false;
-		float m_deltaTimeOnUpdate = 0.0f;							//UpdateŠÖ”‚ğÀs‚µ‚½‚Æ‚«‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€B
+		float m_deltaTimeOnUpdate = 0.0f;													// Updateé–¢æ•°ã‚’å®Ÿè¡Œã—ãŸã¨ãã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã€‚
 	};
 }

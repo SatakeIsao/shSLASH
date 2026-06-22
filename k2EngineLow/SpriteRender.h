@@ -6,31 +6,31 @@ namespace nsK2EngineLow
 	class SpriteRender : public IRenderer
 	{
 	public:
-		//‰Šú‰»
-		void Init(const char* filePath,								//ƒtƒ@ƒCƒ‹ƒpƒX
-			const float w,											//‰æ‘œ‚Ì‰¡•
-			const float h,											//‰æ‘œ‚Ìc•
-			AlphaBlendMode alphaBlendMode = AlphaBlendMode_Trans);	//ƒfƒtƒHƒ‹ƒg‚Í”¼“§–¾‡¬
+		// åˆæœŸåŒ–
+		void Init(const char* filePath,								// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+			const float w,											// ç”»åƒã®æ¨ªå¹…
+			const float h,											// ç”»åƒã®ç¸¦å¹…
+			AlphaBlendMode alphaBlendMode = AlphaBlendMode_Trans);	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯åŠé€æ˜åˆæˆ
 
-		//ƒ†[ƒU[‚ª—pˆÓ‚µ‚½ƒf[ƒ^‚Å‰Šú‰»
+		// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒç”¨æ„ã—ãŸãƒ‡ãƒ¼ã‚¿ã§åˆæœŸåŒ–
 		void Init(SpriteInitData initData)
 		{
 			m_sprite.Init(initData);
 		}
 		
-		//À•Wİ’è
+		// åº§æ¨™è¨­å®š
 		void SetPosition(const Vector3& pos)
 		{
 			m_position = pos;
 		}
 
-		//À•Wæ“¾
+		// åº§æ¨™å–å¾—
 		const Vector3& GetPosition()const
 		{
 			return m_position;
 		}
 
-		//‘å‚«‚³‚ğİ’è
+		// å¤§ãã•ã‚’è¨­å®š
 		void SetScale(const Vector3& scale)
 		{
 			m_scale = scale;
@@ -41,7 +41,7 @@ namespace nsK2EngineLow
 			m_scale.y = scale;
 			m_scale.z = scale;
 		}
-		//‘å‚«‚³‚ğæZ
+		// å¤§ãã•ã‚’ä¹—ç®—
 		void AddScale(const float& scale)
 		{
 			m_scale *= scale;
@@ -53,49 +53,55 @@ namespace nsK2EngineLow
 			m_scale.z *= scale.z;
 		}
 
-		//‘å‚«‚³‚ğæ“¾
+		// å¤§ãã•ã‚’å–å¾—
 		const Vector3& GetScale() const
 		{
 			return m_scale;
 		}
-		//‰ñ“]‚ğæ“¾
+		// å›è»¢ã‚’å–å¾—
 		const Quaternion& GetRotation() const
 		{
 			return m_rotation;
 		}
 
-		//‰ñ“]‚ğİ’è
+		// å›è»¢ã‚’è¨­å®š
 		void SetRotation(const Quaternion& rot)
 		{
 			m_rotation = rot;
 		}
 
-		//ƒsƒ{ƒbƒg‚Ìİ’è
+		// ãƒ”ãƒœãƒƒãƒˆã®è¨­å®š
 		void SetPivot(const Vector2& pivot)
 		{
 			m_pivot = pivot;
 		}
-		//ƒsƒ{ƒbƒg‚ğæ“¾
+		// ãƒ”ãƒœãƒƒãƒˆã‚’å–å¾—
 		const Vector2& GetPivot()const
 		{
 			return m_pivot;
 		}
 
-		//æZƒJƒ‰[‚ğİ’è
+		// ä¹—ç®—ã‚«ãƒ©ãƒ¼ã‚’è¨­å®š
 		void SetMulColor(const Vector4& mulColor)
 		{
 			m_sprite.SetMulColor(mulColor);
 		}
-		//æZƒJƒ‰[‚ğæ“¾
+		// ä¹—ç®—ã‚«ãƒ©ãƒ¼ã‚’å–å¾—
 		const Vector4& GetMulColor()const
 		{
 			return m_sprite.GetMulColor();
 		}
 
-		//’Ç‰Á
-		//void SetTexture(const std::string& filePath);
+		// æ‹¡å¼µå®šæ•°ãƒãƒƒãƒ•ã‚¡ï¼ˆã‚«ã‚¹ã‚¿ãƒ ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®b1ï¼‰ã‚’CPUå´ã‹ã‚‰æ›´æ–°ã™ã‚‹ãŸã‚ã®ã‚¢ã‚¯ã‚»ã‚µ
+		ConstantBuffer& GetExpandConstantBuffer()
+		{
+			return m_sprite.GetExpandConstantBufferGPU();
+		}
 
-		//XVˆ—
+		// è¿½åŠ 
+		// void SetTexture(const std::string& filePath);
+
+		// æ›´æ–°å‡¦ç†
 		void Update()
 		{
 			m_sprite.Update(
@@ -105,7 +111,7 @@ namespace nsK2EngineLow
 				m_pivot);
 		}
 
-		//•`‰æˆ—
+		// æç”»å‡¦ç†
 		void Draw(RenderContext& rc);
 
 		void OnRender2D(RenderContext& rc) override
@@ -117,7 +123,7 @@ namespace nsK2EngineLow
 	public:
 	private:
 		Sprite m_sprite;
-		//Texture m_texture;
+		// Texture m_texture;
 		Vector3 m_position = Vector3::Zero;
 		Vector3 m_scale = Vector3::One;
 		Quaternion m_rotation = Quaternion::Identity;

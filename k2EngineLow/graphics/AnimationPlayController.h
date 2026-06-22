@@ -1,9 +1,7 @@
 /*!
-* @brief	ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶ƒRƒ“ƒgƒ[ƒ‰B
-*/
-
+ * @brief ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã€‚
+ */
 #pragma once
-
 
 namespace nsK2EngineLow {
 	class Skeleton;
@@ -12,59 +10,56 @@ namespace nsK2EngineLow {
 	class Bone;
 
 	/*!
-	* @brief	ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÄ¶ƒRƒ“ƒgƒ[ƒ‰B
-	* @details
-	*  ˆê‚Â‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚É‘Î‚µ‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚ÄAƒ[ƒJƒ‹ƒ|[ƒY‚ğŒvZ‚µ‚Ü‚·B
-	*/
+	 * @brief ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã€‚
+	 * @details 1ã¤ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã«å¯¾ã—ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã¦ã€ãƒ­ãƒ¼ã‚«ãƒ«ãƒãƒ¼ã‚ºã‚’è¨ˆç®—ã—ã¾ã™ã€‚
+	 */
 
-	/// <summary>
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÄ¶ƒRƒ“ƒgƒ[ƒ‰B
-	/// </summary>
-	/// <remark>
-	/// ˆê‚Â‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚É‘Î‚µ‚ÄAƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚Äƒ[ƒJƒ‹ƒ|[ƒY‚ğŒvZ‚µ‚Ü‚·B
-	/// </remark>
+	 /// <summary>
+	 /// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã€‚
+	 /// </summary>
+	 /// <remark>
+	 /// 1ã¤ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã«å¯¾ã—ã¦ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã¦ãƒ­ãƒ¼ã‚«ãƒ«ãƒãƒ¼ã‚ºã‚’è¨ˆç®—ã—ã¾ã™ã€‚
+	 /// </remark>
 	class AnimationPlayController : public Noncopyable {
 	public:
 		/*!
-		* @brief	ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
-		*/
+		 * @brief ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
+		 */
 		AnimationPlayController()
-		{
-		}
+		{}
 		/*!
-		* @brief	ƒfƒXƒgƒ‰ƒNƒ^B
-		*/
+		 * @brief ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
+		 */
 		~AnimationPlayController()
-		{
-		}
+		{}
 		/// <summary>
-		/// ‰Šú‰»
+		/// åˆæœŸåŒ–
 		/// </summary>
-		/// <param name="skeleton">ƒXƒPƒ‹ƒgƒ“</param>
-		/// <param name="footStepBoneNo">footstepƒ{[ƒ“‚Ì”Ô†</param>
+		/// <param name="skeleton">ã‚¹ã‚±ãƒ«ãƒˆãƒ³</param>
+		/// <param name="footStepBoneNo">footstepãƒœãƒ¼ãƒ³ã®ç•ªå·</param>
 		void Init(Skeleton* skeleton, int footStepBoneNo);
 
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì•ÏX
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®å¤‰æ›´
 		/// </summary>
-		/// <param name="clip">•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv</param>
+		/// <param name="clip">å¤‰æ›´å¾Œã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—</param>
 		void ChangeAnimationClip(AnimationClip* clip);
 
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“•âŠÔŠÔ‚ğİ’èB
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è£œé–“æ™‚é–“ã‚’è¨­å®šã€‚
 		/// </summary>
-		/// <param name="interpolateTime">•âŠÔŠÔ</param>
+		/// <param name="interpolateTime">è£œé–“æ™‚é–“</param>
 		void SetInterpolateTime(float interpolateTime)
 		{
 			if (interpolateTime < 0.0f) {
-				//interpolateTime is negative!!
+				// interpolateTime is negative!!
 				return;
 			}
 			m_interpolateEndTime = interpolateTime;
 			m_interpolateTime = 0.0f;
 		}
 		/// <summary>
-		/// Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“•âŠÔ—¦‚ğæ“¾
+		/// ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è£œé–“ç‡ã‚’å–å¾—
 		/// </summary>
 		/// <returns></returns>
 		float GetInterpolateRate() const
@@ -74,18 +69,18 @@ namespace nsK2EngineLow {
 			}
 			return min(1.0f, m_interpolateTime / m_interpolateEndTime);
 		}
-		
+
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚é
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹
 		/// </summary>
-		/// <param name="deltaTime">ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚éŠÔ(’PˆÊ:•b)</param>
+		/// <param name="deltaTime">ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹æ™‚é–“(å˜ä½:ç§’)</param>
 		/// <param name="animation"></param>
 		/// <param name="isInvokeAnimationEvent"></param>
 		void Update(float deltaTime, Animation* animation, bool isInvokeAnimationEvent);
-		
+
 
 		/// <summary>
-		/// ƒ[ƒJƒ‹ƒ{[ƒ“s—ñ‚ğæ“¾B
+		/// ãƒ­ãƒ¼ã‚«ãƒ«ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		const std::vector<Matrix>& GetBoneLocalMatrix() const
@@ -94,24 +89,26 @@ namespace nsK2EngineLow {
 		}
 
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ìæ“¾B
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		AnimationClip* GetAnimClip() const
 		{
 			return m_animationClip;
 		}
-		
+
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶’†‚©”»’èB
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒå†ç”Ÿä¸­ã‹åˆ¤å®šã€‚
 		/// </summary>
 		/// <returns></returns>
 		bool IsPlaying() const
 		{
 			return m_isPlaying;
 		}
+		void SetLoopStartTime(float time) { m_loopStartTime = time; }
+		void SetCurrentTime(float time);
 		/// <summary>
-		/// UpdateŠÖ”‚ğŒÄ‚Ño‚µ‚½‚Æ‚«‚ÌAfootstepƒ{[ƒ“‚ÌˆÚ“®—Ê‚ğæ“¾B
+		/// Updateé–¢æ•°ãŒå‘¼ã³å‡ºã•ã‚ŒãŸã¨ãã®ã€footstepãƒœãƒ¼ãƒ³ã®ç§»å‹•é‡ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		Vector3 GetFootStepDeltaValueOnUpdate() const
@@ -119,56 +116,57 @@ namespace nsK2EngineLow {
 			return m_footstepDeltaValue;
 		}
 	private:
-		
+
 
 		/// <summary>
-		/// ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚ğ‹N“®‚·‚éB
+		/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«ã•ã›ã‚‹ã€‚
 		/// </summary>
 		/// <param name="animation"></param>
 		void InvokeAnimationEvent(Animation* animation);
-		
+
 		/// <summary>
-		/// ƒ‹[ƒvÄ¶‚ğŠJn‚·‚é‚Æ‚«‚ÉÀs‚³‚ê‚éˆ—B
+		/// ãƒ«ãƒ¼ãƒ—å†ç”Ÿã‚’é–‹å§‹ã™ã‚‹ã¨ãã«å®Ÿè¡Œã™ã‚‹å‡¦ç†ã€‚
 		/// </summary>
 		void StartLoop();
 		/// <summary>
-		/// ƒ‹[ƒg‚Ìƒ{[ƒ“‹óŠÔ‚Å‚Ìƒ{[ƒ“s—ñ‚ğŒvZ‚·‚éB
+		/// ãƒ«ãƒ¼ãƒˆã®ãƒœãƒ¼ãƒ³ç©ºé–“ã§ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		/// </summary>
-		/// <param name="bone">ŒvZ‚·‚éœ</param>
-		/// <param name="parentMatrix">e‚Ìs—ñ</param>
+		/// <param name="bone">è¨ˆç®—ã™ã‚‹éª¨</param>
+		/// <param name="parentMatrix">è¦ªã®è¡Œåˆ—</param>
 		void CalcBoneMatrixInRootBoneSpace(Bone& bone, Matrix parentMatrix);
 		/// <summary>
-		/// ƒ{[ƒ“s—ñ‚ğƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚©‚çƒTƒ“ƒvƒŠƒ“ƒO‚·‚éB
+		/// ãƒœãƒ¼ãƒ³è¡Œåˆ—ã‚’ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã‹ã‚‰ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã™ã‚‹ã€‚
 		/// </summary>
 		void SamplingBoneMatrixFromAnimationClip();
 		/// <summary>
-		/// ƒ‹[ƒgƒ{[ƒ“‹óŠÔ‚Å‚Ìs—ñ‚ğŒvZ‚·‚éB
+		/// ãƒ«ãƒ¼ãƒˆãƒœãƒ¼ãƒ³ç©ºé–“ã§ã®è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		/// </summary>
 		void CalcBoneMatrixInRootBoneSpace();
 		/// <summary>
-		/// footstepƒ{[ƒ“‚Ì•Ï‰»—Ê‚ğƒTƒ“ƒvƒŠƒ“ƒO‚·‚éB
+		/// footstepãƒœãƒ¼ãƒ³ã®å¤‰åŒ–é‡ã‚’ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã™ã‚‹ã€‚
 		/// </summary>
 		void SamplingDeltaValueFootstepBone();
 		/// <summary>
-		/// footstepƒ{[ƒ“‚ÌÀ•W‚ğ‘S‘Ì‚Ìœ‚©‚çŒ¸Z‚·‚éB
+		/// footstepãƒœãƒ¼ãƒ³ã®åº§æ¨™ã‚’å…¨ä½“ã®åº§æ¨™ã‹ã‚‰æ¸›ç®—ã™ã‚‹ã€‚
 		/// </summary>
 		void SubtractFootstepbonePosFromAllBone();
 		/// <summary>
-		/// ƒL[ƒtƒŒ[ƒ€”Ô†‚ği‚ß‚éB
+		/// ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·ã‚’é€²ã‚ã‚‹ã€‚
 		/// </summary>
 		void ProgressKeyframeNo(float deltaTime);
 	private:
-		AnimationClip* m_animationClip = nullptr;					// ƒA	ƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒvB
-		int						m_currentKeyFrameNoLastFrame = 0;	// ˆêƒtƒŒ[ƒ€‘O‚ÌƒL[ƒtƒŒ[ƒ€”Ô†B
-		int						m_currentKeyFrameNo = 0;			// Œ»İÄ¶’†‚ÌƒL[ƒtƒŒ[ƒ€”Ô†B
+		AnimationClip* m_animationClip = nullptr;					// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã€‚
+		int						m_currentKeyFrameNoLastFrame = 0;	// å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·ã€‚
+		int						m_currentKeyFrameNo = 0;			// ç¾åœ¨å†ç”Ÿä¸­ã®ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·ã€‚
 		float					m_time = 0.0f;
-		std::vector<Matrix>		m_boneMatrix;						// ‚±‚ÌƒRƒ“ƒgƒ[ƒ‰‚ÅÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìƒ{[ƒ“s—ñB
-		float					m_interpolateTime;					// •âŠ®ŠÔ
-		float					m_interpolateEndTime;				// •âŠ®I—¹ŠÔ
-		bool					m_isPlaying = false;				// Ä¶’†H
-		Skeleton* m_skeleton = nullptr;								// ƒXƒPƒ‹ƒgƒ“B
-		Vector3					m_footstepDeltaValue = g_vec3Zero;	// ƒtƒbƒgƒXƒeƒbƒv‚ÌˆÚ“®ƒxƒNƒgƒ‹B
-		Vector3					m_footstepPos = g_vec3Zero;			// ƒtƒbƒgƒXƒeƒbƒvƒ{[ƒ“‚ÌÀ•WB
-		int						m_footstepBoneNo = -1;				// ƒtƒbƒgƒXƒeƒbƒv‚Ìƒ{[ƒ“‚Ì”Ô†B
+		float					m_loopStartTime = 0.0f;
+		std::vector<Matrix>		m_boneMatrix;						// ã“ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã§å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒœãƒ¼ãƒ³è¡Œåˆ—ã€‚
+		float					m_interpolateTime;					// è£œé–“æ™‚é–“
+		float					m_interpolateEndTime;				// è£œé–“çµ‚äº†æ™‚é–“
+		bool					m_isPlaying = false;				// å†ç”Ÿä¸­ã‹ï¼Ÿ
+		Skeleton* m_skeleton = nullptr;								// ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã€‚
+		Vector3					m_footstepDeltaValue = g_vec3Zero;	// ãƒ•ãƒƒãƒˆã‚¹ãƒ†ãƒƒãƒ—ã®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã€‚
+		Vector3					m_footstepPos = g_vec3Zero;			// ãƒ•ãƒƒãƒˆã‚¹ãƒ†ãƒƒãƒ—ãƒœãƒ¼ãƒ³ã®åº§æ¨™ã€‚
+		int						m_footstepBoneNo = -1;				// ãƒ•ãƒƒãƒˆã‚¹ãƒ†ãƒƒãƒ—ã®ãƒœãƒ¼ãƒ³ç•ªå·ã€‚
 	};
 }
