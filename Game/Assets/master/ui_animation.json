@@ -256,23 +256,143 @@
             "loop": "PingPong"
         },
         {
-            "comment": "タイムアップ：右から中央を少し通り過ぎるまで高速スライド",
-            "key": "TimeUpSlideIn",
+            "comment": "タイムアップ左：左端から中央へ高速スライド",
+            "key": "TimeUpLeftSlideIn",
             "valueType": "Vector3",
-            "startValue": { "x": 1000.0, "y": 0.0, "z": 0.0 },
-            "endValue":   { "x": -50.0, "y": 0.0, "z": 0.0 }, 
+            "startValue": { "x": -900.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x":    0.0, "y": 0.0, "z": 0.0 },
+            "duration": 0.16,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ右：右端から中央へ高速スライド",
+            "key": "TimeUpRightSlideIn",
+            "valueType": "Vector3",
+            "startValue": { "x": 900.0, "y": 0.0, "z": 0.0 },
+            "endValue":   { "x":   0.0, "y": 0.0, "z": 0.0 },
+            "duration": 0.16,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップサイド：スライドしながら中央へ向かうにつれてフェードアウト（0.5→0、スライド全体と同duration）",
+            "key": "TimeUpSideFadeIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.5 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 0.22,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ前カウントダウン：スタンプイン",
+            "key": "TimeUpCount_ScaleIn",
+            "valueType": "Vector3",
+            "startValue": { "x": 2.0, "y": 2.0, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "duration": 0.15,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ前カウントダウン：フラッシュイン",
+            "key": "TimeUpCount_FadeIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 0.10,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ前カウントダウン：縮小退場",
+            "key": "TimeUpCount_ScaleOut",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 0.5, "y": 0.5, "z": 1.0 },
+            "duration": 0.20,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ前カウントダウン：フェードアウト退場",
+            "key": "TimeUpCount_FadeOut",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 0.20,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ白フラッシュ：瞬間点灯→素早くフェードアウト",
+            "key": "TimeUpFlashFade",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.9 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 0.20,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ中央：収束後に瞬時フラッシュイン",
+            "key": "TimeUpCenterFlash",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 0.05,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ中央：収束後の大スタンプポップイン（ドン！）",
+            "key": "TimeUpCenterPop",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.6, "y": 1.6, "z": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
             "duration": 0.20,
             "easing": "EaseOut",
             "loop": "Once"
         },
         {
-            "comment": "タイムアップ：通り過ぎた位置から中央に戻ってピタッと止まる",
-            "key": "TimeUpSlideBack",
+            "comment": "タイムアップ中央ロゴ揺れ1：上へ初撃（タイトル斬撃と同スタイル）",
+            "key": "TimeUpCenterShake_1",
             "valueType": "Vector3",
-            "startValue": { "x": -50.0, "y": 0.0, "z": 0.0 },
-            "endValue":   { "x": 0.0, "y": 0.0, "z": 0.0 }, 
-            "duration": 0.15,
+            "startValue": { "x": 0.0, "y":   0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": -12.0, "z": 0.0 },
+            "duration": 0.04,
             "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ中央ロゴ揺れ2：下へ戻る",
+            "key": "TimeUpCenterShake_2",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": -12.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y":   0.0, "z": 0.0 },
+            "duration": 0.07,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ中央ロゴ揺れ3：上へ小さく",
+            "key": "TimeUpCenterShake_3",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y":  0.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y": -6.0, "z": 0.0 },
+            "duration": 0.04,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "タイムアップ中央ロゴ揺れ4：静止へ戻る",
+            "key": "TimeUpCenterShake_4",
+            "valueType": "Vector3",
+            "startValue": { "x": 0.0, "y": -6.0, "z": 0.0 },
+            "endValue":   { "x": 0.0, "y":  0.0, "z": 0.0 },
+            "duration": 0.07,
+            "easing": "EaseIn",
             "loop": "Once"
         },
         {
@@ -546,7 +666,7 @@
             "valueType": "Vector3",
             "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
             "endValue":   { "x": -475.0, "y": 350.0, "z": 0.0 },
-            "duration": 1.0,
+            "duration": 1.3,
             "easing": "EaseOut",
             "loop": "Once"
         },
@@ -756,7 +876,7 @@
             "valueType": "Vector3",
             "startValue": { "x": -475.0, "y": 800.0, "z": 0.0 },
             "endValue":   { "x": -475.0, "y": 350.0, "z": 0.0 },
-            "duration": 1.0,
+            "duration": 1.05,
             "easing": "EaseOut",
             "loop": "Once"
         },
@@ -971,6 +1091,26 @@
           "loop": "Once"
         },
         {
+          "comment": "クリティカルダメージポップ：フェードイン（オレンジ）",
+          "key": "DamagePop_Critical_FadeIn",
+          "valueType": "Vector4",
+          "startValue": { "x": 1.0, "y": 0.58, "z": 0.12, "w": 0.0 },
+          "endValue":   { "x": 1.0, "y": 0.58, "z": 0.12, "w": 1.0 },
+          "duration": 0.08,
+          "easing": "EaseOut",
+          "loop": "Once"
+        },
+        {
+          "comment": "クリティカルダメージポップ：フェードアウト（オレンジ）",
+          "key": "DamagePop_Critical_FadeOut",
+          "valueType": "Vector4",
+          "startValue": { "x": 1.0, "y": 0.58, "z": 0.12, "w": 1.0 },
+          "endValue":   { "x": 1.0, "y": 0.58, "z": 0.12, "w": 0.0 },
+          "duration": 0.25,
+          "easing": "EaseIn",
+          "loop": "Once"
+        },
+        {
             "comment": "エネミーアイコン2：上からスライド",
             "key": "EnemyIcon2Slide",
             "valueType": "Vector3",
@@ -1041,12 +1181,22 @@
             "loop": "Once"
         },
         {
+            "comment": "カウントダウン数字：登場フラッシュ（ScaleIn と同時再生）",
+            "key": "CountDown_FlashIn",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "duration": 0.08,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
             "comment": "カウントダウン数字：スタンプのように大きく出て定サイズへ",
             "key": "CountDown_ScaleIn",
             "valueType": "Vector3",
             "startValue": { "x": 2.5, "y": 2.5, "z": 1.0 },
             "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0 },
-            "duration": 0.35,
+            "duration": 0.25,
             "easing": "EaseOut",
             "loop": "Once"
         },
@@ -1097,6 +1247,26 @@
             "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
             "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
             "duration": 0.5,
+            "easing": "EaseIn",
+            "loop": "Once"
+        },
+        {
+            "comment": "StartBlur：素早く膨張（FadeOut と同時再生）",
+            "key": "StartBlur_ScaleExpand",
+            "valueType": "Vector3",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0 },
+            "endValue":   { "x": 3.5, "y": 3.5, "z": 1.0 },
+            "duration": 0.35,
+            "easing": "EaseOut",
+            "loop": "Once"
+        },
+        {
+            "comment": "StartBlur：素早くフェードアウト（ScaleExpand と同時再生）",
+            "key": "StartBlur_FadeOut",
+            "valueType": "Vector4",
+            "startValue": { "x": 1.0, "y": 1.0, "z": 1.0, "w": 1.0 },
+            "endValue":   { "x": 1.0, "y": 1.0, "z": 1.0, "w": 0.0 },
+            "duration": 0.35,
             "easing": "EaseIn",
             "loop": "Once"
         }
