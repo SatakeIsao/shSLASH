@@ -50,6 +50,7 @@ namespace app
 			void StartTimer() { isCounting_ = true; }
 			void StopTimer() { isCounting_ = false; }
 			bool IsTimeUp() const { return timer_ <= 0.0f; }
+			void AddTimer(float delta) { timer_ = max(0.0f, min(timer_ + delta, maxTime_)); }
 
 		private:
 			void ApplyGaugeColor(const Vector4& fillColor);

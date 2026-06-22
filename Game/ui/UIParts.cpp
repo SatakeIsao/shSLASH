@@ -351,6 +351,165 @@ namespace app
 
 
 		/************************************/
+		// UINumberSprite
+
+		constexpr float UINumberSprite::DIGIT_X_CORRECTION[10];
+
+		UINumberSprite::UINumberSprite()
+		{
+		}
+
+
+		UINumberSprite::~UINumberSprite()
+		{
+			for (auto* r  : renderList_) delete r;
+			for (auto* cb : cbList_)     delete cb;
+			renderList_.clear();
+			cbList_.clear();
+		}
+
+
+		void UINumberSprite::Initialize(
+			const char* atlasPath, int digit, int number,
+			float width, float height,
+			const Vector3& position, const Vector3& scale, const Quaternion& rotation)
+		{
+			atlasPath_ = atlasPath;
+			digit_     = digit;
+			maxDigit_  = digit;
+			number_    = number;
+			requestNumber_ = number;
+			w_ = width;
+			h_ = height;
+
+			transform.localPosition = position;
+			transform.localScale    = scale;
+			transform.localRotation = rotation;
+
+			for (int i = 0; i < digit; i++) {
+				AddDigitSprite();
+				UpdateDigitUV(i);
+				renderList_[i]->SetPosition(position);
+				renderList_[i]->SetScale(scale);
+				renderList_[i]->SetRotation(rotation);
+				renderList_[i]->Update();
+			}
+		}
+
+
+		void UINumberSprite::Update()
+		{
+			if (number_ != requestNumber_) {
+				number_ = requestNumber_;
+
+				digit_ = isZeroPadding_ ? maxDigit_ : ComputeDigitCount();
+
+				// 余剰スプライトを削除
+				while (static_cast<int>(renderList_.size()) > digit_) {
+					delete renderList_.back(); renderList_.pop_back();
+					delete cbList_.back();     cbList_.pop_back();
+				}
+				// 不足スプライトを追加
+				while (static_cast<int>(renderList_.size()) < digit_) {
+					AddDigitSprite();
+				}
+
+				// 全桁の UV を更新（CopyToVRAM のみ・再初期化なし）
+				for (int i = 0; i < digit_; i++) {
+					UpdateDigitUV(i);
+				}
+			}
+
+			UpdateAnimation();
+			transform.UpdateTransform();
+
+			for (int i = 0; i < static_cast<int>(renderList_.size()); i++) {
+				UpdatePosition(i);
+				renderList_[i]->SetScale(transform.scale);
+				renderList_[i]->SetRotation(transform.rotation);
+				renderList_[i]->SetMulColor(color);
+				renderList_[i]->Update();
+			}
+		}
+
+
+		void UINumberSprite::Render(RenderContext& rc)
+		{
+			if (!isDraw) return;
+			for (auto* r : renderList_) r->Draw(rc);
+		}
+
+
+		void UINumberSprite::AddDigitSprite()
+		{
+			// ヒープ確保で安定したアドレスを持たせる
+			// Sprite::Init が m_userExpandConstantBufferCPU にこのポインタを保存し、
+			// 毎フレームの Draw で CopyToVRAM するため、アドレスが変わると壊れる
+			auto* cb = new NumberSpriteCB();
+			cb->uvOffsetX = 0.0f;
+			cb->uvScaleX  = UV_DIGIT_WIDTH     + uvXScaleBias_;
+			cb->uvOffsetY = CONTENT_UV_OFFSET_Y;
+			cb->uvScaleY  = CONTENT_UV_SCALE_Y + uvYScaleBias_;
+
+			SpriteInitData initData;
+			initData.m_ddsFilePath[0]          = atlasPath_.c_str();
+			initData.m_fxFilePath              = "Assets/Shader/numberSprite.fx";
+			initData.m_width                   = static_cast<UINT>(w_);
+			initData.m_height                  = static_cast<UINT>(h_);
+			initData.m_expandConstantBuffer     = cb;
+			initData.m_expandConstantBufferSize = sizeof(NumberSpriteCB);
+			initData.m_alphaBlendMode           = AlphaBlendMode_Trans;
+
+			auto* render = new SpriteRender();
+			render->Init(initData);
+
+			renderList_.push_back(render);
+			cbList_.push_back(cb);
+		}
+
+
+		void UINumberSprite::UpdateDigitUV(int index)
+		{
+			const int dv = GetDigitAt(index + 1);
+			cbList_[index]->uvOffsetX = (dv + digitUVOffset_[dv]) * UV_DIGIT_WIDTH + uvXBias_;
+			cbList_[index]->uvScaleX  = digitUVScale_[dv] * UV_DIGIT_WIDTH + uvXScaleBias_;
+		}
+
+
+		void UINumberSprite::UpdatePosition(int index)
+		{
+			Vector3 pos = transform.position;
+			pos.x -= w_ * index;
+
+			// 各桁キャラクターのセル内重心補正（"0"の左余白が大きいなど）
+			const int dv = static_cast<int>(cbList_[index]->uvOffsetX * ATLAS_COLUMNS + 0.5f);
+			if (dv >= 0 && dv < 10) {
+				pos.x += w_ * DIGIT_X_CORRECTION[dv];
+			}
+
+			renderList_[index]->SetPosition(pos);
+		}
+
+
+		int UINumberSprite::GetDigitAt(int digitPos)
+		{
+			// digitPos 1 = 1の位, 2 = 10の位, ...
+			const int divisor = static_cast<int>(std::pow(10, digitPos - 1));
+			return (std::abs(number_) / divisor) % 10;
+		}
+
+
+		int UINumberSprite::ComputeDigitCount()
+		{
+			int n = std::abs(number_);
+			if (n == 0) return 1;
+			int count = 0;
+			while (n > 0) { n /= 10; count++; }
+			return count;
+		}
+
+
+		/************************************/
 
 
 		UICanvas::UICanvas()
