@@ -10,6 +10,7 @@
 #include "effect/EffectManager.h"
 #include "sound/SoundManager.h"
 #include "battle/BattleManager.h"
+#include "camera/CameraManager.h"
 
 
 namespace
@@ -318,6 +319,9 @@ namespace app
 
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Avoidance));
+
+			// 前フェーズウィンドウ（ノックバックキャンセル）消費
+			preJustDodgeWindowTimer_ = 0.0f;
 		}
 
 
@@ -360,6 +364,59 @@ namespace app
 			InjuredFootStepHandle_ = app::INVALID_SOUND_HANDLE;
 		}
 
+		void BattleCharacterStateMachine::OnJustDodge()
+		{
+			// 二重発火防止：ウィンドウを即座に閉じる
+			SetJustDodgeWindow(false);
+
+			SetLocalTimeScale(0.2f);
+			justDodgeSlowFrames_ = 60;
+
+			app::camera::CameraManager::Get().SetScreenEffectActive(true);
+			app::camera::CameraManager::Get().SetScreenEffectFocusWorldPos(transform.position);
+
+			// ジャスト回避エフェクト（OnEnterAvoidanceと同じ回転計算）
+			if (EffectManager::IsAvailable())
+			{
+				Vector3 avoidDir = GetMoveDirection();
+				avoidDir.y = 0.0f;
+
+				Quaternion effectRot = Quaternion::Identity;
+				if (avoidDir.LengthSq() > 0.0001f)
+				{
+					avoidDir.Normalize();
+					Vector3 cameraForward = g_camera3D->GetForward();
+					Vector3 cameraRight   = g_camera3D->GetRight();
+					cameraForward.y = 0.0f;
+					cameraRight.y   = 0.0f;
+					cameraForward.Normalize();
+					cameraRight.Normalize();
+					Vector3 worldDir = cameraRight * avoidDir.x + cameraForward * avoidDir.z;
+					worldDir.y = 0.0f;
+					worldDir.Normalize();
+					float yaw = atan2f(-worldDir.x, -worldDir.z);
+					effectRot.SetRotationY(yaw);
+				}
+
+				Vector3 effectPos = transform.position;
+				effectPos.y += 30.0f;
+
+				EffectManager::Get().PlayEffect(
+					enEffectKind_PlayerAvoidanceJust,
+					effectPos,
+					effectRot,
+					Vector3::One,
+					0.2f
+				);
+			}
+
+			if (onJustDodgeCallback_)
+			{
+				onJustDodgeCallback_();
+			}
+		}
+
+
 		void BattleCharacterStateMachine::OnEnterPunch()
 		{
 		}
@@ -388,6 +445,25 @@ namespace app
 
 		void BattleCharacterStateMachine::UpdateState()
 		{
+			// ジャスト回避前ウィンドウタイマー更新
+			if (preJustDodgeWindowTimer_ > 0.0f)
+			{
+				preJustDodgeWindowTimer_ -= g_gameTime->GetFrameDeltaTime();
+				if (preJustDodgeWindowTimer_ < 0.0f) preJustDodgeWindowTimer_ = 0.0f;
+			}
+
+			// ジャスト回避スローモーションのフレームカウントダウン
+			if (justDodgeSlowFrames_ > 0)
+			{
+				--justDodgeSlowFrames_;
+				app::camera::CameraManager::Get().SetScreenEffectFocusWorldPos(transform.position);
+				if (justDodgeSlowFrames_ == 0)
+				{
+					SetLocalTimeScale(1.0f);
+					app::camera::CameraManager::Get().SetScreenEffectActive(false);
+				}
+			}
+
 			// このフレームで既に遷移リクエストを送ったかどうかのフラグ
 			bool isStateRequested = false;
 
@@ -433,10 +509,20 @@ namespace app
 			}
 			//ノックバック
 			{
+				// [前フェーズ] ウィンドウ内にY入力があればノックバックをキャンセルして通常回避へ（被ダメージ中のためジャスト回避なし）
+				if (isKnockBack_ && preJustDodgeWindowTimer_ > 0.0f && IsTriggerY())
+				{
+					isKnockBack_ = false;
+					preJustDodgeWindowTimer_ = 0.0f;
+					wasRecentlyKnockedBack_ = true;
+					RequestChangeState(AvoidanceCharacterState::ID());
+					return;
+				}
+
 				if (isKnockBack_) {
-					/** デバッグテスト */
 					RequestChangeState(KnockBackCharacterState::ID());
 					isKnockBack_ = false;
+					wasRecentlyKnockedBack_ = true;
 					return;
 				}
 
@@ -882,6 +968,18 @@ namespace app
 			// 攻撃方向にオフセットした座標
 			const float offset = 20.0f;
 			Vector3 effectPos = transform.position + attackDir * offset;
+
+			// 攻撃予測エフェクト（即時再生）
+			if (EffectManager::IsAvailable())
+			{
+				EffectManager::Get().PlayEffect(
+					enEffectKind_StonePredictionAtk,
+					effectPos,
+					effectRot,
+					Vector3::One,
+					2.0f
+				);
+			}
 
 			// エフェクト再生
 			attackEffectScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
@@ -1361,6 +1459,18 @@ namespace app
 			// 攻撃方向にオフセットした座標にエフェクトを設置
 			const float offset = 20.0f;
 			Vector3 effectPos = transform.position + attackDir * offset;
+
+			// 攻撃予測エフェクト（即時再生）
+			if (EffectManager::IsAvailable())
+			{
+				EffectManager::Get().PlayEffect(
+					enEffectKind_MushroomPredictionAtk,
+					effectPos,
+					effectRot,
+					Vector3::One,
+					2.0f
+				);
+			}
 
 			// 0.5秒後にエフェクト再生
 			attackEffectScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();

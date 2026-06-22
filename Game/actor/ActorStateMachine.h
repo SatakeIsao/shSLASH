@@ -129,6 +129,10 @@ namespace app
 			bool isGuarding_ = false;
 			/** 回避中か */
 			bool isAvoiding_ = false;
+			/** ジャスト回避判定ウィンドウ中か */
+			bool isJustDodgeWindow_ = false;
+			/** ローカルタイムスケール（ジャスト回避スロー用） */
+			float localTimeScale_ = 1.0f;
 
 			/** ボタンを押したか */
 			bool isActionA_ = false;
@@ -235,6 +239,15 @@ namespace app
 			/** 回避状態を設定 */
 			void SetAvoiding(const bool isAvoiding) { isAvoiding_ = isAvoiding; }
 			bool IsAvoiding() const { return isAvoiding_; }
+			/** ジャスト回避ウィンドウを設定 */
+			void SetJustDodgeWindow(const bool active) { isJustDodgeWindow_ = active; }
+			bool IsJustDodgeWindow() const { return isJustDodgeWindow_; }
+			/** ジャスト回避発動（派生クラスでオーバーライドして効果を実装） */
+			virtual void OnJustDodge() {}
+			/** ローカルタイムスケール操作（回避ステートの移動・アニメだけをスローにする用） */
+			void SetLocalTimeScale(float s) { localTimeScale_ = s; }
+			float GetLocalTimeScale() const { return localTimeScale_; }
+			float GetLocalDeltaTime() const { return g_gameTime->GetFrameDeltaTime() * localTimeScale_; }
 
 
 			/** 入力周り */
@@ -309,6 +322,16 @@ namespace app
 			bool isDeadSEPlayed_ = false;
 			/** プレイヤー側ヒットストップの残り時間 */
 			float hitStopTimer_ = 0.0f;
+			/** ジャスト回避スローモーションの残りフレーム数 */
+			int justDodgeSlowFrames_ = 0;
+			/** ジャスト回避発動時のコールバック */
+			std::function<void()> onJustDodgeCallback_;
+			/** [前フェーズ] 敵の攻撃ゴーストが当たった後、回避入力を待つウィンドウ（秒） */
+			float preJustDodgeWindowTimer_ = 0.0f;
+			/** 直前にノックバックを受けたか（次の回避でジャスト回避を封じる用） */
+			bool wasRecentlyKnockedBack_ = false;
+			/** 無敵時間中か（ジャスト回避を封じる用） */
+			bool isInvincible_ = false;
 
 
 		public:
@@ -353,6 +376,20 @@ namespace app
 		public:
 			/** 溜め攻撃ヒット時にプレイヤー側のヒットストップを開始する */
 			void StartHitStop(float duration) { hitStopTimer_ = duration; }
+
+			/** ジャスト回避発動：スローモーション開始 */
+			virtual void OnJustDodge() override;
+			/** ジャスト回避時のコールバックを登録（BattleManagerが外からセット） */
+			void SetJustDodgeCallback(std::function<void()> cb) { onJustDodgeCallback_ = std::move(cb); }
+
+			/** [前フェーズ] 敵の攻撃が当たった直後に呼ぶ。duration 秒以内に回避するとノックバックをキャンセルできる */
+			void StartPreJustDodgeWindow(float duration = 0.3f) { preJustDodgeWindowTimer_ = duration; }
+			bool IsPreJustDodgeWindowActive() const { return preJustDodgeWindowTimer_ > 0.0f; }
+			/** 被ダメージフラグを取得して同時にクリア（回避ステートが呼ぶ） */
+			bool ConsumeWasRecentlyKnockedBack() { bool v = wasRecentlyKnockedBack_; wasRecentlyKnockedBack_ = false; return v; }
+			/** 無敵状態を設定（BattleManagerが呼ぶ） */
+			void SetInvincible(bool b) { isInvincible_ = b; }
+			bool IsInvincible() const { return isInvincible_; }
 
 			/** 死んだことを教える */
 			void OnDead()

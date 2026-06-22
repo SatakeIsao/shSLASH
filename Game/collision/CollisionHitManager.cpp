@@ -106,6 +106,10 @@ namespace app
 			auto* battleCharacter = GetHitObject<app::actor::BattleCharacter>(hitPair);
 			auto* eventCharacter = GetHitObject <app::actor::StoneEventCharacter>(hitPair);
 
+			// ポインタ取得失敗または敵が死亡中（メインゴーストが非アクティブ）ならスキップ
+			if (!battleCharacter || !eventCharacter) return;
+			if (!eventCharacter->GetGhostBody() || !eventCharacter->GetGhostBody()->IsActive()) return;
+
 			Vector3 playerPos = battleCharacter->transform.position;
 			Vector3 enemyPos = eventCharacter->transform.position;
 
@@ -174,7 +178,20 @@ namespace app
 			else
 			{
 				/** 回避中はノックバックを受けない */
-				if (battleCharacter->GetStateMachine()->IsAvoiding()) return;
+				if (battleCharacter->GetStateMachine()->IsAvoiding())
+				{
+					// 無敵中はジャスト回避を発動しない（回避自体は通す）
+					const bool invincible = battleCharacter->GetStateMachine()->IsInvincible();
+					// ジャスト回避判定：ウィンドウ内に敵の攻撃ゴーストが当たった
+					if (!invincible
+						&& battleCharacter->GetStateMachine()->IsJustDodgeWindow()
+						&& colliedEnemyBody != nullptr
+						&& colliedEnemyBody != eventCharacter->GetGhostBody())
+					{
+						battleCharacter->GetStateMachine()->OnJustDodge();
+					}
+					return;
+				}
 
 				/** エネミーからプレイヤーに向かうベクトル */
 				Vector3 toPlayer = playerPos - enemyPos;
@@ -189,6 +206,13 @@ namespace app
 				}
 				else
 				{
+					// [前フェーズ] 無敵中でなければジャスト回避前ウィンドウを開く
+					if (colliedEnemyBody != nullptr
+						&& colliedEnemyBody != eventCharacter->GetGhostBody()
+						&& !battleCharacter->GetStateMachine()->IsInvincible())
+					{
+						battleCharacter->GetStateMachine()->StartPreJustDodgeWindow();
+					}
 					battleCharacter->GetStateMachine()->OnKnockBack();
 					// 攻撃ゴーストが実際に当たった時だけHPダメージを通知
 					if (colliedEnemyBody != nullptr && colliedEnemyBody != eventCharacter->GetGhostBody())
@@ -216,6 +240,10 @@ namespace app
 		{
 			auto* battleCharacter = GetHitObject<app::actor::BattleCharacter>(hitPair);
 			auto* eventCharacter = GetHitObject <app::actor::MushroomEventCharacter>(hitPair);
+
+			// ポインタ取得失敗または敵が死亡中（メインゴーストが非アクティブ）ならスキップ
+			if (!battleCharacter || !eventCharacter) return;
+			if (!eventCharacter->GetGhostBody() || !eventCharacter->GetGhostBody()->IsActive()) return;
 
 			Vector3 playerPos = battleCharacter->transform.position;
 			Vector3 enemyPos = eventCharacter->transform.position;
@@ -270,7 +298,20 @@ namespace app
 			else
 			{
 				/** 回避中はノックバックを受けない */
-				if (battleCharacter->GetStateMachine()->IsAvoiding()) return;
+				if (battleCharacter->GetStateMachine()->IsAvoiding())
+				{
+					// 無敵中はジャスト回避を発動しない（回避自体は通す）
+					const bool invincible = battleCharacter->GetStateMachine()->IsInvincible();
+					// ジャスト回避判定：ウィンドウ内に敵の攻撃ゴーストが当たった
+					if (!invincible
+						&& battleCharacter->GetStateMachine()->IsJustDodgeWindow()
+						&& colliedEnemyBody != nullptr
+						&& colliedEnemyBody != eventCharacter->GetGhostBody())
+					{
+						battleCharacter->GetStateMachine()->OnJustDodge();
+					}
+					return;
+				}
 
 				/** エネミーからプレイヤーに向かうベクトル */
 				Vector3 toPlayer = playerPos - enemyPos;
@@ -285,6 +326,13 @@ namespace app
 				}
 				else
 				{
+					// [前フェーズ] 無敵中でなければジャスト回避前ウィンドウを開く
+					if (colliedEnemyBody != nullptr
+						&& colliedEnemyBody != eventCharacter->GetGhostBody()
+						&& !battleCharacter->GetStateMachine()->IsInvincible())
+					{
+						battleCharacter->GetStateMachine()->StartPreJustDodgeWindow();
+					}
 					battleCharacter->GetStateMachine()->OnKnockBack();
 					// 攻撃ゴーストが実際に当たった時だけHPダメージを通知
 					if (colliedEnemyBody != nullptr && colliedEnemyBody != eventCharacter->GetGhostBody())

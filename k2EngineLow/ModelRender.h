@@ -202,6 +202,14 @@ namespace nsK2EngineLow
 		{
 			m_animationSpeed = animationSpeed;
 		}
+		void SetAnimationLoopStartTime(float time)
+		{
+			m_animation.SetLoopStartTime(time);
+		}
+		void SetAnimationCurrentTime(float time)
+		{
+			m_animation.SetCurrentTime(time);
+		}
 		//アニメーションイベント
 		void AddAnimationEvent(AnimationEventListener eventListener)
 		{
