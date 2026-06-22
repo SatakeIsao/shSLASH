@@ -265,6 +265,8 @@ namespace app
 			SlashThirdCharacterState(IStateMachine* owner) : ComboAttackCharacterState(owner) {}
 			~SlashThirdCharacterState() {}
 
+			void Exit() override;
+
 		protected:
 			ComboParam GetComboParam() const override
 			{

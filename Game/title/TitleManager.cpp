@@ -26,6 +26,11 @@ namespace app
             return app::core::TitleMenuManager::Get().IsGameStartDecided();
         }
 
+        bool TitleManager::IsTutorialDecided() const
+        {
+            return app::core::TitleMenuManager::Get().IsTutorialDecided();
+        }
+
         void TitleManager::Start()
         {
             titleMenuManagerObject_ = NewGO<app::core::TitleMenuManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));

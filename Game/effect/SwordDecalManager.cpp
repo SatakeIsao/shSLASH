@@ -284,6 +284,15 @@ namespace app
                 }
 
                 entry.model->Update();
+            }
+        }
+
+
+        void SwordDecalManager::Render(RenderContext& rc)
+        {
+            for (int i = 0; i < sword_decal::MAX_DECALS; ++i) {
+                DecalInstance& entry = pool_[i];
+                if (!entry.isActive) continue;
                 g_renderingEngine->AddRenderObject(entry.model.get());
             }
         }

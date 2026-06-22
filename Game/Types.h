@@ -17,6 +17,8 @@ enum class ObjectPriority : uint8_t
 	PlayerUI = 100,
 	SequenceUI = 190,
 	Pause = 200,
+	TutorialPauseHint = 205,
+	ConfirmUI = 210,
 	Fade = 250,
 };
 

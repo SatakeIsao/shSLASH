@@ -1,0 +1,39 @@
+{
+    "canvas": {
+        "elements": [
+            {
+                "type": "UIIcon",
+                "name": "SkipHint_Arrow",
+                "asset": "Assets/ui/pause/tutorial/leftkey.DDS",
+                "width": 60,
+                "height": 60,
+                "position": [75, -410, 0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "SkipHint_Skip",
+                "asset": "Assets/ui/pause/tutorial/skip.DDS",
+                "width": 250,
+                "height": 250,
+                "position": [145, -415, 0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            },
+            {
+                "type": "UIIcon",
+                "name": "SkipHint_Tutorial",
+                "asset": "Assets/ui/pause/tutorial/tutorial.DDS",
+                "width": 250,
+                "height": 250,
+                "position": [265, -415, 0],
+                "scale": [0.9, 0.9, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            }
+        ]
+    }
+}

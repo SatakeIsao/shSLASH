@@ -72,7 +72,7 @@ namespace app
 
 		void EventCharacter::Render(RenderContext& rc)
 		{
-			//SuperClass::Render(rc);
+			SuperClass::Render(rc);
 		}
 
 
@@ -149,12 +149,9 @@ namespace app
 
 		void StoneEventCharacter::Update()
 		{
-			if (isPause_) { return; }
-
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
-			stateMachine_->Update();
 
-			// --- フェード更新 ---
+			// フェード更新はポーズ中でも行う（スポーン直後に凍結されても正しく表示されるよう）
 			if (isFadingIn_)
 			{
 				fadeTimer_ += deltaTime;
@@ -171,7 +168,27 @@ namespace app
 				cbData_.fadeRatio = 1.0f - fadeTimer_ / DEATH_FADE_DURATION;
 				if (cbData_.fadeRatio < 0.0f) cbData_.fadeRatio = 0.0f;
 			}
-			// ------------------
+
+			if (isPause_)
+			{
+				if (stateMachine_->IsDeadState())
+				{
+					// 死亡フラグが立ったら凍結を解除して通常の死亡処理へ移行する
+					isPause_ = false;
+				}
+				else
+				{
+					// AI・移動はスキップしてアニメーションのみ更新（Idle再生継続）
+					SuperClass::Update();
+					// ゴーストボディを正しい位置に維持する（SetActiveされても位置は自動更新されないため）
+					Vector3 centerPos = transform.position;
+					centerPos.y += status_->GetRadius() * 2.0f;
+					ghostBody_->SetPosition(centerPos);
+					return;
+				}
+			}
+
+			stateMachine_->Update();
 
 			Vector3 nextPosition = stateMachine_->transform.position;
 
@@ -296,12 +313,9 @@ namespace app
 
 		void MushroomEventCharacter::Update()
 		{
-			if (isPause_) { return; }
-
 			const float deltaTime = g_gameTime->GetFrameDeltaTime();
-			stateMachine_->Update();
 
-			// --- フェード更新 ---
+			// フェード更新はポーズ中でも行う（スポーン直後に凍結されても正しく表示されるよう）
 			if (isFadingIn_)
 			{
 				fadeTimer_ += deltaTime;
@@ -318,7 +332,27 @@ namespace app
 				cbData_.fadeRatio = 1.0f - fadeTimer_ / DEATH_FADE_DURATION;
 				if (cbData_.fadeRatio < 0.0f) cbData_.fadeRatio = 0.0f;
 			}
-			// ------------------
+
+			if (isPause_)
+			{
+				if (stateMachine_->IsDeadState())
+				{
+					// 死亡フラグが立ったら凍結を解除して通常の死亡処理へ移行する
+					isPause_ = false;
+				}
+				else
+				{
+					// AI・移動はスキップしてアニメーションのみ更新（Idle再生継続）
+					SuperClass::Update();
+					// ゴーストボディを正しい位置に維持する（SetActiveされても位置は自動更新されないため）
+					Vector3 centerPos = transform.position;
+					centerPos.y += status_->GetRadius() * 2.0f;
+					ghostBody_->SetPosition(centerPos);
+					return;
+				}
+			}
+
+			stateMachine_->Update();
 
 			Vector3 nextPosition = stateMachine_->transform.position;
 

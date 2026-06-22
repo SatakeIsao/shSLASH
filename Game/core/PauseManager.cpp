@@ -148,7 +148,7 @@ namespace app
             case PauseState::enPause:
                 if (pauseLayout_) pauseLayout_->Update();
 
-                if (g_pad[0]->IsTrigger(enButtonY))
+                if (canOpenOption_ && g_pad[0]->IsTrigger(enButtonY))
                 {
                     app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
                     if (pause) pause->OnClose();
@@ -160,6 +160,15 @@ namespace app
             case PauseState::enOption:
                 if (layout_) layout_->Update();
 
+                // タイトル/リトライ決定をここでラッチする
+                if (!returnToTitlePending_ && menu && menu->IsReturnTitleDecided())
+                {
+                    returnToTitlePending_ = true;
+                }
+                if (!retryPending_ && menu && menu->IsRetryDecided())
+                {
+                    retryPending_ = true;
+                }
 
                 // Bボタンでメインのポーズメニューへ
                 if (g_pad[0]->IsTrigger(enButtonB))
@@ -175,16 +184,17 @@ namespace app
 
         bool PauseManager::IsReturnToTitleRequested() const
         {
-            if (!layout_) return false;
-            auto* menu = dynamic_cast<app::ui::OptionMenu*>(layout_->GetMenu());
-            return menu ? menu->IsReturnTitleDecided() : false;
+            return returnToTitlePending_;
         }
 
         bool PauseManager::IsRetryRequested() const
         {
-            if (!layout_) return false;
-            auto* menu = dynamic_cast<app::ui::OptionMenu*>(layout_->GetMenu());
-            return menu ? menu->IsRetryDecided() : false;
+            return retryPending_;
+        }
+
+        bool PauseManager::IsInPauseMenu() const
+        {
+            return currentState_ == PauseState::enPause;
         }
 
         void PauseManager::Render(RenderContext& rc)

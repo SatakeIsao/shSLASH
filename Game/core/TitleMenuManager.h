@@ -27,6 +27,7 @@ namespace app {
             bool isPlayingAnimation_ = false;
 
             bool isGameStartDecided_ = false;
+            bool isTutorialDecided_ = false;
 
         private:
             TitleMenuManager();
@@ -46,6 +47,7 @@ namespace app {
 
         public:
             bool IsGameStartDecided() const { return isGameStartDecided_; }
+            bool IsTutorialDecided() const { return isTutorialDecided_; }
 
             static void Initialize() {
                 if (instance_ == nullptr) instance_ = new TitleMenuManager();

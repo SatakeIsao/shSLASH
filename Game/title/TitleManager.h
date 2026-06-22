@@ -25,6 +25,7 @@ namespace app
             void Update();
 
             bool IsGameStartDecided() const;
+            bool IsTutorialDecided() const;
 
         public:
             static void Initialize();

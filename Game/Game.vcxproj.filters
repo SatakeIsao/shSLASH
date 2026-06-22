@@ -110,6 +110,12 @@
     <ClCompile Include="scene\TitleScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
+    <ClCompile Include="scene\TutorialConfirmObject.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\TutorialScene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
     <ClCompile Include="collision\PhysicalBody.cpp">
       <Filter>collision</Filter>
     </ClCompile>
@@ -186,6 +192,18 @@
     <ClCompile Include="core\PauseManagerObject.cpp" />
     <ClCompile Include="ui\BattleSequence.cpp" />
     <ClCompile Include="ui\InGameUI.cpp" />
+    <ClCompile Include="ui\TutorialUIObject.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\TutorialPauseHintObject.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\TutorialReturnConfirmMenu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\TutorialMessageMenu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
     <ClCompile Include="actor\EventCharacterSpawnManager.cpp" />
     <ClCompile Include="ui\PauseMenu.cpp" />
     <ClCompile Include="ui\ReturnToTitleMenu.cpp" />
@@ -296,6 +314,12 @@
     <ClInclude Include="scene\TitleScene.h">
       <Filter>scene</Filter>
     </ClInclude>
+    <ClInclude Include="scene\TutorialConfirmObject.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\TutorialScene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
     <ClInclude Include="collision\PhysicalBody.h">
       <Filter>collision</Filter>
     </ClInclude>
@@ -383,6 +407,18 @@
     <ClInclude Include="core\PauseManagerObject.h" />
     <ClInclude Include="ui\BattleSequence.h" />
     <ClInclude Include="ui\InGameUI.h" />
+    <ClInclude Include="ui\TutorialUIObject.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\TutorialPauseHintObject.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\TutorialReturnConfirmMenu.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\TutorialMessageMenu.h">
+      <Filter>ui</Filter>
+    </ClInclude>
     <ClInclude Include="actor\EventCharacterSpawnManager.h" />
     <ClInclude Include="ui\PauseMenu.h" />
     <ClInclude Include="ui\ReturnToTitleMenu.h" />

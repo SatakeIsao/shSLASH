@@ -91,6 +91,21 @@ namespace app
 
 			void SetPhaseUI(PhaseUI* phaseUI) { phaseUI_ = phaseUI; }
 
+			/** チュートリアル用：自動スポーンを停止する */
+			void ResetPendingSpawn() { pendingSpawnCount_ = 0; pendingSpawnTimer_ = 0.0f; }
+
+			/** チュートリアル用：指定の種類・座標・向きに1体スポーンする（死亡時に再スポーンしない） */
+			void SpawnFixed(EnemyType type, Vector3 position, Quaternion rotation = Quaternion::Identity);
+
+			/** チュートリアルモードON/OFF（ONにするとUpdate内の自動スポーンを全停止） */
+			void SetTutorialMode(bool v) { isTutorialMode_ = v; }
+
+			/** チュートリアル中に敵を凍結/解除する（全アクティブ敵に即時反映） */
+			void SetTutorialEnemyFrozen(bool frozen);
+
+			/** 現在アクティブな敵の数を返す */
+			int GetActiveEnemyCount() const { return static_cast<int>(activeEntries_.size()); }
+
 			/** プレイヤーレベルが上がったときに呼ばれる */
 			void OnPlayerLevelUp(int newLevel);
 
@@ -133,6 +148,8 @@ namespace app
 			float pendingSpawnTimer_ = 1.0f;                          // 初期・追加スポーンのインターバルタイマー（初回は即スポーン）
 			float spawnPosY_ = 0.0f;									  // スポーンY座標
 			bool isPause_ = false;
+			bool isTutorialMode_ = false;
+			bool tutorialEnemyFrozen_ = false;
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック

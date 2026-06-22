@@ -105,15 +105,28 @@ namespace app {
                         isGameStartDecided_ = true;
                     }
 
+                    else if (subMenu && subMenu->IsTutorialDecided()) {
+                        isTutorialDecided_ = true;
+                    }
+
                     else if (subMenu && subMenu->IsSystemDecided()) {
                         app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
 
-                        subMenu->ResetSystemDecided(); // フラグを元に戻す
-                        subMenu->OnClose();            // メインメニューを閉じる演出
+                        subMenu->ResetSystemDecided();
+                        subMenu->OnClose();
 
-                        // マネージャー側で正しく遷移とアニメーションのフラグを立てる
                         nextState_ = TitleMenuState::enOptionMenu;
-                        isPlayingAnimation_ = true; // ★これがtrueになることで、OptionMenuのOnOpen()が呼ばれて画面に表示される！
+                        isPlayingAnimation_ = true;
+                    }
+
+                    else if (subMenu && subMenu->IsTitleDecided()) {
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonReturn));
+
+                        subMenu->ResetTitleDecided();
+                        subMenu->OnClose();
+
+                        nextState_ = TitleMenuState::enPressAnyButton;
+                        isPlayingAnimation_ = true;
                     }
 
                     if (g_pad[0]->IsTrigger(enButtonB)) {

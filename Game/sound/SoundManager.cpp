@@ -159,6 +159,15 @@ namespace app
 	}
 
 
+	void SoundManager::StopAllSE()
+	{
+		for (auto& it : m_seList) {
+			if (it.second) it.second->Stop();
+		}
+		m_seList.clear();
+	}
+
+
 	void SoundManager::SetVolumeSE(const SoundHandle handle, float volume)
 	{
 		auto* se = FindSE(handle);

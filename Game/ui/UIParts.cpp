@@ -157,11 +157,13 @@ namespace app
 			fontRender_.SetPosition(transform.position);
 			fontRender_.SetScale(transform.scale.x);
 			fontRender_.SetColor(color);
+			fontRender_.SetPivot(pivot);
 		}
 
 
 		void UIText::Render(RenderContext& rc)
 		{
+			if (!isDraw) return;
 			fontRender_.Draw(rc);
 		}
 

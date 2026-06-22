@@ -45,6 +45,12 @@ namespace app
             bool isVolume_ = false;
             /** ポーズメニューを開くことができるか */
             bool canPause_ = true;
+            /** オプション画面を開くことができるか */
+            bool canOpenOption_ = true;
+            /** タイトルに戻るリクエストが確定したか（ラッチ式） */
+            bool returnToTitlePending_ = false;
+            /** リトライリクエストが確定したか（ラッチ式） */
+            bool retryPending_ = false;
 
         private:
             PauseManager();
@@ -69,8 +75,14 @@ namespace app
             void SetCanPause(bool canPause) { canPause_ = canPause; }
             bool CanPause() const { return canPause_; }
 
+            /** 外部からオプション画面への遷移の許可/禁止を設定 */
+            void SetCanOpenOption(bool can) { canOpenOption_ = can; }
+
             bool IsReturnToTitleRequested() const;
             bool IsRetryRequested() const;
+
+            /** ポーズメニュー画面（設定画面ではない）が開いているか */
+            bool IsInPauseMenu() const;
 
             /**
              * シングルトン用

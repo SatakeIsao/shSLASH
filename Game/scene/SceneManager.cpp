@@ -5,6 +5,7 @@
 #include "TitleScene.h"
 #include "BootScene.h"
 #include "BattleScene.h"
+#include "TutorialScene.h"
 #include "GameOverScene.h"
 #include "ResultScene.h"
 
@@ -24,6 +25,7 @@ SceneManager::SceneManager()
 #endif
 
 	AddSceneMap<BattleScene>();
+	AddSceneMap<TutorialScene>();
 	AddSceneMap<GameOverScene>();
 	AddSceneMap<ResultScene>();
 }

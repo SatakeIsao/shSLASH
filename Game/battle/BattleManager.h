@@ -150,6 +150,23 @@ namespace app
             bool hasPlayedPunchEffect_ = false;
             bool deadTest_ = false;
             bool isPause_ = false;
+            bool isTutorialMode_ = false;
+            bool tutorialEnemyMoveEnabled_ = false;
+            bool tutorialNeedsSpawn_        = false;
+            bool tutorialRespawnEnabled_    = false;
+            Vector3 tutorialStoneSpawnPos_    = Vector3::Zero;
+            Vector3 tutorialMushroomSpawnPos_ = Vector3::Zero;
+            Quaternion tutorialEnemySpawnRot_;
+            bool playerInputEnabled_          = true;
+            bool suppressChargeAttackInput_   = false;
+            bool comboAttackJustCompleted_    = false;
+            bool chargeAttackJustCompleted_   = false;
+            bool guardJustSucceeded_          = false;
+            float guardSuccessCooldown_       = 0.0f;
+            bool avoidJustSucceeded_          = false;
+            bool tutorialFreeze_              = false;
+            bool tutorialNoDamage_            = false;
+            bool tutorialLevelUpNotified_     = false;
 
             /** アニメーション初期化を待ってからシーケンスを起動するための遅延 */
             float battleSequenceStartTimer_ = 0.1f;
@@ -196,6 +213,8 @@ namespace app
             void Start();
             /** 更新処理 */
             void Update();
+            /** 描画処理 */
+            void Render(RenderContext& rc);
 
 
             void AddNotify(INotify* notify)
@@ -232,6 +251,71 @@ namespace app
             void SetPause(bool isPause);
             void SetLevelUpUIObject(app::ui::LevelUpUIObject* obj) { levelUpObject_ = obj; }
             bool IsTimeUpFinished() const;
+
+            /** チュートリアルモードを有効にする（Start()の前に呼ぶこと） */
+            void SetTutorialMode(bool isTutorial) { isTutorialMode_ = isTutorial; }
+            /** オープニングシーケンス（3/2/1/START）が完了したか */
+            bool IsOpeningSequenceDone() const;
+            /** チュートリアル中の敵の動きを許可/停止する */
+            void SetTutorialEnemyMoveEnabled(bool enabled);
+            /** プレイヤーの操作入力を許可/停止する */
+            void SetPlayerInputEnabled(bool enabled) { playerInputEnabled_ = enabled; }
+            bool IsPlayerInputEnabled() const { return playerInputEnabled_; }
+            /** チュートリアルメッセージ進行中に溜め攻撃入力を抑制する */
+            void SetSuppressChargeAttackInput(bool v) { suppressChargeAttackInput_ = v; }
+            bool IsSuppressChargeAttackInput() const { return suppressChargeAttackInput_; }
+            /** チュートリアル用: コンボ攻撃（3連撃完了）通知 */
+            void NotifyComboAttackCompleted()  { comboAttackJustCompleted_  = true; }
+            bool CheckAndConsumeComboAttackCompleted()
+            {
+                if (!comboAttackJustCompleted_) return false;
+                comboAttackJustCompleted_ = false;
+                return true;
+            }
+            /** チュートリアル用: 溜め攻撃完了通知 */
+            void NotifyChargeAttackCompleted() { chargeAttackJustCompleted_ = true; }
+            bool CheckAndConsumeChargeAttackCompleted()
+            {
+                if (!chargeAttackJustCompleted_) return false;
+                chargeAttackJustCompleted_ = false;
+                return true;
+            }
+            /** チュートリアル用: ガード成功通知 */
+            void NotifyGuardSucceeded() { guardJustSucceeded_ = true; }
+            bool CheckAndConsumeGuardSucceeded()
+            {
+                if (!guardJustSucceeded_) return false;
+                guardJustSucceeded_ = false;
+                return true;
+            }
+            /** チュートリアル用: 回避実行通知 */
+            void NotifyAvoidSucceeded() { avoidJustSucceeded_ = true; }
+            bool CheckAndConsumeAvoidSucceeded()
+            {
+                if (!avoidJustSucceeded_) return false;
+                avoidJustSucceeded_ = false;
+                return true;
+            }
+            /** チュートリアル用: レベルアップ通知 */
+            void NotifyTutorialLevelUp() { tutorialLevelUpNotified_ = true; }
+            bool CheckAndConsumeTutorialLevelUp()
+            {
+                if (!tutorialLevelUpNotified_) return false;
+                tutorialLevelUpNotified_ = false;
+                return true;
+            }
+            /** チュートリアル用: 特定メッセージ表示中にゲームを一時停止する */
+            void SetTutorialFreeze(bool freeze) { tutorialFreeze_ = freeze; }
+            /** チュートリアル用: trueの間はHP減算とOnDeadをスキップする（アニメーション・ダメージポップは出る） */
+            void SetTutorialNoDamage(bool v) { tutorialNoDamage_ = v; }
+            bool IsTutorialNoDamage() const { return tutorialNoDamage_; }
+            /** チュートリアル用: 敵全滅時のリスポーンを有効/無効にする */
+            void SetTutorialRespawnEnabled(bool enabled) { tutorialRespawnEnabled_ = enabled; }
+            bool IsTutorialRespawnEnabled() const { return tutorialRespawnEnabled_; }
+            /** チュートリアルの全敵が倒されたか（スポーン後にカウントが0になった時 true） */
+            bool IsTutorialAllEnemiesDefeated() const;
+            /** チュートリアル中の現在の生存敵数を返す */
+            int GetTutorialActiveEnemyCount() const;
 
         private:
             int CalcDamage(const app::actor::BattleCharacter* attacker,

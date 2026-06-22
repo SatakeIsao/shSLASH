@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "TitleScene.h"
 #include "BattleScene.h"
+#include "TutorialScene.h"
 #include "title/TitleManager.h"
 #include "sound/SoundManager.h"
 
@@ -51,6 +52,12 @@ bool TitleScene::RequestScene(uint32_t& id, float& waitTime)
 		return true;
 	}
 
+	if (app::title::TitleManager::Get().IsTutorialDecided())
+	{
+		id = TutorialScene::ID();
+		waitTime = 1.0f;
+		return true;
+	}
 
 	return false;
 }

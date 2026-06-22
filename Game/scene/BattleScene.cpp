@@ -7,6 +7,7 @@
 #include "core/PauseManager.h"
 #include "ui/SoundOptionMenu.h"
 #include "ui/GameOverSequence.h"
+#include "sound/SoundManager.h"
 
 namespace app
 {
@@ -26,6 +27,7 @@ BattleScene::BattleScene()
 
 BattleScene::~BattleScene()
 {
+	app::SoundManager::Get().StopAllSE();
 	app::battle::BattleManager::Finalize();
 }
 
@@ -55,6 +57,10 @@ void BattleScene::Update()
 
 void BattleScene::Render(RenderContext& rc)
 {
+	if (app::battle::BattleManager::IsAvailable())
+	{
+		app::battle::BattleManager::Get().Render(rc);
+	}
 	if (isGameOver_) {
 		gameOverSequence_->Render(rc);
 	}
@@ -77,20 +83,21 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 		return false;
 	}
 
-	// ポーズメニューからのタイトルへ戻るリクエスト
-	if (app::core::PauseManager::Get().IsReturnToTitleRequested())
+	if (app::core::PauseManager::IsAvailable())
 	{
-		id = TitleScene::ID(); // タイトルシーンのIDをセット
-		waitTime = 1.0f;       // フェード時間
-		return true;           // 遷移を許可
-	}
-
-	// ポーズメニューからのリトライリクエスト
-	if (app::core::PauseManager::Get().IsRetryRequested())
-	{
-		id = BattleScene::ID(); //BattleSceneのIDをセットしてリロード
-		waitTime = 1.0f;
-		return true;
+		auto& pause = app::core::PauseManager::Get();
+		if (pause.IsReturnToTitleRequested())
+		{
+			id = TitleScene::ID();
+			waitTime = 1.0f;
+			return true;
+		}
+		if (pause.IsRetryRequested())
+		{
+			id = BattleScene::ID();
+			waitTime = 1.0f;
+			return true;
+		}
 	}
 
 	/** Playerのダウンモーションが再生終了したら */
