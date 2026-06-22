@@ -47,6 +47,8 @@ namespace app
             /** OnSpawn() に渡せないので事前にセット */
             int     pendingDamage_ = 0;
             Vector3 pendingWorldPos_ = Vector3::Zero;
+            bool    pendingIsCritical_ = false;
+            bool    isCritical_ = false;
             /** 時間切れ時に自分を Release するためのプール参照 */
             class DamagePopPool* ownerPool_ = nullptr;
             /** フェード・スケールアニメーションシーケンス */
@@ -56,6 +58,7 @@ namespace app
             /** 定数 */
             static constexpr char  LAYOUT_PATH[] = "Assets/ui/layout/damagePopLayout.json";
             static constexpr char  DIGIT_UI_NAME[] = "damageNumbers";
+            static constexpr char  CRITICAL_DIGIT_UI_NAME[] = "criticalDamageNumbers";
             /** 頭上オフセット */
             static constexpr float WORLD_Y_OFFSET = 90.0f;
             /** 浮上速度（スクリーンpx/秒） */
@@ -92,10 +95,11 @@ namespace app
             /** Acquire() の後に呼ぶ。UIDigit に値を反映する */
             void ApplySpawnParams();
 
-            void SetSpawnParams(int damage, const Vector3& worldPos)
+            void SetSpawnParams(int damage, const Vector3& worldPos, bool isCritical = false)
             {
                 pendingDamage_ = max(1, min(damage, 999));
                 pendingWorldPos_ = worldPos;
+                pendingIsCritical_ = isCritical;
             }
 
             void SetOwnerPool(DamagePopPool* pool) { ownerPool_ = pool; }
@@ -155,7 +159,7 @@ namespace app
             // ── IDamagePopListener ─────────────────────────────
 
             /** 空きスロットがなければ何もしない（最大 POOL_SIZE 件まで同時表示） */
-            void OnDamageDealt(int damage, const Vector3& worldPos) override;
+            void OnDamageDealt(int damage, const Vector3& worldPos, bool isCritical = false) override;
             /** IRecyclable: 時間切れになった DamagePopUIObject をプールに返す */
             void Recycle(DamagePopUIObject* obj) override { pool_.Release(obj); }
         };

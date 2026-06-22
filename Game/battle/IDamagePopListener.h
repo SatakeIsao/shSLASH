@@ -15,7 +15,7 @@ namespace app
         struct IDamagePopListener
         {
             virtual ~IDamagePopListener() {}
-            virtual void OnDamageDealt(int damage, const Vector3& worldPos) = 0;
+            virtual void OnDamageDealt(int damage, const Vector3& worldPos, bool isCritical = false) = 0;
         };
     }
 }
