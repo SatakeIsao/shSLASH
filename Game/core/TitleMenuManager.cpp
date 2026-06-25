@@ -119,14 +119,11 @@ namespace app {
                         isPlayingAnimation_ = true;
                     }
 
-                    else if (subMenu && subMenu->IsTitleDecided()) {
-                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonReturn));
+                    else if (subMenu && subMenu->IsExitDecided()) {
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
 
-                        subMenu->ResetTitleDecided();
-                        subMenu->OnClose();
-
-                        nextState_ = TitleMenuState::enPressAnyButton;
-                        isPlayingAnimation_ = true;
+                        subMenu->ResetExitDecided();
+                        PostQuitMessage(0);
                     }
 
                     if (g_pad[0]->IsTrigger(enButtonB)) {

@@ -38,10 +38,10 @@ namespace app {
             }
 
             if (highlight_) {
-                if (currentIndex_ == 0) highlight_->transform.localPosition.y = -185.0f;
-                else if (currentIndex_ == 1) highlight_->transform.localPosition.y = -265.0f;
-                else if (currentIndex_ == 2) highlight_->transform.localPosition.y = -345.0f;
-                else if (currentIndex_ == 3) highlight_->transform.localPosition.y = -425.0f;
+                if (currentIndex_ == 0) highlight_->transform.localPosition.y = -125.0f;
+                else if (currentIndex_ == 1) highlight_->transform.localPosition.y = -205.0f;
+                else if (currentIndex_ == 2) highlight_->transform.localPosition.y = -285.0f;
+                else if (currentIndex_ == 3) highlight_->transform.localPosition.y = -365.0f;
             }
 
             if (g_pad[0]->IsTrigger(enButtonA)) {
@@ -56,8 +56,8 @@ namespace app {
                 case 2: // SYSTEM
                     isSystemDecided_ = true;
                     break;
-                case 3: // TITLE
-                    isTitleDecided_ = true;
+                case 3: // EXIT
+                    isExitDecided_ = true;
                     break;
                 }
             }
