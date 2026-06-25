@@ -12,12 +12,12 @@ namespace app
 
 		TitleMenuManagerObject::~TitleMenuManagerObject()
 		{
-			TitleMenuManager::Get().Finalize();
+			TitleMenuManager::Finalize();
 		}
 
 		bool TitleMenuManagerObject::Start()
 		{
-			TitleMenuManager::Get().Initialize();
+			TitleMenuManager::Initialize();
 
 			return true;
 		}
