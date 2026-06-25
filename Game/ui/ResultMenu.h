@@ -71,6 +71,7 @@ namespace app {
             int shakingDigitIndex_ = -1;        // 今どの数字が揺れているか
             Vector3 initialDigitPositions_[5];  // 5つの数字の「元の座標」を記憶
             Vector3 initialBeginnerRankPos_;    // Beginner ランクアイコンの初期座標
+            bool rankSEPlayed_ = false;         // ランクSEを再生済みかどうか
 
         };
     }
