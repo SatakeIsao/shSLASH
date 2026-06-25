@@ -29,18 +29,18 @@ BattleScene::~BattleScene()
 {
 	app::SoundManager::Get().StopAllSE();
 	app::battle::BattleManager::Finalize();
+	DeleteGO(gameOverSequence_);
 }
 
 
 bool BattleScene::Start()
 {
 	g_sceneLight->SetBattleLighting();
-
-	app::battle::BattleManager::Initialize();
+	if (!app::battle::BattleManager::IsAvailable()) {
+		app::battle::BattleManager::Initialize();
+	}
 	app::battle::BattleManager::Get().Start();
-
-	gameOverSequence_ = std::make_unique<app::ui::GameOverSequence>();
-
+	gameOverSequence_ = NewGO<app::ui::GameOverSequence>(static_cast<uint8_t>(ObjectPriority::GameOverUI));
 	return true;
 }
 
@@ -49,8 +49,11 @@ void BattleScene::Update()
 {
 	app::battle::BattleManager::Get().Update();
 
-	if (isGameOver_) {
-		gameOverSequence_->Update();
+	if (!isGameOver_ && app::battle::BattleManager::Get().IsPlayerDead())
+	{
+		isGameOver_ = true;
+		app::battle::BattleManager::Get().SetGameOverFreeze(true);
+		if (gameOverSequence_) gameOverSequence_->StartSequence();
 	}
 }
 
@@ -60,9 +63,6 @@ void BattleScene::Render(RenderContext& rc)
 	if (app::battle::BattleManager::IsAvailable())
 	{
 		app::battle::BattleManager::Get().Render(rc);
-	}
-	if (isGameOver_) {
-		gameOverSequence_->Render(rc);
 	}
 }
 
@@ -74,11 +74,25 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 
 	if (isGameOver_)
 	{
-		if (gameOverSequence_ && gameOverSequence_->IsReturnTitleDecided())
+		if (gameOverSequence_)
 		{
-			id = TitleScene::ID();
-			waitTime = 1.0f;
-			return true;
+			if (gameOverSequence_->IsRetryDecided())
+			{
+				id = BattleScene::ID();
+				waitTime = 1.0f;
+				return true;
+			}
+			if (gameOverSequence_->IsReturnTitleDecided())
+			{
+				id = TitleScene::ID();
+				waitTime = 1.0f;
+				return true;
+			}
+			if (gameOverSequence_->IsExitDecided())
+			{
+				PostQuitMessage(0);
+				return false;
+			}
 		}
 		return false;
 	}
@@ -100,19 +114,19 @@ bool BattleScene::RequestScene(uint32_t& id, float& waitTime)
 		}
 	}
 
-	/** Playerのダウンモーションが再生終了したら */
+#if defined(APP_DEBUG)
+	/** デバッグ: LB2+Downでゲームオーバーシーケンスを強制再生 */
 	if (g_pad[0]->IsPress(enButtonLB2)
 		&& g_pad[0]->IsTrigger(enButtonDown))
-		//if (app::battle::BattleManager::Get().GetDeadTest())
 	{
 		isGameOver_ = true;
+		app::battle::BattleManager::Get().SetGameOverFreeze(true);
 		if (gameOverSequence_) {
 			gameOverSequence_->StartSequence();
 		}
-		/*id = GameOverScene::ID();
-		waitTime = 3.0f;*/
 		return false;
 	}
+#endif // APP_DEBUG
 
 	/** タイマーが0になったら */
 	if (app::battle::BattleManager::Get().IsTimeUpFinished())

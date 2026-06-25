@@ -19,6 +19,7 @@ enum class ObjectPriority : uint8_t
 	Pause = 200,
 	TutorialPauseHint = 205,
 	ConfirmUI = 210,
+	GameOverUI = 230,
 	Fade = 250,
 };
 
