@@ -62,10 +62,21 @@ namespace nsK2EngineLow {
         m_cbData.eyePos         = Vector4(pos.x, pos.y, pos.z, 1.0f);
         m_cbData.viewForward    = Vector4(fwd.x, fwd.y, fwd.z, 0.0f);
         m_cbData.playerWorldPos = Vector4(m_playerWorldPos.x, m_playerWorldPos.y, m_playerWorldPos.z, 1.0f);
-        m_cbData.nearBlur       = NEAR_BLUR;
-        m_cbData.farBlur        = FAR_BLUR;
         m_cbData.strength       = m_currentStrength;
-        m_cbData.playerRadius   = PLAYER_RADIUS;
+        if (m_forceFullBlur)
+        {
+            // 全画素を最大ブラーにする：playerRadius=0で保護ゾームなし、
+            // nearBlur=farBlur=0でdepthAlpha=1.0（depth>0.001で飽和）
+            m_cbData.nearBlur     = 0.0f;
+            m_cbData.farBlur      = 0.0f;
+            m_cbData.playerRadius = 0.0f;
+        }
+        else
+        {
+            m_cbData.nearBlur     = NEAR_BLUR;
+            m_cbData.farBlur      = FAR_BLUR;
+            m_cbData.playerRadius = PLAYER_RADIUS;
+        }
 
         m_dofSprite.GetExpandConstantBufferGPU().CopyToVRAM(m_cbData);
 

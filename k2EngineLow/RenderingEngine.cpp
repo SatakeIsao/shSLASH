@@ -280,6 +280,16 @@ namespace nsK2EngineLow {
 		spriteInitData.m_colorBufferFormat[0] = m_2DRenderTarget.GetColorBufferFormat();
 
 		m_mainSprite.Init(spriteInitData);
+
+		// pre-blur 合成用スプライト（2DRT→mainRT、アルファブレンド）
+		SpriteInitData preBlurInitData;
+		preBlurInitData.m_textures[0]       = &m_2DRenderTarget.GetRenderTargetTexture();
+		preBlurInitData.m_width             = m_mainRenderingTarget.GetWidth();
+		preBlurInitData.m_height            = m_mainRenderingTarget.GetHeight();
+		preBlurInitData.m_fxFilePath        = "Assets/Shader/sprite.fx";
+		preBlurInitData.m_alphaBlendMode    = AlphaBlendMode_Trans;
+		preBlurInitData.m_colorBufferFormat[0] = m_mainRenderingTarget.GetColorBufferFormat();
+		m_preBlurCompositeSprite.Init(preBlurInitData);
 	}
 
 	void RenderingEngine::Execute(RenderContext& rc)
@@ -390,23 +400,21 @@ namespace nsK2EngineLow {
 
 	void RenderingEngine::SpriteFontDraw(RenderContext& rc)
 	{
-		//2D用のターゲットが使えるようになるまで待つ
+		// pre-blur スプライト（HPバーなど）を 2D RT に描画してからメイン RT に合成する
 		rc.WaitUntilToPossibleSetRenderTarget(m_2DRenderTarget);
-		//ターゲットセット
 		rc.SetRenderTargetAndViewport(m_2DRenderTarget);
-		//ターゲットのクリア
 		rc.ClearRenderTargetView(m_2DRenderTarget);
 
-		m_mainSprite.Draw(rc);
+		for (auto* obj : m_preBlurSpriteObjects)
+			if (obj) obj->OnRender2D(rc);
+		m_preBlurSpriteObjects.clear();
 
-		m_2DSprite.Draw(rc);
-
-		//描画されるまで待つ
 		rc.WaitUntilFinishDrawingToRenderTarget(m_2DRenderTarget);
-		//ターゲットをメインに戻す
+
+		// 2D RT の内容をメイン RT にアルファブレンドで合成（DoF より前）
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderingTarget);
 		rc.SetRenderTargetAndViewport(m_mainRenderingTarget);
-		//メインレンダリングターゲットへの書き込み終了待ち
+		m_preBlurCompositeSprite.Draw(rc);
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderingTarget);
 	}
 

@@ -103,6 +103,9 @@ namespace app
 			/** チュートリアル中に敵を凍結/解除する（全アクティブ敵に即時反映） */
 			void SetTutorialEnemyFrozen(bool frozen);
 
+			/** 全アクティブ敵HPバーのブラー前描画フラグを一括設定する */
+			void SetAllHpBarsPreBlurRender(bool v);
+
 			/** 現在アクティブな敵の数を返す */
 			int GetActiveEnemyCount() const { return static_cast<int>(activeEntries_.size()); }
 

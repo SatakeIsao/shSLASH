@@ -32,6 +32,8 @@ namespace nsK2EngineLow {
             m_playerWorldPos = pos;
         }
 
+        void SetForceFullBlur(bool v) { m_forceFullBlur = v; }
+
     private:
         GaussianBlur  m_blur;
         Sprite        m_dofSprite;
@@ -40,6 +42,7 @@ namespace nsK2EngineLow {
         float   m_currentStrength = 0.0f;
         float   m_targetStrength  = 0.0f;
         Vector3 m_playerWorldPos;
+        bool    m_forceFullBlur  = false;
 
         RenderTarget* m_mainRT = nullptr;
     };
