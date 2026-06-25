@@ -53,6 +53,8 @@ public:
 	void FadeIn(float duration);
 	bool IsFadeInComplete() const { return isEnable && !isFadingIn && m_fadeAlpha <= 0.0f; }
 
+	bool IsEnabled() const { return isEnable; }
+
 
 
 	/**

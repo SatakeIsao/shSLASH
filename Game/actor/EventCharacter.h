@@ -109,7 +109,7 @@ namespace app
 			bool isVisible_ = false;
 			bool justSpawned_ = false;
 
-			EnemyAttackPointManager* attackPointManager_;
+			EnemyAttackPointManager* attackPointManager_ = nullptr;
 			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
 
 			EnemyFadeCB cbData_;
