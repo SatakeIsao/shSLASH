@@ -396,6 +396,7 @@ namespace app
 			{
 				isDead_ = true;
 			}
+			bool IsDeadTriggered() const { return isDead_; }
 
 			// 参照と同時にフラグをリセット
 			bool CheckAndConsumeKnockBack()

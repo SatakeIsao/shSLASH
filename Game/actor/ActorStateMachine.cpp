@@ -469,8 +469,10 @@ namespace app
 
 			// 死亡・起き上がり判定
 			{
+#if defined(APP_DEBUG)
 				bool isRB2Trigger = g_pad[0]->IsTrigger(enButtonRB2);
 				bool isXTrigger = g_pad[0]->IsPress(enButtonX);
+#endif // APP_DEBUG
 
 				if (IsEqualCurrentState(DeadCharacterState::ID()))
 				{
@@ -485,28 +487,39 @@ namespace app
 							isDeadSEPlayed_ = true;
 						}
 					}
+#if defined(APP_DEBUG)
 					if (isXTrigger)
 					{
 						RequestChangeState(KipUpCharacterState::ID());
 						isStateRequested = true; // 遷移決定
 					}
+#endif // APP_DEBUG
 					if (!isStateRequested) return; // 遷移しないならDead維持。遷移するなら下へ。
 				}
+				else if (isDead_)
+				{
+					RequestChangeState(DeadCharacterState::ID());
+					isStateRequested = true;
+				}
+#if defined(APP_DEBUG)
 				else if (isRB2Trigger)
 				{
 					RequestChangeState(DeadCharacterState::ID());
 					isStateRequested = true;
 				}
+#endif // APP_DEBUG
 			}
 
 			// 既に遷移が決まっているなら、以下の他のステート判定（移動など）をすべてスキップする
 			if (isStateRequested) return;
 
+#if defined(APP_DEBUG)
 			// --- KipUp中の待機 ---
 			if (IsEqualCurrentState(KipUpCharacterState::ID()))
 			{
 				if (!CanChangeState()) return;
 			}
+#endif // APP_DEBUG
 			//ノックバック
 			{
 				// [前フェーズ] ウィンドウ内にY入力があればノックバックをキャンセルして通常回避へ（被ダメージ中のためジャスト回避なし）
@@ -673,7 +686,11 @@ namespace app
 				//}
 			}
 
-			bool isLB2Pressed = g_pad[0]->IsPress(enButtonLB2);
+#if defined(APP_DEBUG)
+			const bool isLB2Pressed = g_pad[0]->IsPress(enButtonLB2);
+#else
+			const bool isLB2Pressed = false;
+#endif // APP_DEBUG
 			// 負傷判定
 			const bool isInjured = GetStatus()->IsInjured();
 			const Vector3 direction = moveSpeedVector_;

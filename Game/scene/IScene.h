@@ -21,11 +21,11 @@ public:
 	virtual ~IScene() {} 
 
 	/** 純粋仮想関数:派生クラスで実装されてなかったらエラーが出る */
-	virtual bool Start()   = 0; 
+	virtual bool Start()   = 0;
 	virtual void Update() = 0;
 	virtual void Render(RenderContext& rc) = 0;
 
-	/** 
+	/**
 	 * 次のシーンを要求する。
 	 * idは次のシーンのIDを返す。
 	 * trueならば要求成功、falseならば失敗
