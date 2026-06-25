@@ -111,6 +111,7 @@ namespace app
 
                 bool    hideWindow          = false;
                 bool    showLvPopupAfter   = false;
+                bool    blurBackground     = false;
 
                 struct LvPopupImageEntry {
                     std::string name;

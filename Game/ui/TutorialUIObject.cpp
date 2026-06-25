@@ -29,7 +29,13 @@ namespace app
         void TutorialUIObject::Render(RenderContext& rc)
         {
             if (!isVisible_) return;
-            if (layout_) layout_->Render(rc);
+            if (!layout_) return;
+            // ポップアップ自身はブラー後に sharp で描画したいので、
+            // グローバルプレブラーモードを一時的に無効にする
+            const bool wasGlobal = g_renderingEngine->IsGlobalPreBlurMode();
+            if (wasGlobal) g_renderingEngine->SetGlobalPreBlurMode(false);
+            layout_->Render(rc);
+            if (wasGlobal) g_renderingEngine->SetGlobalPreBlurMode(true);
         }
 
         bool TutorialUIObject::IsAllMessagesShown() const

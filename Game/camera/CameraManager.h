@@ -43,6 +43,7 @@ namespace app
             bool isMotionBlurEnabled_ = true;
             bool isDepthOfFieldEnabled_ = true;
             bool isScreenEffectActive_ = false;
+            bool isPopupBlurActive_ = false;
 
         private:
             CameraManager();
@@ -122,6 +123,8 @@ namespace app
             bool IsDepthOfFieldEnabled() const { return isDepthOfFieldEnabled_; }
             void SetScreenEffectActive(bool active);
             void SetScreenEffectFocusWorldPos(const Vector3& position);
+            /** explain ポップアップ専用のブラー（アクターのエフェクトと独立） */
+            void SetPopupBlurActive(bool active);
 
         public:
             static void Initialize()

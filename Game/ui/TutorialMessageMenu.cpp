@@ -2,6 +2,7 @@
 #include "TutorialMessageMenu.h"
 #include "sound/SoundManager.h"
 #include "battle/BattleManager.h"
+#include "camera/CameraManager.h"
 #include "core/PauseManager.h"
 #include "json/json.hpp"
 #include <fstream>
@@ -332,6 +333,8 @@ namespace app
 
                         if (msg.contains("hideWindow") && msg["hideWindow"].get<bool>())
                             entry.hideWindow = true;
+                        if (msg.contains("blurBackground") && msg["blurBackground"].get<bool>())
+                            entry.blurBackground = true;
                         if (msg.contains("showLvPopupAfter") && !msg["showLvPopupAfter"].is_null())
                         {
                             const auto& lv = msg["showLvPopupAfter"];
@@ -661,6 +664,17 @@ namespace app
         {
             if (currentIndex_ < 0 || currentIndex_ >= static_cast<int>(messages_.size())) return;
 
+            if (currentIndex_ > 0)
+                app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
+
+            // blurBackground フラグに応じてポップアップブラーを切り替える
+            {
+                const bool blur = messages_[currentIndex_].blurBackground;
+                app::camera::CameraManager::Get().SetPopupBlurActive(blur);
+                if (app::battle::BattleManager::IsAvailable())
+                    app::battle::BattleManager::Get().SetHpBarPreBlurRender(blur);
+            }
+
             if (messages_[currentIndex_].startPracticePhase)
                 practicePhaseReached_ = true;
             if (messages_[currentIndex_].freezeGame && app::battle::BattleManager::IsAvailable())
@@ -865,6 +879,8 @@ namespace app
                 ApplySlideAnim(1.0f, true);
             slideAnim_ = SlideAnim::None;
             slideElems_.clear();
+
+            app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::TaskClear));
 
             clearPendingAdv_ = pendingAdvance;
             clearAnimState_  = ClearAnimState::ZoomIn;
@@ -1234,8 +1250,12 @@ namespace app
                 else
                 {
                     lvPopupState_ = LvPopupState::None;
+                    app::camera::CameraManager::Get().SetPopupBlurActive(false);
                     if (app::battle::BattleManager::IsAvailable())
+                    {
+                        app::battle::BattleManager::Get().SetHpBarPreBlurRender(false);
                         app::battle::BattleManager::Get().SetTutorialFreeze(false);
+                    }
                     if (lvPopupPendingAdvance_)
                     {
                         lvPopupPendingAdvance_ = false;
@@ -1306,6 +1326,10 @@ namespace app
             if (app::battle::BattleManager::IsAvailable())
                 app::battle::BattleManager::Get().SetTutorialFreeze(true);
 
+            app::camera::CameraManager::Get().SetPopupBlurActive(true);
+            if (app::battle::BattleManager::IsAvailable())
+                app::battle::BattleManager::Get().SetHpBarPreBlurRender(true);
+
             lvPopupState_ = LvPopupState::In;
             lvPopupTimer_ = 0.0f;
             ApplyLvPopupFactor(lvPopupCurScale_ * kWinAnimInitialRatio);
@@ -1348,8 +1372,12 @@ namespace app
                     else
                     {
                         lvPopupState_ = LvPopupState::None;
+                        app::camera::CameraManager::Get().SetPopupBlurActive(false);
                         if (app::battle::BattleManager::IsAvailable())
+                        {
+                            app::battle::BattleManager::Get().SetHpBarPreBlurRender(false);
                             app::battle::BattleManager::Get().SetTutorialFreeze(false);
+                        }
 
                         if (lvPopupPendingAdvance_)
                         {

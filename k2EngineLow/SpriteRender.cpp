@@ -19,6 +19,9 @@ namespace nsK2EngineLow {
 
 	void SpriteRender::Draw(RenderContext& rc)
 	{
-		g_renderingEngine->AddSpriteRenderObject(this);
+		if (g_renderingEngine->IsPreBlurMode() || g_renderingEngine->IsGlobalPreBlurMode())
+			g_renderingEngine->AddPreBlurSpriteObject(this);
+		else
+			g_renderingEngine->AddSpriteRenderObject(this);
 	}
 }

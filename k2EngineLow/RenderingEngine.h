@@ -42,6 +42,12 @@ namespace nsK2EngineLow {
 			m_renderObjects.emplace_back(renderObject);
 		}
 
+		void AddPreBlurSpriteObject(IRenderer* obj) { m_preBlurSpriteObjects.push_back(obj); }
+		void SetPreBlurMode(bool v) { m_preBlurMode = v; }
+		bool IsPreBlurMode() const { return m_preBlurMode; }
+		void SetGlobalPreBlurMode(bool v) { m_globalPreBlurMode = v; }
+		bool IsGlobalPreBlurMode() const { return m_globalPreBlurMode; }
+
 		/// <summary>
 		/// スプライトレンダラーをコンテナの後ろに追加する
 		/// </summary>
@@ -122,6 +128,11 @@ namespace nsK2EngineLow {
 			m_dof.SetPlayerWorldPos(position);
 		}
 
+		void SetDepthOfFieldForceFullBlur(bool v)
+		{
+			m_dof.SetForceFullBlur(v);
+		}
+
 		void SetMotionBlurEnabled(bool enabled)
 		{
 			m_motionBlur.SetEnabled(enabled);
@@ -138,6 +149,10 @@ namespace nsK2EngineLow {
 		RenderTarget m_2DRenderTarget;
 		Sprite m_mainSprite;
 		Sprite m_2DSprite;
+		Sprite m_preBlurCompositeSprite;
+		std::vector<IRenderer*> m_preBlurSpriteObjects;
+		bool m_preBlurMode = false;
+		bool m_globalPreBlurMode = false;
 		// シャドウ用
 		//RenderTarget m_shadowMapTarget;
 		Camera m_lightCamera;

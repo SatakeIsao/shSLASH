@@ -104,6 +104,15 @@ namespace app
 			}
 		}
 
+		void EventCharacterSpawnManager::SetAllHpBarsPreBlurRender(bool v)
+		{
+			for (auto& entry : activeEntries_)
+			{
+				if (entry.hpUI)
+					entry.hpUI->SetPreBlurRender(v);
+			}
+		}
+
 
 		bool EventCharacterSpawnManager::Start(app::actor::BattleCharacter* battleCharacter)
 		{
@@ -311,7 +320,7 @@ namespace app
 				stone->SetPause(isPause_);
 
 				auto* hpUI = hpUIPool_.Acquire();
-				if (!hpUI) { break; }
+				if (!hpUI) { stonePool_.Release(stone); break; }
 				hpUI->SetTargetEnemy(stone);
 				hpUI->SetPlayer(battleCharacter_);
 
@@ -349,7 +358,7 @@ namespace app
 				mushroom->SetPause(isPause_);
 
 				auto* hpUI = hpUIPool_.Acquire();
-				if (!hpUI) { break; }
+				if (!hpUI) { mushroomPool_.Release(mushroom); break; }
 				hpUI->SetTargetEnemy(mushroom);
 				hpUI->SetPlayer(battleCharacter_);
 

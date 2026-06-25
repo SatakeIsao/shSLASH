@@ -39,8 +39,9 @@ namespace app
                 return;
             }
 
-            g_renderingEngine->SetDepthOfFieldEnabled(isScreenEffectActive_ && isDepthOfFieldEnabled_);
-            g_renderingEngine->SetMotionBlurEnabled(isScreenEffectActive_ && isMotionBlurEnabled_);
+            const bool effectOn = isScreenEffectActive_ || isPopupBlurActive_;
+            g_renderingEngine->SetDepthOfFieldEnabled(effectOn && isDepthOfFieldEnabled_);
+            g_renderingEngine->SetMotionBlurEnabled(effectOn && isMotionBlurEnabled_);
         }
 
 
@@ -61,6 +62,18 @@ namespace app
         void CameraManager::SetScreenEffectActive(bool active)
         {
             isScreenEffectActive_ = active;
+            ApplyScreenEffectSettings();
+        }
+
+
+        void CameraManager::SetPopupBlurActive(bool active)
+        {
+            isPopupBlurActive_ = active;
+            if (g_renderingEngine)
+            {
+                g_renderingEngine->SetGlobalPreBlurMode(active);
+                g_renderingEngine->SetDepthOfFieldForceFullBlur(active);
+            }
             ApplyScreenEffectSettings();
         }
 
