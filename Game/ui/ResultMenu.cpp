@@ -4,6 +4,7 @@
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
 #include "GameResultData.h"
+#include "sound/SoundManager.h"
 
 namespace app {
     namespace ui {
@@ -93,15 +94,32 @@ namespace app {
 
             if (currentState_ >= SequenceState::ShowResult && currentState_ <= SequenceState::ShowDigits) {
                 if (g_pad[0]->IsTrigger(enButtonA)) {
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
                     if (resultIcon_) {
                         resultIcon_->isDraw = true;
                         resultIcon_->transform.localPosition = Vector3(-475.0f, 350.0f, 0.0f);
                         resultIcon_->transform.UpdateTransform();
                     }
-                    if (scoreBoard_)  scoreBoard_->isDraw = true;
-                    if (enemyIcon1_) enemyIcon1_->isDraw = true;
-                    if (enemyIcon2_) enemyIcon2_->isDraw = true;
-                    if (enemyIcon3_) enemyIcon3_->isDraw = true;
+                    if (scoreBoard_) {
+                        scoreBoard_->isDraw = true;
+                        scoreBoard_->transform.localPosition = Vector3(-475.0f, -50.0f, 0.0f);
+                        scoreBoard_->transform.UpdateTransform();
+                    }
+                    if (enemyIcon1_) {
+                        enemyIcon1_->isDraw = true;
+                        enemyIcon1_->transform.localPosition = Vector3(-475.0f, 45.0f, 0.0f);
+                        enemyIcon1_->transform.UpdateTransform();
+                    }
+                    if (enemyIcon2_) {
+                        enemyIcon2_->isDraw = true;
+                        enemyIcon2_->transform.localPosition = Vector3(-475.0f, -20.0f, 0.0f);
+                        enemyIcon2_->transform.UpdateTransform();
+                    }
+                    if (enemyIcon3_) {
+                        enemyIcon3_->isDraw = true;
+                        enemyIcon3_->transform.localPosition = Vector3(-475.0f, -90.0f, 0.0f);
+                        enemyIcon3_->transform.UpdateTransform();
+                    }
 
                     UINumberSprite* digits[] = { levelDigit_, enemyDigit1_, enemyDigit2_, enemyDigit3_, scoreDigit_ };
                     for (int i = 0; i < 5; ++i) {
@@ -209,6 +227,7 @@ namespace app {
 
                     auto* anim = currentDigit->FindAnimation(Hash32("DigitStamp"));
                     if (anim && !anim->IsPlay() && shakeTimer_ <= 0.0f && stateTimer_ == 0.0f) {
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::TitleBreak));
                         shakeTimer_ = 0.15f;
                         shakingDigitIndex_ = currentDigitStep_;
                         stateTimer_ = 0.15;
@@ -265,6 +284,17 @@ namespace app {
                     break;
                 }
 
+                if (currentDigitStep_ == 5 && !rankSEPlayed_) {
+                    UIIcon* rankIcon = (currentRank_ == 0) ? rankMaster_ : (currentRank_ == 1) ? rankElite_ : rankBeginner_;
+                    if (rankIcon) {
+                        auto* anim = rankIcon->FindAnimation(Hash32("RankStamp"));
+                        if (anim && !anim->IsPlay()) {
+                            app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::TitleBreak));
+                            rankSEPlayed_ = true;
+                        }
+                    }
+                }
+
                 if (currentDigitStep_ == 5 && currentRank_ == 0 && rankMasterFog_ && rankMaster_) {
                     masterFogTimer_ += g_gameTime->GetFrameDeltaTime();
                     float fogScale = 1.0f + 0.1f * sinf(masterFogTimer_ * 5.0f);
@@ -283,6 +313,7 @@ namespace app {
             case SequenceState::Finished:
             {
                 if (nextIcon_ && nextIcon_->isDraw && g_pad[0]->IsTrigger(enButtonA)) {
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
                     currentState_ = SequenceState::OpenMenu;
                     subMenuLayout_ = std::make_unique<app::ui::Layout>();
                     subMenuLayout_->Initialize<app::ui::ResultSubMenu>("Assets/ui/layout/ResultMenuLayout.json");
@@ -422,6 +453,7 @@ namespace app {
             isBeginnerRankTilted_ = false;
             shakeTimer_           = 0.0f;
             shakingDigitIndex_    = -1;
+            rankSEPlayed_         = false;
         }
 
 

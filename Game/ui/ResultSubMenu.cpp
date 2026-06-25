@@ -2,6 +2,7 @@
 #include "ResultSubMenu.h"
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
+#include "sound/SoundManager.h"
 
 namespace app {
     namespace ui {
@@ -97,10 +98,12 @@ namespace app {
             if (fadeProgress_ >= 1.0f) {
                 // カーソル移動処理
                 if (g_pad[0]->IsTrigger(enButtonDown)) {
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                     cursorIndex_++;
                     if (cursorIndex_ > 2) cursorIndex_ = 0;
                 }
                 if (g_pad[0]->IsTrigger(enButtonUp)) {
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
                     cursorIndex_--;
                     if (cursorIndex_ < 0) cursorIndex_ = 2;
                 }
@@ -113,6 +116,7 @@ namespace app {
 
                 // 決定処理
                 if (g_pad[0]->IsTrigger(enButtonA)) {
+                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonDecision));
                     if (cursorIndex_ == 0)      isRetryDecided_ = true;
                     else if (cursorIndex_ == 1) isReturnTitleDecided_ = true;
                     else if (cursorIndex_ == 2) isExitDecided_ = true;

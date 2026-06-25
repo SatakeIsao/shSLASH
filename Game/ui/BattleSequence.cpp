@@ -2,6 +2,7 @@
 #include "BattleSequence.h"
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
+#include "sound/SoundManager.h"
 
 namespace app
 {
@@ -133,6 +134,15 @@ namespace app
 
 			timeUpCountTimer_       = kTimeUpCountHoldDuration + kTimeUpCountFadeDuration;
 			timeUpCountFadeStarted_ = false;
+
+			static const app::SoundKind kCountVoices[5] = {
+				app::SoundKind::CountdownVoice1,
+				app::SoundKind::CountdownVoice2,
+				app::SoundKind::CountdownVoice3,
+				app::SoundKind::CountdownVoice4,
+				app::SoundKind::CountdownVoice5,
+			};
+			app::SoundManager::Get().PlaySE(static_cast<int>(kCountVoices[count - 1]));
 		}
 
 		void BattleSequence::PlayTimeUp()
@@ -165,6 +175,8 @@ namespace app
 			timeUpConvergeTimer_ = kTimeUpConvergeDuration;
 			timeUpPhase_         = TimeUpPhase::Converging;
 			timeUpHoldTimer_     = 0.0f;
+
+			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::CountdownVoiceTimeUp));
 		}
 
 		static void TriggerTimeUpConvergeImpact(UIIcon* iconCenter, UIIcon* iconFlash, UIAnimationSequence& shakeSeq)
@@ -327,6 +339,7 @@ namespace app
 					currentDown_ = SequenceName::Count3;
 					countTimer_ = kCountDuration;
 					ShowCountIcon(menu->GetUI<UIIcon>(Hash32("Count3")));
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::CountdownVoice3));
 				}
 				break;
 
@@ -342,6 +355,7 @@ namespace app
 					countTimer_ = kCountDuration;
 					fadeOutStarted_ = false;
 					ShowCountIcon(menu->GetUI<UIIcon>(Hash32("Count2")));
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::CountdownVoice2));
 				}
 				break;
 
@@ -357,6 +371,7 @@ namespace app
 					countTimer_ = kCountDuration;
 					fadeOutStarted_ = false;
 					ShowCountIcon(menu->GetUI<UIIcon>(Hash32("Count1")));
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::CountdownVoice1));
 				}
 				break;
 
@@ -373,6 +388,7 @@ namespace app
 					fadeOutStarted_ = false;
 					ShowStartIcon(menu->GetUI<UIIcon>(Hash32("Start")));
 					ShowStartBlurIcon(menu->GetUI<UIIcon>(Hash32("StartBlur")));
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::CountdownVoiceStart));
 				}
 				break;
 
