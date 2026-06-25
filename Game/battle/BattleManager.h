@@ -151,6 +151,7 @@ namespace app
             bool deadTest_ = false;
             bool isPause_ = false;
             bool isTutorialMode_ = false;
+            bool gameOverFreeze_ = false;
             bool tutorialEnemyMoveEnabled_ = false;
             bool tutorialNeedsSpawn_        = false;
             bool tutorialRespawnEnabled_    = false;
@@ -172,6 +173,7 @@ namespace app
 
             int timeUpFreezeFrames_ = 0;
             static constexpr int kTimeUpFreezeFrameCount = 10;
+            int loadStep_ = 0;
 
             /** アニメーション初期化を待ってからシーケンスを起動するための遅延 */
             float battleSequenceStartTimer_ = 0.1f;
@@ -214,8 +216,10 @@ namespace app
 
 
         public:
-            /** 初期化 */
+            /** 初期化（同期版。DebugScene用） */
             void Start();
+            /** 分割ロード。falseを返す間は毎フレーム呼ぶ。trueで完了。 */
+            bool LoadStep();
             /** 更新処理 */
             void Update();
             /** 描画処理 */
@@ -249,6 +253,10 @@ namespace app
             {
                 return deadTest_;
             }
+
+            bool IsPlayerDead() const;
+            void SetGameOverFreeze(bool v);
+            void SetHpBarPreBlurRender(bool v);
 
 
             void SetTorchLightsEnabled(bool enabled) { torchLightsEnabled_ = enabled; }

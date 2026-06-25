@@ -342,6 +342,7 @@ void ResultScene::Update()
 	}
 
 	if (playerModel_) {
+#if defined(APP_DEBUG)
 		// デバッグ: LB1 + 右/左 でランクアニメーションを切り替え
 		if (g_pad[0]->IsPress(enButtonLB1)) {
 			bool switched = false;
@@ -388,6 +389,7 @@ void ResultScene::Update()
 				}
 			}
 		}
+#endif // APP_DEBUG
 
 		// 各ランク: メインアニメ終了後にアイドルへ遷移
 		if (debugRankIndex_ == 2 && !beginnerIdlePlaying_ && !playerModel_->IsPlayingAnimation()) {

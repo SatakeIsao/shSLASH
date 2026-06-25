@@ -252,329 +252,283 @@ namespace app
 
 		void BattleManager::Start()
 		{
-			// パラメーター読み込み
-			LoadParameter();
+			// DebugScene 用の同期版。BattleScene/TutorialScene は LoadStep() を使う。
+			while (!LoadStep()) {}
+		}
 
-			// スカイキューブ
+
+		bool BattleManager::LoadStep()
+		{
+			switch (loadStep_++)
 			{
-				skyCube_ = NewGO<nsK2EngineLow::SkyCube>(0, "skycube");
-				// 明るさを設定
-				skyCube_->SetLuminance(1.0f);
-				skyCube_->SetScale(300.0f);
-				skyCube_->SetPosition({ 1000.0f,0.0f,1000.0f });
-				// スカイキューブの種類を設定
-				skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_NightToon_2);
-			}
-			// 月オブジェクト
-			{
-				moon_ = NewGO<app::actor::MoonGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "moon");
-				moon_->transform.position = Vector3(1000.0f, 1800.0f, 5000.0f);
-				moon_->transform.scale = Vector3(26.0f, 26.0f, 26.0f);
-				moon_->Initialize("Assets/ModelData/stage/moon.tkm");
-			}
-			// エフェクトマネージャーオブジェクト
-			{
-				effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
-				effectManager2DObject_ = NewGO<EffectManager2DObject>(static_cast<uint8_t>(ObjectPriority::Default));
-			}
-			/** イベントキャラクタースポーンマネージャー */
-			{
-				eventCharacterSpawnManagerObject_ = NewGO<app::actor::EventCharacterSpawnManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
-				eventCharacterSpawnManagerObject_->GetManager().SetOnSpawned([this](const app::actor::SpawnResult& result)
+			case 0:
+				// パラメーター読み込み
+				LoadParameter();
+				return false;
+
+			case 1:
+				// スカイキューブ + 月オブジェクト
+				{
+					skyCube_ = NewGO<nsK2EngineLow::SkyCube>(0, "skycube");
+					skyCube_->SetLuminance(1.0f);
+					skyCube_->SetScale(300.0f);
+					skyCube_->SetPosition({ 1000.0f, 0.0f, 1000.0f });
+					skyCube_->SetType((nsK2EngineLow::EnSkyCubeType)enSkyCubeType_NightToon_2);
+				}
+				{
+					moon_ = NewGO<app::actor::MoonGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "moon");
+					moon_->transform.position = Vector3(1000.0f, 1800.0f, 5000.0f);
+					moon_->transform.scale = Vector3(26.0f, 26.0f, 26.0f);
+					moon_->Initialize("Assets/ModelData/stage/moon.tkm");
+				}
+				return false;
+
+			case 2:
+				// エフェクトマネージャー + スポーンマネージャー（コールバックはラムダなので遅延実行）
+				{
+					effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+					effectManager2DObject_ = NewGO<EffectManager2DObject>(static_cast<uint8_t>(ObjectPriority::Default));
+				}
+				{
+					eventCharacterSpawnManagerObject_ = NewGO<app::actor::EventCharacterSpawnManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+					eventCharacterSpawnManagerObject_->GetManager().SetOnSpawned([this](const app::actor::SpawnResult& result)
+						{
+							auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
+							switch (result.type)
+							{
+							case app::actor::EnemyType::STONE:
+							{
+								auto* stone = result.stoneCharacter;
+
+								stoneEventCharacters_.push_back(stone);
+								if (!stone->GetModelRender())
+								{
+									stone->Initialize(sStoneEnemyInitializeParameter);
+									stone->AddState <app::actor::IdleCharacterState>();
+									stone->AddState<app::actor::PatrolCharacterState>();
+									stone->AddState<app::actor::RunCharacterState>();
+									stone->AddState<app::actor::AttackCharacterState>();
+									stone->AddState<app::actor::WaitingAttackCharacterState>();
+									stone->AddState<app::actor::DeadCharacterState>();
+									stone->AddState <app::actor::KnockBackCharacterState>();
+								}
+								stone->GetStatus()->SetFriction(stageParam->friction);
+								stone->GetStatus()->SetGravity(stageParam->gravity);
+								stone->GetCharacterController()->SetGravity(stageParam->gravity);
+								if (isTutorialMode_)
+									stone->GetStateMachine()->SetAIEnabled(false);
+								if (effectManagerObject_)
+								{
+									static Vector3 spawnEffectPos = result.spawnPosition;
+									spawnEffectPos = result.spawnPosition;
+									spawnEffectPos.y += STONE_SPAWN_EFFECT_OFFSET_Y;
+									effectManagerObject_->PlayEffectFollow(
+										enEffectKind_StoneSpawn,
+										&spawnEffectPos,
+										Quaternion::Identity,
+										Vector3::One
+									);
+									{
+										const auto& sp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>();
+										TriggerTBDRSpawnLight(spawnEffectPos, Vector3(sp.spawnLightColorR, sp.spawnLightColorG, sp.spawnLightColorB), 250.f, 2.5f);
+									}
+								}
+								stone->AddOnDeadEffect([this, stone]()
+								{
+									if (effectManagerObject_)
+									{
+										effectManagerObject_->PlayEffect(
+											enEffectKind_StoneDead,
+											stone->transform.position,
+											Quaternion::Identity,
+											Vector3::One
+										);
+									}
+									if (app::effect::SwordDecalManager::IsAvailable())
+									{
+										Vector3 rayStart = stone->transform.position + Vector3(0.0f, 50.0f, 0.0f);
+										Vector3 rayEnd   = stone->transform.position + Vector3(0.0f, -200.0f, 0.0f);
+										RaycastHit hit{};
+										if (PhysicsWorld::Get().Raycast(rayStart, rayEnd, hit))
+											if (hit.normal.y > 0.7f)
+												app::effect::SwordDecalManager::Get().SpawnDecal(
+													hit.point, hit.normal, Vector3::Front);
+									}
+								});
+								stone->AddOnDead([this, stone]()
+								{
+									stoneEventCharacters_.erase(
+										std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
+										stoneEventCharacters_.end()
+									);
+									if (playerHpUIObject_)
+									{
+										playerHpUIObject_->AddLevelUpGauge(3);
+										app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
+									}
+									stoneKillCount_++;
+								});
+								break;
+							}
+							case app::actor::EnemyType::MUSHROOM:
+							{
+								auto* mushroom = result.mushroomCharacter;
+
+								mushroomEventCharacters_.push_back(mushroom);
+								if (!mushroom->GetModelRender())
+								{
+									mushroom->Initialize(sMushroomEnemyInitializeParameter);
+									mushroom->AddState <app::actor::IdleCharacterState>();
+									mushroom->AddState<app::actor::PatrolCharacterState>();
+									mushroom->AddState<app::actor::RunCharacterState>();
+									mushroom->AddState<app::actor::AttackCharacterState>();
+									mushroom->AddState<app::actor::WaitingAttackCharacterState>();
+									mushroom->AddState<app::actor::DeadCharacterState>();
+									mushroom->AddState <app::actor::KnockBackCharacterState>();
+								}
+								mushroom->GetStatus()->SetFriction(stageParam->friction);
+								mushroom->GetStatus()->SetGravity(stageParam->gravity);
+								mushroom->GetCharacterController()->SetGravity(stageParam->gravity);
+								if (isTutorialMode_)
+									mushroom->GetStateMachine()->SetAIEnabled(false);
+								if (effectManagerObject_)
+								{
+									static Vector3 spawnEffectPos = result.spawnPosition;
+									spawnEffectPos = result.spawnPosition;
+									spawnEffectPos.y += MUSHROOM_SPAWN_EFFECT_OFFSET_Y;
+									effectManagerObject_->PlayEffectFollow(
+										enEffectKind_MushroomSpawn,
+										&spawnEffectPos,
+										Quaternion::Identity,
+										Vector3(1.2f, 1.2f, 1.2f)
+									);
+									{
+										const auto& mp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterMushroomEventCharacterParameter>();
+										TriggerTBDRSpawnLight(spawnEffectPos, Vector3(mp.spawnLightColorR, mp.spawnLightColorG, mp.spawnLightColorB), 250.f, 2.5f);
+									}
+								}
+								mushroom->AddOnDeadEffect([this, mushroom]()
+								{
+									if (effectManagerObject_)
+									{
+										effectManagerObject_->PlayEffect(
+											enEffectKind_MushroomDead,
+											mushroom->transform.position,
+											Quaternion::Identity,
+											Vector3::One
+										);
+									}
+									if (app::effect::SwordDecalManager::IsAvailable())
+									{
+										Vector3 rayStart = mushroom->transform.position + Vector3(0.0f, 50.0f, 0.0f);
+										Vector3 rayEnd   = mushroom->transform.position + Vector3(0.0f, -200.0f, 0.0f);
+										RaycastHit hit{};
+										if (PhysicsWorld::Get().Raycast(rayStart, rayEnd, hit))
+											if (hit.normal.y > 0.7f)
+												app::effect::SwordDecalManager::Get().SpawnMushroomFloorDecal(
+													hit.point, hit.normal, Vector3::Front);
+									}
+								});
+								mushroom->AddOnDead([this, mushroom]()
+								{
+									mushroomEventCharacters_.erase(
+										std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
+										mushroomEventCharacters_.end()
+									);
+									if (playerHpUIObject_)
+									{
+										playerHpUIObject_->AddLevelUpGauge(5);
+										app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
+									}
+									mushroomKillCount_++;
+								});
+								break;
+							}
+							default:
+								break;
+							}
+						});
+				}
+				return false;
+
+			case 3:
+				// プレイヤー + キャラクターステアリング + スポーンマネージャー起動
+				{
+					characterSteering_ = std::make_unique<app::actor::CharacterSteering>();
 					{
-						auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>(); 
-						switch (result.type)
+						battleCharacter_ = NewGO<app::actor::BattleCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "mario");
+						battleCharacter_->Initialize(sPlayerInitializeParameter);
 						{
-						case app::actor::EnemyType::STONE:
+							battleCharacter_->AddState<app::actor::IdleCharacterState>();
+							battleCharacter_->AddState<app::actor::RunCharacterState>();
+							battleCharacter_->AddState<app::actor::ChargeAttackCharacterState>();
+							battleCharacter_->AddState<app::actor::FallingCharacterState>();
+							battleCharacter_->AddState<app::actor::SlashFirstCharacterState>();
+							battleCharacter_->AddState<app::actor::SlashSecondCharacterState>();
+							battleCharacter_->AddState<app::actor::SlashThirdCharacterState>();
+							battleCharacter_->AddState<app::actor::WarpInCharacterState>();
+							battleCharacter_->AddState<app::actor::WarpOutCharacterState>();
+							battleCharacter_->AddState<app::actor::KnockBackCharacterState>();
+							battleCharacter_->AddState<app::actor::DeadCharacterState>();
+							battleCharacter_->AddState<app::actor::GuardCharacterState>();
+							battleCharacter_->AddState<app::actor::AvoidanceCharacterState>();
+							battleCharacter_->AddState<app::actor::InjuredIdleCharacterState>();
+							battleCharacter_->AddState<app::actor::InjuredRunCharacterState>();
+							battleCharacter_->AddState<app::actor::KipUpCharacterState>();
+						}
 						{
-							auto* stone = result.stoneCharacter;
-
-							stoneEventCharacters_.push_back(stone);
-							stone->Initialize(sStoneEnemyInitializeParameter);
-							stone->AddState <app::actor::IdleCharacterState>();
-							stone->AddState<app::actor::PatrolCharacterState>();
-							stone->AddState<app::actor::RunCharacterState>();
-							stone->AddState<app::actor::AttackCharacterState>();
-							stone->AddState<app::actor::WaitingAttackCharacterState>();
-							stone->AddState<app::actor::DeadCharacterState>();
-							stone->AddState <app::actor::KnockBackCharacterState>();
-							stone->GetStatus()->SetFriction(stageParam->friction);
-							stone->GetStatus()->SetGravity(stageParam->gravity);
-							stone->GetCharacterController()->SetGravity(stageParam->gravity);
-							if (isTutorialMode_)
-								stone->GetStateMachine()->SetAIEnabled(false);
-							//stone->GetStateMachine()->transform.position = stone->transform.position;
-							// スポーンエフェクト
-							if (effectManagerObject_)
-							{
-								static Vector3 spawnEffectPos = result.spawnPosition;
-								spawnEffectPos = result.spawnPosition;
-								spawnEffectPos.y += STONE_SPAWN_EFFECT_OFFSET_Y;
-								effectManagerObject_->PlayEffectFollow(
-									enEffectKind_StoneSpawn,
-									&spawnEffectPos,
-									Quaternion::Identity,
-									Vector3::One
-								);
-								{
-									const auto& sp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>();
-									TriggerTBDRSpawnLight(spawnEffectPos, Vector3(sp.spawnLightColorR, sp.spawnLightColorG, sp.spawnLightColorB), 250.f, 2.5f);
-								}
-							}
-
-							// 死亡時のコールバックをセット
-							// フェード開始と同時：死亡エフェクト＋床デカール
-							stone->AddOnDeadEffect([this, stone]()
-							{
-								// 死亡エフェクト再生
-								if (effectManagerObject_)
-								{
-									effectManagerObject_->PlayEffect(
-										enEffectKind_StoneDead,
-										stone->transform.position,
-										Quaternion::Identity,
-										Vector3::One
-									);
-								}
-								// 床デカール生成
-								if (app::effect::SwordDecalManager::IsAvailable())
-								{
-									Vector3 rayStart = stone->transform.position + Vector3(0.0f, 50.0f, 0.0f);
-									Vector3 rayEnd   = stone->transform.position + Vector3(0.0f, -200.0f, 0.0f);
-									RaycastHit hit{};
-									if (PhysicsWorld::Get().Raycast(rayStart, rayEnd, hit))
-										if (hit.normal.y > 0.7f)
-											app::effect::SwordDecalManager::Get().SpawnDecal(
-												hit.point, hit.normal, Vector3::Front);
-								}
-							});
-							// フェード完了後：クリーンアップ
-							stone->AddOnDead([this, stone]()
-							{
-								// リストから削除
-								stoneEventCharacters_.erase(
-									std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
-									stoneEventCharacters_.end()
-								);
-								// レベルゲージを溜める
-								if (playerHpUIObject_)
-								{
-									playerHpUIObject_->AddLevelUpGauge(3);
-									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
-								}
-								stoneKillCount_++;
-							});
-							break;
+							PendingSpawnEffect entry;
+							entry.effectKind = enEffectKind_PlayerLevelUp;
+							entry.scale = Vector3::One;
+							entry.timer = 0.1f;
+							pendingSpawnEffects_.push_back(entry);
+							pendingPlayerSpawnLightTimer_ = 0.1f;
 						}
-						case app::actor::EnemyType::MUSHROOM:
 						{
-							auto* mushroom = result.mushroomCharacter;
-
-							mushroomEventCharacters_.push_back(mushroom);
-							mushroom->Initialize(sMushroomEnemyInitializeParameter);
-							mushroom->AddState <app::actor::IdleCharacterState>();
-							mushroom->AddState<app::actor::PatrolCharacterState>();
-							mushroom->AddState<app::actor::RunCharacterState>();
-							mushroom->AddState<app::actor::AttackCharacterState>();
-							mushroom->AddState<app::actor::WaitingAttackCharacterState>();
-							mushroom->AddState<app::actor::DeadCharacterState>();
-							mushroom->AddState <app::actor::KnockBackCharacterState>();
-							mushroom->GetStatus()->SetFriction(stageParam->friction);
-							mushroom->GetStatus()->SetGravity(stageParam->gravity);
-							mushroom->GetCharacterController()->SetGravity(stageParam->gravity);
-							if (isTutorialMode_)
-								mushroom->GetStateMachine()->SetAIEnabled(false);
-							///mushroom->GetStateMachine()->transform.position = mushroom->transform.position;
-
-							//　スポーンエフェクト
-							if (effectManagerObject_)
-							{
-								static Vector3 spawnEffectPos = result.spawnPosition;
-								spawnEffectPos = result.spawnPosition;          // 毎回更新（static の初期化は初回のみなので必要）
-								spawnEffectPos.y += MUSHROOM_SPAWN_EFFECT_OFFSET_Y;
-								effectManagerObject_->PlayEffectFollow(
-									enEffectKind_MushroomSpawn,
-									&spawnEffectPos,
-									Quaternion::Identity,
-									Vector3(1.2f,1.2f,1.2f)
-								);
-								{
-									const auto& mp = *app::core::ParameterManager::Get().GetParameter<app::core::MasterMushroomEventCharacterParameter>();
-									TriggerTBDRSpawnLight(spawnEffectPos, Vector3(mp.spawnLightColorR, mp.spawnLightColorG, mp.spawnLightColorB), 250.f, 2.5f);
-								}
-							}
-							//死亡時のコールバックをセット
-							// フェード開始と同時：死亡エフェクト＋床デカール
-							mushroom->AddOnDeadEffect([this, mushroom]()
-							{
-								// 死亡エフェクト再生
-								if (effectManagerObject_)
-								{
-									effectManagerObject_->PlayEffect(
-										enEffectKind_MushroomDead,
-										mushroom->transform.position,
-										Quaternion::Identity,
-										Vector3::One
-									);
-								}
-								// 床デカール生成
-								if (app::effect::SwordDecalManager::IsAvailable())
-								{
-									Vector3 rayStart = mushroom->transform.position + Vector3(0.0f, 50.0f, 0.0f);
-									Vector3 rayEnd   = mushroom->transform.position + Vector3(0.0f, -200.0f, 0.0f);
-									RaycastHit hit{};
-									if (PhysicsWorld::Get().Raycast(rayStart, rayEnd, hit))
-										if (hit.normal.y > 0.7f)
-											app::effect::SwordDecalManager::Get().SpawnMushroomFloorDecal(
-												hit.point, hit.normal, Vector3::Front);
-								}
-							});
-							// フェード完了後：クリーンアップ
-							mushroom->AddOnDead([this, mushroom]()
-							{
-								// リストから削除
-								mushroomEventCharacters_.erase(
-									std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
-									mushroomEventCharacters_.end()
-								);
-
-								// レベルゲージを溜める
-								if (playerHpUIObject_)
-								{
-									playerHpUIObject_->AddLevelUpGauge(5);
-									app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
-								}
-								mushroomKillCount_++;
-							});
-							break;
+							auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
+							battleCharacter_->GetStatus()->SetFriction(parameter->friction);
+							battleCharacter_->GetStatus()->SetGravity(parameter->gravity);
+							battleCharacter_->GetStatus()->SetWarpData(parameter->warpStartScale, parameter->warpEndScale, parameter->warpTime);
 						}
-						default:
-							break;
-						}
+					}
+					battleCharacter_->GetStateMachine()->SetJustDodgeCallback([this]()
+					{
+						AddPlayerGauge(2);
 					});
-			}
-			{
-				characterSteering_ = std::make_unique<app::actor::CharacterSteering>();
-				// Player
-				{
-					battleCharacter_ = NewGO<app::actor::BattleCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "mario");
-					battleCharacter_->Initialize(sPlayerInitializeParameter);
+					characterSteering_->Initialize(battleCharacter_, 0);
+					eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
+					eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
+					if (isTutorialMode_)
 					{
-						battleCharacter_->AddState<app::actor::IdleCharacterState>();
-						battleCharacter_->AddState<app::actor::RunCharacterState>();
-						battleCharacter_->AddState<app::actor::ChargeAttackCharacterState>();
-						battleCharacter_->AddState<app::actor::FallingCharacterState>();
-						battleCharacter_->AddState<app::actor::SlashFirstCharacterState>();
-						battleCharacter_->AddState<app::actor::SlashSecondCharacterState>();
-						battleCharacter_->AddState<app::actor::SlashThirdCharacterState>();
-						battleCharacter_->AddState<app::actor::WarpInCharacterState>();
-						battleCharacter_->AddState<app::actor::WarpOutCharacterState>();
-						battleCharacter_->AddState<app::actor::KnockBackCharacterState>();
-						battleCharacter_->AddState<app::actor::DeadCharacterState>();
-						battleCharacter_->AddState<app::actor::GuardCharacterState>();
-						battleCharacter_->AddState<app::actor::AvoidanceCharacterState>();
-						battleCharacter_->AddState<app::actor::InjuredIdleCharacterState>();
-						battleCharacter_->AddState<app::actor::InjuredRunCharacterState>();
-						battleCharacter_->AddState<app::actor::KipUpCharacterState>();
+						eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
+						eventCharacterSpawnManagerObject_->GetManager().ResetPendingSpawn();
+						eventCharacterSpawnManagerObject_->GetManager().SetTutorialMode(true);
+						tutorialNeedsSpawn_ = true;
 					}
+					else if (ENABLE_ENEMY_SPAWN)
 					{
-						// スポーンエフェクト（EffectManagerのStart完了を待つため遅延キューに積む）
-						PendingSpawnEffect entry;
-						entry.effectKind = enEffectKind_PlayerLevelUp;
-						entry.scale = Vector3::One;
-						entry.timer = 0.1f;
-						pendingSpawnEffects_.push_back(entry);
-						// スポットライトも同タイミングで発火（シーケンス終了時にポーズが解けてから計測開始）
-						pendingPlayerSpawnLightTimer_ = 0.1f;
+						eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
 					}
-					// TODO: ステージによって変えたいので、ステージクラスが作られたら移譲する
-					{
-						auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
-						// 摩擦設定
-						battleCharacter_->GetStatus()->SetFriction(parameter->friction);
-						// 重力設定
-						battleCharacter_->GetStatus()->SetGravity(parameter->gravity);
-						// ワープ設定
-						battleCharacter_->GetStatus()->SetWarpData(parameter->warpStartScale, parameter->warpEndScale, parameter->warpTime);
-					}
+					battleCharacter_->SetSpawnManager(&eventCharacterSpawnManagerObject_->GetManager());
 				}
-				// ジャスト回避コールバックを登録（経験値ゲージを20%加算）
-				battleCharacter_->GetStateMachine()->SetJustDodgeCallback([this]()
-				{
-					AddPlayerGauge(2);
-				});
+				return false;
 
-				characterSteering_->Initialize(battleCharacter_, 0);
-
-				eventCharacterSpawnManagerObject_->GetManager().SetFieldEdge(300.0f);
-				eventCharacterSpawnManagerObject_->GetManager().SetSpawnPosY(-354.0f);
-
-				if (isTutorialMode_)
-				{
-					// プールだけ初期化して自動スポーンを無効化
-					// 実際の敵配置は EffectManager 初期化後に Update() 内で行う
-					eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
-					eventCharacterSpawnManagerObject_->GetManager().ResetPendingSpawn();
-					eventCharacterSpawnManagerObject_->GetManager().SetTutorialMode(true);
-					tutorialNeedsSpawn_ = true;
-				}
-				else if (ENABLE_ENEMY_SPAWN)
-				{
-					eventCharacterSpawnManagerObject_->GetManager().Start(battleCharacter_);
-				}
-				battleCharacter_->SetSpawnManager(&eventCharacterSpawnManagerObject_->GetManager());
-
-				// 敵キャラクター 
-				//eventCharacter_ = NewGO<app::actor::EventCharacter>(static_cast<uint8_t>(ObjectPriority::Character), "nokonoko");
-				//eventCharacter_->Initialize(sEnemyInitializeParameter);
-				//{
-				//	eventCharacter_->AddState <app::actor::IdleCharacterState>();
-				//	eventCharacter_->AddState<app::actor::RunCharacterState>();
-				//	eventCharacter_->AddState<app::actor::AttackCharacterState>();
-				//	eventCharacter_->AddState<app::actor::PunchCharacterState>();
-				//	eventCharacter_->AddState<app::actor::DeadCharacterState>();
-				//	eventCharacter_->AddState <app::actor::KnockBackCharacterState>();
-				//}
-
-
-				/** 敵に重力付与のテスト */
-				//TODO: いま、ステージなので敵のパラメータに変更させたい
-				{
-					auto stageParam = app::core::ParameterManager::Get().GetParameter<app::core::MasterStageParameter>();
-					//eventCharacter_->GetStatus()->SetFriction(stageParam->friction);
-					//eventCharacter_->GetStatus()->SetGravity(stageParam->gravity);
-				}
-
-				// ギミック設置（テスト用）
+			case 4:
+				// ステージギミック（stage.tkm はサイズが大きいため単独ステップ）
 				{
 					testGimmickList_.resize(1);
 					testGimmickList_[0] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
 					testGimmickList_[0]->transform.position = Vector3(0.0f, -50.0f, 0.0f);
 					testGimmickList_[0]->transform.scale = Vector3(5.0f, 5.0f, 5.0f);
 					testGimmickList_[0]->Initialize("Assets/ModelData/stage/stage.tkm", "Assets/Shader/modelWall.fx", "Assets/Shader/model_gbuffer_wall.fx");
-					//  const int gimmickNum = 100;
-					//  const int gimmickRowNum = 10;
-					//  const int gimmickColNum = 10;
-					//  testGimmickList_.resize(gimmickNum);
-					//  
-					//  for (int i = 0; i < testGimmickList_.size(); ++i)
-					//  {
-					//  	testGimmickList_[i] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
-					//  	//配置
-					//  	int row = i / gimmickColNum;
-					//  	int col = i % gimmickColNum;
-					//  	float x = (static_cast<float>(col) - (gimmickColNum / 2.0f)) * 100.0f;
-					//  	float z = (static_cast<float>(row) - (gimmickRowNum / 2.0f)) * 100.0f;
-					//  	testGimmickList_[i]->transform.position = Vector3(x, -50.0f, z);
-					//  	testGimmickList_[i]->transform.scale = Vector3(1.0f, 1.0f, 1.0f);
-					//  	testGimmickList_[i]->Initialize("Assets/ModelData/stage/GroundGreenBlock.tkm");
-					//  }
 				}
-				// カメラ初期化
+				return false;
+
+			case 5:
+				// カメラ + ポーズ + UI + BGM
 				{
 					auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterBattleCameraParameter>();
 					cameraSteering_ = std::make_unique<app::camera::CameraSteering>();
-
 					app::camera::CameraSteering::Config initConfig;
 					initConfig.distance = parameter->distance;
 					initConfig.height = parameter->height;
@@ -585,42 +539,32 @@ namespace app
 					initData.farClip = parameter->farClip;
 					cameraSteering_->SetConfig(initConfig);
 					cameraSteering_->SetTargetCharacter(battleCharacter_);
-
 					auto gameCamera = std::make_shared<app::camera::GameCamera>();
 					gameCamera->SetState(initData);
 					gameCameraController_ = gameCamera;
 					app::camera::CameraManager::Get().Register(app::camera::GameCamera::ID(), gameCameraController_);
-					// blendTime なし → カメラを即座に定位置へ配置
 					app::camera::CameraManager::Get().SwitchCamera(gameCameraController_);
 				}
-				//ポーズマネージャーオブジェクト
 				{
 					pauseManagerObject_ = NewGO<app::core::PauseManagerObject>(static_cast<uint8_t>(ObjectPriority::Pause));
 				}
-				// battleSequenceObject_ は Update() 内でアニメーション初期化後に生成する
-				// タイマーUI（チュートリアルでは不要）
 				if (!isTutorialMode_)
 				{
 					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
-					// 初回だけセット
 					timerUIObject_->SetTimer(remainTime_);
 				}
-				// HPUI
 				{
 					playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
 				}
-				// 生成後にプレイヤーを紐づけ
 				if (playerHpUIObject_ && battleCharacter_)
 				{
 					playerHpUIObject_->SetPlayer(battleCharacter_);
 				}
 				isInvincible_ = true;
 				invincibleTimer_ = 3.0f;
-				// BGM再生
 				{
 					app::SoundManager::Get().PlayBGM(static_cast<int>(app::SoundKind::Game));
 				}
-				// レベルアップUI・フェーズUI（チュートリアルでは不要）
 				if (!isTutorialMode_)
 				{
 					levelUpObject_ = NewGO<app::ui::LevelUpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
@@ -631,12 +575,15 @@ namespace app
 					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
 					eventCharacterSpawnManagerObject_->GetManager().SetPhaseUI(phaseUI_);
 				}
-				// ダメージポッププール
 				{
 					damagePopPool_ = new app::ui::DamagePopPool();
 					damagePopPool_->Initialize();
 					SetDamagePopListener(damagePopPool_);
 				}
+				return true;
+
+			default:
+				return true;
 			}
 		}
 
@@ -715,7 +662,7 @@ namespace app
 			// シーケンス中は手動ポーズ（メニュー表示）を禁止する
 			app::core::PauseManager::Get().SetCanPause(!isSequence);
 
-			if (currentPause || tutorialFreeze_)
+			if (currentPause || tutorialFreeze_ || gameOverFreeze_)
 			{
 				return;
 			}
@@ -762,12 +709,20 @@ namespace app
 				}
 			}
 
+#if defined(APP_DEBUG)
 			// デバッグ機能：LB1+Downでプレイヤーに1ダメージ
 			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonDown))
 			{
 				float newHp = max(battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f, 0.0f);
 				battleCharacter_->GetStatus()->SetCurrentHp(newHp);
-				battleCharacter_->GetStateMachine()->OnKnockBack();
+				if (newHp <= 0.0f)
+				{
+					battleCharacter_->GetStateMachine()->OnDead();
+				}
+				else
+				{
+					battleCharacter_->GetStateMachine()->OnKnockBack();
+				}
 			}
 
 			// デバッグ機能：LB1+UpでタイムアップUIをトグル表示
@@ -793,6 +748,7 @@ namespace app
 					timerUIObject_->AddTimer(-kDebugTimerStep);
 				}
 			}
+#endif // APP_DEBUG
 
 			if (!isSequence)
 			{
@@ -1154,6 +1110,10 @@ namespace app
 								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
 								newHp = max(newHp, 0.0f);
 								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+								if (newHp <= 0.0f)
+								{
+									battleCharacter_->GetStateMachine()->OnDead();
+								}
 							}
 
 							/** ノックバック */
@@ -1209,6 +1169,10 @@ namespace app
 								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
 								newHp = max(newHp, 0.0f);
 								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+								if (newHp <= 0.0f)
+								{
+									battleCharacter_->GetStateMachine()->OnDead();
+								}
 							}
 
 							/** ノックバック */
@@ -1348,6 +1312,10 @@ namespace app
 								float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - attackPower;
 								newHp = max(newHp, 0.0f);
 								battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+								if (newHp <= 0.0f)
+								{
+									battleCharacter_->GetStateMachine()->OnDead();
+								}
 							}
 						}
 					}
@@ -1573,6 +1541,10 @@ namespace app
 			{
 				layout_->Render(rc);
 			}
+			if (app::effect::SwordDecalManager::IsAvailable())
+			{
+				app::effect::SwordDecalManager::Get().Render(rc);
+			}
 		}
 
 
@@ -1609,6 +1581,41 @@ namespace app
 		{
 			if (!eventCharacterSpawnManagerObject_) return 0;
 			return eventCharacterSpawnManagerObject_->GetManager().GetActiveEnemyCount();
+		}
+
+		bool BattleManager::IsPlayerDead() const
+		{
+			return battleCharacter_ && battleCharacter_->GetStateMachine()->IsDeadTriggered();
+		}
+
+		void BattleManager::SetGameOverFreeze(bool v)
+		{
+			gameOverFreeze_ = v;
+			playerInputEnabled_ = !v;
+
+			// 敵をポーズ（プレイヤーのDeadアニメは止めない）
+			for (auto* stone : stoneEventCharacters_)
+				if (stone) stone->SetPause(v);
+			for (auto* mushroom : mushroomEventCharacters_)
+				if (mushroom) mushroom->SetPause(v);
+			if (eventCharacterSpawnManagerObject_)
+				eventCharacterSpawnManagerObject_->SetPause(v);
+
+			// タイマーを止める
+			if (timerUIObject_)
+			{
+				if (v) timerUIObject_->StopTimer();
+				else   timerUIObject_->StartTimer();
+			}
+		}
+
+
+		void BattleManager::SetHpBarPreBlurRender(bool v)
+		{
+			if (playerHpUIObject_)
+				playerHpUIObject_->SetPreBlurRender(v);
+			if (app::actor::EventCharacterSpawnManager::IsAvailable())
+				app::actor::EventCharacterSpawnManager::Get().SetAllHpBarsPreBlurRender(v);
 		}
 
 

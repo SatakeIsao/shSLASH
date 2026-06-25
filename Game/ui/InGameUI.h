@@ -130,6 +130,8 @@ namespace app
 			float displayHpRatio_ = 0.0f;
 			/** 目標HP割合 */
 			float targetHpRatio_ = 0.0f;
+			/** ブラー前パスに描画するか（チュートリアルexplain表示中） */
+			bool usePreBlurRender_ = false;
 
 		public:
 			PlayerHpUIObject();
@@ -156,6 +158,8 @@ namespace app
 				blinkTimer_ = 0.0f;
 				isVisible_ = true;
 			}
+
+			void SetPreBlurRender(bool v) { usePreBlurRender_ = v; }
 		};
 
 
@@ -168,6 +172,7 @@ namespace app
 		{
 		private:
 			bool isDead_ = false;
+			bool usePreBlurRender_ = false;
 
 			std::unique_ptr<app::ui::Layout> layout_;
 
@@ -208,6 +213,8 @@ namespace app
 				mushroomTarget_ = nullptr;
 				isDead_ = true;
 			}
+			void SetPreBlurRender(bool v) { usePreBlurRender_ = v; }
+
 			/** プールから取り出す時に呼ぶ */
 			void OnSpawn()
 			{

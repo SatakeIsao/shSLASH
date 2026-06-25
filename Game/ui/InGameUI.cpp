@@ -34,6 +34,10 @@ namespace {
 	static constexpr float TIMER_DANGER_RATIO = 0.10f;
 	/** 点滅の切り替え間隔（秒） */
 	static constexpr float TIMER_BLINK_SPEED = 0.08f;
+	/** 残り30秒以下で点滅開始する閾値（秒） */
+	static constexpr float TIMER_WARN_SEC = 30.0f;
+	/** 残り30秒警告フェードの周波数（rad/s）。Math::PI2 で約1秒サイクル */
+	static constexpr float TIMER_WARN_PULSE_FREQ = Math::PI2;
 
 	/** 座標・スケール */
 	/** タイマーUIの表示座標（画面右上） */
@@ -160,8 +164,29 @@ namespace app
 			timerGauge_.SetFillAmount(fillAmount);
 			timerBackGround_.SetFillAmount(fillAmount);
 
-			isVisible_ = true;
-			ApplyGaugeColor(TIMER_COLOR_CREAM);
+			if (timer_ <= TIMER_WARN_SEC)
+			{
+				blinkTimer_ += g_gameTime->GetFrameDeltaTime();
+				/** sinf で cream ↔ 赤を滑らかに往復 */
+				const float pulse = (sinf(blinkTimer_ * TIMER_WARN_PULSE_FREQ) + 1.0f) * 0.5f;
+				const Vector4 warnColor = {
+					TIMER_COLOR_CREAM.x + (TIMER_COLOR_RED.x - TIMER_COLOR_CREAM.x) * pulse,
+					TIMER_COLOR_CREAM.y + (TIMER_COLOR_RED.y - TIMER_COLOR_CREAM.y) * pulse,
+					TIMER_COLOR_CREAM.z + (TIMER_COLOR_RED.z - TIMER_COLOR_CREAM.z) * pulse,
+					1.0f
+				};
+				timerGauge_.SetFillColor(TIMER_COLOR_EMPTY);
+				timerGauge_.SetEmptyColor(warnColor);
+				timerBackGround_.SetFillColor(TIMER_COLOR_EMPTY);
+				timerBackGround_.SetEmptyColor(warnColor);
+				timerOuterRing_.SetFillColor(TIMER_COLOR_WHITE);
+				timerOuterRing_.SetEmptyColor(TIMER_COLOR_WHITE);
+			}
+			else
+			{
+				blinkTimer_ = 0.0f;
+				ApplyGaugeColor(TIMER_COLOR_CREAM);
+			}
 
 			timerBackGround_.Update();
 			timerGauge_.Update();
@@ -181,10 +206,7 @@ namespace app
 		{
 			timerBackGround_.Draw(rc);
 			timerGapRing_.Draw(rc);
-			if (isVisible_)
-			{
-				timerGauge_.Draw(rc);
-			}
+			timerGauge_.Draw(rc);
 			timerOuterRing_.Draw(rc);
 			needleSprite_.Draw(rc);
 			needleFixedSprite_.Draw(rc);
@@ -350,6 +372,7 @@ namespace app
 				}
 				index_ = newIndex;
 			}
+#if defined(APP_DEBUG)
 			/** NOTE: 確認でき次第削除 */
 			else
 			{
@@ -363,6 +386,7 @@ namespace app
 				}
 				targetHpRatio_ = static_cast<float>(index_) / static_cast<float>(MAX_LEVEL);
 			}
+#endif // APP_DEBUG
 
 			/** 回復アニメーション中は指数関数的に補間、通常時は即時追従 */
 			if (isHealAnimating_)
@@ -500,9 +524,9 @@ namespace app
 				currentLevel->transform.localScale.x = parameter->levelBarScaleX[MAX_LEVEL];
 			}
 
+#if defined(APP_DEBUG)
 			// デバッグ: 右ボタンでレベルアップ
 			if (g_pad[0]->IsTrigger(enButtonRight))
-
 			{
 				if (level_ < MAX_LEVEL)
 				{
@@ -511,6 +535,7 @@ namespace app
 					currentLevel->transform.localScale.x = parameter->levelBarScaleX[levelUpIndex_];
 				}
 			}
+#endif // APP_DEBUG
 
 
 			/** レベル数値の表示 */
@@ -601,11 +626,16 @@ namespace app
 		void PlayerHpUIObject::Render(RenderContext& rc)
 		{
 			if (layout_) {
+				if (usePreBlurRender_)
+					g_renderingEngine->SetPreBlurMode(true);
+
 				layout_->Render(rc);
 				bgCircle_.Draw(rc);
-
 				hpGauge_.Draw(rc);
 				icon_.Draw(rc);
+
+				if (usePreBlurRender_)
+					g_renderingEngine->SetPreBlurMode(false);
 			}
 		}
 
@@ -871,7 +901,11 @@ namespace app
 		void EnemyHpUIObject::Render(RenderContext& rc)
 		{
 			if (layout_ && isVisible_) {
+				if (usePreBlurRender_)
+					g_renderingEngine->SetPreBlurMode(true);
 				layout_->Render(rc);
+				if (usePreBlurRender_)
+					g_renderingEngine->SetPreBlurMode(false);
 			}
 		}
 
