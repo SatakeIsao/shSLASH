@@ -71,10 +71,10 @@
                 "type": "UIIcon",
                 "name": "Text_Yes",
                 "asset": "Assets/ui/pause/camera/YES.DDS",
-                "width": 88,
-                "height": 42,
+                "width": 440,
+                "height": 208,
                 "position": [0.0, 55.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
+                "scale": [0.2, 0.2, 1.0],
                 "rotation": 0.0,
                 "color": [1.0, 1.0, 1.0, 1.0]
             },
@@ -82,10 +82,10 @@
                 "type": "UIIcon",
                 "name": "Text_No",
                 "asset": "Assets/ui/pause/camera/NO.DDS",
-                "width": 88,
-                "height": 42,
+                "width": 444,
+                "height": 207,
                 "position": [0.0, -55.0, 0.0],
-                "scale": [1.0, 1.0, 1.0],
+                "scale": [0.17, 0.17, 1.0],
                 "rotation": 0.0,
                 "color": [1.0, 1.0, 1.0, 1.0]
             }
