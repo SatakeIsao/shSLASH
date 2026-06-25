@@ -67,8 +67,7 @@ void SceneManager::Update()
 			m_waitTime = 0.0f;
 			m_elapsedTime = 0.0f;
 			nextSceneId_ = INVALID_SCENE_ID;
-			m_isFadingIn = true;
-			Fade::Get().FadeIn(0.5f);
+			// FadeIn は Load() 完了後に呼ぶ
 		}
 	}
 
@@ -96,6 +95,10 @@ void SceneManager::CreateScene(const uint32_t id)
 	auto& createSceneFunc = it->second;
 	m_currentScene = createSceneFunc();
 	m_currentScene->Start();
+	if (Fade::Get().IsEnabled()) {
+		m_isFadingIn = true;
+		Fade::Get().FadeIn(0.5f);
+	}
 }
 
 
@@ -119,15 +122,14 @@ SceneManagerObject::~SceneManagerObject()
 bool SceneManagerObject::Start()
 {
 	// 最初のシーンを設定
-//#if defined(APP_DEBUG)
-//	SceneManager::Get().CreateScene(DebugScene::ID());
-//#else
-	//SceneManager::Get().CreateScene(StartupScene::ID());
-//#endif // APP_DEBUG
+//  #if defined(APP_DEBUG)
+//  	SceneManager::Get().CreateScene(BootScene::ID());
+//  #else
+//  	SceneManager::Get().CreateScene(StartupScene::ID());
+//  #endif // APP_DEBUG
 
 	/** デバックテスト */
 	SceneManager::Get().CreateScene(TitleScene::ID());
-
 	return true;
 }
 

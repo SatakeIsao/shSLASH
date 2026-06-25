@@ -38,6 +38,8 @@ private:
         const Vector3* targetPosition = nullptr; // 追従先座標へのポインタ
     };
     std::vector<FollowEffectEntry> m_followEffectList;
+    /** PlayEffect() で生成した非追従エフェクトの追跡リスト（シーン遷移時に強制停止するために保持） */
+    std::vector<EffectEmitter*> m_activeEffectList;
 
 
 private:

@@ -24,11 +24,31 @@ EffectManager::EffectManager()
 
 EffectManager::~EffectManager()
 {
+	for (auto* emitter : m_activeEffectList)
+	{
+		if (emitter && emitter->IsPlay())
+			emitter->Stop();
+	}
+	m_activeEffectList.clear();
+
+	for (auto& entry : m_followEffectList)
+	{
+		if (entry.emitter && entry.emitter->IsPlay())
+			entry.emitter->Stop();
+	}
+	m_followEffectList.clear();
 }
 
 
 void EffectManager::Update()
 {
+	// 終了済みの非追従エフェクトをリストから除去
+	m_activeEffectList.erase(
+		std::remove_if(m_activeEffectList.begin(), m_activeEffectList.end(),
+			[](EffectEmitter* e) { return e == nullptr || !e->IsPlay(); }),
+		m_activeEffectList.end()
+	);
+
 	// 追従エフェクトの座標を毎フレーム同期
 	// 終了済みエントリ（K2Engine側で削除済み）は除去する
 	m_followEffectList.erase(
@@ -68,6 +88,7 @@ EffectHandle EffectManager::PlayEffect(const int kind, const Vector3& position, 
 	{
 		m_effect->SetSpeed(speed);
 	}
+	m_activeEffectList.push_back(m_effect);
 
 	return m_effectHandleCount;
 }
