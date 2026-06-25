@@ -18,7 +18,7 @@ private:
 
 	//
 	// app::ui::Layout gameOverLayout_;
-	std::unique_ptr<app::ui::GameOverSequence> gameOverSequence_;
+	app::ui::GameOverSequence* gameOverSequence_ = nullptr;
 	bool isGameOver_ = false;
 
 public:

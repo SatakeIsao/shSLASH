@@ -17,6 +17,7 @@ TutorialScene::TutorialScene()
 TutorialScene::~TutorialScene()
 {
     app::SoundManager::Get().StopAllSE();
+    DeleteGO(gameOverSequence_);
     if (confirmObject_)
     {
         DeleteGO(confirmObject_);
@@ -39,14 +40,15 @@ TutorialScene::~TutorialScene()
 bool TutorialScene::Start()
 {
     g_sceneLight->SetBattleLighting();
-
-    app::battle::BattleManager::Initialize();
-    app::battle::BattleManager::Get().SetTutorialMode(true);
-    app::battle::BattleManager::Get().SetTutorialNoDamage(true);
+    if (!app::battle::BattleManager::IsAvailable()) {
+        app::battle::BattleManager::Initialize();
+        app::battle::BattleManager::Get().SetTutorialMode(true);
+        app::battle::BattleManager::Get().SetTutorialNoDamage(true);
+    }
     app::battle::BattleManager::Get().Start();
     app::battle::BattleManager::Get().SetPlayerInputEnabled(false);
 
-    gameOverSequence_ = std::make_unique<app::ui::GameOverSequence>();
+    gameOverSequence_ = NewGO<app::ui::GameOverSequence>(static_cast<uint8_t>(ObjectPriority::GameOverUI));
 
     tutorialUI_ = NewGO<app::ui::TutorialUIObject>(
         static_cast<uint8_t>(ObjectPriority::PlayerUI));
@@ -87,6 +89,21 @@ void TutorialScene::Update()
         // 実践フェーズ前はリスポーン有効、フェーズ到達後は無効
         const bool practicePhase = tutorialUI_->IsPracticePhaseReached();
         app::battle::BattleManager::Get().SetTutorialRespawnEnabled(!practicePhase);
+
+        // 実践フェーズ到達後はダメージを有効にする
+        if (practicePhase)
+            app::battle::BattleManager::Get().SetTutorialNoDamage(false);
+    }
+
+    // プレイヤーがDeadステートに遷移したらゲームオーバー開始
+    if (!isGameOver_ && !isAllEnemiesDefeated_ && !isSkipRequested_)
+    {
+        if (app::battle::BattleManager::Get().IsPlayerDead())
+        {
+            isGameOver_ = true;
+            app::battle::BattleManager::Get().SetGameOverFreeze(true);
+            if (gameOverSequence_) gameOverSequence_->StartSequence();
+        }
     }
 
     if (!isGameOver_ && !isAllEnemiesDefeated_ && !isSkipRequested_)
@@ -153,9 +170,6 @@ void TutorialScene::Update()
         }
     }
 
-    if (isGameOver_) {
-        gameOverSequence_->Update();
-    }
 }
 
 
@@ -164,9 +178,6 @@ void TutorialScene::Render(RenderContext& rc)
     if (app::battle::BattleManager::IsAvailable())
     {
         app::battle::BattleManager::Get().Render(rc);
-    }
-    if (isGameOver_) {
-        gameOverSequence_->Render(rc);
     }
 }
 
@@ -182,11 +193,25 @@ bool TutorialScene::RequestScene(uint32_t& id, float& waitTime)
 
     if (isGameOver_)
     {
-        if (gameOverSequence_ && gameOverSequence_->IsReturnTitleDecided())
+        if (gameOverSequence_)
         {
-            id = TitleScene::ID();
-            waitTime = 1.0f;
-            return true;
+            if (gameOverSequence_->IsRetryDecided())
+            {
+                id = TutorialScene::ID();
+                waitTime = 1.0f;
+                return true;
+            }
+            if (gameOverSequence_->IsReturnTitleDecided())
+            {
+                id = TitleScene::ID();
+                waitTime = 1.0f;
+                return true;
+            }
+            if (gameOverSequence_->IsExitDecided())
+            {
+                PostQuitMessage(0);
+                return false;
+            }
         }
         return false;
     }

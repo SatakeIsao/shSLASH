@@ -16,7 +16,7 @@ class TutorialScene : public IScene
     appScene(TutorialScene);
 
 private:
-    std::unique_ptr<app::ui::GameOverSequence> gameOverSequence_;
+    app::ui::GameOverSequence* gameOverSequence_ = nullptr;
     app::ui::TutorialUIObject* tutorialUI_ = nullptr;
     app::ui::TutorialPauseHintObject* tutorialPauseHint_ = nullptr;
     bool isGameOver_ = false;
