@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "ParallelFor.h"
 
 
@@ -7,31 +7,31 @@ namespace app
     namespace core
     {
         /**
-         * ƒWƒ‡ƒuƒVƒXƒeƒ€ƒNƒ‰ƒX
-         * ˆ—‚ğƒWƒ‡ƒu’PˆÊ‚ÅŠÇ—‚µˆË‘¶ŠÖŒW‚ğl—¶‚µ‚Ä•À—ñÀs‚·‚é
+         * ã‚¸ãƒ§ãƒ–ã‚·ã‚¹ãƒ†ãƒ ã‚¯ãƒ©ã‚¹
+         * å‡¦ç†ã‚’ã‚¸ãƒ§ãƒ–å˜ä½ã§ç®¡ç†ã—ä¾å­˜é–¢ä¿‚ã‚’è€ƒæ…®ã—ã¦ä¸¦åˆ—å®Ÿè¡Œã™ã‚‹
          */
         class JobSystem
         {
         public:
             /**
-             * ƒWƒ‡ƒu\‘¢‘Ì
+             * ã‚¸ãƒ§ãƒ–æ§‹é€ ä½“
              */
             struct Job
             {
-                std::function<void()> m_task;                               // ƒWƒ‡ƒu‚Ìƒ^ƒXƒN
-                std::atomic<int> m_unfinishedDependencies{ 0 };             // –¢Š®—¹‚ÌˆË‘¶ƒWƒ‡ƒu”
-                std::vector<std::shared_ptr<Job>> m_dependents;             // ˆË‘¶‚µ‚Ä‚¢‚éƒWƒ‡ƒuƒŠƒXƒg
-                std::vector<std::function<void()>> m_callbacks;             // Š®—¹‚ÉŒÄ‚ÔŠÖ”ƒŠƒXƒg
-                std::atomic<bool> m_completed{ false };                     // ƒWƒ‡ƒuŠ®—¹ƒtƒ‰ƒO
-                std::mutex m_syncMutex;                                     // “¯Šú—pƒ~ƒ…[ƒeƒbƒNƒX
-                std::condition_variable m_completedConditionVariable;       // Š®—¹’Ê’m—pğŒ•Ï”
+                std::function<void()> m_task;                               // ã‚¸ãƒ§ãƒ–ã®ã‚¿ã‚¹ã‚¯
+                std::atomic<int> m_unfinishedDependencies{ 0 };             // æœªå®Œäº†ã®ä¾å­˜ã‚¸ãƒ§ãƒ–æ•°
+                std::vector<std::shared_ptr<Job>> m_dependents;             // ä¾å­˜ã—ã¦ã„ã‚‹ã‚¸ãƒ§ãƒ–ãƒªã‚¹ãƒˆ
+                std::vector<std::function<void()>> m_callbacks;             // å®Œäº†æ™‚ã«å‘¼ã¶é–¢æ•°ãƒªã‚¹ãƒˆ
+                std::atomic<bool> m_completed{ false };                     // ã‚¸ãƒ§ãƒ–å®Œäº†ãƒ•ãƒ©ã‚°
+                std::mutex m_syncMutex;                                     // åŒæœŸç”¨ãƒŸãƒ¥ãƒ¼ãƒ†ãƒƒã‚¯ã‚¹
+                std::condition_variable m_completedConditionVariable;       // å®Œäº†é€šçŸ¥ç”¨æ¡ä»¶å¤‰æ•°
                 //
                 Job(const std::function<void()>& t) : m_task(std::move(t)) {}
             };
 
 
         public:
-            /** ƒWƒ‡ƒuƒnƒ“ƒhƒ‹Œ^’è‹` */
+            /** ã‚¸ãƒ§ãƒ–ãƒãƒ³ãƒ‰ãƒ«å‹å®šç¾© */
             using JobHandle = std::shared_ptr<Job>;
 
 
@@ -40,25 +40,25 @@ namespace app
 
 
         public:
-            /** ƒWƒ‡ƒu‚ğì¬‚·‚é */
+            /** ã‚¸ãƒ§ãƒ–ã‚’ä½œæˆã™ã‚‹ */
             JobHandle CreateJob(std::function<void()> task)
             {
                 return std::make_shared<Job>(std::move(task));
             }
 
-            /** Š®—¹‚ÉÀs‚·‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^ */
+            /** å®Œäº†æ™‚ã«å®Ÿè¡Œã™ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ² */
             void SetCallback(JobHandle job, std::function<void()> callback)
             {
                 if (!job) return;
                 std::lock_guard<std::mutex> lock(job->m_syncMutex);
                 if (job->m_completed) {
-                    callback(); // ‚·‚Å‚ÉI‚í‚Á‚Ä‚¢‚ê‚Î‘¦Às
+                    callback(); // ã™ã§ã«çµ‚ã‚ã£ã¦ã„ã‚Œã°å³å®Ÿè¡Œ
                 } else {
                     job->m_callbacks.push_back(std::move(callback));
                 }
             }
 
-            /** ˆË‘¶ŠÖŒW‚ğ’Ç‰Á */
+            /** ä¾å­˜é–¢ä¿‚ã‚’è¿½åŠ  */
             void AddDependency(JobHandle parent, JobHandle child)
             {
                 if (!parent || !child) return;
@@ -69,8 +69,8 @@ namespace app
             }
 
             /**
-             * ƒWƒ‡ƒu‚ğÀs
-             * NOTE: ˆË‘¶ŠÖŒW‚ğl—¶
+             * ã‚¸ãƒ§ãƒ–ã‚’å®Ÿè¡Œ
+             * NOTE: ä¾å­˜é–¢ä¿‚ã‚’è€ƒæ…®
              */
             void Run(JobHandle job)
             {
@@ -80,13 +80,13 @@ namespace app
                 }
             }
 
-            /** Š®—¹‚µ‚½‚©ƒ`ƒFƒbƒN */
+            /** å®Œäº†ã—ãŸã‹ãƒã‚§ãƒƒã‚¯ */
             bool IsCompleted(JobHandle job) const
             {
                 return job ? job->m_completed.load() : true;
             }
 
-            /** I‚í‚é‚Ü‚Å‘Ò‹@ */
+            /** çµ‚ã‚ã‚‹ã¾ã§å¾…æ©Ÿ */
             void Wait(JobHandle job)
             {
                 if (!job || job->m_completed) return;
@@ -97,13 +97,13 @@ namespace app
 
         private:
             /**
-             * ƒWƒ‡ƒu‚ğƒXƒŒƒbƒh‚É“Š“ü‚·‚é
+             * ã‚¸ãƒ§ãƒ–ã‚’ã‚¹ãƒ¬ãƒƒãƒ‰ã«æŠ•å…¥ã™ã‚‹
              */
             void Submit(JobHandle job)
             {
                 ThreadPool::GetInstance().Enqueue([this, job]
                     {
-                        // ƒ^ƒXƒNÀs
+                        // ã‚¿ã‚¹ã‚¯å®Ÿè¡Œ
                         job->m_task();
 
                         std::vector<JobHandle> ready_jobs;
@@ -112,25 +112,25 @@ namespace app
                             std::lock_guard<std::mutex> lock(job->m_syncMutex);
                             job->m_completed = true;
 
-                            // Œã‘±ƒWƒ‡ƒu‚Ì€”õ
+                            // å¾Œç¶šã‚¸ãƒ§ãƒ–ã®æº–å‚™
                             for (auto& dep : job->m_dependents) {
                                 if (--dep->m_unfinishedDependencies == 0) ready_jobs.push_back(dep);
                             }
-                            // ƒR[ƒ‹ƒoƒbƒN‚ÌƒRƒs[
+                            // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã®ã‚³ãƒ”ãƒ¼
                             local_callbacks = std::move(job->m_callbacks);
                         }
 
-                        // Œã‘±ƒWƒ‡ƒu‚ğƒLƒ…[‚Ö
+                        // å¾Œç¶šã‚¸ãƒ§ãƒ–ã‚’ã‚­ãƒ¥ãƒ¼ã¸
                         for (auto& r : ready_jobs) {
                             Submit(r);
                         }
 
-                        // ƒR[ƒ‹ƒoƒbƒNÀs
+                        // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å®Ÿè¡Œ
                         for (auto& cb : local_callbacks) {
                             cb();
                         }
 
-                        // Š®—¹’Ê’m
+                        // å®Œäº†é€šçŸ¥
                         job->m_completedConditionVariable.notify_all();
                     });
             }
@@ -140,7 +140,7 @@ namespace app
 
         public:
             /**
-             * ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒXæ“¾
+             * ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å–å¾—
              */
             static JobSystem& GetInstance()
             {

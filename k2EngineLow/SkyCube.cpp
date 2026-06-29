@@ -33,16 +33,16 @@ namespace nsK2EngineLow
 	bool SkyCube::Start()
 	{
 		ModelInitData initData;
-		//tkmƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚é
+		//tkmï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½wï¿½è‚·ï¿½ï¿½
 		initData.m_tkmFilePath = "Assets/ModelData/preset/sky.tkm";
-		//ƒVƒF[ƒ_[ƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚é
+		//ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½Xï¿½ï¿½ï¿½wï¿½è‚·ï¿½ï¿½
 		initData.m_fxFilePath = "Assets/Shader/skyCube.fx";
 		initData.m_vsEntryPointFunc = "VSMain";
 		initData.m_psEntryPointFunc = "PSMain";
 
-		for (int i = 0; i < enSkyCubeType_Num; i++) {
-			m_texture[i].InitFromDDSFile(m_textureFilePaths[i]);
-		}
+		// Only load the texture that is actually used.
+		// (Previously all enSkyCubeType_Num textures were loaded, causing a long freeze.)
+		m_texture[m_type].InitFromDDSFile(m_textureFilePaths[m_type]);
 
 		initData.m_expandShaderResoruceView[0] = &m_texture[m_type];
 		initData.m_expandConstantBuffer = &m_luminance;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "ParameterManager.h"
 
 
@@ -6,7 +6,7 @@ namespace app
 {
 	namespace core
 	{
-		ParameterManager* ParameterManager::m_instance = nullptr;	//‰Šú‰»
+		ParameterManager* ParameterManager::m_instance = nullptr;	// åˆæœŸåŒ–
 
 		ParameterManager::ParameterManager()
 		{
@@ -15,7 +15,7 @@ namespace app
 
 		ParameterManager::~ParameterManager()
 		{
-			//“®“IŠm•Û‚µ‚½ƒpƒ‰ƒ[ƒ^[‚ğ‘S‰ğ•ú
+			// å‹•çš„ç¢ºä¿ã—ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’å…¨è§£æ”¾
 			for (auto& it : m_parameterMap)
 			{
 				auto& parameters = it.second;

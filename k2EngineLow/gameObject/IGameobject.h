@@ -1,5 +1,5 @@
-/*!
- *@brief	ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ÌŠî’êƒNƒ‰ƒXB
+ï»¿/*!
+ *@brief	ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åŸºåº•ã‚¯ãƒ©ã‚¹ã€‚
  */
 
 #pragma once
@@ -10,12 +10,12 @@ namespace nsK2EngineLow {
 	class RenderContext;
 
 	/*!
-		*@brief	ƒQ[ƒ€ƒIƒuƒWƒFƒNƒgB
+		*@brief	ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
 		*/
 	class IGameObject : public Noncopyable {
 	public:
 		/*!
-			*@brief	ƒfƒXƒgƒ‰ƒNƒ^
+			*@brief	ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 			*/
 		virtual ~IGameObject()
 		{
@@ -24,21 +24,21 @@ namespace nsK2EngineLow {
 
 
 		/*!
-		*@brief	Update‚Ì’¼‘O‚ÅŒÄ‚Î‚ê‚éŠJnˆ—B
+		*@brief	Updateã®ç›´å‰ã§å‘¼ã°ã‚Œã‚‹é–‹å§‹å‡¦ç†ã€‚
 		*@details
 		*
-		* –{ŠÖ”‚ªtrue‚ğ•Ô‚·‚ÆƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚Ì€”õ‚ªŠ®—¹‚µ‚½‚Æ”»’f‚³‚ê‚Ä</br>
-		* UpdateŠÖ”‚ªŒÄ‚Î‚êo‚µ‚Ü‚·Btrue‚ğ•Ô‚µ‚ÄˆÈ~‚ÍStartŠÖ”‚ÍŒÄ‚Î‚ê‚È‚­‚È‚è‚Ü‚·B</br>
-		* ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚Ì‰Šú‰»‚É•¡”ƒtƒŒ[ƒ€‚©‚©‚éê‡‚È‚Ç‚Ífalse‚ğ•Ô‚µ‚ÄA‰Šú‰»ƒXƒeƒbƒv‚È‚Ç‚ğg‚Á‚Ä</br>
-		* “KØ‚É‰Šú‰»‚ğs‚Á‚Ä‚­‚¾‚³‚¢B
+		* æœ¬é–¢æ•°ãŒtrueã‚’è¿”ã™ã¨ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æº–å‚™ãŒå®Œäº†ã—ãŸã¨åˆ¤æ–­ã•ã‚Œã¦</br>
+		* Updateé–¢æ•°ãŒå‘¼ã°ã‚Œå‡ºã—ã¾ã™ã€‚trueã‚’è¿”ã—ã¦ä»¥é™ã¯Starté–¢æ•°ã¯å‘¼ã°ã‚Œãªããªã‚Šã¾ã™ã€‚</br>
+		* ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–ã«è¤‡æ•°ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‹ã‚‹å ´åˆãªã©ã¯falseã‚’è¿”ã—ã¦ã€åˆæœŸåŒ–ã‚¹ãƒ†ãƒƒãƒ—ãªã©ã‚’ä½¿ã£ã¦</br>
+		* é©åˆ‡ã«åˆæœŸåŒ–ã‚’è¡Œã£ã¦ãã ã•ã„ã€‚
 		*/
 		virtual bool Start() { return true; }
 		/*!
-			*@brief	XV
+			*@brief	æ›´æ–°
 			*/
 		virtual void Update() {}
 		/*!
-		 *@brief	•`‰æ
+		 *@brief	æç”»
 		*/
 		virtual void Render(RenderContext& renderContext)
 		{
@@ -47,28 +47,28 @@ namespace nsK2EngineLow {
 
 	public:
 		/*!
-		*@brief StartŠÖ”‚ªŠ®—¹‚µ‚½H
+		*@brief Starté–¢æ•°ãŒå®Œäº†ã—ãŸï¼Ÿ
 		*/
 		bool IsStart() const
 		{
 			return m_isStart;
 		}
 		/*!
-		*@brief ƒAƒNƒeƒBƒu‚©‚Ç‚¤‚©‚ğ”»’èB
+		*@brief ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‹ã©ã†ã‹ã‚’åˆ¤å®šã€‚
 		*/
 		bool IsActive() const
 		{
 			return m_isActive;
 		}
 		/// <summary>
-		/// ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ğƒAƒNƒeƒBƒu‚É‚·‚éB
+		/// ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã™ã‚‹ã€‚
 		/// </summary>
 		void Activate()
 		{
 			m_isActive = true;
 		}
 		/// <summary>
-		/// ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ğ”ñƒAƒNƒeƒBƒu‚É‚·‚éB
+		/// ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã™ã‚‹ã€‚
 		/// </summary>
 		void Deactivate()
 		{
@@ -76,24 +76,24 @@ namespace nsK2EngineLow {
 		}
 
 		/// <summary>
-		/// €–S‚³‚¹‚éB
+		/// æ­»äº¡ã•ã›ã‚‹ã€‚
 		/// </summary>
 		void Dead()
 		{
 			m_isDead = true;
 		}
 		/// <summary>
-		/// €–S‚µ‚Ä‚¢‚éH
+		/// æ­»äº¡ã—ã¦ã„ã‚‹ï¼Ÿ
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚ç€–S‚µ‚Ä‚¢‚é</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰æ­»äº¡ã—ã¦ã„ã‚‹</returns>
 		bool IsDead() const
 		{
 			return m_isDead;
 		}
 		/// <summary>
-		/// ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚Ì–¼‘O‚ğİ’èB
+		/// ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åå‰ã‚’è¨­å®šã€‚
 		/// </summary>
-		/// <param name="name">–¼‘O</param>
+		/// <param name="name">åå‰</param>
 		void SetName(const char* name)
 		{
 			if (name != nullptr) {
@@ -101,7 +101,7 @@ namespace nsK2EngineLow {
 			}
 		}
 		/// <summary>
-		/// ˆø”‚Å“n‚³‚ê‚½–¼‘O‚ªA‚±‚ÌƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚Ì–¼‘O‚Æƒ}ƒbƒ`‚·‚é‚©”»’èB
+		/// å¼•æ•°ã§æ¸¡ã•ã‚ŒãŸåå‰ãŒã€ã“ã®ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åå‰ã¨ãƒãƒƒãƒã™ã‚‹ã‹åˆ¤å®šã€‚
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -131,19 +131,19 @@ namespace nsK2EngineLow {
 		{
 			if (m_isActive && !m_isStart && !m_isDead) {
 				if (Start()) {
-					//‰Šú‰»ˆ—Š®—¹B
+					// åˆæœŸåŒ–å‡¦ç†å®Œäº†ã€‚
 					m_isStart = true;
 				}
 			}
 		}
 		friend class CGameObjectManager;
 	protected:
-		std::string m_name = "default";					//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚Ì–¼‘O
-		bool m_isStart = false;							//Start‚ÌŠJnƒtƒ‰ƒOB
-		bool m_isDead = false;							//€–Sƒtƒ‰ƒOB
-		bool m_isRegistDeadList = false;				//€–SƒŠƒXƒg‚ÉÏ‚Ü‚ê‚Ä‚¢‚éB
-		bool m_isNewFromGameObjectManager;	//GameObjectManager‚Ånew‚³‚ê‚½B
-		bool m_isRegist = false;							//GameObjectManager‚É“o˜^‚³‚ê‚Ä‚¢‚éH
-		bool m_isActive = true;							//Activeƒtƒ‰ƒOB
+		std::string m_name = "default";					// ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åå‰
+		bool m_isStart = false;							// Startã®é–‹å§‹ãƒ•ãƒ©ã‚°ã€‚
+		bool m_isDead = false;							// æ­»äº¡ãƒ•ãƒ©ã‚°ã€‚
+		bool m_isRegistDeadList = false;				// æ­»äº¡ãƒªã‚¹ãƒˆã«ç©ã¾ã‚Œã¦ã„ã‚‹ã€‚
+		bool m_isNewFromGameObjectManager;				// GameObjectManagerã§newã•ã‚ŒãŸã€‚
+		bool m_isRegist = false;						// GameObjectManagerã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ï¼Ÿ
+		bool m_isActive = true;							// Activeãƒ•ãƒ©ã‚°ã€‚
 	};
 }

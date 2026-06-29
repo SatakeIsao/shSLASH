@@ -1,35 +1,35 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@B
+	/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
 	/// </summary>
 	/// <remarks>
 	/// </remarks>
 	class IndexBuffer : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~IndexBuffer();
 		/// <summary>
-		/// ‰Šú‰»B
+		/// åˆæœŸåŒ–ã€‚
 		/// </summary>
-		/// <param name="size">ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒTƒCƒYB</param>
-		/// <param name="stride">ƒXƒgƒ‰ƒCƒhB</param>
+		/// <param name="size">ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚ºã€‚</param>
+		/// <param name="stride">ã‚¹ãƒˆãƒ©ã‚¤ãƒ‰ã€‚</param>
 		void Init(int size, int stride);
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚ğƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÉƒRƒs[B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã€‚
 		/// </summary>
-		/// <param name="srcIndecies">ƒRƒs[Œ³‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^B</param>
+		/// <param name="srcIndecies">ã‚³ãƒ”ãƒ¼å…ƒã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã€‚</param>
 		void Copy(uint16_t* srcIndecies);
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚ğƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÉƒRƒs[B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã€‚
 		/// </summary>
-		/// <param name="srcIndecies">ƒRƒs[Œ³‚ÌƒCƒ“ƒfƒbƒNƒXƒf[ƒ^B</param>
+		/// <param name="srcIndecies">ã‚³ãƒ”ãƒ¼å…ƒã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã€‚</param>
 		void Copy(uint32_t* srcIndecies);
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒrƒ…[‚ğæ“¾B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		const D3D12_INDEX_BUFFER_VIEW& GetView() const
@@ -37,26 +37,26 @@ namespace nsK2EngineLow {
 			return m_indexBufferView;
 		}
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒX‚Ì”‚ğæ“¾B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ•°ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>ƒCƒ“ƒfƒbƒNƒX‚Ì”B</returns>
+		/// <returns>ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ•°ã€‚</returns>
 		int GetCount() const
 		{
 			return m_count;
 		}
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒXƒgƒ‰ƒCƒh‚ğæ“¾B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ã‚¹ãƒˆãƒ©ã‚¤ãƒ‰ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// ƒXƒgƒ‰ƒCƒh‚Æ‚¢‚¤‚Ì‚ÍA‚P—v‘f‚ÌƒTƒCƒY‚Ì‚±‚ÆB
-		/// ‚±‚±‚Å‚ÍAˆê‚Â‚ÌƒCƒ“ƒfƒbƒNƒX‚ÌƒTƒCƒY‚ğæ“¾‚·‚é‚±‚Æ‚É‚È‚éB
-		/// 2‚©4‚ª•Ô‚Á‚Ä‚«‚Ü‚·B
+		/// ã‚¹ãƒˆãƒ©ã‚¤ãƒ‰ã¨ã„ã†ã®ã¯ã€ï¼‘è¦ç´ ã®ã‚µã‚¤ã‚ºã®ã“ã¨ã€‚
+		/// ã“ã“ã§ã¯ã€ä¸€ã¤ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ã“ã¨ã«ãªã‚‹ã€‚
+		/// 2ã‹4ãŒè¿”ã£ã¦ãã¾ã™ã€‚
 		/// <returns></returns>
 		UINT GetStrideInBytes() const
 		{
 			return static_cast<UINT>(m_strideInBytes);
 		}
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒTƒCƒY(’PˆÊFƒoƒCƒg)‚ğæ“¾B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º(å˜ä½ï¼šãƒã‚¤ãƒˆ)ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		UINT GetSizeInBytes() const
@@ -64,7 +64,7 @@ namespace nsK2EngineLow {
 			return static_cast<UINT>(m_sizeInBytes);
 		}
 		/// <summary>
-		/// ID3D12Resource‚ÌƒAƒhƒŒƒX‚ğæ“¾‚µ‚Ü‚·B
+		/// ID3D12Resourceã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—ã—ã¾ã™ã€‚
 		/// </summary>
 		/// <returns></returns>
 		ID3D12Resource* GetID3DResourceAddress() const
@@ -74,14 +74,14 @@ namespace nsK2EngineLow {
 	private:
 
 		/// <summary>
-		/// ‰ğ•ú
+		/// è§£æ”¾
 		/// </summary>
 		void Release();
 	private:
-		ID3D12Resource* m_indexBuffer = nullptr;	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@B
-		D3D12_INDEX_BUFFER_VIEW m_indexBufferView;	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒrƒ…[B
-		int m_count = 0;							//ƒCƒ“ƒfƒbƒNƒX‚Ì”B
-		int m_strideInBytes = 0;					//ƒXƒgƒ‰ƒCƒh(’PˆÊFƒoƒCƒg)B
-		int m_sizeInBytes = 0;						//ƒTƒCƒY(’PˆÊFƒoƒCƒg)B
+		ID3D12Resource* m_indexBuffer = nullptr;	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+		D3D12_INDEX_BUFFER_VIEW m_indexBufferView;	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼ã€‚
+		int m_count = 0;							//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ•°ã€‚
+		int m_strideInBytes = 0;					//ã‚¹ãƒˆãƒ©ã‚¤ãƒ‰(å˜ä½ï¼šãƒã‚¤ãƒˆ)ã€‚
+		int m_sizeInBytes = 0;						//ã‚µã‚¤ã‚º(å˜ä½ï¼šãƒã‚¤ãƒˆ)ã€‚
 	};
 }

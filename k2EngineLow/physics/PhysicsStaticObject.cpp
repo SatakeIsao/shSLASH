@@ -1,5 +1,5 @@
-/*!
-* @brief	�ÓI�I�u�W�F�N�g�B
+﻿/*!
+* @brief	静的オブジェクト。
 */
 
 

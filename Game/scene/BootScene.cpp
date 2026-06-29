@@ -1,6 +1,6 @@
-/**
+ï»¿/**
  * BootScene.cpp
- * ‹N“®‰æ–Ê‚ÌƒV[ƒ“
+ * èµ·å‹•ç”»é¢ã®ã‚·ãƒ¼ãƒ³
  */
 #include "stdafx.h"
 #include "BootScene.h"
@@ -31,9 +31,9 @@ namespace
 
 	static const SelectSceneInformation selectSceneinformationList[static_cast<uint8_t>(SceneKind::Max)] =
 	{
-		SelectSceneInformation(L"ƒfƒoƒbƒO", Vector3(0.0f, 100.0f, 0.0f), DebugScene::ID()),
-		SelectSceneInformation(L"ƒXƒ^[ƒgƒAƒbƒv", Vector3(0.0f, 200.0f, 0.0f), StartupScene::ID()),
-		SelectSceneInformation(L"ƒQ[ƒ€ƒI[ƒo[",Vector3(0.0f,300.0f,0.0f),GameOverScene::ID()),
+		SelectSceneInformation(L"ãƒ‡ãƒãƒƒã‚°", Vector3(0.0f, 100.0f, 0.0f), DebugScene::ID()),
+		SelectSceneInformation(L"ã‚¹ã‚¿ãƒ¼ãƒˆã‚¢ãƒƒãƒ—", Vector3(0.0f, 200.0f, 0.0f), StartupScene::ID()),
+		SelectSceneInformation(L"ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼",Vector3(0.0f,300.0f,0.0f),GameOverScene::ID()),
 	};
 
 
@@ -58,13 +58,13 @@ BootScene::~BootScene()
 
 bool BootScene::Start()
 {
-	// ƒV[ƒ“‘I‘ğ—p‚É•\¦B‚Ç‚ñ‚ÈƒV[ƒ“‚ª‚ ‚é‚©
+	// ã‚·ãƒ¼ãƒ³é¸æŠç”¨ã«è¡¨ç¤ºã€‚ã©ã‚“ãªã‚·ãƒ¼ãƒ³ãŒã‚ã‚‹ã‹
 	for (uint8_t i = 0; i < static_cast<uint8_t>(SceneKind::Max); i++) {
 		const auto& info = selectSceneinformationList[i];
 		m_sceneText[i].SetText(info.name);
 		m_sceneText[i].SetPosition(info.position);
 	}
-	// ‘I‘ğ‚µ‚Ä‚¢‚éŒÂŠ‚ğ•ª‚©‚é‚æ‚¤‚É‚·‚éƒAƒCƒRƒ“
+	// é¸æŠã—ã¦ã„ã‚‹å€‹æ‰€ã‚’åˆ†ã‹ã‚‹ã‚ˆã†ã«ã™ã‚‹ã‚¢ã‚¤ã‚³ãƒ³
 	//m_selecterRender.Init("Assets/modelData/debug/selecter.dds", 64.0f, 64.0f);
 
 	return true;
@@ -75,20 +75,20 @@ void BootScene::Update()
 {
 	if (g_pad[0]->IsTrigger(enButtonUp)) {
 		m_selectIndex--;
-		// Å¬’lƒ`ƒFƒbƒN
+		// æœ€å°å€¤ãƒã‚§ãƒƒã‚¯
 		if (m_selectIndex < static_cast<uint8_t>(SceneKind::Default)) {
-			m_selectIndex = static_cast<uint8_t>(SceneKind::Default);	// ”ÍˆÍŠO‚É‚È‚ç‚È‚¢‚æ‚¤‚É’²®
+			m_selectIndex = static_cast<uint8_t>(SceneKind::Default);	// ç¯„å›²å¤–ã«ãªã‚‰ãªã„ã‚ˆã†ã«èª¿æ•´
 		}
 	}
 	else if (g_pad[0]->IsTrigger(enButtonDown)) {
 		m_selectIndex++;
-		// Å‘å’lƒ`ƒFƒbƒN
+		// æœ€å¤§å€¤ãƒã‚§ãƒƒã‚¯
 		if (m_selectIndex >= static_cast<uint8_t>(SceneKind::Max)) {
-			m_selectIndex = static_cast<uint8_t>(SceneKind::Max) - 1;	// ”ÍˆÍŠO‚É‚È‚ç‚È‚¢‚æ‚¤‚É’²®
+			m_selectIndex = static_cast<uint8_t>(SceneKind::Max) - 1;	// ç¯„å›²å¤–ã«ãªã‚‰ãªã„ã‚ˆã†ã«èª¿æ•´
 		}
 	}
 
-	// ƒV[ƒ“İ’è
+	// ã‚·ãƒ¼ãƒ³è¨­å®š
 	if (g_pad[0]->IsTrigger(enButtonA)) {
 		const auto& info = selectSceneinformationList[m_selectIndex];
 		m_requestSceneId = info.sceneId;
@@ -101,12 +101,12 @@ void BootScene::Update()
 
 void BootScene::Render(RenderContext& rc)
 {
-	// ƒV[ƒ“‚Ì–¼‘O•`‰æ
+	// ã‚·ãƒ¼ãƒ³ã®åå‰æç”»
 	for (uint8_t i = 0; i < static_cast<uint8_t>(SceneKind::Max); i++)
 	{
 		m_sceneText[i].Draw(rc);
 	}
-	// ƒZƒŒƒNƒ^[•`‰æ
+	// ã‚»ãƒ¬ã‚¯ã‚¿ãƒ¼æç”»
 	//m_selecterRender.Draw(rc);
 }
 

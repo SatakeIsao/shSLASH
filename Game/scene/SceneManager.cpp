@@ -71,6 +71,14 @@ void SceneManager::Update()
 		}
 	}
 
+	// 非同期ロード中のシーンが準備完了を通知したらフェードインを開始する。
+	if (!m_isFadingIn && !m_isFadingOut && m_currentScene
+		&& Fade::Get().IsEnabled() && m_currentScene->IsReadyToFadeIn())
+	{
+		m_isFadingIn = true;
+		Fade::Get().FadeIn(0.5f);
+	}
+
 	if (m_isFadingIn && Fade::Get().IsFadeInComplete()) {
 		m_isFadingIn = false;
 		Fade::Get().Disable();
@@ -95,7 +103,10 @@ void SceneManager::CreateScene(const uint32_t id)
 	auto& createSceneFunc = it->second;
 	m_currentScene = createSceneFunc();
 	m_currentScene->Start();
-	if (Fade::Get().IsEnabled()) {
+	// シーンが即座に準備完了の場合のみフェードインする。
+	// 非同期ロードするシーンはIsReadyToFadeIn()がfalseを返すため、
+	// 準備完了後にSceneManager::Update()がフェードインを開始する。
+	if (Fade::Get().IsEnabled() && m_currentScene->IsReadyToFadeIn()) {
 		m_isFadingIn = true;
 		Fade::Get().FadeIn(0.5f);
 	}

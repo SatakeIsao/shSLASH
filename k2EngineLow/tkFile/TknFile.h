@@ -1,33 +1,33 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// tknƒtƒ@ƒCƒ‹
+	/// tknãƒ•ã‚¡ã‚¤ãƒ«
 	/// </summary>
 	class TknFile : public Noncopyable {
 	public:
 		/// <summary>
-		/// tknƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_[
+		/// tknãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€ãƒ¼
 		/// </summary>
 		struct SHeader {
-			std::uint32_t numCell;	// ƒZƒ‹‚Ì”B
+			std::uint32_t numCell;	// ã‚»ãƒ«ã®æ•°ã€‚
 		};
 		/// <summary>
-		/// ƒZƒ‹‚Ìƒf[ƒ^B
+		/// ã‚»ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã€‚
 		/// </summary>
 		struct SCell {
-			Vector3 vertexPosition[3];	// ƒZƒ‹‚Ì’¸“_À•WB
-			Vector3 normal;				// ƒZƒ‹‚Ì–@üB
-			std::int32_t linkCellNo[3];	// —×ÚƒZƒ‹‚Ì”Ô†B
+			Vector3 vertexPosition[3];	// ã‚»ãƒ«ã®é ‚ç‚¹åº§æ¨™ã€‚
+			Vector3 normal;				// ã‚»ãƒ«ã®æ³•ç·šã€‚
+			std::int32_t linkCellNo[3];	// éš£æ¥ã‚»ãƒ«ã®ç•ªå·ã€‚
 		};
 		/// <summary>
-		/// tknƒtƒ@ƒCƒ‹‚ğƒ[ƒh‚·‚éB
+		/// tknãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã€‚
 		/// </summary>
-		/// <param name="filePath">tknƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒX</param>
-		/// <returns>false‚ª•Ô‚Á‚Ä‚«‚½‚çƒ[ƒh¸”sB</returns>
+		/// <param name="filePath">tknãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹</param>
+		/// <returns>falseãŒè¿”ã£ã¦ããŸã‚‰ãƒ­ãƒ¼ãƒ‰å¤±æ•—ã€‚</returns>
 		bool Load(const char* filePath);
 		/// <summary>
-		/// ƒZƒ‹‚Ì”‚ğæ“¾B
+		/// ã‚»ãƒ«ã®æ•°ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		int GetNumCell() const
@@ -35,16 +35,16 @@ namespace nsK2EngineLow {
 			return m_header.numCell;
 		}
 		/// <summary>
-		/// ƒZƒ‹‚ğæ“¾
+		/// ã‚»ãƒ«ã‚’å–å¾—
 		/// </summary>
-		/// <param name="cellNo">ƒZƒ‹”Ô†</param>
+		/// <param name="cellNo">ã‚»ãƒ«ç•ªå·</param>
 		/// <returns></returns>
 		const SCell& GetCell(int cellNo) const
 		{
 			return m_cellArray.at(cellNo);
 		}
 	private:
-		SHeader m_header;				// ƒwƒbƒ_B
-		std::vector<SCell> m_cellArray;	// ƒZƒ‹‚Ì”z—ñB
+		SHeader m_header;				// ãƒ˜ãƒƒãƒ€ã€‚
+		std::vector<SCell> m_cellArray;	// ã‚»ãƒ«ã®é…åˆ—ã€‚
 	};
 }

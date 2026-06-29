@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "Bloom.h"
 
 namespace nsK2EngineLow {
@@ -18,92 +18,92 @@ namespace nsK2EngineLow {
 
 		void Bloom::InitLumi(RenderTarget& mainRenderTarget)
 		{
-			//‹P“x’Šo—p‚ÌƒVƒF[ƒ_[
+			//è¼åº¦æŠ½å‡ºç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
 			luminanceSpriteInitData.m_fxFilePath = "Assets/Shader/postEffect.fx";
-			//’¸“_ƒVƒF[ƒ_[‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚é
+			//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æŒ‡å®šã™ã‚‹
 			luminanceSpriteInitData.m_vsEntryPointFunc = "VSMain";
-			//ƒsƒNƒZƒ‹ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’è‚·‚é
+			//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æŒ‡å®šã™ã‚‹
 			luminanceSpriteInitData.m_psEntryPoinFunc = "PSSamplingLuminance";
-			//ƒXƒvƒ‰ƒCƒg‚Ì•‚Æ‚‚³‚Í luminnceRenderTarget ‚Æ“¯‚¶
+			//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®å¹…ã¨é«˜ã•ã¯ luminnceRenderTarget ã¨åŒã˜
 			luminanceSpriteInitData.m_width = luminanceRenderTarget.GetWidth();
 			luminanceSpriteInitData.m_height = luminanceRenderTarget.GetHeight();
-			//ƒeƒNƒXƒ`ƒƒ‚ÍƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒJƒ‰[ƒoƒbƒtƒ@
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡
 			luminanceSpriteInitData.m_textures[0]
 				= &mainRenderTarget.GetRenderTargetTexture();
-			//‘‚«‚ŞƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒtƒH[ƒ}ƒbƒg‚ğw’è‚·‚é
+			//æ›¸ãè¾¼ã‚€ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’æŒ‡å®šã™ã‚‹
 			luminanceSpriteInitData.m_colorBufferFormat[0]
 				= DXGI_FORMAT_R32G32B32A32_FLOAT;
-			//ì¬‚µ‚½‰Šú‰»î•ñ‚ğ‚à‚Æ‚ÉƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»‚·‚é
+			//ä½œæˆã—ãŸåˆæœŸåŒ–æƒ…å ±ã‚’ã‚‚ã¨ã«ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–ã™ã‚‹
 			luminanceSprite.Init(luminanceSpriteInitData);
 		}
 
 
 		void Bloom::InitGaussBlur()
 		{
-			//gaussianBlur[0]‚Í‹P“xƒeƒNƒXƒ`ƒƒ‚ÉƒKƒEƒXƒAƒ“ƒuƒ‰[‚ğ‚©‚¯‚é
+			//gaussianBlur[0]ã¯è¼åº¦ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ã‚¬ã‚¦ã‚¹ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ã‚’ã‹ã‘ã‚‹
 			gaussianBlur[0].Init(&luminanceRenderTarget.GetRenderTargetTexture());
-			//gaussianBlur[1]‚Í gaussianBlur[0]‚ÌƒeƒNƒXƒ`ƒƒ‚ÉƒKƒEƒXƒAƒ“ƒuƒ‰[‚ğ‚©‚¯‚é
+			//gaussianBlur[1]ã¯ gaussianBlur[0]ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ã‚¬ã‚¦ã‚¹ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ã‚’ã‹ã‘ã‚‹
 			gaussianBlur[1].Init(&gaussianBlur[0].GetBokeTexture());
-			//gaussianBlur[2]‚Í gaussianBlur[1]‚ÌƒeƒNƒXƒ`ƒƒ‚ÉƒKƒEƒXƒAƒ“ƒuƒ‰[‚ğ‚©‚¯‚é
+			//gaussianBlur[2]ã¯ gaussianBlur[1]ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ã‚¬ã‚¦ã‚¹ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ã‚’ã‹ã‘ã‚‹
 			gaussianBlur[2].Init(&gaussianBlur[1].GetBokeTexture());
-			//gaussianBlur[3]‚Í gaussianBlur[2]‚ÌƒeƒNƒXƒ`ƒƒ‚ÉƒKƒEƒXƒAƒ“ƒuƒ‰[‚ğ‚©‚¯‚é
+			//gaussianBlur[3]ã¯ gaussianBlur[2]ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ã‚¬ã‚¦ã‚¹ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ã‚’ã‹ã‘ã‚‹
 			gaussianBlur[3].Init(&gaussianBlur[2].GetBokeTexture());
 		}
 
 		void Bloom::InitBoke(RenderTarget& mainRenderTarget)
 		{
-			//ƒ{ƒPƒeƒNƒXƒ`ƒƒ‚ğ4–‡w’è
+			//ãƒœã‚±ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’4æšæŒ‡å®š
 			finalSpriteInitData.m_textures[0] = &gaussianBlur[0].GetBokeTexture();
 			finalSpriteInitData.m_textures[1] = &gaussianBlur[1].GetBokeTexture();
 			finalSpriteInitData.m_textures[2] = &gaussianBlur[2].GetBokeTexture();
 			finalSpriteInitData.m_textures[3] = &gaussianBlur[3].GetBokeTexture();
 
-			//‰ğ‘œ“x‚Í mainRenderTarget‚Ì•‚Æ‚‚³
+			//è§£åƒåº¦ã¯ mainRenderTargetã®å¹…ã¨é«˜ã•
 			finalSpriteInitData.m_width = mainRenderTarget.GetWidth();
 			finalSpriteInitData.m_height = mainRenderTarget.GetHeight();
 
-			//‚Ú‚©‚µ‚½‰æ‘œ‚ğA’Êí‚Ì2D‚Æ‚µ‚ÄƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì•`‰æ‚·‚é‚Ì‚Å
-			//2D—p‚ÌƒVƒF[ƒ_[‚ğg—p‚·‚é
+			//ã¼ã‹ã—ãŸç”»åƒã‚’ã€é€šå¸¸ã®2Dã¨ã—ã¦ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æç”»ã™ã‚‹ã®ã§
+			//2Dç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ç”¨ã™ã‚‹
 			//finalSpriteInitData.m_fxFilePath = "Assets/shader/sample2D.fx";
 
-			//ƒ{ƒP‰æ‘œ‚ğ‡¬‚·‚é•K—v‚ª‚ ‚é‚Ì‚ÅA2D—p‚ÌƒVƒF[ƒ_[‚Å‚Í‚È‚­A
-			//ê—pƒVƒF[ƒ_[‚ğw’è
+			//ãƒœã‚±ç”»åƒã‚’åˆæˆã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã®ã§ã€2Dç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§ã¯ãªãã€
+			//å°‚ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’æŒ‡å®š
 			finalSpriteInitData.m_fxFilePath = "Assets/Shader/postEffect.fx";
 			finalSpriteInitData.m_psEntryPoinFunc = "PSBloomFinal";
 
-			//‚½‚¾‚µA‰ÁZ‡¬‚Å•`‰æ‚·‚é‚Ì‚ÅAƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒfƒBƒ“ƒOƒ‚[ƒh‚ğ‰ÁZ‚·‚é
+			//ãŸã ã—ã€åŠ ç®—åˆæˆã§æç”»ã™ã‚‹ã®ã§ã€ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’åŠ ç®—ã™ã‚‹
 			finalSpriteInitData.m_alphaBlendMode = AlphaBlendMode_Add;
 
-			//ƒJƒ‰[ƒoƒbƒtƒ@[‚ÌƒtƒH[ƒ}ƒbƒg‚Í—á‚É‚æ‚Á‚ÄA32ƒrƒbƒg•‚“®¬”“_ƒoƒbƒtƒ@[
+			//ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¯ä¾‹ã«ã‚ˆã£ã¦ã€32ãƒ“ãƒƒãƒˆæµ®å‹•å°æ•°ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ¼
 			finalSpriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
-			//‰Šú‰»î•ñ‚ğŒ³‚É‰ÁZ‡¬—p‚ÌƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
+			//åˆæœŸåŒ–æƒ…å ±ã‚’å…ƒã«åŠ ç®—åˆæˆç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
 			finalSprite.Init(finalSpriteInitData);
 
-			//ƒeƒNƒXƒ`ƒƒ‚Í mainRenderTarget ‚ÌƒJƒ‰[ƒoƒbƒtƒ@[
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯ mainRenderTarget ã®ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ãƒ¼
 			//spriteInitData.m_textures[0] = &mainRenderTarget.GetRenderTargetTexture();
 			//spriteInitData.m_width = 1280;
 			//spriteInitData.m_height = 720;
 
-			//ƒ‚ƒmƒNƒ—p‚ÌƒVƒF[ƒ_[‚ğw’è‚·‚é
+			//ãƒ¢ãƒã‚¯ãƒ­ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’æŒ‡å®šã™ã‚‹
 			//spriteInitData.m_fxFilePath = "Assets/shader/sample2D.fx";
 
-			//‰Šú‰»ƒIƒuƒWƒFƒNƒg‚ğg‚Á‚ÄAƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
+			//åˆæœŸåŒ–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½¿ã£ã¦ã€ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
 			//copyToFrameBufferSprite.Init(spriteInitData);
 		}
 
 		void Bloom::RenderLumi(RenderContext& rc)
 		{
-			//‹P“x’Šo—p‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚É•ÏX
+			//è¼åº¦æŠ½å‡ºç”¨ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«å¤‰æ›´
 			rc.WaitUntilToPossibleSetRenderTarget(luminanceRenderTarget);
-			//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğİ’è
+			//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®š
 			rc.SetRenderTargetAndViewport(luminanceRenderTarget);
-			//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğƒNƒŠƒA
+			//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ã‚¯ãƒªã‚¢
 			rc.ClearRenderTargetView(luminanceRenderTarget);
-			//‹P“x’Šo‚ğs‚¤
+			//è¼åº¦æŠ½å‡ºã‚’è¡Œã†
 			luminanceSprite.Draw(rc);
 
-			//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ö‚Ì‘‚«‚İI—¹‘Ò‚¿
+			//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®æ›¸ãè¾¼ã¿çµ‚äº†å¾…ã¡
 			rc.WaitUntilFinishDrawingToRenderTarget(luminanceRenderTarget);
 		}
 
@@ -117,13 +117,13 @@ namespace nsK2EngineLow {
 
 		//void Bloom::RenderBoke(RenderContext& rc, RenderTarget& mainRenderTarget)
 		//{
-		//	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Æ‚µ‚Ä—˜—p‚Å‚«‚é‚Ü‚Å‘Ò‚Â
+		//	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã—ã¦åˆ©ç”¨ã§ãã‚‹ã¾ã§å¾…ã¤
 		//	rc.WaitUntilToPossibleSetRenderTarget(mainRenderTarget);
-		//	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğİ’è
+		//	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®š
 		//	rc.SetRenderTargetAndViewport(mainRenderTarget);
-		//	//ÅI‡¬
+		//	//æœ€çµ‚åˆæˆ
 		//	finalSprite.Draw(rc);
-		//	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ö‚Ì‘‚«‚İI—¹‘Ò‚¿
+		//	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®æ›¸ãè¾¼ã¿çµ‚äº†å¾…ã¡
 		//	rc.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
 		//}
 

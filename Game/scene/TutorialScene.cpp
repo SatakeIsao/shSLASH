@@ -45,7 +45,6 @@ bool TutorialScene::Start()
         app::battle::BattleManager::Get().SetTutorialMode(true);
         app::battle::BattleManager::Get().SetTutorialNoDamage(true);
     }
-    app::battle::BattleManager::Get().Start();
     app::battle::BattleManager::Get().SetPlayerInputEnabled(false);
 
     gameOverSequence_ = NewGO<app::ui::GameOverSequence>(static_cast<uint8_t>(ObjectPriority::GameOverUI));
@@ -69,6 +68,13 @@ bool TutorialScene::Start()
 
 void TutorialScene::Update()
 {
+    if (!isLoaded_)
+    {
+        if (app::battle::BattleManager::Get().LoadStep())
+            isLoaded_ = true;
+        return;
+    }
+
     app::battle::BattleManager::Get().Update();
 
     const bool isPaused = app::core::PauseManager::IsAvailable()
@@ -175,6 +181,7 @@ void TutorialScene::Update()
 
 void TutorialScene::Render(RenderContext& rc)
 {
+    if (!isLoaded_) return;
     if (app::battle::BattleManager::IsAvailable())
     {
         app::battle::BattleManager::Get().Render(rc);

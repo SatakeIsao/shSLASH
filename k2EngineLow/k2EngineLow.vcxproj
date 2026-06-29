@@ -135,6 +135,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>k2EngineLowPreCompile.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +153,7 @@
       <PrecompiledHeaderFile>k2EngineLowPreCompile.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)\$(TargetName).pch</PrecompiledHeaderOutputFile>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,6 +175,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>k2EngineLowPreCompile.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -191,6 +194,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>k2EngineLowPreCompile.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -212,6 +216,7 @@
       <PrecompiledHeaderFile>k2EngineLowPreCompile.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)\$(TargetName).pch</PrecompiledHeaderOutputFile>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -237,6 +242,7 @@
       <PrecompiledHeaderFile>k2EngineLowPreCompile.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)\$(TargetName).pch</PrecompiledHeaderOutputFile>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

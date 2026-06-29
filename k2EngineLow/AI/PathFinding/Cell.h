@@ -1,43 +1,43 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	class TknFile;
 	namespace nsAI {
 		/// <summary>
-		/// ƒiƒrƒƒbƒVƒ…‚ÌƒZƒ‹
+		/// ãƒŠãƒ“ãƒ¡ãƒƒã‚·ãƒ¥ã®ã‚»ãƒ«
 		/// </summary>
 		class Cell {
 		public:
 			/// <summary>
-			/// ’¸“_À•W‚ğİ’èB
+			/// é ‚ç‚¹åº§æ¨™ã‚’è¨­å®šã€‚
 			/// </summary>
-			/// <param name="vertNo">’¸“_”Ô†</param>
-			/// <param name="pos">À•W</param>
+			/// <param name="vertNo">é ‚ç‚¹ç•ªå·</param>
+			/// <param name="pos">åº§æ¨™</param>
 			void SetVertexPosition(int vertNo, const Vector3& pos)
 			{
 				K2_ASSERT(vertNo < 3, "Invalid vertNo");
 				m_vertexPosition[vertNo] = pos;
 			}
 			/// <summary>
-			/// –@ü‚ğİ’èB
+			/// æ³•ç·šã‚’è¨­å®šã€‚
 			/// </summary>
-			/// <param name="normal">–@ü</param>
+			/// <param name="normal">æ³•ç·š</param>
 			void SetNormal(const Vector3& normal)
 			{
 				m_normal = normal;
 			}
 			/// <summary>
-			/// —×ÚƒZƒ‹î•ñ‚ğİ’èB
+			/// éš£æ¥ã‚»ãƒ«æƒ…å ±ã‚’è¨­å®šã€‚
 			/// </summary>
-			/// <param name="linkNo">—×Ú”Ô†B0`2B</param>
-			/// <param name="linkCell">—×ÚƒZƒ‹</param>
+			/// <param name="linkNo">éš£æ¥ç•ªå·ã€‚0ï½2ã€‚</param>
+			/// <param name="linkCell">éš£æ¥ã‚»ãƒ«</param>
 			void SetLinkCell(int linkNo, Cell* linkCell)
 			{
 				K2_ASSERT(linkNo < 3, "Invalid linkNo");
 				m_linkCell[linkNo] = linkCell;
 			}
 			/// <summary>
-			/// ƒZƒ‹‚Ì’†SÀ•W‚ğİ’èB
+			/// ã‚»ãƒ«ã®ä¸­å¿ƒåº§æ¨™ã‚’è¨­å®šã€‚
 			/// </summary>
 			/// <param name="centerPos"></param>
 			void SetCenterPosition(const Vector3& centerPos)
@@ -45,7 +45,7 @@ namespace nsK2EngineLow {
 				m_centerPos = centerPos;
 			}
 			/// <summary>
-			/// ƒZƒ‹‚Ì’†SÀ•W‚ğæ“¾B
+			/// ã‚»ãƒ«ã®ä¸­å¿ƒåº§æ¨™ã‚’å–å¾—ã€‚
 			/// </summary>
 			/// <returns></returns>
 			const Vector3& GetCenterPosition()const
@@ -53,15 +53,15 @@ namespace nsK2EngineLow {
 				return m_centerPos;
 			}
 			/// <summary>
-			/// ƒZƒ‹”Ô†‚ğİ’èB
+			/// ã‚»ãƒ«ç•ªå·ã‚’è¨­å®šã€‚
 			/// </summary>
-			/// <param name="no">”Ô†</param>
+			/// <param name="no">ç•ªå·</param>
 			void SetCellNo(int no)
 			{
 				m_no = no;
 			}
 			/// <summary>
-			/// ƒZƒ‹”Ô†‚ğæ“¾B
+			/// ã‚»ãƒ«ç•ªå·ã‚’å–å¾—ã€‚
 			/// </summary>
 			/// <returns></returns>
 			int GetCellNo() const
@@ -69,7 +69,7 @@ namespace nsK2EngineLow {
 				return m_no;
 			}
 			/// <summary>
-			/// —×ÚƒZƒ‹‚ğæ“¾B
+			/// éš£æ¥ã‚»ãƒ«ã‚’å–å¾—ã€‚
 			/// </summary>
 			/// <param name="linkCellNo"></param>
 			/// <returns></returns>
@@ -78,20 +78,20 @@ namespace nsK2EngineLow {
 				return m_linkCell[linkCellNo];
 			}
 			/// <summary>
-			/// ƒZƒ‹‚Ì’¸“_À•W‚ğæ“¾‚·‚éB
+			/// ã‚»ãƒ«ã®é ‚ç‚¹åº§æ¨™ã‚’å–å¾—ã™ã‚‹ã€‚
 			/// </summary>
-			/// <param name="vertNo">’¸“_”Ô†</param>
-			/// <returns>’¸“_À•W</returns>
+			/// <param name="vertNo">é ‚ç‚¹ç•ªå·</param>
+			/// <returns>é ‚ç‚¹åº§æ¨™</returns>
 			const Vector3& GetVertexPosition(int vertNo) const
 			{
 				return m_vertexPosition[vertNo];
 			}
 		private:
-			Vector3 m_vertexPosition[3];		// ƒZƒ‹‚Ì’¸“_À•W
-			Vector3 m_normal;					// –@ü
-			Vector3 m_centerPos;				// ’†SÀ•WB
-			Cell* m_linkCell[3] = { nullptr };	// —×ÚƒZƒ‹
-			int m_no = 0;						// ƒZƒ‹”Ô†
+			Vector3 m_vertexPosition[3];		// ã‚»ãƒ«ã®é ‚ç‚¹åº§æ¨™
+			Vector3 m_normal;					// æ³•ç·š
+			Vector3 m_centerPos;				// ä¸­å¿ƒåº§æ¨™ã€‚
+			Cell* m_linkCell[3] = { nullptr };	// éš£æ¥ã‚»ãƒ«
+			int m_no = 0;						// ã‚»ãƒ«ç•ªå·
 		};
 	}
 }

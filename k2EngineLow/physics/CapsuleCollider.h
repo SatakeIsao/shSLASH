@@ -1,5 +1,5 @@
-/*!
- * @brief	ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[B
+ï»¿/*!
+ * @brief	ã‚«ãƒ—ã‚»ãƒ«ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã€‚
  */
 
 #pragma once
@@ -11,7 +11,7 @@ namespace nsK2EngineLow {
 	{
 	public:
 		/// <summary>
-		/// ‰Šú‰»
+		/// åˆæœŸåŒ–
 		/// </summary>
 		/// <param name="radius"></param>
 		/// <param name="height"></param>
@@ -22,7 +22,7 @@ namespace nsK2EngineLow {
 			m_height = height;
 		}
 		/// <summary>
-		/// BulletPhysics‚ÌƒRƒŠƒWƒ‡ƒ“Œ`ó‚ğæ“¾B
+		/// BulletPhysicsã®ã‚³ãƒªã‚¸ãƒ§ãƒ³å½¢çŠ¶ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		btCollisionShape* GetBody() const override
@@ -30,7 +30,7 @@ namespace nsK2EngineLow {
 			return m_shape.get();
 		}
 		/// <summary>
-		/// ”¼Œa‚ğæ“¾B
+		/// åŠå¾„ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		float GetRadius() const
@@ -38,7 +38,7 @@ namespace nsK2EngineLow {
 			return m_radius;
 		}
 		/// <summary>
-		/// ‚‚³‚ğæ“¾B
+		/// é«˜ã•ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		float GetHeight() const

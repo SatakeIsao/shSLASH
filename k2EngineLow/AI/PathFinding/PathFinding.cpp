@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "AI/PathFinding/PathFinding.h"
 #include "AI/PathFinding/NaviMesh.h"
 #include "AI/PathFinding/Path.h"
@@ -18,12 +18,12 @@ namespace nsAI {
 	}
 	bool PathFinding::IsIntercetRayToCell(Vector3 rayStartPos, Vector3 rayEndPos, CellWork* currentCellWork) const
 	{
-		// ƒŒƒC‚ğŒvZ‚·‚éB
+		// ãƒ¬ã‚¤ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		Vector3 ray = rayEndPos - rayStartPos;
 
 		bool isVisible = false;
 
-		// ‰Â‹‚Æ‚¢‚¤‚±‚Æ‚ÍArayStartPos‚©‚çrayEndPos‚ÉŒü‚©‚Á‚ÄL‚Ñ‚éü•ª‚ªAƒZƒ‹‚Ì‚Ç‚ê‚©‚P‚Â‚ÌƒGƒbƒW‚ÆŒğ·‚µ‚Ä‚¢‚é‚Æ‚¢‚¤‚±‚ÆB
+		// å¯è¦–ã¨ã„ã†ã“ã¨ã¯ã€rayStartPosã‹ã‚‰rayEndPosã«å‘ã‹ã£ã¦ä¼¸ã³ã‚‹ç·šåˆ†ãŒã€ã‚»ãƒ«ã®ã©ã‚Œã‹ï¼‘ã¤ã®ã‚¨ãƒƒã‚¸ã¨äº¤å·®ã—ã¦ã„ã‚‹ã¨ã„ã†ã“ã¨ã€‚
 		const int vertNo[3][2] = {
 			{0, 1},
 			{1, 2},
@@ -33,22 +33,22 @@ namespace nsAI {
 		for (int edgeNo = 0; edgeNo < 3; edgeNo++) {
 			const Vector3& p0 = currentCell->GetVertexPosition(vertNo[edgeNo][0]);
 			const Vector3& p1 = currentCell->GetVertexPosition(vertNo[edgeNo][1]);
-			// ‚Ü‚¸‚Í–³ŒÀü•ª‚Æ‚µ‚ÄŒğ·‚µ‚Ä‚¢‚é‚©”»’èB
+			// ã¾ãšã¯ç„¡é™ç·šåˆ†ã¨ã—ã¦äº¤å·®ã—ã¦ã„ã‚‹ã‹åˆ¤å®šã€‚
 			Vector3 p0ToStartPos = rayStartPos - p0;
 			p0ToStartPos.y = 0.0f;
 			Vector3 p0ToEndPos = rayEndPos - p0;
 			p0ToEndPos.y = 0.0f;
 
-			// p0ToStartPos‚Æp0ToEndPos‚ğ³‹K‰»‚·‚éB
+			// p0ToStartPosã¨p0ToEndPosã‚’æ­£è¦åŒ–ã™ã‚‹ã€‚
 			Vector3 p0ToStartPosNorm = p0ToStartPos;
 			p0ToStartPosNorm.Normalize();
 			Vector3 p0ToEndPosNorm = p0ToEndPos;
 			p0ToEndPosNorm.Normalize();
 
 			if (p0ToStartPosNorm.Dot(p0ToEndPosNorm) <= 0.0f) {
-				// Œğ·‚µ‚Ä‚¢‚éB
-				// ‘±‚¢‚ÄŒğ“_‚ğ‹‚ß‚éB
-				// ‚Ü‚¸‚ÍAXZ•½–Ê‚ÅƒŒƒC‚É‚’¼‚Èü•ª‚ğ‹‚ß‚éB
+				// äº¤å·®ã—ã¦ã„ã‚‹ã€‚
+				// ç¶šã„ã¦äº¤ç‚¹ã‚’æ±‚ã‚ã‚‹ã€‚
+				// ã¾ãšã¯ã€XZå¹³é¢ã§ãƒ¬ã‚¤ã«å‚ç›´ãªç·šåˆ†ã‚’æ±‚ã‚ã‚‹ã€‚
 				Vector3 rayNorm = ray;
 				rayNorm.Normalize();
 				Vector3 rayTangent;
@@ -56,17 +56,17 @@ namespace nsAI {
 				rayTangent.Normalize();
 				float t0 = fabsf(Dot(rayTangent, p0ToStartPos));
 				float t1 = fabsf(Dot(rayTangent, p0ToEndPos));
-				// n“_‚©‚çŒğ“_‚Ü‚Å‚Ì”ä—¦‚ğ‹‚ß‚éB
+				// å§‹ç‚¹ã‹ã‚‰äº¤ç‚¹ã¾ã§ã®æ¯”ç‡ã‚’æ±‚ã‚ã‚‹ã€‚
 				float rate = t0 / (t0 + t1);
 				Vector3 hitPos = Math::Lerp(rate, rayStartPos, rayEndPos);
-				// ‘±‚¢‚ÄŒğ“_‚ªü•ªã‚É‚¢‚é‚©’²‚×‚éB
+				// ç¶šã„ã¦äº¤ç‚¹ãŒç·šåˆ†ä¸Šã«ã„ã‚‹ã‹èª¿ã¹ã‚‹ã€‚
 				Vector3 rsToHitPos = hitPos - rayStartPos;
 				Vector3 reToHitPos = hitPos - rayEndPos;
 				rsToHitPos.Normalize();
 				reToHitPos.Normalize();
 				if (rsToHitPos.Dot(reToHitPos) <= 0.0f) {
-					// Œğ·‚µ‚Ä‚¢‚éê‡‚Í‚±‚ÌƒxƒNƒgƒ‹‚ª‹tŒü‚«‚É‚È‚é‚Í‚¸B
-					// Œğ·‚µ‚Ä‚¢‚éB
+					// äº¤å·®ã—ã¦ã„ã‚‹å ´åˆã¯ã“ã®ãƒ™ã‚¯ãƒˆãƒ«ãŒé€†å‘ãã«ãªã‚‹ã¯ãšã€‚
+					// äº¤å·®ã—ã¦ã„ã‚‹ã€‚
 					isVisible = true;
 					break;
 				}
@@ -81,24 +81,24 @@ namespace nsAI {
 			float agentRadius,
 			float agentHeight
 	) {
-		// ƒpƒX‚Ì‰Â‹”»’è‚ğs‚Á‚ÄA•s—v‚ÈƒZƒ‹‚ğœŠO‚µ‚Ä‚¢‚­B
+		// ãƒ‘ã‚¹ã®å¯è¦–åˆ¤å®šã‚’è¡Œã£ã¦ã€ä¸è¦ãªã‚»ãƒ«ã‚’é™¤å¤–ã—ã¦ã„ãã€‚
 		if (cellList.size() < 3) {
-			// ƒZƒ‹‚Ì”‚ª3ˆÈ‰º‚È‚çƒXƒ€[ƒWƒ“ƒO‚·‚é•K—v‚È‚µB
+			// ã‚»ãƒ«ã®æ•°ãŒ3ä»¥ä¸‹ãªã‚‰ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°ã™ã‚‹å¿…è¦ãªã—ã€‚
 			return;
 		}
 		int skipCellCount = static_cast<int>(cellList.size()) - 1;
 		while (skipCellCount > 2) {
-			// ƒZƒ‹‚Ì”‚ª‚RˆÈã‚È‚çAƒpƒX‚Ì‰Â‹”»’è‚ğs‚Á‚ÄA•s—v‚ÈƒZƒ‹‚ğœŠO‚µ‚Ä‚¢‚­B
-			// ƒŒƒC‚Ìn“_‚Æ‚È‚éƒZƒ‹B
+			// ã‚»ãƒ«ã®æ•°ãŒï¼“ä»¥ä¸Šãªã‚‰ã€ãƒ‘ã‚¹ã®å¯è¦–åˆ¤å®šã‚’è¡Œã£ã¦ã€ä¸è¦ãªã‚»ãƒ«ã‚’é™¤å¤–ã—ã¦ã„ãã€‚
+			// ãƒ¬ã‚¤ã®å§‹ç‚¹ã¨ãªã‚‹ã‚»ãƒ«ã€‚
 			auto rayStartCellIt = cellList.begin();
-			// ƒŒƒC‚ÌI“_‚ÌƒZƒ‹B
+			// ãƒ¬ã‚¤ã®çµ‚ç‚¹ã®ã‚»ãƒ«ã€‚
 			auto rayEndCellIt = rayStartCellIt;
 			for (int i = 0; i < skipCellCount; i++) {
 				rayEndCellIt++;
 			}
 			bool isEnd = false;
 			while (isEnd == false) {
-				// ƒŒƒC‚ÌI’[‚ÌƒZƒ‹‚Ü‚ÅƒŒƒCƒeƒXƒg‚ğXZ•½–Ê‚Ås‚¤B
+				// ãƒ¬ã‚¤ã®çµ‚ç«¯ã®ã‚»ãƒ«ã¾ã§ãƒ¬ã‚¤ãƒ†ã‚¹ãƒˆã‚’XZå¹³é¢ã§è¡Œã†ã€‚
 				Vector3 rayStartPos = (*rayStartCellIt)->cell->GetCenterPosition();
 				Vector3 rayEndPos = (*rayEndCellIt)->cell->GetCenterPosition();
 				rayStartPos.y = 0.0f;
@@ -110,8 +110,8 @@ namespace nsAI {
 					isVisible = isVisible && IsIntercetRayToCell(rayStartPos, rayEndPos, *cellIt);
 				} while (cellIt != rayEndCellIt);
 				if (isVisible) {
-					// ‰Â‹
-					// n“_‚©‚çI“_‚ªŒ©‚¦‚é‚Æ‚¢‚¤‚±‚Æ‚ÍAn“_`I“_‚Ü‚Å‚ÌŠÔ‚ÌƒZƒ‹‚Ííœ‚Å‚«‚é‚Ì‚ÅƒXƒ€[ƒXƒ}[ƒN‚ğ•t‚¯‚éB
+					// å¯è¦–
+					// å§‹ç‚¹ã‹ã‚‰çµ‚ç‚¹ãŒè¦‹ãˆã‚‹ã¨ã„ã†ã“ã¨ã¯ã€å§‹ç‚¹ï½çµ‚ç‚¹ã¾ã§ã®é–“ã®ã‚»ãƒ«ã¯å‰Šé™¤ã§ãã‚‹ã®ã§ã‚¹ãƒ ãƒ¼ã‚¹ãƒãƒ¼ã‚¯ã‚’ä»˜ã‘ã‚‹ã€‚
 					auto cellIt = rayStartCellIt;
 					cellIt++;
 					while (cellIt != rayEndCellIt) {
@@ -119,7 +119,7 @@ namespace nsAI {
 						cellIt++;
 					}
 				}
-				// ŸB
+				// æ¬¡ã€‚
 				rayStartCellIt = rayEndCellIt;
 				rayEndCellIt = rayStartCellIt;
 				for (int i = 0; i < skipCellCount; i++) {
@@ -132,13 +132,13 @@ namespace nsAI {
 			}
 			skipCellCount /= 2;
 		}
-		// ƒXƒ€[ƒXƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éƒZƒ‹‚ğœ‹‚µ‚Ä‚¢‚­
+		// ã‚¹ãƒ ãƒ¼ã‚¹ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹ã‚»ãƒ«ã‚’é™¤å»ã—ã¦ã„ã
 		for (auto it = cellList.begin(); it != cellList.end(); it++) {
 			if ((*it)->isSmooth) {
 				it = cellList.erase(it);
 			}
 		}
-		// •¨—ƒIƒuƒWƒFƒNƒg‚Æ‚ÌÕ“Ë”»’è‚ğs‚¢Aíœ‚Å‚«‚éƒZƒ‹‚Ííœ‚·‚éB
+		// ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã®è¡çªåˆ¤å®šã‚’è¡Œã„ã€å‰Šé™¤ã§ãã‚‹ã‚»ãƒ«ã¯å‰Šé™¤ã™ã‚‹ã€‚
 		if (physicsWorld && cellList.size() > 2) {
 			CCapsuleCollider collider;
 			collider.Init(agentRadius, agentHeight);
@@ -155,23 +155,23 @@ namespace nsAI {
 				rayEndPos.y += offset;
 				SweepHit result;
 				if (physicsWorld->ConvexSweepTest(collider, rayStartPos, rayEndPos, result)) {
-					// ‰½‚©‚ÌƒIƒuƒWƒFƒNƒg‚Æ‚Ô‚Â‚©‚Á‚½B
-					// n“_‚©‚çI“_‚ÌŠÔ‚ÌƒZƒ‹‚Ííœ‚Å‚«‚È‚¢B
-					// Ÿ‚ÌƒuƒƒbƒN‚ğŒ©‚Ä‚¢‚­B
+					// ä½•ã‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã¶ã¤ã‹ã£ãŸã€‚
+					// å§‹ç‚¹ã‹ã‚‰çµ‚ç‚¹ã®é–“ã®ã‚»ãƒ«ã¯å‰Šé™¤ã§ããªã„ã€‚
+					// æ¬¡ã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’è¦‹ã¦ã„ãã€‚
 					rayStartCellIt = rayEndCellIt;
 					rayPrevCellit = rayEndCellIt;
 					rayPrevCellit++;
 					if (rayPrevCellit == cellList.end()) {
-						// I‚í‚èB
+						// çµ‚ã‚ã‚Šã€‚
 						break;
 					}
 					rayEndCellIt = rayPrevCellit;
 					rayEndCellIt++;
 				}
 				else {
-					// ‚Ô‚Â‚©‚ç‚È‚©‚Á‚½ ¨ n“_‚ÆI“_‚ÌŠÔ‚ÌƒZƒ‹‚Íœ‹‚Å‚«‚éB
+					// ã¶ã¤ã‹ã‚‰ãªã‹ã£ãŸ â†’ å§‹ç‚¹ã¨çµ‚ç‚¹ã®é–“ã®ã‚»ãƒ«ã¯é™¤å»ã§ãã‚‹ã€‚
 					cellList.erase(rayPrevCellit);
-					// ŸB
+					// æ¬¡ã€‚
 					rayPrevCellit = rayEndCellIt;
 					rayEndCellIt++;
 				}
@@ -179,7 +179,7 @@ namespace nsAI {
 		}
 	}
 	/// <summary>
-	/// Ÿ‚ÌƒZƒ‹‚ÉˆÚ“®‚·‚éƒRƒXƒg‚ğŒvZ
+	/// æ¬¡ã®ã‚»ãƒ«ã«ç§»å‹•ã™ã‚‹ã‚³ã‚¹ãƒˆã‚’è¨ˆç®—
 	/// </summary>
 	/// <returns></returns>
 	void PathFinding::CalcCost(
@@ -191,11 +191,11 @@ namespace nsAI {
 	)
 	{
 		if (prevCell == nullptr) {
-			// ’¼‘O‚ÌƒZƒ‹‚ª‚È‚¢B
+			// ç›´å‰ã®ã‚»ãƒ«ãŒãªã„ã€‚
 			costFromStartCell = 0.0f;
 		}
 		else {
-			// ’¼‘O‚ÌƒZƒ‹‚ª‚ ‚éB
+			// ç›´å‰ã®ã‚»ãƒ«ãŒã‚ã‚‹ã€‚
 			Vector3 t = nextCell->cell->GetCenterPosition() - prevCell->cell->GetCenterPosition();
 			costFromStartCell = t.Length() + prevCell->costFromStartCell;
 		}
@@ -211,83 +211,83 @@ namespace nsAI {
 		float agentRadius,
 		float agentHeight)
 	{
-		// ƒpƒX‚ğƒNƒŠƒAB
+		// ãƒ‘ã‚¹ã‚’ã‚¯ãƒªã‚¢ã€‚
 		path.Clear();
-		// ŠJnˆÊ’u‚ÉÅ‚à‹ß‚¢ƒZƒ‹‚ğŒŸõB
+		// é–‹å§‹ä½ç½®ã«æœ€ã‚‚è¿‘ã„ã‚»ãƒ«ã‚’æ¤œç´¢ã€‚
 		const Cell& startCell = naviMesh.FindNearestCell(startPos);
-		// I—¹ˆÊ’u‚ÉÅ‚à‹ß‚¢ƒZƒ‹‚ğŒŸõB
+		// çµ‚äº†ä½ç½®ã«æœ€ã‚‚è¿‘ã„ã‚»ãƒ«ã‚’æ¤œç´¢ã€‚
 		const Cell& endCell = naviMesh.FindNearestCell(endPos);
-		// A*‚ğ‰ğ‚­‚ÉAƒZƒ‹‚É‚¢‚ë‚¢‚ë‚Èî•ñ‚ğ–„‚ß‚Ş‚Ì‚ÅAî•ñ‚ğ–„‚ß‚Şì‹Æ—Ìˆæ‚ğŠm•ÛB
+		// A*ã‚’è§£ãæ™‚ã«ã€ã‚»ãƒ«ã«ã„ã‚ã„ã‚ãªæƒ…å ±ã‚’åŸ‹ã‚è¾¼ã‚€ã®ã§ã€æƒ…å ±ã‚’åŸ‹ã‚è¾¼ã‚€ä½œæ¥­é ˜åŸŸã‚’ç¢ºä¿ã€‚
 		m_cellWork.resize(naviMesh.GetNumCell());
 
-		// ì‹Æ—Ìˆæ‚ğ‰Šú‰»‚·‚éB
+		// ä½œæ¥­é ˜åŸŸã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
 		for (int cellNo = 0; cellNo < m_cellWork.size(); cellNo++) {
 			m_cellWork[cellNo].Init(&naviMesh.GetCell(cellNo));
 		}
-		// ÅŒã‚ÉƒpƒX‚ğì‚é‚Æ‚«‚ÌÀ•W‚ğİ’è‚·‚éB
-		// ŠJnƒZƒ‹‚ÍŠJnÀ•WAI—¹ƒZƒ‹‚ÍI—¹À•WB
-		// ‚»‚êˆÈŠO‚ÌƒZƒ‹‚ÍAƒZƒ‹‚Ì’†SÀ•W‚ªCellWork::Init()ŠÖ”‚Åİ’è‚³‚ê‚Ä‚¢‚éB
+		// æœ€å¾Œã«ãƒ‘ã‚¹ã‚’ä½œã‚‹ã¨ãã®åº§æ¨™ã‚’è¨­å®šã™ã‚‹ã€‚
+		// é–‹å§‹ã‚»ãƒ«ã¯é–‹å§‹åº§æ¨™ã€çµ‚äº†ã‚»ãƒ«ã¯çµ‚äº†åº§æ¨™ã€‚
+		// ãã‚Œä»¥å¤–ã®ã‚»ãƒ«ã¯ã€ã‚»ãƒ«ã®ä¸­å¿ƒåº§æ¨™ãŒCellWork::Init()é–¢æ•°ã§è¨­å®šã•ã‚Œã¦ã„ã‚‹ã€‚
 		m_cellWork[startCell.GetCellNo()].pathPoint = startPos;
 		m_cellWork[endCell.GetCellNo()].pathPoint = endPos;
 			
 		using namespace std;
 		vector< CellWork* > openList;
-		// ŠJnƒZƒ‹‚Ìì‹Æ—Ìˆæ‚ğæ“¾B
+		// é–‹å§‹ã‚»ãƒ«ã®ä½œæ¥­é ˜åŸŸã‚’å–å¾—ã€‚
 		CellWork* crtCell = &m_cellWork.at( startCell.GetCellNo() );
-		// ŠJnƒZƒ‹‚ÌˆÚ“®ƒRƒXƒg‚ğŒvZ‚·‚éB
+		// é–‹å§‹ã‚»ãƒ«ã®ç§»å‹•ã‚³ã‚¹ãƒˆã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		CalcCost(crtCell->cost, crtCell->costFromStartCell, crtCell, nullptr, &endCell);
-		// ŠJnƒZƒ‹‚ğƒI[ƒvƒ“ƒŠƒXƒg‚ÉÏ‚ŞB
+		// é–‹å§‹ã‚»ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã«ç©ã‚€ã€‚
 		openList.emplace_back(crtCell);
-		// ƒZƒ‹‚ğƒI[ƒvƒ“ƒŠƒXƒg‚ÉÏ‚ñ‚¾ˆó‚ğ‚Â‚¯‚éB
+		// ã‚»ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã«ç©ã‚“ã å°ã‚’ã¤ã‘ã‚‹ã€‚
 		crtCell->isOpend = true;
 
-		// ‚±‚±‚©‚çA*ƒAƒ‹ƒSƒŠƒYƒ€‚ğ‰ğ‚¢‚Ä‚¢‚­‚ŠB
+		// ã“ã“ã‹ã‚‰A*ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã‚’è§£ã„ã¦ã„ãï½Šã€‚
 		bool isSuccess = false;
 		while (!openList.empty()) {
-			// ƒI[ƒvƒ“ƒŠƒXƒg‚©‚çÅ‚àƒRƒXƒg‚ÌˆÀ‚¢ƒZƒ‹‚ğæ“¾B
+			// ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã‹ã‚‰æœ€ã‚‚ã‚³ã‚¹ãƒˆã®å®‰ã„ã‚»ãƒ«ã‚’å–å¾—ã€‚
 			crtCell = nullptr;
 			float lowestCost = FLT_MAX;
 			vector<CellWork*>::iterator lowestCellIt;
 			for( auto it = openList.begin(); it != openList.end(); it++ ){
 
 				if (lowestCost > (*it)->cost) {
-					// ‚±‚ÌƒZƒ‹‚Ì•û‚ªˆÀ‚¢B
+					// ã“ã®ã‚»ãƒ«ã®æ–¹ãŒå®‰ã„ã€‚
 					lowestCost = (*it)->cost;
 					crtCell = (*it);
 					lowestCellIt = it;
 				}
 			}
-			// æ‚èo‚µ‚½ƒZƒ‹‚ğƒI[ƒvƒ“ƒŠƒXƒg‚©‚çíœB
+			// å–ã‚Šå‡ºã—ãŸã‚»ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã€‚
 			openList.erase(lowestCellIt);
 
 			if (crtCell->cell == &endCell) {
-				// ƒI[ƒvƒ“ƒŠƒXƒg‚©‚çæ‚èo‚µ‚½ƒZƒ‹‚ªI—¹‚¹‚é‚È‚çŒo˜H’Tõ¬Œ÷B
+				// ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã‹ã‚‰å–ã‚Šå‡ºã—ãŸã‚»ãƒ«ãŒçµ‚äº†ã›ã‚‹ãªã‚‰çµŒè·¯æ¢ç´¢æˆåŠŸã€‚
 				isSuccess = true;
 				break;
 			}
 				
-			// ŠJ‚¢‚½ƒZƒ‹‚Ì—×ÚƒZƒ‹‚ğƒI[ƒvƒ“ƒŠƒXƒg‚ÉÏ‚ñ‚Å‚¢‚­B
+			// é–‹ã„ãŸã‚»ãƒ«ã®éš£æ¥ã‚»ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã«ç©ã‚“ã§ã„ãã€‚
 			for (int linkCellNo = 0; linkCellNo < 3; linkCellNo++) {
 				Cell* linkCell = crtCell->cell->GetLinkCell(linkCellNo);
 				if( linkCell != nullptr){
-					// —×ÚƒZƒ‹‚ª‚ ‚Á‚½‚Ì‚ÅAƒRƒXƒg‚ğŒvZ‚µ‚ÄƒI[ƒvƒ“ƒŠƒXƒg‚ÉÏ‚ŞB
+					// éš£æ¥ã‚»ãƒ«ãŒã‚ã£ãŸã®ã§ã€ã‚³ã‚¹ãƒˆã‚’è¨ˆç®—ã—ã¦ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã«ç©ã‚€ã€‚
 					CellWork* linkCellWork = &m_cellWork.at(linkCell->GetCellNo());
 
-					//—×ÚƒZƒ‹‚ÉˆÚ“®‚·‚éƒRƒXƒg‚ğŒvZ
+					//éš£æ¥ã‚»ãƒ«ã«ç§»å‹•ã™ã‚‹ã‚³ã‚¹ãƒˆã‚’è¨ˆç®—
 					float newCost;
 					float newCostFromStartCell;
 					CalcCost(newCost, newCostFromStartCell, linkCellWork, crtCell, &endCell);
 					
-					if (linkCellWork->isClosed == false	) { //—×ÚƒZƒ‹‚Ì’²¸‚ÍI‚í‚Á‚Ä‚¢‚È‚¢B
+					if (linkCellWork->isClosed == false	) { //éš£æ¥ã‚»ãƒ«ã®èª¿æŸ»ã¯çµ‚ã‚ã£ã¦ã„ãªã„ã€‚
 						if (linkCellWork->cost > newCost) {
-							// ‚±‚¿‚ç‚ÌƒRƒXƒg‚Ì•û‚ªˆÀ‚¢‚Ì‚Å‰ü‘P‚·‚éB
+							// ã“ã¡ã‚‰ã®ã‚³ã‚¹ãƒˆã®æ–¹ãŒå®‰ã„ã®ã§æ”¹å–„ã™ã‚‹ã€‚
 							linkCellWork->costFromStartCell = newCostFromStartCell;
 							linkCellWork->cost = newCost;
-							// e‚ğİ’èB
+							// è¦ªã‚’è¨­å®šã€‚
 							linkCellWork->parentCell = crtCell;
 						}
 						if (linkCellWork->isOpend == false) {
-							// ‚Ü‚¾ƒI[ƒvƒ“ƒŠƒXƒg‚ÉÏ‚ŞB
+							// ã¾ã ã‚ªãƒ¼ãƒ—ãƒ³ãƒªã‚¹ãƒˆã«ç©ã‚€ã€‚
 							linkCellWork->isOpend = true;
 							openList.emplace_back(linkCellWork);
 						}
@@ -295,35 +295,35 @@ namespace nsAI {
 						
 				}
 			}
-			// ‚±‚ÌƒZƒ‹‚Ì’²¸‚ÍI—¹‚È‚Ì‚ÅAƒNƒ[ƒY‚Ìˆó‚ğ‚Â‚¯‚éB
+			// ã“ã®ã‚»ãƒ«ã®èª¿æŸ»ã¯çµ‚äº†ãªã®ã§ã€ã‚¯ãƒ­ãƒ¼ã‚ºã®å°ã‚’ã¤ã‘ã‚‹ã€‚
 			crtCell->isClosed = true;
 		}
 			
 		if (isSuccess) {
-			// ƒpƒX‚ğ\’zB
+			// ãƒ‘ã‚¹ã‚’æ§‹ç¯‰ã€‚
 			list<CellWork*> cellList;
 			crtCell = &m_cellWork.at(endCell.GetCellNo());
 			while (true) {
 				if (crtCell->cell == &startCell) {
-					// ŠJnƒZƒ‹‚É“’B‚µ‚½B
-					// ÅŒã‚ÉŠJnƒZƒ‹‚ğÏ‚ŞB
+					// é–‹å§‹ã‚»ãƒ«ã«åˆ°é”ã—ãŸã€‚
+					// æœ€å¾Œã«é–‹å§‹ã‚»ãƒ«ã‚’ç©ã‚€ã€‚
 					cellList.emplace_back(crtCell);
 					break;
 				}
 				cellList.emplace_back(crtCell);
 				crtCell = crtCell->parentCell;
 			}
-			// ”½“]‚³‚¹‚éB
+			// åè»¢ã•ã›ã‚‹ã€‚
 			std::reverse(cellList.begin(), cellList.end());
 			//
 			Smoothing(cellList, physicsWorld, agentRadius, agentHeight);
 			
-			// ƒ|ƒCƒ“ƒg‚ğƒpƒX‚ÉÏ‚ñ‚Å‚¢‚­
+			// ãƒã‚¤ãƒ³ãƒˆã‚’ãƒ‘ã‚¹ã«ç©ã‚“ã§ã„ã
 			for (auto it = cellList.begin(); it != cellList.end(); it++) {
 				path.AddPoint((*it)->pathPoint);
 			}
 			
-			// ƒpƒX‚ğ\’z‚·‚éB
+			// ãƒ‘ã‚¹ã‚’æ§‹ç¯‰ã™ã‚‹ã€‚
 			path.Build();
 				
 		}

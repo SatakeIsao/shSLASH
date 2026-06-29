@@ -13,12 +13,7 @@ EffectManager* EffectManager::m_instance = nullptr; //初期化
 EffectManager::EffectManager()
 {
 	m_effectList.clear();
-
-	// サウンドの登録
-	for (int i = 0; i < ARRAYSIZE(effectInformation); ++i) {
-		const auto& info = effectInformation[i];
-		EffectEngine::GetInstance()->ResistEffect(i, info.assetPath);
-	}
+	// ResistEffect はEffectManagerObject::Start()で分割登録済み。
 }
 
 
@@ -149,8 +144,10 @@ EffectManagerObject::~EffectManagerObject()
 
 bool EffectManagerObject::Start()
 {
+	const int total = static_cast<int>(enEffectKind_Max);
+	for (int i = 0; i < total; ++i)
+		EffectEngine::GetInstance()->ResistEffect(i, effectInformation[i].assetPath);
 	EffectManager::Initialize();
-
 	return true;
 }
 

@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "SpringCamera.h"
 
 namespace nsK2EngineLow {
@@ -27,7 +27,7 @@ namespace nsK2EngineLow {
 			float t = dampingK / (2.0f * dampingRate);
 			float springK = t * t;
 			springAccel *= springK;
-			//‰Á‘¬“x‚ğŒˆ’èB
+			//åŠ é€Ÿåº¦ã‚’æ±ºå®šã€‚
 			float vt = moveSpeed;
 			vt *= dampingK;
 			springAccel -= vt;
@@ -40,14 +40,14 @@ namespace nsK2EngineLow {
 			newPos += addPos;
 			vt = positionTarget - newPos;
 			if (fabsf(vt) < FLT_EPSILON) {
-				//–Ú•WÀ•W‚Ü‚ÅˆÚ“®Š®—¹‚µ‚½B
+				//ç›®æ¨™åº§æ¨™ã¾ã§ç§»å‹•å®Œäº†ã—ãŸã€‚
 				newPos = positionTarget;
 				moveSpeed = 0.0f;
 			}
 			else {
 				vt /= fabsf(vt);
 				if (vt * originalDir < 0.0f) {
-					//–Ú•WÀ•W‚ğ’´‚¦‚½B
+					//ç›®æ¨™åº§æ¨™ã‚’è¶…ãˆãŸã€‚
 					newPos = positionTarget;
 					moveSpeed = 0.0f;
 				}
@@ -56,7 +56,7 @@ namespace nsK2EngineLow {
 		}
 
 		/// <summary>
-		/// ƒoƒlŒ¸Š‚ğg—p‚µ‚ÄAŒ»İ‚ÌˆÊ’uA–Ú•W‚Æ‚È‚éˆÊ’uA‘¬“xA‰Á‘¬“x‚©‚çV‚µ‚¢ˆÊ’u‚ğŒvZ‚·‚éB
+		/// ãƒãƒæ¸›è¡°ã‚’ä½¿ç”¨ã—ã¦ã€ç¾åœ¨ã®ä½ç½®ã€ç›®æ¨™ã¨ãªã‚‹ä½ç½®ã€é€Ÿåº¦ã€åŠ é€Ÿåº¦ã‹ã‚‰æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		/// </summary>
 		Vector3 CalcSpringVector(
 			const Vector3& positionNow,
@@ -67,7 +67,7 @@ namespace nsK2EngineLow {
 		)
 		{
 			float deltaTime = min(1.0f / 30.0f, g_gameTime->GetFrameDeltaTime());
-			//Œ»İ‚ÌˆÊ’u‚Æ–Ú•W‚ÌˆÊ’u‚Æ‚Ì·•ª‚ğ‹‚ß‚éB
+			//ç¾åœ¨ã®ä½ç½®ã¨ç›®æ¨™ã®ä½ç½®ã¨ã®å·®åˆ†ã‚’æ±‚ã‚ã‚‹ã€‚
 			Vector3 distance;
 			distance.Subtract(positionTarget, positionNow);
 			Vector3 originalDir = distance;
@@ -78,7 +78,7 @@ namespace nsK2EngineLow {
 			float t = dampingK / (2.0f * dampingRate);
 			float springK = t * t;
 			springAccel.Scale(springK);
-			//‰Á‘¬“x‚ğŒˆ’èB
+			//åŠ é€Ÿåº¦ã‚’æ±ºå®šã€‚
 			Vector3 vt = moveSpeed;
 			vt.Scale(dampingK);
 			springAccel.Subtract(vt);
@@ -86,7 +86,7 @@ namespace nsK2EngineLow {
 			springAccel.Scale(deltaTime);
 			moveSpeed.Add(springAccel);
 			if (moveSpeed.LengthSq() > maxMoveSpeed * maxMoveSpeed) {
-				//Å‚‘¬“x‚æ‚è‘¬‚­‚È‚Á‚Ä‚µ‚Ü‚Á‚½B
+				//æœ€é«˜é€Ÿåº¦ã‚ˆã‚Šé€Ÿããªã£ã¦ã—ã¾ã£ãŸã€‚
 				moveSpeed.Normalize();
 				moveSpeed.Scale(maxMoveSpeed);
 			}
@@ -102,7 +102,7 @@ namespace nsK2EngineLow {
 				vt.Subtract(positionTarget, newPos);
 				vt.Normalize();
 				if (vt.Dot(originalDir) < 0.0f) {
-					//–Ú•WÀ•W‚ğ’´‚¦‚½B
+					//ç›®æ¨™åº§æ¨™ã‚’è¶…ãˆãŸã€‚
 					newPos = positionTarget;
 					moveSpeed = Vector3::Zero;
 				}
@@ -140,8 +140,8 @@ namespace nsK2EngineLow {
 			return;
 		}
 		if (m_isRefresh) {
-			//ƒŠƒtƒŒƒbƒVƒ…‚ª•K—v‚È‚çAƒJƒƒ‰‚ÌÀ•W‚ğˆê‹C‚É–Ú•WÀ•W‚É‚·‚éB
-			//ƒV[ƒ“‚ÌØ‚è‘Ö‚í‚è‚È‚ÇAˆê‹C‚ÉƒJƒƒ‰‚ğ•ÏX‚·‚é•K—v‚ª‚ ‚é‚Æ‚«‚Ég—p‚µ‚Ä‚­‚¾‚³‚¢B
+			//ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥ãŒå¿…è¦ãªã‚‰ã€ã‚«ãƒ¡ãƒ©ã®åº§æ¨™ã‚’ä¸€æ°—ã«ç›®æ¨™åº§æ¨™ã«ã™ã‚‹ã€‚
+			//ã‚·ãƒ¼ãƒ³ã®åˆ‡ã‚Šæ›¿ã‚ã‚Šæ™‚ãªã©ã€ä¸€æ°—ã«ã‚«ãƒ¡ãƒ©ã‚’å¤‰æ›´ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã¨ãã«ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚
 			m_camera->SetTarget(m_target);
 			m_camera->SetPosition(m_position);
 			m_isRefresh = false;

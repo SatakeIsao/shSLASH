@@ -1,10 +1,10 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "NullTextureMaps.h"
 
 namespace nsK2EngineLow {
 	void NullTextureMaps::Init()
 	{
-		//ŠeíƒeƒNƒXƒ`ƒƒ‚ğƒ[ƒhB
+		//å„ç¨®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		auto TexLoad = [&](
 			const char* loadTexFilePath,
 			std::unique_ptr<char[]>& outTexData,
@@ -12,44 +12,44 @@ namespace nsK2EngineLow {
 			) {
 			FILE* fp = fopen(loadTexFilePath, "rb");
 			if (fp == nullptr) {
-				//nullƒeƒNƒXƒ`ƒƒ‚Ìƒ[ƒh‚É¸”sB
-				MessageBoxA(nullptr, "nullƒeƒNƒXƒ`ƒƒ‚Ìƒ[ƒh‚É¸”s‚µ‚Ü‚µ‚½B", "ƒGƒ‰[", MB_OK);
+				//nullãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã€‚
+				MessageBoxA(nullptr, "nullãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ã¾ã—ãŸã€‚", "ã‚¨ãƒ©ãƒ¼", MB_OK);
 				std::abort();
 			}
-			//ƒeƒNƒXƒ`ƒƒƒTƒCƒY‚ğŒvZB
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºã‚’è¨ˆç®—ã€‚
 			fseek(fp, 0L, SEEK_END);
 			outTexSize = ftell(fp);
 			fseek(fp, 0L, SEEK_SET);
 
-			//ƒƒ‚ƒŠ‚ğŠm•Û
+			//ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 			outTexData = std::make_unique<char[]>(outTexSize);
 			fread(outTexData.get(), outTexSize, 1, fp);
 			fclose(fp);
 		};
 
 		m_albedoMapFilePath = "Assets/ModelData/preset/NullAlbedoMap.DDS";
-		//ƒAƒ‹ƒxƒhƒ}ƒbƒv‚ğƒ[ƒhB
+		//ã‚¢ãƒ«ãƒ™ãƒ‰ãƒãƒƒãƒ—ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		TexLoad(
 			m_albedoMapFilePath,
 			m_albedoMap,
 			m_albedoMapSize);
 
 		m_normalMapFilePath = "Assets/ModelData/preset/NullNormalMap.DDS";
-		//–@üƒ}ƒbƒv‚ğƒ[ƒhB
+		//æ³•ç·šãƒãƒƒãƒ—ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		TexLoad(
 			m_normalMapFilePath,
 			m_normalMap,
 			m_normalMapSize);
 
 		m_specMapFilePath = "Assets/ModelData/preset/specMap_None.DDS";
-		//ƒXƒyƒLƒ…ƒ‰ƒ}ƒbƒvƒ}ƒbƒv‚ğƒ[ƒhB
+		//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		TexLoad(
 			m_specMapFilePath,
 			m_specMap,
 			m_specMapSize);
 
 		m_zeroValueMapFilePath = "Assets/ModelData/preset/ZeroValueMap.DDS";
-		//‚O‚Ì’l‚ğŠi”[‚µ‚Ä‚¢‚éƒ}ƒbƒv‚ğƒ[ƒhB
+		//ï¼ã®å€¤ã‚’æ ¼ç´ã—ã¦ã„ã‚‹ãƒãƒƒãƒ—ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		TexLoad(
 			m_zeroValueMapFilePath,
 			m_zeroValueMap,

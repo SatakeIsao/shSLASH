@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "ConstantBuffer.h"
 
 namespace nsK2EngineLow {
@@ -21,13 +21,13 @@ namespace nsK2EngineLow {
 		Release();
 		m_size = size;
 
-		//D3DƒfƒoƒCƒX‚ðŽæ“¾B
+		//D3Dãƒ‡ãƒã‚¤ã‚¹ã‚’å–å¾—ã€‚
 		auto device = g_graphicsEngine->GetD3DDevice();
 
 
-		//’è”ƒoƒbƒtƒ@‚Í256ƒoƒCƒgƒAƒ‰ƒCƒƒ“ƒg‚ª—v‹‚³‚ê‚é‚Ì‚ÅA256‚Ì”{”‚ÉØ‚èã‚°‚éB
+		//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¯256ãƒã‚¤ãƒˆã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆãŒè¦æ±‚ã•ã‚Œã‚‹ã®ã§ã€256ã®å€æ•°ã«åˆ‡ã‚Šä¸Šã’ã‚‹ã€‚
 		m_allocSize = (size + 256) & 0xFFFFFF00;
-		//’è”ƒoƒbƒtƒ@‚Ìì¬B
+		//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆã€‚
 		int bufferNo = 0;
 		auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		auto rDesc = CD3DX12_RESOURCE_DESC::Buffer(m_allocSize);
@@ -40,8 +40,8 @@ namespace nsK2EngineLow {
 				nullptr,
 				IID_PPV_ARGS(&cb)
 			);
-			//’è”ƒoƒbƒtƒ@‚ðCPU‚©‚çƒAƒNƒZƒX‰Â”\‚È‰¼‘zƒAƒhƒŒƒX‹óŠÔ‚Éƒ}ƒbƒsƒ“ƒO‚·‚éB
-			//ƒ}ƒbƒvAƒAƒ“ƒ}ƒbƒv‚ÌƒI[ƒo[ƒwƒbƒh‚ðŒyŒ¸‚·‚é‚½‚ß‚É‚Í‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª¶‚«‚Ä‚¢‚éŠÔ‚Ís‚í‚È‚¢B
+			//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã‚’CPUã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½ãªä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ç©ºé–“ã«ãƒžãƒƒãƒ”ãƒ³ã‚°ã™ã‚‹ã€‚
+			//ãƒžãƒƒãƒ—ã€ã‚¢ãƒ³ãƒžãƒƒãƒ—ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ˜ãƒƒãƒ‰ã‚’è»½æ¸›ã™ã‚‹ãŸã‚ã«ã¯ã“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒç”Ÿãã¦ã„ã‚‹é–“ã¯è¡Œã‚ãªã„ã€‚
 			{
 				CD3DX12_RANGE readRange(0, 0);        //     intend to read from this resource on the CPU.
 				cb->Map(0, &readRange, reinterpret_cast<void**>(&m_constBufferCPU[bufferNo]));
@@ -51,12 +51,12 @@ namespace nsK2EngineLow {
 			}
 			bufferNo++;
 		}
-		//—˜—p‰Â”\‚É‚·‚éB
+		//åˆ©ç”¨å¯èƒ½ã«ã™ã‚‹ã€‚
 		m_isValid = true;
 	}
 	void ConstantBuffer::RegistConstantBufferView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle, int bufferNo)
 	{
-		//D3DƒfƒoƒCƒX‚ðŽæ“¾B
+		//D3Dãƒ‡ãƒã‚¤ã‚¹ã‚’å–å¾—ã€‚
 		auto device = g_graphicsEngine->GetD3DDevice();
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 		desc.BufferLocation = m_constantBuffer[bufferNo]->GetGPUVirtualAddress();

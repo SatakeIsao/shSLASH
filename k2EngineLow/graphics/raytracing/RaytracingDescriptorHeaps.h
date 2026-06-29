@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	namespace raytracing {
 		/// <summary>
-		/// ƒŒƒCƒgƒŒ[ƒVƒ“ƒO‚Åg—p‚·‚éƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv
+		/// ãƒ¬ã‚¤ãƒˆãƒ¬ãƒ¼ã‚·ãƒ³ã‚°ã§ä½¿ç”¨ã™ã‚‹ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
 		/// </summary>
 		class DescriptorHeaps : public Noncopyable {
 		public:
 			/// <summary>
-			/// ŠeíƒŠƒ\[ƒX‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^‚µ‚Ä‚¢‚­B
+			/// å„ç¨®ãƒªã‚½ãƒ¼ã‚¹ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã—ã¦ã„ãã€‚
 			/// </summary>
 			/// <param name="world"></param>
 			/// <param name="outputBuffer"></param>
@@ -19,8 +19,8 @@ namespace nsK2EngineLow {
 				ConstantBuffer& rayGeneCB
 			);
 			/// <summary>
-			/// ƒVƒF[ƒ_[ƒŠƒ\[ƒXAƒAƒ“ƒI[ƒ_[ƒAƒNƒZƒXƒVƒF[ƒ_[ƒŠƒ\[ƒXA’è”ƒoƒbƒtƒ@‚Ì
-			/// ƒfƒBƒXƒNƒŠƒvƒ^‚ª“o˜^‚³‚ê‚Ä‚¢‚éƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚ğæ“¾B
+			/// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒªã‚½ãƒ¼ã‚¹ã€ã‚¢ãƒ³ã‚ªãƒ¼ãƒ€ãƒ¼ã‚¢ã‚¯ã‚»ã‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒªã‚½ãƒ¼ã‚¹ã€å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®
+			/// ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚’å–å¾—ã€‚
 			/// </summary>
 			/// <returns></returns>
 			const DescriptorHeap& GetSrvUavCbvDescriptorHeap() const
@@ -28,7 +28,7 @@ namespace nsK2EngineLow {
 				return m_srvUavCbvHeap;
 			}
 			/// <summary>
-			/// ƒTƒ“ƒvƒ‰‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ª“o˜^‚³‚ê‚Ä‚¢‚éƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚ğæ“¾B
+			/// ã‚µãƒ³ãƒ—ãƒ©ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚’å–å¾—ã€‚
 			/// </summary>
 			/// <returns></returns>
 			const DescriptorHeap& GetSamplerDescriptorHeap() const
@@ -36,8 +36,8 @@ namespace nsK2EngineLow {
 				return m_samplerDescriptorHeap;
 			}
 		private:
-			DescriptorHeap m_srvUavCbvHeap;			//SRV_UAV_CBV—p‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒvB
-			DescriptorHeap m_samplerDescriptorHeap;	//ƒTƒ“ƒvƒ‰—p‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒvB
+			DescriptorHeap m_srvUavCbvHeap;			//SRV_UAV_CBVç”¨ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã€‚
+			DescriptorHeap m_samplerDescriptorHeap;	//ã‚µãƒ³ãƒ—ãƒ©ç”¨ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã€‚
 		};
 	}
 }

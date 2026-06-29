@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "Physics.h"
 
 using namespace std;
@@ -7,8 +7,8 @@ namespace nsK2EngineLow
 	namespace
 	{
 		/**
-		 * Šg’£RayResultCallback
-		 * ˆê”Ôè‘O‚ÌƒIƒuƒWƒFƒNƒg‚¾‚¯‚ğæ“¾‚·‚éClosestRayResultCallback‚ğŒp³
+		 * æ‹¡å¼µRayResultCallback
+		 * ä¸€ç•ªæ‰‹å‰ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã ã‘ã‚’å–å¾—ã™ã‚‹ClosestRayResultCallbackã‚’ç¶™æ‰¿
 		 */
 		struct ExtendedRayResultCallback : public btCollisionWorld::ClosestRayResultCallback
 		{
@@ -20,19 +20,19 @@ namespace nsK2EngineLow
 			}
 
 			/**
-			 * Bullet‚ªuÕ“ËŒó•âv‚ğŒ©‚Â‚¯‚½‚ÉŒÄ‚ÔŠÖ”B‚±‚±‚ÅƒtƒBƒ‹ƒ^ƒŠƒ“ƒO‚ğs‚¤B
+			 * BulletãŒã€Œè¡çªå€™è£œã€ã‚’è¦‹ã¤ã‘ãŸæ™‚ã«å‘¼ã¶é–¢æ•°ã€‚ã“ã“ã§ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ã‚’è¡Œã†ã€‚
 			 */
 			virtual bool needsCollision(btBroadphaseProxy* proxy0) const override
 			{
-				// ‚Ü‚¸•W€‚ÌƒOƒ‹[ƒv/ƒ}ƒXƒN”»’è
+				// ã¾ãšæ¨™æº–ã®ã‚°ãƒ«ãƒ¼ãƒ—/ãƒã‚¹ã‚¯åˆ¤å®š
 				bool collides = btCollisionWorld::ClosestRayResultCallback::needsCollision(proxy0);
 				if (!collides) return false;
 
-				// ƒ†[ƒU[’è‹`‚ÌƒtƒBƒ‹ƒ^‚ª‚ ‚ê‚ÎÀs
+				// ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©ã®ãƒ•ã‚£ãƒ«ã‚¿ãŒã‚ã‚Œã°å®Ÿè¡Œ
 				if (filterCallback) {
 					const btCollisionObject* obj = (const btCollisionObject*)proxy0->m_clientObject;
 					if (!filterCallback(*obj)) {
-						return false; // ƒ†[ƒU[ğŒ‚Å’e‚­
+						return false; // ãƒ¦ãƒ¼ã‚¶ãƒ¼æ¡ä»¶ã§å¼¾ã
 					}
 				}
 				return true;
@@ -41,8 +41,8 @@ namespace nsK2EngineLow
 
 
 		/**
-		 * Šg’£ConvexResultCallback
-		 * ˆê”Ôè‘O‚ÌƒIƒuƒWƒFƒNƒg‚¾‚¯‚ğæ“¾‚·‚éClosestConvexResultCallback‚ğŒp³
+		 * æ‹¡å¼µConvexResultCallback
+		 * ä¸€ç•ªæ‰‹å‰ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã ã‘ã‚’å–å¾—ã™ã‚‹ClosestConvexResultCallbackã‚’ç¶™æ‰¿
 		 */
 		struct ExtendedConvexResultCallback : public btCollisionWorld::ClosestConvexResultCallback
 		{
@@ -99,7 +99,7 @@ namespace nsK2EngineLow
 
 	PhysicsWorld::PhysicsWorld()
 	{
-		//K2_ASSERT(instance_ == nullptr, "PhysicsWorld‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•¡”ì‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB");
+		//K2_ASSERT(instance_ == nullptr, "PhysicsWorldã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¤‡æ•°ä½œã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚");
 		Setup();
 	}
 
@@ -132,7 +132,7 @@ namespace nsK2EngineLow
 
 
 	void PhysicsWorld::Release() {
-		// ˆË‘¶ŠÖŒW‚Ì‹t‡‚Å”jŠü‚·‚é‚Ì‚ªˆÀ‘S
+		// ä¾å­˜é–¢ä¿‚ã®é€†é †ã§ç ´æ£„ã™ã‚‹ã®ãŒå®‰å…¨
 		dynamicWorld_.reset();
 		constraintSolver_.reset();
 		overlappingPairCache_.reset();
@@ -143,7 +143,7 @@ namespace nsK2EngineLow
 
 	void PhysicsWorld::Update(float deltaTime)
 	{
-		// subSteps=10, fixedTimeStep=1/60.0f ‚È‚ÇAˆÀ’è«‚Ì‚½‚ß‚Ìİ’è‚ğ„§
+		// subSteps=10, fixedTimeStep=1/60.0f ãªã©ã€å®‰å®šæ€§ã®ãŸã‚ã®è¨­å®šã‚’æ¨å¥¨
 		dynamicWorld_->stepSimulation(deltaTime, 10);
 	}
 
@@ -164,7 +164,7 @@ namespace nsK2EngineLow
 
 	void PhysicsWorld::AddRigidBody(RigidBody& rb, void* ptr)
 	{
-		// UserPointer‚ğİ’è‚µ‚Ä‚¨‚­‚ÆRaycast‚Å‹tˆø‚«‚Å‚«‚Ä•Ö—˜
+		// UserPointerã‚’è¨­å®šã—ã¦ãŠãã¨Raycastã§é€†å¼•ãã§ãã¦ä¾¿åˆ©
 		rb.GetBody()->setUserPointer(ptr);
 		AddRigidBody(rb);
 	}
@@ -202,16 +202,16 @@ namespace nsK2EngineLow
 		btVector3 start = ConvertVector3(rayStart);
 		btVector3 end = ConvertVector3(rayEnd);
 
-		// ƒJƒXƒ^ƒ€ƒR[ƒ‹ƒoƒbƒN‚ğg—p
+		// ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ä½¿ç”¨
 		ExtendedRayResultCallback cb(start, end);
 
-		// ƒOƒ‹[ƒv‚Æƒ}ƒXƒN‚Ìİ’è
-		// Raycast‚ğs‚¤‘¤(Group)‚Íw’è‚¹‚¸ CollisionWorld‘¤‚Åu’N‚Æ“–‚½‚é‚©v‚ğMask‚Å§Œä
+		// ã‚°ãƒ«ãƒ¼ãƒ—ã¨ãƒã‚¹ã‚¯ã®è¨­å®š
+		// Raycastã‚’è¡Œã†å´(Group)ã¯æŒ‡å®šã›ãš CollisionWorldå´ã§ã€Œèª°ã¨å½“ãŸã‚‹ã‹ã€ã‚’Maskã§åˆ¶å¾¡
 		cb.m_collisionFilterGroup = -1;
 		cb.m_collisionFilterMask = filterMask;
 		cb.filterCallback = filterCallback;
 
-		// Às
+		// å®Ÿè¡Œ
 		dynamicWorld_->rayTest(start, end, cb);
 
 		if (cb.hasHit()) {
@@ -233,7 +233,7 @@ namespace nsK2EngineLow
 	{
 		const btConvexShape* convexShape = dynamic_cast<const btConvexShape*>(collider.GetBody());
 		if (!convexShape) {
-			// ConvexˆÈŠO‚ÌShape(Mesh‚È‚Ç)‚Å‚ÍSweep‚Å‚«‚Ü‚¹‚ñ
+			// Convexä»¥å¤–ã®Shape(Meshãªã©)ã§ã¯Sweepã§ãã¾ã›ã‚“
 			return false;
 		}
 		return ConvexSweepTest(convexShape, rayStart, rayEnd, result, filterMask, filterCallback);
@@ -249,14 +249,14 @@ namespace nsK2EngineLow
 		startTrans.setOrigin(ConvertVector3(rayStart));
 		endTrans.setOrigin(ConvertVector3(rayEnd));
 
-		// ƒJƒXƒ^ƒ€ƒR[ƒ‹ƒoƒbƒN‚ğg—p
+		// ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ä½¿ç”¨
 		ExtendedConvexResultCallback cb(startTrans.getOrigin(), endTrans.getOrigin());
-		// ƒOƒ‹[ƒv‚Æƒ}ƒXƒN‚Ìİ’è
-		// Raycast‚ğs‚¤‘¤(Group)‚Íw’è‚¹‚¸ CollisionWorld‘¤‚Åu’N‚Æ“–‚½‚é‚©v‚ğMask‚Å§Œä
+		// ã‚°ãƒ«ãƒ¼ãƒ—ã¨ãƒã‚¹ã‚¯ã®è¨­å®š
+		// Raycastã‚’è¡Œã†å´(Group)ã¯æŒ‡å®šã›ãš CollisionWorldå´ã§ã€Œèª°ã¨å½“ãŸã‚‹ã‹ã€ã‚’Maskã§åˆ¶å¾¡
 		cb.m_collisionFilterGroup = -1;
 		cb.m_collisionFilterMask = filterMask;
 		cb.filterCallback = filterCallback;
-		// Às
+		// å®Ÿè¡Œ
 		dynamicWorld_->convexSweepTest(shape, startTrans, endTrans, cb);
 
 		if (cb.hasHit()) {
@@ -275,7 +275,7 @@ namespace nsK2EngineLow
 	{
 		const btConvexShape* convexShape = dynamic_cast<const btConvexShape*>(collider.GetBody());
 		if (!convexShape) {
-			// ConvexˆÈŠO‚ÌShape(Mesh‚È‚Ç)‚Å‚ÍSweep‚Å‚«‚Ü‚¹‚ñ
+			// Convexä»¥å¤–ã®Shape(Meshãªã©)ã§ã¯Sweepã§ãã¾ã›ã‚“
 			return;
 		}
 		ConvexSweepTest(convexShape, start, end, resultCallback, allowedCcdPenetration);
@@ -314,7 +314,7 @@ namespace nsK2EngineLow
 
 	void PhysicsWorld::ContactTest(CharacterController* characterContoller, std::function<void(const btCollisionObject&)> cb)
 	{
-		// CharacterController‚ÌÀ‘•‚ÉˆË‘¶‚·‚é‚ªAˆê”Ê“I‚ÉRigidBody‚ğ‚Á‚Ä‚¢‚é
+		// CharacterControllerã®å®Ÿè£…ã«ä¾å­˜ã™ã‚‹ãŒã€ä¸€èˆ¬çš„ã«RigidBodyã‚’æŒã£ã¦ã„ã‚‹
 		ContactTest(*characterContoller->GetRigidBody(), cb);
 	}
 

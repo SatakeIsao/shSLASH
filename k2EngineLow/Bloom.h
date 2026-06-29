@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "graphics/GaussianBlur.h"
 
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒuƒ‹[ƒ€B
+	/// ãƒ–ãƒ«ãƒ¼ãƒ ã€‚
 	/// </summary>
 	class Bloom : public Noncopyable
 	{
@@ -12,7 +12,7 @@ namespace nsK2EngineLow {
 		
 		
 		/// <summary>
-		/// ƒ|ƒXƒgƒGƒtƒFƒNƒg‚ğÀs‚µ‚½Œ‹‰Ê‚Æ‚È‚éƒeƒNƒXƒ`ƒƒ‚ğæ“¾
+		/// ãƒã‚¹ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å®Ÿè¡Œã—ãŸçµæœã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å–å¾—
 		/// </summary>
 		/// <returns></returns>
 		Texture& GetResultTexture()
@@ -32,35 +32,35 @@ namespace nsK2EngineLow {
 		
 
 		/// <summary>
-		/// ‹P“x’Šo—p‚ÌƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
+		/// è¼åº¦æŠ½å‡ºç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
 		/// </summary>
 		void InitLumi(RenderTarget& mainRenderTarget);
 		/// <summary>
-		/// ‹P“x’Šo—p‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg
+		/// è¼åº¦æŠ½å‡ºç”¨ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		/// </summary>
 		/// <param name="rc"></param>
 		void InitRenderTarget(RenderTarget& rc);
 		/// <summary>
-		/// ƒKƒEƒVƒAƒ“ƒuƒ‰[‚ğ‰Šú‰»
+		/// ã‚¬ã‚¦ã‚·ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ã‚’åˆæœŸåŒ–
 		/// </summary>
 		void InitGaussBlur();
 		/// <summary>
-		/// ƒ{ƒP‰æ‘œ‚ğ‰ÁZ‡¬‚·‚éƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
+		/// ãƒœã‚±ç”»åƒã‚’åŠ ç®—åˆæˆã™ã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
 		/// </summary>
 		/// <param name="mainRenderTarget"></param>
 		void InitBoke(RenderTarget& mainRenderTarget);
 		/// <summary>
-		/// ‹P“x’Šo—p‚ÌƒXƒvƒ‰ƒCƒg‚ğ•`‰æ
+		/// è¼åº¦æŠ½å‡ºç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’æç”»
 		/// </summary>
 		/// <param name="rc"></param>
 		void RenderLumi(RenderContext& rc);
 		/// <summary>
-		/// ƒKƒEƒVƒAƒ“ƒuƒ‰[‚ğÀs
+		/// ã‚¬ã‚¦ã‚·ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼ã‚’å®Ÿè¡Œ
 		/// </summary>
 		/// <param name="rc"></param>
 		void RenderGauss(RenderContext& rc);
 		/// <summary>
-		/// ƒ{ƒP‰æ‘œ‚ğƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚É‰ÁZ‡¬
+		/// ãƒœã‚±ç”»åƒã‚’ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«åŠ ç®—åˆæˆ
 		/// </summary>
 		/// <param name="rc"></param>
 		/// <param name="mainRenderTarget"></param>
@@ -74,16 +74,16 @@ namespace nsK2EngineLow {
 	private:
 		//RenderTarget* mainRenderTarget;
 
-		RenderTarget luminanceRenderTarget;	//‹P“x’Šo—p‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg
-		SpriteInitData luminanceSpriteInitData; //‹P“x’Šo—p‚ÌƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
+		RenderTarget luminanceRenderTarget;	//è¼åº¦æŠ½å‡ºç”¨ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
+		SpriteInitData luminanceSpriteInitData; //è¼åº¦æŠ½å‡ºç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
 		Sprite luminanceSprite;				
 
-		GaussianBlur gaussianBlur[4];			//ƒKƒEƒVƒAƒ“ƒuƒ‰[
+		GaussianBlur gaussianBlur[4];			//ã‚¬ã‚¦ã‚·ã‚¢ãƒ³ãƒ–ãƒ©ãƒ¼
 
-		SpriteInitData finalSpriteInitData; //ƒ{ƒP‰æ‘œ‚ğ‰ÁZ‡¬‚·‚éƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
-		Sprite finalSprite;					//‰ÁZ‡¬—p‚ÌƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
-		//SpriteInitData spriteInitData;		//ƒXƒvƒ‰ƒCƒg‚Ì‰Šú‰»ƒIƒuƒWƒFƒNƒg
-		Sprite copyToFrameBufferSprite;		//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒRƒs[‚·‚é‚½‚ß‚ÌƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»
+		SpriteInitData finalSpriteInitData; //ãƒœã‚±ç”»åƒã‚’åŠ ç®—åˆæˆã™ã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
+		Sprite finalSprite;					//åŠ ç®—åˆæˆç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
+		//SpriteInitData spriteInitData;		//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®åˆæœŸåŒ–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+		Sprite copyToFrameBufferSprite;		//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ãŸã‚ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–
 	};
 }
 

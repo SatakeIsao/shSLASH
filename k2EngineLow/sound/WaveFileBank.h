@@ -1,32 +1,32 @@
-/// <summary>
-/// ”gŒ`ƒf[ƒ^ƒoƒ“ƒNB
+ï»¿/// <summary>
+/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ãƒãƒ³ã‚¯ã€‚
 /// </summary>
 #pragma once
 #include <array>
 
 namespace nsK2EngineLow {
-	//“o˜^‚Å‚«‚é”gŒ`ƒf[ƒ^‚ÌŒÀŠE”B
+	//ç™»éŒ²ã§ãã‚‹æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã®é™ç•Œæ•°ã€‚
 	const int MAXWAVEFILENUMBER = 1000;
 
 	class WaveFile;
 	typedef std::shared_ptr<WaveFile>	WaveFilePtr;
 	/// <summary>
-	/// ”gŒ`ƒf[ƒ^ƒoƒ“ƒNB
-	/// WaveFile::Resist‚Å”gŒ`ƒf[ƒ^‚ğƒ[ƒh‚µ‚ÄAƒoƒ“ƒN‚É“o˜^‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
-	/// ƒoƒ“ƒN‚É“o˜^‚³‚ê‚½”gŒ`ƒf[ƒ^‚ÍASoundSource::Init‚Å—˜—p‚µ‚Ü‚·B
+	/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ãƒãƒ³ã‚¯ã€‚
+	/// WaveFile::Resistã§æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ­ãƒ¼ãƒ‰ã—ã¦ã€ãƒãƒ³ã‚¯ã«ç™»éŒ²ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
+	/// ãƒãƒ³ã‚¯ã«ç™»éŒ²ã•ã‚ŒãŸæ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã¯ã€SoundSource::Initã§åˆ©ç”¨ã—ã¾ã™ã€‚
 	/// </summary>
 	class WaveFileBank : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+		/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		WaveFileBank();
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~WaveFileBank();
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ğŠJ•ú‚·‚éB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’é–‹æ”¾ã™ã‚‹ã€‚
 		/// </summary>
 		void Release()
 		{
@@ -36,21 +36,21 @@ namespace nsK2EngineLow {
 			}
 		}
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ğŒŸõ‚·‚éB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’æ¤œç´¢ã™ã‚‹ã€‚
 		/// </summary>
-		/// <param name="number">WaveFile::Resist‚Å“o˜^‚µ‚½”Ô†B</param>
+		/// <param name="number">WaveFile::Resistã§ç™»éŒ²ã—ãŸç•ªå·ã€‚</param>
 		/// <returns></returns>
 		WaveFilePtr FindWaveFile(int number)
 		{
 			return m_waveFilePtrArray[number];
 		}
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ğ“o˜^‚·‚éB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²ã™ã‚‹ã€‚
 		/// </summary>
-		/// <param name="number">“o˜^‚·‚é”Ô†B</param>
-		/// <param name="filePath">waveƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒXB</param>
+		/// <param name="number">ç™»éŒ²ã™ã‚‹ç•ªå·ã€‚</param>
+		/// <param name="filePath">waveãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã€‚</param>
 		void Resist(int number, const char* filePath);
 	private:
-		std::array<WaveFilePtr, MAXWAVEFILENUMBER> m_waveFilePtrArray;		//”gŒ`ƒf[ƒ^‚Ì”z—ñB
+		std::array<WaveFilePtr, MAXWAVEFILENUMBER> m_waveFilePtrArray;		//æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã®é…åˆ—ã€‚
 	};
 }

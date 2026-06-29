@@ -1,5 +1,5 @@
-/*!
- *@brief	”gŒ`ƒf[ƒ^ƒoƒ“ƒNB
+ï»¿/*!
+ *@brief	æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ãƒãƒ³ã‚¯ã€‚
  */
 
 #include "k2EngineLowPreCompile.h"
@@ -12,28 +12,28 @@ namespace nsK2EngineLow {
 	}
 	WaveFileBank::~WaveFileBank()
 	{
-		//”gŒ`ƒf[ƒ^‚ðŠJ•ú‚·‚éB
+		//æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’é–‹æ”¾ã™ã‚‹ã€‚
 		Release();
 	}
 
 	void WaveFileBank::Resist(int number, const char* filePath)
 	{
-		//Šù‚É”gŒ`ƒf[ƒ^‚ª“o˜^‚³‚ê‚Ä‚¢‚½‚çB
+		//æ—¢ã«æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ãŒç™»éŒ²ã•ã‚Œã¦ã„ãŸã‚‰ã€‚
 		if (m_waveFilePtrArray[number])
 		{
-			//‰½‚à‚µ‚È‚¢B
+			//ä½•ã‚‚ã—ãªã„ã€‚
 			return;
 		}
 		m_waveFilePtrArray[number].reset(new WaveFile);
 		auto waveFile = m_waveFilePtrArray[number];
 		bool result = waveFile->Open(filePath);
-		//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ÉŽ¸”s‚µ‚½‚çB
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸã‚‰ã€‚
 		if (result == false) {
-			//ƒŠƒ\[ƒX‚ð”jŠü‚·‚éB
+			//ãƒªã‚½ãƒ¼ã‚¹ã‚’ç ´æ£„ã™ã‚‹ã€‚
 			m_waveFilePtrArray[number].reset();
 			return;
 		}
-		waveFile->AllocReadBuffer(waveFile->GetSize());	//waveƒtƒ@ƒCƒ‹‚ÌƒTƒCƒY•ª‚Ì“Ç‚Ýž‚Ýƒoƒbƒtƒ@‚ðŠm•Û‚·‚éB
+		waveFile->AllocReadBuffer(waveFile->GetSize());	//waveãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚µã‚¤ã‚ºåˆ†ã®èª­ã¿è¾¼ã¿ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã™ã‚‹ã€‚
 		unsigned int dummy;
 		waveFile->Read(waveFile->GetReadBuffer(), waveFile->GetSize(), &dummy);
 		waveFile->ResetFile();

@@ -1,5 +1,5 @@
-/*!
- * @brief	Ã“IƒIƒuƒWƒFƒNƒgB
+ï»¿/*!
+ * @brief	é™çš„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
  */
 
 #pragma once
@@ -9,29 +9,29 @@
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// Ã“I•¨—ƒIƒuƒWƒFƒNƒg
+	/// é™çš„ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	/// </summary>
 	class PhysicsStaticObject : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		/// </summary>
 		PhysicsStaticObject();
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		/// </summary>
 		~PhysicsStaticObject();
 		/// <summary>
-		/// ƒ‚ƒfƒ‹‚©‚ç‚ÌÃ“IƒIƒuƒWƒFƒNƒg‚Ìì¬B
+		/// ãƒ¢ãƒ‡ãƒ«ã‹ã‚‰ã®é™çš„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã€‚
 		/// </summary>
-		/// <param name="model">ƒ‚ƒfƒ‹</param>
-		/// <param name="worldMatrix">ƒ[ƒ‹ƒhs—ñ</param>
-		/// <param name="restitution">”½”­—Í</param>
+		/// <param name="model">ãƒ¢ãƒ‡ãƒ«</param>
+		/// <param name="worldMatrix">ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—</param>
+		/// <param name="restitution">åç™ºåŠ›</param>
 		void CreateFromModel(Model& model, const Matrix& worldMatrix, const float restitution = 0.0f);
 		/// <summary>
-		/// –€C—Í‚ğİ’è‚·‚éB
+		/// æ‘©æ“¦åŠ›ã‚’è¨­å®šã™ã‚‹ã€‚
 		/// </summary>
-		/// <param name="friction">–€C—ÍB10‚ªÅ‘å’lB</param>
+		/// <param name="friction">æ‘©æ“¦åŠ›ã€‚10ãŒæœ€å¤§å€¤ã€‚</param>
 		void SetFriction(float friction)
 		{
 			m_rigidBody.SetFriction(friction);
@@ -41,14 +41,14 @@ namespace nsK2EngineLow {
 			return m_rigidBody.GetBody();
 		}
 		/// <summary>
-		/// „‘Ì‚ğ”jŠüB
+		/// å‰›ä½“ã‚’ç ´æ£„ã€‚
 		/// </summary>
 		void Release()
 		{
 			m_rigidBody.Release();
 		}
 	private:
-		MeshCollider m_meshCollider;		//ƒƒbƒVƒ…ƒRƒ‰ƒCƒ_[B
-		RigidBody m_rigidBody;				//„‘ÌB
+		MeshCollider m_meshCollider;		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã€‚
+		RigidBody m_rigidBody;				//å‰›ä½“ã€‚
 	};
 }

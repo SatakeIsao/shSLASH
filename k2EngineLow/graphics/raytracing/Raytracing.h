@@ -1,4 +1,5 @@
-#pragma once
+ï»¿#pragma once
+#include "RaytracingWorld.h"
 
 namespace nsK2EngineLow {
 	namespace raytracing {
@@ -10,18 +11,12 @@ namespace nsK2EngineLow {
 			const D3D12_HEAP_PROPERTIES& heapProps
 		);
 
-		struct AccelerationStructureBuffers {
-			ID3D12Resource* pScratch = nullptr;
-			ID3D12Resource* pResult = nullptr;
-			ID3D12Resource* pInstanceDesc = nullptr;
-		};
-
-		//ƒqƒbƒgƒOƒ‹[ƒvB
+		//ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã€‚
 		enum EHitGroup {
 			eHitGroup_Undef = -1,
-			eHitGroup_PBRCameraRay,	//PBRƒ}ƒeƒŠƒAƒ‹‚ÉƒJƒƒ‰ƒŒƒC‚ªÕ“Ë‚·‚é‚Æ‚«‚ÌƒqƒbƒgƒOƒ‹[ƒvB
-			eHitGroup_PBRShadowRay,	//PBRƒ}ƒeƒŠƒAƒ‹‚ÉƒVƒƒƒhƒEƒŒƒC‚ªÕ“Ë‚·‚é‚Æ‚«‚ÌƒqƒbƒgƒOƒ‹[ƒvB
-			eHitGroup_Num,			//ƒqƒbƒgƒOƒ‹[ƒv‚Ì”B
+			eHitGroup_PBRCameraRay,	// PBRãƒãƒ†ãƒªã‚¢ãƒ«ã«ã‚«ãƒ¡ãƒ©ãƒ¬ã‚¤ãŒè¡çªã™ã‚‹ã¨ãã®ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã€‚
+			eHitGroup_PBRShadowRay,	// PBRãƒãƒ†ãƒªã‚¢ãƒ«ã«ã‚·ãƒ£ãƒ‰ã‚¦ãƒ¬ã‚¤ãŒè¡çªã™ã‚‹ã¨ãã®ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã€‚
+			eHitGroup_Num,			// ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã®æ•°ã€‚
 		};
 
 		const D3D12_HEAP_PROPERTIES kUploadHeapProps =
@@ -42,42 +37,41 @@ namespace nsK2EngineLow {
 			0
 		};
 
-		const int MAX_TRACE_RECURSION_DEPTH = 4;	//ƒŒƒCƒgƒŒ[ƒX‚ÌÄ‹AŒÄ‚Ño‚µ‚ÌÅ‘å”B
-														//‚±‚ê‚ªTraceRay‚ğÄ‹A“I‚ÉŒÄ‚Ño‚¹‚éÅ‘å”‚Å‚·B
-														//
-			//ƒ[ƒJƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ
+		const int MAX_TRACE_RECURSION_DEPTH = 4;	// ãƒ¬ã‚¤ãƒˆãƒ¬ãƒ¼ã‚¹ã®å†å¸°å‘¼ã³å‡ºã—ã®æœ€å¤§æ•°ã€‚
+													// ã“ã‚ŒãŒTraceRayã‚’å†å¸°çš„ã«å‘¼ã³å‡ºã›ã‚‹æœ€å¤§æ•°ã§ã™ã€‚												
+		// ãƒ­ãƒ¼ã‚«ãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£
 		enum ELocalRootSignature {
-			eLocalRootSignature_Empty,				//‹ó‚Ìƒ[ƒJƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒƒB
-			eLocalRootSignature_Raygen,				//ƒŒƒC¶¬ƒVƒF[ƒ_[—p‚Ìƒ[ƒJƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒƒB
-			eLocalRootSignature_PBRMaterialHit,		//PBRƒ}ƒeƒŠƒAƒ‹‚Éƒqƒbƒg‚µ‚½‚Æ‚«‚Ìƒ[ƒJƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒƒB
+			eLocalRootSignature_Empty,				// ç©ºã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã€‚
+			eLocalRootSignature_Raygen,				// ãƒ¬ã‚¤ç”Ÿæˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨ã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã€‚
+			eLocalRootSignature_PBRMaterialHit,		// PBRãƒãƒ†ãƒªã‚¢ãƒ«ã«ãƒ’ãƒƒãƒˆã—ãŸã¨ãã®ãƒ­ãƒ¼ã‚«ãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã€‚
 		};
-		//ƒVƒF[ƒ_[
+		//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼
 		enum EShader {
-			eShader_Raygeneration,		//ƒJƒƒ‰ƒŒƒC‚ğ¶¬‚·‚éƒVƒF[ƒ_[B
-			eShader_Miss,				//ƒJƒƒ‰ƒŒƒC‚ª‚Ç‚±‚É‚à‚Ô‚Â‚©‚ç‚È‚©‚Á‚½‚ÉŒÄ‚Î‚ê‚éƒVƒF[ƒ_[B
-			eShader_PBRChs,				//‚à‚Á‚Æ‚à‹ß‚¢ƒ|ƒŠƒSƒ“‚ÆƒJƒƒ‰ƒŒƒC‚ªŒğ·‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒVƒF[ƒ_[B
-			eShader_ShadowChs,			//‚à‚Á‚Æ‚à‹ß‚¢ƒ|ƒŠƒSƒ“‚ÆƒVƒƒƒhƒEƒŒƒC‚ªŒğ·‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒVƒF[ƒ_[B
-			eShader_ShadowMiss,			//ƒVƒƒƒhƒEƒŒƒC‚ª‚Ç‚±‚É‚à‚Ô‚Â‚©‚ç‚È‚©‚Á‚½‚ÉŒÄ‚Î‚ê‚éƒVƒF[ƒ_[B
-			eShader_Num,				//ƒVƒF[ƒ_[‚Ì”B
+			eShader_Raygeneration,		// ã‚«ãƒ¡ãƒ©ãƒ¬ã‚¤ã‚’ç”Ÿæˆã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShader_Miss,				// ã‚«ãƒ¡ãƒ©ãƒ¬ã‚¤ãŒã©ã“ã«ã‚‚ã¶ã¤ã‹ã‚‰ãªã‹ã£ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShader_PBRChs,				// ã‚‚ã£ã¨ã‚‚è¿‘ã„ãƒãƒªã‚´ãƒ³ã¨ã‚«ãƒ¡ãƒ©ãƒ¬ã‚¤ãŒäº¤å·®ã—ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShader_ShadowChs,			// ã‚‚ã£ã¨ã‚‚è¿‘ã„ãƒãƒªã‚´ãƒ³ã¨ã‚·ãƒ£ãƒ‰ã‚¦ãƒ¬ã‚¤ãŒäº¤å·®ã—ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShader_ShadowMiss,			// ã‚·ãƒ£ãƒ‰ã‚¦ãƒ¬ã‚¤ãŒã©ã“ã«ã‚‚ã¶ã¤ã‹ã‚‰ãªã‹ã£ãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShader_Num,				// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®æ•°ã€‚
 		};
-		//ƒVƒF[ƒ_[‚ÌƒJƒeƒSƒŠB
+		//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚«ãƒ†ã‚´ãƒªã€‚
 		enum EShaderCategory {
-			eShaderCategory_RayGenerator,	//ƒŒƒC‚ğ¶¬‚·‚éƒVƒF[ƒ_[B
-			eShaderCategory_Miss,			//ƒ~ƒXƒVƒF[ƒ_[B
-			eShaderCategory_ClosestHit,		//‚à‚Á‚Æ‚à‹ß‚¢ƒ|ƒŠƒSƒ“‚ÆƒŒƒC‚ªŒğ·‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒVƒF[ƒ_[B
+			eShaderCategory_RayGenerator,	// ãƒ¬ã‚¤ã‚’ç”Ÿæˆã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShaderCategory_Miss,			// ãƒŸã‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+			eShaderCategory_ClosestHit,		// ã‚‚ã£ã¨ã‚‚è¿‘ã„ãƒãƒªã‚´ãƒ³ã¨ãƒ¬ã‚¤ãŒäº¤å·®ã—ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
 		};
 
 
-		//ƒVƒF[ƒ_[ƒf[ƒ^\‘¢‘ÌB
+		//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã€‚
 		struct ShaderData {
-			const wchar_t* entryPointName;				//ƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚Ì–¼‘OB
-			ELocalRootSignature useLocalRootSignature;	//g—p‚·‚éƒ[ƒJƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒƒB
-			EShaderCategory category;					//ƒJƒeƒSƒŠ[B
-			EHitGroup hitgroup;							//ƒqƒbƒgƒOƒ‹[ƒvB
-														//ƒJƒeƒSƒŠ‚ªeShaderCategory_MissAeShaderCategory_RayGenerator‚Ìê‡A‚±‚Ìƒpƒ‰ƒ[ƒ^[‚Í–³‹‚³‚ê‚Ü‚·B
+			const wchar_t* entryPointName;				// ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã®åå‰ã€‚
+			ELocalRootSignature useLocalRootSignature;	// ä½¿ç”¨ã™ã‚‹ãƒ­ãƒ¼ã‚«ãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã€‚
+			EShaderCategory category;					// ã‚«ãƒ†ã‚´ãƒªãƒ¼ã€‚
+			EHitGroup hitgroup;							// ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã€‚
+														// ã‚«ãƒ†ã‚´ãƒªãŒeShaderCategory_Missã€eShaderCategory_RayGeneratorã®å ´åˆã€ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã¯ç„¡è¦–ã•ã‚Œã¾ã™ã€‚
 		};
 		const ShaderData shaderDatas[] = {
-			//entryPointName	useLocalRootSignature				category						hitgroup
+		// ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ	ä½¿ç”¨ã™ã‚‹ãƒ­ãƒ¼ã‚«ãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£	ã‚«ãƒ†ã‚´ãƒªãƒ¼					ã€€ã€€ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—
 			{ L"rayGen",		eLocalRootSignature_Raygen,			eShaderCategory_RayGenerator,	eHitGroup_Undef },
 			{ L"miss",			eLocalRootSignature_Empty,			eShaderCategory_Miss,			eHitGroup_Undef },
 			{ L"chs",			eLocalRootSignature_PBRMaterialHit,	eShaderCategory_ClosestHit,		eHitGroup_PBRCameraRay },
@@ -89,11 +83,11 @@ namespace nsK2EngineLow {
 
 
 		struct SHitGroup {
-			const wchar_t* name;				//ƒqƒbƒgƒOƒ‹[ƒv‚Ì–¼‘OB
-			const wchar_t* chsHitShaderName;	//Å‚à‹ß‚¢ƒ|ƒŠƒSƒ“‚Éƒqƒbƒg‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒVƒF[ƒ_[‚Ì–¼‘OB
-			const wchar_t* anyHitShaderName;	//any shader???
+			const wchar_t* name;				// ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã®åå‰ã€‚
+			const wchar_t* chsHitShaderName;	// æœ€ã‚‚è¿‘ã„ãƒãƒªã‚´ãƒ³ã«ãƒ’ãƒƒãƒˆã—ãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®åå‰ã€‚
+			const wchar_t* anyHitShaderName;	// ãƒãƒªã‚´ãƒ³ã¨ãƒ¬ã‚¤ãŒäº¤å·®ã—ãŸã¨ãã«æ¡ä»¶ã‚’å•ã‚ãšå‘¼ã°ã‚Œã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®åå‰ã€‚
 		};
-		//ƒqƒbƒgƒOƒ‹[ƒv‚Ì–¼‘O‚Ì”z—ñB
+		//ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã®åå‰ã®é…åˆ—ã€‚
 		const SHitGroup hitGroups[] = {
 			{ L"HitGroup",			shaderDatas[eShader_PBRChs].entryPointName,	nullptr },
 			{ L"ShadowHitGroup",	shaderDatas[eShader_ShadowChs].entryPointName, nullptr },
@@ -101,41 +95,38 @@ namespace nsK2EngineLow {
 
 
 		/// <summary>
-		/// ƒVƒF[ƒ_[ƒe[ƒuƒ‹‚É“o˜^‚³‚ê‚Ä‚¢‚éSRV‚Ì1—v‘f
+		/// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹SRVã®1è¦ç´ 
 		/// </summary>
 		/// <remarks>
-		/// ‚±‚Ì—ñ‹“q‚Ì•À‚Ñ‚ªtƒŒƒWƒXƒ^‚Ì”Ô†‚É‚È‚è‚Ü‚·B
-		/// ƒVƒF[ƒ_[ƒe[ƒuƒ‹‚É‚ÍŠeƒCƒ“ƒXƒ^ƒ“ƒX‚²‚Æ‚ÉƒVƒF[ƒ_[ƒŠƒ\[ƒX‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ª“o˜^‚³‚ê‚Ä‚¢‚Ü‚·B
-		/// ‚±‚Ì—ñ‹“q‚ªŠeƒCƒ“ƒXƒ^ƒ“ƒX‚ÉŠ„‚è“–‚Ä‚ç‚ê‚Ä‚¢‚éƒVƒF[ƒ_[ƒŠƒ\[ƒX‚ğ•\‚µ‚Ä‚¢‚Ü‚·B
+		/// ã“ã®åˆ—æŒ™å­ã®ä¸¦ã³ãŒtãƒ¬ã‚¸ã‚¹ã‚¿ã®ç•ªå·ã«ãªã‚Šã¾ã™ã€‚
+		/// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã«ã¯å„ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã”ã¨ã«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒªã‚½ãƒ¼ã‚¹ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãŒç™»éŒ²ã•ã‚Œã¦ã„ã¾ã™ã€‚
+		/// ã“ã®åˆ—æŒ™å­ãŒå„ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚Œã¦ã„ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒªã‚½ãƒ¼ã‚¹ã‚’è¡¨ã—ã¦ã„ã¾ã™ã€‚
 		/// </remarks>
 		enum class ESRV_OneEntry {
-			eStartRayGenerationSRV,				//ƒŒƒCƒWƒFƒlƒŒ[ƒVƒ‡ƒ“ƒVƒF[ƒ_[‚Å—˜—p‚·‚éSRV‚ÌŠJn”Ô†B
-			eTLAS = eStartRayGenerationSRV,		//TLAS
-			eEndRayGenerationSRV,					//ƒŒƒCƒWƒFƒlƒŒ[ƒVƒ‡ƒ“‚Åg—p‚³‚ê‚éSRV‚Ì”B
-			eAlbedoMap = eEndRayGenerationSRV,	//ƒAƒ‹ƒxƒhƒ}ƒbƒvB
-			eNormalMap,							//–@üƒ}ƒbƒvB
-			eSpecularMap,						//ƒXƒyƒLƒ…ƒ‰ƒ}ƒbƒvB
-			eReflectionMap,						//ƒŠƒtƒŒƒNƒVƒ‡ƒ“ƒ}ƒbƒvB
-			eRefractionMap,						//‹üÜƒ}ƒbƒvB
-			eVertexBuffer,						//’¸“_ƒoƒbƒtƒ@B
-			eIndexBuffer,						//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@B
-			eNum,			//SRV‚Ì”B
-			eNumRayGenerationSRV = eEndRayGenerationSRV - eStartRayGenerationSRV,	//ƒŒƒCƒWƒFƒlƒŒ[ƒVƒ‡ƒ“ƒVƒF[ƒ_[‚Åg—p‚·‚éSRV‚Ì”B
+			eStartRayGenerationSRV,				// ãƒ¬ã‚¤ã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§åˆ©ç”¨ã™ã‚‹SRVã®é–‹å§‹ç•ªå·ã€‚
+			eTLAS = eStartRayGenerationSRV,		// TLAS
+			eEndRayGenerationSRV,				// ãƒ¬ã‚¤ã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã§ä½¿ç”¨ã•ã‚Œã‚‹SRVã®æ•°ã€‚
+			eAlbedoMap = eEndRayGenerationSRV,	// ã‚¢ãƒ«ãƒ™ãƒ‰ãƒãƒƒãƒ—ã€‚
+			eNormalMap,							// æ³•ç·šãƒãƒƒãƒ—ã€‚
+			eSpecularMap,						// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒãƒƒãƒ—ã€‚
+			eReflectionMap,						// ãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ—ã€‚
+			eRefractionMap,						// å±ˆæŠ˜ãƒãƒƒãƒ—ã€‚
+			eVertexBuffer,						// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+			eIndexBuffer,						// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+			eNum,								// SRVã®æ•°ã€‚
+			eNumRayGenerationSRV = eEndRayGenerationSRV - eStartRayGenerationSRV,	// ãƒ¬ã‚¤ã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§ä½¿ç”¨ã™ã‚‹SRVã®æ•°ã€‚
 		};
 		/// <summary>
-		/// ƒqƒbƒgƒVƒF[ƒ_[‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒe[ƒuƒ‹
+		/// ãƒ’ãƒƒãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ«
 		/// </summary>
 		enum EHitShaderDescriptorTable {
-			eHitShaderDescriptorTable_SRV_CBV,	//SRV‚ÆCBV
-			eHitShaderDescriptorTable_Sampler,	//ƒTƒ“ƒvƒ‰
-			eHitShaderDescriptorTable_Num       //ƒe[ƒuƒ‹‚Ì”B
+			eHitShaderDescriptorTable_SRV_CBV,	// SRVã¨CBV
+			eHitShaderDescriptorTable_Sampler,	// ã‚µãƒ³ãƒ—ãƒ©
+			eHitShaderDescriptorTable_Num       // ãƒ†ãƒ¼ãƒ–ãƒ«ã®æ•°ã€‚
 		};
-		struct Instance;
-		using InstancePtr = std::unique_ptr< Instance>;
 		using ID3D12ResourcePtr = CComPtr<ID3D12Resource>;
 		using ID3D12RootSignaturePtr = CComPtr<ID3D12RootSignature>;
 		using ID3DBlobPtr = CComPtr<ID3DBlob>;
 		using ID3D12DescriptorHeapPtr = CComPtr<ID3D12DescriptorHeap>;
-	}//namespace raytracing
-}//namespace nsK2EngineLow 
-#include "RaytracingWorld.h"
+	}
+}

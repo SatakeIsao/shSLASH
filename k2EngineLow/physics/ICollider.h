@@ -1,5 +1,5 @@
-/*!
- * @brief	ƒRƒ‰ƒCƒ_[B
+ï»¿/*!
+ * @brief	ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã€‚
  */
 
 #pragma once
@@ -7,7 +7,7 @@
 class btCollisionShape;
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒRƒ‰ƒCƒ_[‚ÌƒCƒ“ƒ^[ƒtƒF[ƒXƒNƒ‰ƒXB
+	/// ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã€‚
 	/// </summary>
 	class ICollider : public Noncopyable {
 	public:

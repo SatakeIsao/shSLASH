@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "LinearMath/btIDebugDraw.h"
 #include "graphics/Shader.h"
 
@@ -10,27 +10,27 @@ namespace nsK2EngineLow {
 		DebugWireframe();
 		~DebugWireframe();
 		/// <summary>
-		/// ‰Šú‰»B	
+		/// åˆæœŸåŒ–ã€‚	
 		/// </summary>
 		void Init();
 		/// <summary>
-		/// drawLine()‚ğŒÄ‚Ô‘O‚És‚¤ˆ—B
+		/// drawLine()ã‚’å‘¼ã¶å‰ã«è¡Œã†å‡¦ç†ã€‚
 		/// </summary>
 		void Begin()
 		{
 			m_vertexList.clear();
 		}
 		/// <summary>
-		/// drawLine()‚ğŒÄ‚ñ‚¾Œã‚És‚¤ˆ—B
+		/// drawLine()ã‚’å‘¼ã‚“ã å¾Œã«è¡Œã†å‡¦ç†ã€‚
 		/// </summary>
 		void End(RenderContext& rc);
-		/// •K{B
+		/// å¿…é ˆã€‚
 		/// <summary>
-		/// ü‚²‚Æ‚Éˆê‰ñ‚¸‚ÂŒÄ‚Î‚ê‚éB
+		/// ç·šã”ã¨ã«ä¸€å›ãšã¤å‘¼ã°ã‚Œã‚‹ã€‚
 		/// </summary>
-		/// <param name="from">1‚Â–Ú‚Ì’¸“_‚ÌÀ•WB</param>
-		/// <param name="to">2‚Â–Ú‚Ì’¸“_‚ÌÀ•WB</param>
-		/// <param name="color">FB</param>
+		/// <param name="from">1ã¤ç›®ã®é ‚ç‚¹ã®åº§æ¨™ã€‚</param>
+		/// <param name="to">2ã¤ç›®ã®é ‚ç‚¹ã®åº§æ¨™ã€‚</param>
+		/// <param name="color">è‰²ã€‚</param>
 		void    drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
 		void    setDebugMode(int debugMode) override {};
 		int     getDebugMode() const override
@@ -38,49 +38,49 @@ namespace nsK2EngineLow {
 			return true;
 		};
 
-		//‰½‚à‚µ‚È‚­‚Ä‚à–â‘è‚È‚µ {}@•K—v‚Å‚ ‚ê‚Î’è‹`
+		//ä½•ã‚‚ã—ãªãã¦ã‚‚å•é¡Œãªã— {}ã€€å¿…è¦ã§ã‚ã‚Œã°å®šç¾©
 		void    drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override {};
 		void    reportErrorWarning(const char* warningString) override {};
 		void    draw3dText(const btVector3& location, const char* textString) override {};
 	private:
 		/// <summary>
-		/// ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ‚Ì‰Šú‰»B
+		/// ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitRootSignature();
 		/// <summary>
-		/// ƒVƒF[ƒ_[‚Ì‰Šú‰»B
+		/// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitSharder();
 		/// <summary>
-		/// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒg‚Ì‰Šú‰»B
+		/// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitPipelineState();
 		/// <summary>
-		/// ’¸“_ƒoƒbƒtƒ@‚Ì‰Šú‰»B
+		/// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitVertexBuffer();
 		/// <summary>
-		/// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ì‰Šú‰»B
+		/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitIndexBuffer();
 		/// <summary>
-		/// ’è”ƒoƒbƒtƒ@‚Ì‰Šú‰»B
+		/// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitConstantBuffer();
 		/// <summary>
-		/// ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ì‰Šú‰»B
+		/// ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void InitDescriptorHeap();
 		/// <summary>
-		/// ’¸“_ƒoƒbƒtƒ@‚ÌXVB
+		/// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®æ›´æ–°ã€‚
 		/// </summary>
 		void VertexBufferUpdate(const btVector3& from, const btVector3& to, const btVector3& color);
 		/// <summary>
-		/// ’è”ƒoƒbƒtƒ@‚ÌXVB
+		/// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®æ›´æ–°ã€‚
 		/// </summary>
 		void ConstantBufferUpdate();
 		/// <summary>
-		/// ƒŒƒ“ƒ_[ƒRƒ“ƒeƒLƒXƒg‚ÌXVB
+		/// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®æ›´æ–°ã€‚
 		/// </summary>
 		void RenderContextUpdate(RenderContext& rc);
 	private:
@@ -89,16 +89,16 @@ namespace nsK2EngineLow {
 			Vector3 pos;
 			Vector3 color;
 		};
-		std::vector<Vertex>	m_vertexList;				//•`‰æ‚·‚é’¸“_‚ÌƒŠƒXƒgB
-		ConstantBuffer		m_constantBuffer;			//’è”ƒoƒbƒtƒ@B
-		VertexBuffer		m_vertexBuffer;				//’¸“_ƒoƒbƒtƒ@B
-		IndexBuffer			m_indexBuffer;				//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@B
-		RootSignature		m_rootSignature;			//ƒ‹[ƒgƒVƒOƒlƒ`ƒƒB
-		Shader				m_Vshader;					//’¸“_ƒVƒF[ƒ_[B
-		Shader				m_Pshader;					//ƒsƒNƒZƒ‹ƒVƒF[ƒ_[B
-		PipelineState		m_pipelineState;			//ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgB
-		DescriptorHeap		m_descriptorHeap;			//ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒvB	
-		static const int	MAX_VERTEX = 10000000;		//’¸“_‚ÌÅ‘å”B
+		std::vector<Vertex>	m_vertexList;				//æç”»ã™ã‚‹é ‚ç‚¹ã®ãƒªã‚¹ãƒˆã€‚
+		ConstantBuffer		m_constantBuffer;			//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã€‚
+		VertexBuffer		m_vertexBuffer;				//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+		IndexBuffer			m_indexBuffer;				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+		RootSignature		m_rootSignature;			//ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã€‚
+		Shader				m_Vshader;					//é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+		Shader				m_Pshader;					//ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã€‚
+		PipelineState		m_pipelineState;			//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã€‚
+		DescriptorHeap		m_descriptorHeap;			//ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã€‚	
+		static const int	MAX_VERTEX = 10000000;		//é ‚ç‚¹ã®æœ€å¤§æ•°ã€‚
 	};
 }
 

@@ -159,4 +159,5 @@ public:
     void StopEffect(const EffectHandle handle);
 
     EffectHandle PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale);
+
 };

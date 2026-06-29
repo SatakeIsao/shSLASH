@@ -1,32 +1,43 @@
 #pragma once
+#include <future>
+#include <vector>
+#include <array>
+#include <string>
 
 namespace nsK2EngineLow {
 	class Shader : public Noncopyable {
 	public:
+		// 背景スレッド（非同期）でシェーダーの一括プリコンパイルを行います。
+		// 各要素の構成は {ファイルパス, エントリーポイント関数名, シェーダーモデル} です。
+		// すべてのコンパイルが完了したときに完了する std::future を返します。
+		// 任意のthreadから安全に呼び出し可能です。コンパイル済みのバイナリ（バイトコード）はプロセス全体でキャッシュされます。
+		static std::future<void> PrecompileAsync(
+			std::vector<std::array<std::string, 3>> list);
+
 		/// <summary>
-		/// �s�N�Z���V�F�[�_�[�����[�h�B
+		/// ピクセルシェーダーをロード。
 		/// </summary>
-		/// <param name="filePath">�t�@�C���p�X�B</param>
-		/// <param name="entryFuncName">�G���g���[�|�C���g�̊֐����B</param>
+		/// <param name="filePath">ファイルパス。</param>
+		/// <param name="entryFuncName">エントリーポイントの関数名。</param>
 		void LoadPS(const char* filePath, const char* entryFuncName);
 		/// <summary>
-		/// ���_�V�F�[�_�[�����[�h�B
+		/// 頂点シェーダーをロード。
 		/// </summary>
-		/// <param name="filePath">�t�@�C���p�X</param>
-		/// <param name="entryFuncName">�G���g���[�|�C���g�̊֐����B</param>
+		/// <param name="filePath">ファイルパス</param>
+		/// <param name="entryFuncName">エントリーポイントの関数名。</param>
 		void LoadVS(const char* filePath, const char* entryFuncName);
 		/// <summary>
-		/// �R���s���[�g�V�F�[�_�[�����[�h�B
+		/// コンピュートシェーダーをロード。
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="entryFuncName"></param>
 		void LoadCS(const char* filePath, const char* entryFuncName);
 		/// <summary>
-		/// ���C�g���[�V���O�p�̃V�F�[�_�[�����[�h�B
+		/// レイトレーシング用のシェーダーをロード。
 		/// </summary>
 		void LoadRaytracing(const wchar_t* filePath);
 		/// <summary>
-		/// �R���p�C���ς݃V�F�[�_�[�f�[�^���擾�B
+		/// コンパイル済みシェーダーデータを取得。
 		/// </summary>
 		/// <returns></returns>
 		ID3DBlob* GetCompiledBlob() const
@@ -38,7 +49,7 @@ namespace nsK2EngineLow {
 			return m_dxcBlob;
 		}
 		/// <summary>
-		/// �������ς݁H
+		/// 初期化済みか？
 		/// </summary>
 		/// <returns></returns>
 		bool IsInited() const
@@ -50,19 +61,19 @@ namespace nsK2EngineLow {
 		
 	private:
 		/// <summary>
-		/// �V�F�[�_�[�����[�h�B
+		/// シェーダーをロード。
 		/// </summary>
-		/// <param name="filePath">�t�@�C���p�X</param>
-		/// <param name="entryFuncName">�G���g���[�|�C���g�̊֐����B</param>
-		/// <param name="shaderModel">�V�F�[�_�[���f��</param>
+		/// <param name="filePath">ファイルパス</param>
+		/// <param name="entryFuncName">エントリーポイントの関数名。</param>
+		/// <param name="shaderModel">シェーダーモデル</param>
 		void Load(const char* filePath, const char* entryFuncName, const char* shaderModel);
 		/// <summary>
-		/// ���
+		/// 解放
 		/// </summary>
 		void Release();
 	private:
-		ID3DBlob* m_blob = nullptr;	//�R���p�C���ς݂̃V�F�[�_�[�f�[�^�B
-		IDxcBlob* m_dxcBlob = nullptr;	//DXC�R���p�C�����g�p�����Ƃ��̃V�F�[�_�[�f�[�^�B
-		bool m_isInited = false;		//�������ς݁H
+		ID3DBlob* m_blob = nullptr;	//コンパイル済みのシェーダーデータ。
+		IDxcBlob* m_dxcBlob = nullptr;	//DXCコンパイラを使用したときのシェーダーデータ。
+		bool m_isInited = false;		//初期化済みか？
 	};
 }

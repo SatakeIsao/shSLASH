@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 
 #include "RaytracingEngine.h"
 #include "graphics/Material.h"
@@ -36,7 +36,7 @@ namespace nsK2EngineLow {
 		{
 			auto d3dDevice = g_graphicsEngine->GetD3DDevice();
 
-			// ƒŒƒCƒgƒŒ‚ÌŒ‹‰Ê‚Ìo—Íæ‚ÌƒeƒNƒXƒ`ƒƒ‚ðì¬B
+			// ãƒ¬ã‚¤ãƒˆãƒ¬ã®çµæžœã®å‡ºåŠ›å…ˆã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆã€‚
 			D3D12_RESOURCE_DESC resDesc = {};
 			resDesc.DepthOrArraySize = 1;
 			resDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -49,7 +49,7 @@ namespace nsK2EngineLow {
 			resDesc.Width = g_graphicsEngine->GetFrameBufferWidth();
 			m_outputResource.Init(resDesc);
 
-			//ƒŒƒCƒWƒFƒlƒŒ[ƒVƒ‡ƒ“—p‚Ì’è”ƒoƒbƒtƒ@B
+			// ãƒ¬ã‚¤ã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ã®å®šæ•°ãƒãƒƒãƒ•ã‚¡ã€‚
 			Camera cam;
 			cam.pos = g_camera3D->GetPosition();
 			cam.mRot = g_camera3D->GetCameraRotation();
@@ -62,7 +62,7 @@ namespace nsK2EngineLow {
 
 		void Engine::Dispatch(RenderContext& rc)
 		{
-			//ƒJƒŠƒJƒŠ
+			// ä¸€æ™‚çš„ãªã‚«ãƒ¡ãƒ©æƒ…å ±ã‚’æ§‹ç¯‰
 			Camera cam;
 			cam.pos = g_camera3D->GetPosition();
 			cam.mRot = g_camera3D->GetCameraRotation();
@@ -90,27 +90,27 @@ namespace nsK2EngineLow {
 			auto numMissShader = m_shaderTable.GetNumMissShader();
 			auto numHitShader = m_shaderTable.GetNumHitShader();
 
-			// ƒŒƒC¶¬ƒVƒF[ƒ_[‚ÌƒVƒF[ƒ_[ƒe[ƒuƒ‹‚ÌŠJŽnƒAƒhƒŒƒX‚ÆƒTƒCƒY‚ðÝ’èB
+			// ãƒ¬ã‚¤ç”Ÿæˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã®é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã‚µã‚¤ã‚ºã‚’è¨­å®šã€‚
 			raytraceDesc.RayGenerationShaderRecord.StartAddress = m_shaderTable.GetGPUVirtualAddress();
 			raytraceDesc.RayGenerationShaderRecord.SizeInBytes = shaderTableEntrySize;
 
-			// ƒ~ƒXƒVƒF[ƒ_[‚ÌƒVƒF[ƒ_[ƒe[ƒuƒ‹‚ÌŠJŽnƒAƒhƒŒƒX‚ÆƒTƒCƒY‚ðÝ’èB
+			// ãƒŸã‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã®é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã‚µã‚¤ã‚ºã‚’è¨­å®šã€‚
 			size_t missOffset = numRayGenShader * shaderTableEntrySize;
 			raytraceDesc.MissShaderTable.StartAddress = m_shaderTable.GetGPUVirtualAddress() + missOffset;
 			raytraceDesc.MissShaderTable.StrideInBytes = shaderTableEntrySize;
 			raytraceDesc.MissShaderTable.SizeInBytes = shaderTableEntrySize * numMissShader;
 
-			// ƒqƒbƒgƒOƒ‹[ƒvƒVƒF[ƒ_[‚ÌŠJŽnƒAƒhƒŒƒX‚ÆƒTƒCƒY‚ðÝ’èB
+			// ãƒ’ãƒƒãƒˆã‚°ãƒ«ãƒ¼ãƒ—ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã‚µã‚¤ã‚ºã‚’è¨­å®šã€‚
 			size_t hitOffset = (numRayGenShader + numMissShader) * shaderTableEntrySize;
 			raytraceDesc.HitGroupTable.StartAddress = m_shaderTable.GetGPUVirtualAddress() + hitOffset;
 			raytraceDesc.HitGroupTable.StrideInBytes = shaderTableEntrySize;
 			raytraceDesc.HitGroupTable.SizeInBytes = shaderTableEntrySize * numHitShader * m_world.GetNumInstance();
 
-			// ƒOƒ[ƒoƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ‚ðÝ’èB
+			// ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã‚’è¨­å®šã€‚
 			rc.SetComputeRootSignature(m_pipelineStateObject.GetGlobalRootSignature());
 
 			// Dispatch
-			//ƒOƒ[ƒoƒ‹ƒ‹[ƒgƒVƒOƒlƒ`ƒ`ƒƒ‚É“o˜^‚³‚ê‚Ä‚¢‚éƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚ð“o˜^‚·‚éB
+			// ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒãƒ£ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚’ç™»éŒ²ã™ã‚‹ã€‚
 			const DescriptorHeap* descriptorHeaps[] = {
 				&m_descriptorHeaps.GetSrvUavCbvDescriptorHeap(),
 				&m_descriptorHeaps.GetSamplerDescriptorHeap()
@@ -127,7 +127,7 @@ namespace nsK2EngineLow {
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
 			rc.ResourceBarrier(barrier);
 
-			//ƒŒƒCƒgƒŒ‚ÌŒ‹‰Ê‚ðƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚É‘‚«–ß‚·B
+			// ãƒ¬ã‚¤ãƒˆãƒ¬ã®çµæžœã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãæˆ»ã™ã€‚
 			g_graphicsEngine->CopyToFrameBuffer(rc, m_outputResource.Get());
 
 		}
@@ -136,16 +136,16 @@ namespace nsK2EngineLow {
 		{
 			g_graphicsEngine->BeginRender();
 			m_world.CommitRegistGeometry(rc);
-			//ƒVƒF[ƒ_[ƒŠƒ\[ƒX‚ðì¬B
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½œæˆã€‚
 			CreateShaderResources();
-			//ŠeŽíƒŠƒ\[ƒX‚ðƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^‚·‚éB
+			// å„ç¨®ãƒªã‚½ãƒ¼ã‚¹ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã™ã‚‹ã€‚
 			m_descriptorHeaps.Init(m_world, m_outputResource, m_rayGenerationCB);
-			//PSO‚ðì¬B
+			// PSOã‚’ä½œæˆã€‚
 			m_pipelineStateObject.Init(m_descriptorHeaps);
-			//ƒVƒF[ƒ_[ƒe[ƒuƒ‹‚ðì¬B
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ä½œæˆã€‚
 			m_shaderTable.Init(m_world, m_pipelineStateObject, m_descriptorHeaps);
 
 			g_graphicsEngine->EndRender();
 		}
-	}//namespace raytracing
-}//namespace nsK2EngineLow 
+	}
+}

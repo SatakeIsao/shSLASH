@@ -1,5 +1,5 @@
-/*!
- *@brief	ƒ}ƒbƒvƒ`ƒbƒv
+ï»¿/*!
+ *@brief	ãƒãƒƒãƒ—ãƒãƒƒãƒ—
  */
 #include "k2EngineLowPreCompile.h"
 #include "MapChip.h"
@@ -9,20 +9,20 @@ namespace nsK2EngineLow {
 	MapChip::MapChip(const LevelObjectData& objData, const char* filePath)
 	{
 		ModelInitData initData;
-		//tkmƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚éB
+		//tkmãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æŒ‡å®šã™ã‚‹ã€‚
 		initData.m_tkmFilePath = filePath;
-		//ƒVƒF[ƒ_[ƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚ğw’è‚·‚éB
+		//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æŒ‡å®šã™ã‚‹ã€‚
 		initData.m_fxFilePath = "Assets/Shader/model.fx";
-		//ƒmƒ“ƒXƒLƒ“ƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğw’è‚·‚éB
+		//ãƒãƒ³ã‚¹ã‚­ãƒ³ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æŒ‡å®šã™ã‚‹ã€‚
 		initData.m_vsEntryPointFunc = "VSMain";
 
-		//ƒ‚ƒfƒ‹‚ğ“Ç‚İ‚ŞB
+		//ãƒ¢ãƒ‡ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 		m_model.Init(initData);
 
-		//ƒ‚ƒfƒ‹‚ÌXVB
+		//ãƒ¢ãƒ‡ãƒ«ã®æ›´æ–°ã€‚
 		m_model.UpdateWorldMatrix(objData.position, objData.rotation, objData.scale);
 
-		//Ã“I•¨—ƒIƒuƒWƒFƒNƒg‚ğì¬B
+		//é™çš„ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã€‚
 		m_physicsStaticObject.CreateFromModel(m_model, m_model.GetWorldMatrix());
 	}
 

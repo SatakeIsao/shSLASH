@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// �S�[�X�g�I�u�W�F�N�g�B
-	/// �S�[�X�g�I�u�W�F�N�g�͍��̂����蔲���邠���蔻��̃I�u�W�F�N�g�ł��B
-	/// �L�����N�^�[�̃`�F�b�N�|�C���g�ʉߔ���A�N���A����Ȃǂ�
-	/// �L�����N�^�[�����蔲����K�v�̂��邠���蔻��Ɏg���܂��B
+	/// ゴーストオブジェクト。
+	/// ゴーストオブジェクトは剛体がすり抜けるあたり判定のオブジェクトです。
+	/// キャラクターのチェックポイント通過判定、クリア判定などの
+	/// キャラクターがすり抜ける必要のあるあたり判定に使えます。
 	/// </summary>
 	class PhysicsGhostObject : public Noncopyable {
 	public:
@@ -14,8 +14,8 @@ namespace nsK2EngineLow {
 			Release();
 		}
 		/// <summary>
-		/// �S�[�X�g�I�u�W�F�N�g���J���B
-		/// �����I�ȃ^�C�~���O�ŃS�[�X�g�I�u�W�F�N�g���폜�������ꍇ�ɌĂяo���Ă��������B
+		/// ゴーストオブジェクトを開放。
+		/// 明示的なタイミングでゴーストオブジェクトを削除したい場合に呼び出してください。
 		/// </summary>
 		void Release()
 		{
@@ -25,48 +25,48 @@ namespace nsK2EngineLow {
 			}
 		}
 		/// <summary>
-		/// �{�b�N�X�`��̃S�[�X�g�I�u�W�F�N�g���쐬�B
+		/// ボックス形状のゴーストオブジェクトを作成。
 		/// </summary>
-		/// <param name="pos">���W�B</param>
-		/// <param name="rot">��]�B</param>
-		/// <param name="size">�T�C�Y�B</param>
+		/// <param name="pos">座標。</param>
+		/// <param name="rot">回転。</param>
+		/// <param name="size">サイズ。</param>
 		void CreateBox(Vector3 pos, Quaternion rot, Vector3 size);
 		/// <summary>
-		/// �J�v�Z���`��̃S�[�X�g�I�u�W�F�N�g���쐬�B
+		/// カプセル形状のゴーストオブジェクトを作成。
 		/// </summary>
-		/// <param name="pos">���W�B</param>
-		/// <param name="rot">��]�B</param>
-		/// <param name="radius">�J�v�Z���̔��a�B</param>
-		/// <param name="height">�J�v�Z���̍����B</param>
+		/// <param name="pos">座標。</param>
+		/// <param name="rot">回転。</param>
+		/// <param name="radius">カプセルの半径。</param>
+		/// <param name="height">カプセルの高さ。</param>
 		void CreateCapsule(Vector3 pos, Quaternion rot, float radius, float height);
 		/// <summary>
-		/// ���`��̃S�[�X�g�I�u�W�F�N�g���쐬�B
+		/// 球形状のゴーストオブジェクトを作成。
 		/// </summary>
-		/// <param name="pos">���W�B</param>
-		/// <param name="rot">��]�B</param>
-		/// <param name="radius">���`�̔��a�B</param>
+		/// <param name="pos">座標。</param>
+		/// <param name="rot">回転。</param>
+		/// <param name="radius">球形の半径。</param>
 		void CreateSphere(Vector3 pos, Quaternion rot, float radius);
 		/// <summary>
-		/// ���b�V���`��̃S�[�X�g�I�u�W�F�N�g���쐬�B
+		/// メッシュ形状のゴーストオブジェクトを作成。
 		/// </summary>
-		/// <param name="pos">���W�B</param>
-		/// <param name="rot">��]�B</param>
-		/// <param name="model">���f���B</param>
-		/// <param name="worldMatrix">���[���h�s��B</param>
+		/// <param name="pos">座標。</param>
+		/// <param name="rot">回転。</param>
+		/// <param name="model">モデル。</param>
+		/// <param name="worldMatrix">ワールド行列。</param>
 		void CreateMesh(Vector3 pos, Quaternion rot, const Model& model, const Matrix& worldMatrix);
 		/// <summary>
-		/// �����œn���ꂽ�S�[�X�g�I�u�W�F�N�g���������g���ǂ����𔻒� 
+		/// 引数で渡されたゴーストオブジェクトが自分自身かどうかを判定 
 		/// </summary>
-		/// <param name="ghost">�S�[�X�g�I�u�W�F�N�g�B</param>
-		/// <returns>�����̃S�[�X�g�I�u�W�F�N�g���������g�Ȃ�true�B</returns>
+		/// <param name="ghost">ゴーストオブジェクト。</param>
+		/// <returns>引数のゴーストオブジェクトが自分自身ならtrue。</returns>
 		bool IsSelf(const btCollisionObject& ghost) const
 		{
 			return &ghost == &m_ghostObject;
 		}
 		/// <summary>
-		/// ���W��ݒ�B
+		/// 座標を設定。
 		/// </summary>
-		/// <param name="pos">���W�B</param>
+		/// <param name="pos">座標。</param>
 		void SetPosition(const Vector3& pos)
 		{
 			auto& btTrans = m_ghostObject.getWorldTransform();
@@ -75,9 +75,9 @@ namespace nsK2EngineLow {
 			btTrans.setOrigin(btPos);
 		}
 		/// <summary>
-		/// ��]��ݒ�B
+		/// 回転を設定。
 		/// </summary>
-		/// <param name="rot">��]�B</param>
+		/// <param name="rot">回転。</param>
 		void SetRotation(const Quaternion& rot)
 		{
 			auto& btTrans = m_ghostObject.getWorldTransform();
@@ -91,14 +91,14 @@ namespace nsK2EngineLow {
 		}
 	private:
 		/// <summary>
-		/// �S�[�X�g�쐬�����̋��ʏ����B
+		/// ゴースト作成処理の共通処理。
 		/// </summary>
-		/// <param name="pos">���W�B</param>
-		/// <param name="rot">��]�B</param>
+		/// <param name="pos">座標。</param>
+		/// <param name="rot">回転。</param>
 		void CreateCommon(Vector3 pos, Quaternion rot);
 	private:
-		bool							m_isRegistPhysicsWorld = false;	//�������[���h�ɓo�^���Ă��邩�ǂ����̃t���O�B
-		btGhostObject					m_ghostObject;					//�S�[�X�g
-		std::unique_ptr<ICollider>		m_collider;						//�R���C�_�[�B
+		bool							m_isRegistPhysicsWorld = false;	//物理ワールドに登録しているかどうかのフラグ。
+		btGhostObject					m_ghostObject;					//ゴースト
+		std::unique_ptr<ICollider>		m_collider;						//コライダー。
 	};
 }

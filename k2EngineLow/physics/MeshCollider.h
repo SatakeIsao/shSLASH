@@ -1,22 +1,22 @@
-#pragma once
+ï»¿#pragma once
 
 #include "ICollider.h"
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒƒbƒVƒ…ƒRƒ‰ƒCƒ_[
+	/// ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼
 	/// </summary>
 	class MeshCollider : public ICollider
 	{
 	public:
 		/// <summary>
-		/// ModelƒNƒ‰ƒX‚©‚çƒƒbƒVƒ…ƒRƒ‰ƒCƒ_[‚ğì¬B
+		/// Modelã‚¯ãƒ©ã‚¹ã‹ã‚‰ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’ä½œæˆã€‚
 		/// </summary>
 		/// <param name="model"></param>
 		/// <param name="worldMatrix"></param>
 		void CreateFromModel(const Model& model, const Matrix& worldMatrix);
 		/// <summary>
-		/// BulletPhysics‚ÌƒRƒ‰ƒCƒ_[‚ÌŒ`ó‚ğæ“¾B
+		/// BulletPhysicsã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®å½¢çŠ¶ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		btCollisionShape* GetBody() const override
@@ -24,13 +24,13 @@ namespace nsK2EngineLow {
 			return m_meshShape.get();
 		}
 	private:
-		typedef std::vector<Vector3>		VertexBuffer;		//’¸“_ƒoƒbƒtƒ@B
-		typedef std::vector<unsigned int>	IndexBuffer;		//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@B
+		typedef std::vector<Vector3>		VertexBuffer;		//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+		typedef std::vector<unsigned int>	IndexBuffer;		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
 		typedef std::unique_ptr<VertexBuffer>	VertexBufferPtr;
 		typedef std::unique_ptr<IndexBuffer>	IndexBufferPtr;
-		std::vector<VertexBufferPtr>					m_vertexBufferArray;		//’¸“_ƒoƒbƒtƒ@‚Ì”z—ñB
-		std::vector<IndexBufferPtr>						m_indexBufferArray;		//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ì”z—ñB
-		std::unique_ptr<btBvhTriangleMeshShape>			m_meshShape;				//ƒƒbƒVƒ…Œ`óB
+		std::vector<VertexBufferPtr>					m_vertexBufferArray;		//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®é…åˆ—ã€‚
+		std::vector<IndexBufferPtr>						m_indexBufferArray;		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®é…åˆ—ã€‚
+		std::unique_ptr<btBvhTriangleMeshShape>			m_meshShape;				//ãƒ¡ãƒƒã‚·ãƒ¥å½¢çŠ¶ã€‚
 		std::unique_ptr<btTriangleIndexVertexArray>		m_stridingMeshInterface;
 	};
 }

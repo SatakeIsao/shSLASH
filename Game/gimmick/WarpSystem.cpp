@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "WarpSystem.h"
 #include "actor/Gimmick.h"
 
@@ -24,8 +24,8 @@ namespace app
         void WarpSystem::RegisterPipe(EndpointId id, app::actor::PipeGimmick* pipe)
         {
             if (registMap_.find(id) != registMap_.end()) {
-                // IDd•¡
-                K2_ASSERT(false, "‚·‚Å‚É“o˜^‚³‚ê‚Ä‚¢‚Ü‚·\n");
+                // IDé‡è¤‡
+                K2_ASSERT(false, "ã™ã§ã«ç™»éŒ²ã•ã‚Œã¦ã„ã¾ã™\n");
                 return;
             }
 			registMap_.emplace(id, pipe);
@@ -34,7 +34,7 @@ namespace app
 
         void WarpSystem::UnregisterPipe(EndpointId id)
         {
-            /** registMap_‚ªnull‚É‚È‚Á‚Ä‚½‚Ì‚Åˆê’UƒRƒƒ“ƒgƒAƒEƒg */
+            /** registMap_ãŒnullã«ãªã£ã¦ãŸã®ã§ä¸€æ—¦ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆ */
             //registMap_.erase(id);
         }
 
@@ -52,7 +52,7 @@ namespace app
         void WarpSystem::AddLink(EndpointId from, EndpointId to)
         {
             if (linkMap_.find(from) != linkMap_.end()) {
-				K2_ASSERT(false, "‚·‚Å‚ÉƒŠƒ“ƒN‚ª“o˜^‚³‚ê‚Ä‚¢‚Ü‚·\n");
+				K2_ASSERT(false, "ã™ã§ã«ãƒªãƒ³ã‚¯ãŒç™»éŒ²ã•ã‚Œã¦ã„ã¾ã™\n");
                 return;
             }
 			linkMap_.emplace(from, to);

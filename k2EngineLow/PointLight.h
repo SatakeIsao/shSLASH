@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	class PointLight: public Noncopyable
@@ -7,7 +7,7 @@ namespace nsK2EngineLow {
 		PointLight();
 		~PointLight();
 
-		////À•W‚ğİ’è
+		////åº§æ¨™ã‚’è¨­å®š
 		//void SetPosition(const Vector3& position)
 		//{                                                                                           
 		//m_pointLight->SetPosition(position);
@@ -17,7 +17,7 @@ namespace nsK2EngineLow {
 		//	m_pointLight->SetPosition(x, y, z);
 		//}
 
-		////ƒJƒ‰[‚ğİ’è
+		////ã‚«ãƒ©ãƒ¼ã‚’è¨­å®š
 		//void SetColor(const Vector3& color)
 		//{
 		//	m_pointLight->SetColor(color);
@@ -27,34 +27,34 @@ namespace nsK2EngineLow {
 		//	m_pointLight->SetColor(r, g, b);
 		//}
 
-		////”ÍˆÍ‚ğİ’è
+		////ç¯„å›²ã‚’è¨­å®š
 		//void SetRange(float range)
 		//{
 		//	m_pointLight->SetRange(range);
 		//}
 
-		////‰e‹¿—¦‚Ì—İæ”‚ğİ’è
+		////å½±éŸ¿ç‡ã®ç´¯ä¹—æ•°ã‚’è¨­å®š
 		//void SetAffectPowParam(float powParam)
 		//{
 		//	m_pointLight->SetAffectPowParam(powParam);
 		//}
 
-		////À•W‚ğæ“¾
+		////åº§æ¨™ã‚’å–å¾—
 		//const Vector3& GetPosition() const
 		//{
 		//	return m_pointLight->GetPosition();
 		//}
-		////ƒJƒ‰[‚ğæ“¾
+		////ã‚«ãƒ©ãƒ¼ã‚’å–å¾—
 		//const Vector3& GetColor() const
 		//{
 		//	return m_pointLight->GetColor();
 		//}
-		////‰e‹¿”ÍˆÍ‚ğæ“¾
+		////å½±éŸ¿ç¯„å›²ã‚’å–å¾—
 		//float GetRange() const
 		//{
 		//	return m_pointLight->GetRange();
 		//}
-		////¶ƒf[ƒ^‚ğæ“¾
+		////ç”Ÿãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 		//const SPointLight& GetRawData() const
 		//{
 		//	return *m_pointLight;

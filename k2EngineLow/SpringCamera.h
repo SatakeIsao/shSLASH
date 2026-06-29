@@ -1,33 +1,33 @@
-#pragma once
+﻿#pragma once
 #include "CameraCollisionSolver.h"
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// �o�l�J�����B
-	/// �o�l�Ɉ���������悤�ȃJ�����̋�������������N���X�ł��B
-	/// SetTarget�֐���SetPosition�֐����g�p���āA
-	/// �J�����̖ڕW�ƂȂ钍���_�Ǝ��_��ݒ肵�Ă��������B
-	/// Update�֐������s���邱�ƂŁA�J�������ݒ肳�ꂽ�ڕW���W�ɒǏ]���Ă����܂��B
+	/// バネカメラ。
+	/// バネに引っ張られるようなカメラの挙動を実現するクラスです。
+	/// SetTarget関数とSetPosition関数を使用して、
+	/// カメラの目標となる注視点と視点を設定してください。
+	/// Update関数を実行することで、カメラが設定された目標座標に追従していきます。
 	/// </summary>
 	class SpringCamera : public Noncopyable
 	{
 	public:
 		/// <summary>
-		/// �R���X�g���N�^�B
+		/// コンストラクタ。
 		/// </summary>
 		SpringCamera();
 		/// <summary>
-		/// �f�X�g���N�^�B
+		/// デストラクタ。
 		/// </summary>
 		~SpringCamera();
 
 		/// <summary>
-		/// �������B
+		/// 初期化。
 		/// </summary>
-		/// <param name="camera">�J�����B</param>
-		/// <param name="maxMoveSpeed">�J�����̍ő呬�x�B</param>
-		/// <param name="isEnableCollisionSolver">�R���W����������L���ɂ���?</param>
-		/// <param name="sphereCollisionRadius">���̂̃R���W�����̔��a�BisEnableCollisionSolover��true�̎��ɗL���ɂȂ�܂��B</param>
+		/// <param name="camera">カメラ。</param>
+		/// <param name="maxMoveSpeed">カメラの最大速度。</param>
+		/// <param name="isEnableCollisionSolver">コリジョン処理を有効にする?</param>
+		/// <param name="sphereCollisionRadius">球体のコリジョンの半径。isEnableCollisionSoloverがtrueの時に有効になります。</param>
 		void Init(
 			Camera& camera,
 			float maxMoveSpeed,
@@ -35,25 +35,25 @@ namespace nsK2EngineLow {
 			float sphereCollisionRadius
 		);
 		/// <summary>
-		/// �ڕW�ƂȂ钍���_��ݒ�B
+		/// 目標となる注視点を設定。
 		/// </summary>
-		/// <param name="target">�����_�B</param>
+		/// <param name="target">注視点。</param>
 		void SetTarget(const Vector3& target)
 		{
 			m_target = target;
 		}
 		/// <summary>
-		/// �ڕW�ƂȂ鎋�_��ݒ�B
+		/// 目標となる視点を設定。
 		/// </summary>
-		/// <param name="position">���_�B</param>
+		/// <param name="position">視点。</param>
 		void SetPosition(const Vector3& position)
 		{
 			m_position = position;
 		}
 		/// <summary>
-		/// �����ʂ�ݒ�B
+		/// 遠平面を設定。
 		/// </summary>
-		/// <param name="_far">�����ʁB</param>
+		/// <param name="_far">遠平面。</param>
 		void SetFar(float _far)
 		{
 			if (m_camera == nullptr) {
@@ -62,9 +62,9 @@ namespace nsK2EngineLow {
 			m_camera->SetFar(_far);
 		}
 		/// <summary>
-		/// �ߕ��ʁB
+		/// 近平面。
 		/// </summary>
-		/// <param name="_near">�ߕ��ʁB</param>
+		/// <param name="_near">近平面。</param>
 		void SetNear(float _near)
 		{
 			if (m_camera == nullptr) {
@@ -73,9 +73,9 @@ namespace nsK2EngineLow {
 			m_camera->SetNear(_near);
 		}
 		/// <summary>
-		/// �J�����̉�]�s����擾�B
+		/// カメラの回転行列を取得。
 		/// </summary>
-		/// <returns>�J�����̉�]�s��B</returns>
+		/// <returns>カメラの回転行列。</returns>
 		const Matrix& GetCameraRotation() const
 		{
 			if (m_camera == nullptr) {
@@ -84,29 +84,29 @@ namespace nsK2EngineLow {
 			return m_camera->GetCameraRotation();
 		}
 		/// <summary>
-		/// �ڕW�ƂȂ钍���_���擾�B
-		/// ���̊֐����Ԃ��Ă��钍���_�́A���ۂ̒����_�ł͂Ȃ��̂Œ��ӂ��ĉ������B
-		///	���ۂ̒����_���ق����ꍇ��GetRealTarget���g�p���Ă��������B
+		/// 目標となる注視点を取得。
+		/// この関数が返してくる注視点は、実際の注視点ではないので注意して下さい。
+		///	実際の注視点がほしい場合はGetRealTargetを使用してください。
 		/// </summary>
-		/// <returns>�����_�B</returns>
+		/// <returns>注視点。</returns>
 		const Vector3& GetTarget() const
 		{
 			return m_target;
 		}
 		/// <summary>
-		/// �ڕW�ƂȂ鎋�_���擾�B
-		/// ���̊֐����Ԃ��Ă��鎋�_�́A���ۂ̎��_�ł͂Ȃ��̂Œ��ӂ��Ă��������B
-		///	���ۂ̎n�_���ق����ꍇ��GetRealPosition���g�p���ĉ������B
+		/// 目標となる視点を取得。
+		/// この関数が返してくる視点は、実際の視点ではないので注意してください。
+		///	実際の始点がほしい場合はGetRealPositionを使用して下さい。
 		/// </summary>
-		/// <returns>���_�B</returns>
+		/// <returns>視点。</returns>
 		const Vector3& GetPosition() const
 		{
 			return m_position;
 		}
 		/// <summary>
-		/// ���ۂ̒����_���擾�B
+		/// 実際の注視点を取得。
 		/// </summary>
-		/// <returns>�����_�B</returns>
+		/// <returns>注視点。</returns>
 		const Vector3& GetRealTarget() const
 		{
 			if (m_camera == nullptr) {
@@ -116,9 +116,9 @@ namespace nsK2EngineLow {
 
 		}
 		/// <summary>
-		/// ���ۂ̎��_���擾�B
+		/// 実際の視点を取得。
 		/// </summary>
-		/// <returns>���_�B</returns>
+		/// <returns>視点。</returns>
 		const Vector3& GetRealPosition() const
 		{
 			if (m_camera == nullptr) {
@@ -127,28 +127,28 @@ namespace nsK2EngineLow {
 			return m_camera->GetPosition();
 		}
 		/// <summary>
-		/// �X�V�B
+		/// 更新。
 		/// </summary>
 		void Update();
 		/// <summary>
-		/// �J�������擾�B
+		/// カメラを取得。
 		/// </summary>
-		/// <returns>�J�����B</returns>
+		/// <returns>カメラ。</returns>
 		const Camera* GetCamera() const
 		{
 			return m_camera;
 		}
 		/// <summary>
-		/// �o�l�̌�������ݒ�B
-		/// �l���傫���قǃJ�������x��ĕt���Ă��܂��B
+		/// バネの減衰率を設定。
+		/// 値が大きいほどカメラが遅れて付いてきます。
 		/// </summary>
-		/// <param name="dampingRate">�o�l�̌������B</param>
+		/// <param name="dampingRate">バネの減衰率。</param>
 		void SetDampingRate(float dampingRate)
 		{
 			m_targetDampingRate = dampingRate;
 		}
 		/// <summary>
-		/// �J�������擾�B
+		/// カメラを取得。
 		/// </summary>
 		/// <returns></returns>
 		Camera* GetCamera()
@@ -156,9 +156,9 @@ namespace nsK2EngineLow {
 			return m_camera;
 		}
 		/// <summary>
-		/// ��p��ݒ�B
+		/// 画角を設定。
 		/// </summary>
-		/// <param name="angle">��p�B</param>
+		/// <param name="angle">画角。</param>
 		void SetViewAngle(float angle)
 		{
 			if (m_camera == nullptr) {
@@ -167,9 +167,9 @@ namespace nsK2EngineLow {
 			m_camera->SetViewAngle(angle);
 		}
 		/// <summary>
-		/// ��p���擾�B
+		/// 画角を取得。
 		/// </summary>
-		/// <returns>��p�B</returns>
+		/// <returns>画角。</returns>
 		float GetViewAngle() const
 		{
 			if (m_camera == nullptr) {
@@ -178,10 +178,10 @@ namespace nsK2EngineLow {
 			return m_camera->GetViewAngle();
 		}
 		/// <summary>
-		/// ���t���b�V���B
-		/// ���̊֐����Ăяo���ƁA�o�l�̈ړ������t���b�V������āAUpdate�֐����Ăяo���ƃJ�����̈ʒu��
-		///	�����ɖڕW���_�ƖڕW�����_�Ɉړ����܂��B�V�[�����؂�ւ���ăJ��������C�ɐ؂�ւ������Ƃ��Ȃǂ�
-		/// �g�p���Ă��������B
+		/// リフレッシュ。
+		/// この関数を呼び出すと、バネの移動がリフレッシュされて、Update関数を呼び出すとカメラの位置が
+		///	即座に目標視点と目標注視点に移動します。シーンが切り替わってカメラを一気に切り替えたいときなどに
+		/// 使用してください。
 		/// </summary>
 		void Refresh()
 		{
@@ -190,15 +190,15 @@ namespace nsK2EngineLow {
 			m_isRefresh = true;
 		}
 		/// <summary>
-		/// �o�l�J�����̍X�V�����B
-		/// Update�֐��ŌĂ΂�Ă��܂��B
-		/// �o�l�J�����̍X�V���������ʂŌĂт����Ȃǂ̓���ȃP�[�X�Ŏg�p���Ă��������B
+		/// バネカメラの更新処理。
+		/// Update関数で呼ばれています。
+		/// バネカメラの更新処理だけ個別で呼びたいなどの特殊なケースで使用してください。
 		/// </summary>
 		void UpdateSpringCamera();
 		/// <summary>
-		/// �J�����̍X�V�B
-		/// Update�֐�����Ă΂�Ă��܂��B
-		/// �J�����̍X�V���������ʂŌĂт����Ȃǂ̓���ȃP�[�X�Ŏg�p���Ă��������B
+		/// カメラの更新。
+		/// Update関数から呼ばれています。
+		/// カメラの更新処理だけ個別で呼びたいなどの特殊なケースで使用してください。
 		/// </summary>
 		void UpdateCamera()
 		{
@@ -207,17 +207,17 @@ namespace nsK2EngineLow {
 			}
 		}
 	private:
-		Camera* m_camera = nullptr;						//�J�����B
-		Vector3		m_target = Vector3::Zero;				//�ڕW�ƂȂ钍���_�B
-		Vector3		m_position = Vector3::Zero;				//�ڕW�ƂȂ鎋�_�B
-		Vector3		m_targetMoveSpeed = Vector3::Zero;		//�����_�̈ړ����x�B
-		Vector3		m_positionMoveSpeed = Vector3::Zero;	//���_�̈ړ����x�B
-		float		m_maxMoveSpeed = 0.0f;					//�ō��ړ����x�B
-		float		m_targetDampingRate = 1.0f;				//�������B�l���傫���قǃJ�������x��t���Ă���B
-		float		m_dampingRate = 1.0f;					//�������B
+		Camera* m_camera = nullptr;						//カメラ。
+		Vector3		m_target = Vector3::Zero;				//目標となる注視点。
+		Vector3		m_position = Vector3::Zero;				//目標となる視点。
+		Vector3		m_targetMoveSpeed = Vector3::Zero;		//注視点の移動速度。
+		Vector3		m_positionMoveSpeed = Vector3::Zero;	//視点の移動速度。
+		float		m_maxMoveSpeed = 0.0f;					//最高移動速度。
+		float		m_targetDampingRate = 1.0f;				//減衰率。値が大きいほどカメラが遅れ付いてくる。
+		float		m_dampingRate = 1.0f;					//減衰率。
 		float		m_dampingRateVel = 0.0f;
-		bool		m_isEnableCollisionSolver = false;		//�R���W�����������L���H
-		bool		m_isRefresh = true;						//���t���b�V�����K�v�H
+		bool		m_isEnableCollisionSolver = false;		//コリジョン処理が有効？
+		bool		m_isRefresh = true;						//リフレッシュが必要？
 		CameraCollisionSolver m_cameraCollisionSolver;
 	};
 }

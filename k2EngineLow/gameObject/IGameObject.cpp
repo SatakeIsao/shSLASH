@@ -1,5 +1,5 @@
-/*!
- *@brief	GameObjectƒNƒ‰ƒX
+ï»¿/*!
+ *@brief	GameObjectã‚¯ãƒ©ã‚¹
  */
 
 #include "k2EngineLowPreCompile.h"

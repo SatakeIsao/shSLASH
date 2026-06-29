@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "RaytracingDescriptorHeaps.h"
 #include "graphics/Material.h"
 
@@ -11,7 +11,7 @@ namespace nsK2EngineLow {
 		)
 		{
 
-			//ƒŒƒCƒgƒŒ‚Ìo—Íæ‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^‚·‚éB
+			//ãƒ¬ã‚¤ãƒˆãƒ¬ã®å‡ºåŠ›å…ˆã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã™ã‚‹ã€‚
 			m_srvUavCbvHeap.RegistUnorderAccessResource(0, outputBuffer);
 			m_srvUavCbvHeap.RegistConstantBuffer(0, rayGeneCB);
 			int regNo = 0;
@@ -21,39 +21,39 @@ namespace nsK2EngineLow {
 					regNo + (int)ESRV_OneEntry::eTLAS,
 					world.GetTLASBuffer()
 				);
-				//ƒAƒ‹ƒxƒhƒ}ƒbƒv‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//ã‚¢ãƒ«ãƒ™ãƒ‰ãƒãƒƒãƒ—ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eAlbedoMap,
 					instance.m_material->GetAlbedoMap()
 				);
-				//–@üƒ}ƒbƒv‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//æ³•ç·šãƒãƒƒãƒ—ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eNormalMap,
 					instance.m_material->GetNormalMap()
 				);
-				//ƒXƒyƒLƒ…ƒ‰ƒ}ƒbƒv‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒãƒƒãƒ—ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eSpecularMap,
 					instance.m_material->GetSpecularMap()
 				);
 
-				//ƒŠƒtƒŒƒNƒVƒ‡ƒ“ƒ}ƒbƒv‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//ãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ—ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eReflectionMap,
 					instance.m_material->GetReflectionMap()
 				);
 
-				//‹üÜƒ}ƒbƒv‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//å±ˆæŠ˜ãƒãƒƒãƒ—ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eRefractionMap,
 					instance.m_material->GetRefractionMap()
 				);
-				//’¸“_ƒoƒbƒtƒ@‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eVertexBuffer,
 					instance.m_vertexBufferRWSB
 				);
-				//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^B
+				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã€‚
 				m_srvUavCbvHeap.RegistShaderResource(
 					regNo + (int)ESRV_OneEntry::eIndexBuffer,
 					instance.m_indexBufferRWSB
@@ -62,7 +62,7 @@ namespace nsK2EngineLow {
 
 			});
 
-			//ƒTƒ“ƒvƒ‰ƒXƒe[ƒg‚Ìˆµ‚¢‚Í‰¼B
+			//ã‚µãƒ³ãƒ—ãƒ©ã‚¹ãƒ†ãƒ¼ãƒˆã®æ‰±ã„ã¯ä»®ã€‚
 			D3D12_SAMPLER_DESC samplerDesc = {};
 			samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 			samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -78,7 +78,7 @@ namespace nsK2EngineLow {
 			samplerDesc.MinLOD = 0.0f;
 			samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 
-			//ƒTƒ“ƒvƒ‰ƒXƒe[ƒg‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚É“o˜^‚·‚éB
+			//ã‚µãƒ³ãƒ—ãƒ©ã‚¹ãƒ†ãƒ¼ãƒˆã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ç™»éŒ²ã™ã‚‹ã€‚
 			m_samplerDescriptorHeap.RegistSamplerDesc(0, samplerDesc);
 			m_samplerDescriptorHeap.CommitSamperHeap();
 			m_srvUavCbvHeap.Commit();

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 #include <d3d12.h>
@@ -18,51 +18,51 @@
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒfƒBƒ“ƒOƒ‚[ƒh
+	/// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰
 	/// </summary>
 	enum AlphaBlendMode {
-		AlphaBlendMode_None,	//ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒfƒBƒ“ƒO‚È‚µ(ã‘‚«)B
-		AlphaBlendMode_Trans,	//”¼“§–¾‡¬
-		AlphaBlendMode_Add,		//‰ÁZ‡¬
-		AlphaBlendMode_Multiply	//æZ‡¬
+		AlphaBlendMode_None,	//ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãªã—(ä¸Šæ›¸ã)ã€‚
+		AlphaBlendMode_Trans,	//åŠé€æ˜åˆæˆ
+		AlphaBlendMode_Add,		//åŠ ç®—åˆæˆ
+		AlphaBlendMode_Multiply	//ä¹—ç®—åˆæˆ
 	};
 
 	/// <summary>
-	/// DirectX12‚ÉˆË‘¶‚·‚éƒOƒ‰ƒtƒBƒbƒNƒXƒGƒ“ƒWƒ“
+	/// DirectX12ã«ä¾å­˜ã™ã‚‹ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚¨ãƒ³ã‚¸ãƒ³
 	/// </summary>
 	class GraphicsEngine : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~GraphicsEngine();
 		/// <summary>
-		/// ‰Šú‰»
+		/// åˆæœŸåŒ–
 		/// </summary>
 		/// <remarks>
-		/// –{ŠÖ”‚ğŒÄ‚Ño‚·‚±‚Æ‚ÅDirectX12‚Ì‰Šú‰»‚ªs‚í‚ê‚Ü‚·B
+		/// æœ¬é–¢æ•°ã‚’å‘¼ã³å‡ºã™ã“ã¨ã§DirectX12ã®åˆæœŸåŒ–ãŒè¡Œã‚ã‚Œã¾ã™ã€‚
 		/// </remarks>
-		/// <param name="hwnd">Windowƒnƒ“ƒhƒ‹</param>
-		/// <param name="frameBufferwidth">ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•</param>
-		/// <param name="frameBufferHeight">ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³</param>
-		/// <returns>false‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¸”sB</returns>
+		/// <param name="hwnd">Windowãƒãƒ³ãƒ‰ãƒ«</param>
+		/// <param name="frameBufferwidth">ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…</param>
+		/// <param name="frameBufferHeight">ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•</param>
+		/// <returns>falseãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«å¤±æ•—ã€‚</returns>
 		bool Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeight);
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOŠJnB
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°é–‹å§‹ã€‚
 		/// </summary>
 		/// <remarks>
-		/// 1ƒtƒŒ[ƒ€‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŠJn‚ÉŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢B
+		/// 1ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®é–‹å§‹æ™‚ã«å‘¼ã³å‡ºã—ã¦ãã ã•ã„ã€‚
 		/// </remarks>
 		void BeginRender();
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOI—¹B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°çµ‚äº†ã€‚
 		/// </summary>
 		/// <remarks>
-		/// 1ƒtƒŒ[ƒ€‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌI—¹‚ÉŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢B
+		/// 1ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®çµ‚äº†æ™‚ã«å‘¼ã³å‡ºã—ã¦ãã ã•ã„ã€‚
 		/// </remarks>
 		void EndRender();
 		/// <summary>
-		/// D3DƒfƒoƒCƒX‚ğæ“¾B
+		/// D3Dãƒ‡ãƒã‚¤ã‚¹ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		ID3D12Device5* GetD3DDevice()
@@ -70,15 +70,15 @@ namespace nsK2EngineLow {
 			return m_d3dDevice;
 		}
 		/// <summary>
-		/// ƒoƒbƒNƒoƒbƒtƒ@‚Ì”Ô†‚ğæ“¾B
+		/// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ç•ªå·ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>ƒoƒbƒNƒoƒbƒtƒ@‚Ì”Ô†B</returns>
+		/// <returns>ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ç•ªå·ã€‚</returns>
 		UINT GetBackBufferIndex() const
 		{
 			return m_frameIndex;
 		}
 		/// <summary>
-		/// ƒRƒ}ƒ“ƒhƒLƒ…[‚ğæ“¾B
+		/// ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		ID3D12CommandQueue* GetCommandQueue() const
@@ -86,7 +86,7 @@ namespace nsK2EngineLow {
 			return m_commandQueue;
 		}
 		/// <summary>
-		/// ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğæ“¾B
+		/// ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		ID3D12GraphicsCommandList4* GetCommandList() const
@@ -94,7 +94,7 @@ namespace nsK2EngineLow {
 			return m_commandList[m_frameIndex];
 		}
 		/// <summary>
-		/// CBR_SRV‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ÌƒTƒCƒY‚ğæ“¾B
+		/// CBR_SRVã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		UINT GetCbrSrvDescriptorSize() const
@@ -102,7 +102,7 @@ namespace nsK2EngineLow {
 			return m_cbrSrvDescriptorSize;
 		}
 		/// <summary>
-		/// ƒTƒ“ƒvƒ‰‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒvƒTƒCƒY‚ğæ“¾B
+		/// ã‚µãƒ³ãƒ—ãƒ©ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚µã‚¤ã‚ºã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		UINT GetSapmerDescriptorSize() const
@@ -110,7 +110,7 @@ namespace nsK2EngineLow {
 			return m_samplerDescriptorSize;
 		}
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒeƒLƒXƒg‚ğæ“¾B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		RenderContext& GetRenderContext()
@@ -118,28 +118,28 @@ namespace nsK2EngineLow {
 			return m_renderContext;
 		}
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•‚ğæ“¾B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•B</returns>
+		/// <returns>ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…ã€‚</returns>
 		UINT GetFrameBufferWidth() const
 		{
 			return m_frameBufferWidth;
 		}
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³‚ğæ“¾B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³B</returns>
+		/// <returns>ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•ã€‚</returns>
 		UINT GetFrameBufferHeight() const
 		{
 			return m_frameBufferHeight;
 		}
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚É•ÏX‚·‚éB
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«å¤‰æ›´ã™ã‚‹ã€‚
 		/// </summary>
 		/// <param name="rc"></param>
 		void ChangeRenderTargetToFrameBuffer(RenderContext& rc);
 		/// <summary>
-		/// Œ»İ‚ÌƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒgƒrƒ…[‚ğæ“¾B
+		/// ç¾åœ¨ã®ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentFrameBuffuerRTV() const
@@ -147,7 +147,7 @@ namespace nsK2EngineLow {
 			return m_frameBuffer.GetCurrentRenderTargetViewDescriptorHandle();
 		}
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ö‚Ì•`‰æ‚Ég—p‚³‚ê‚Ä‚¢‚éƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒrƒ…[‚ğæ“¾B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã¸ã®æç”»æ™‚ã«ä½¿ç”¨ã•ã‚Œã¦ã„ã‚‹ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ“ãƒ¥ãƒ¼ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentFrameBuffuerDSV() const
@@ -155,7 +155,7 @@ namespace nsK2EngineLow {
 			return m_frameBuffer.GetCurrentDepthStencilViewDescriptorHandle();
 		}
 		/// <summary>
-		/// 3DModel‚ğƒŒƒCƒgƒŒƒ[ƒ‹ƒh‚É“o˜^B
+		/// 3DModelã‚’ãƒ¬ã‚¤ãƒˆãƒ¬ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«ç™»éŒ²ã€‚
 		/// </summary>
 		/// <param name="model"></param>
 		void RegistModelToRaytracingWorld(Model& model)
@@ -163,14 +163,14 @@ namespace nsK2EngineLow {
 			m_raytracingEngine.RegistGeometry(model);
 		}
 		/// <summary>
-		/// ‚±‚±‚Ü‚Å“o˜^‚³‚ê‚½ƒ‚ƒfƒ‹‚ğg‚Á‚ÄƒŒƒCƒgƒŒƒ[ƒ‹ƒh‚ğ\’zB
+		/// ã“ã“ã¾ã§ç™»éŒ²ã•ã‚ŒãŸãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã£ã¦ãƒ¬ã‚¤ãƒˆãƒ¬ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‚’æ§‹ç¯‰ã€‚
 		/// </summary>
 		void BuildRaytracingWorld(RenderContext& rc)
 		{
 			m_raytracingEngine.CommitRegistGeometry(rc);
 		}
 		/// <summary>
-		/// ƒŒƒCƒgƒŒ[ƒVƒ“ƒO‚ğƒfƒBƒXƒpƒbƒ`B
+		/// ãƒ¬ã‚¤ãƒˆãƒ¬ãƒ¼ã‚·ãƒ³ã‚°ã‚’ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒã€‚
 		/// </summary>
 		/// <param name="rc"></param>
 		void DispatchRaytracing(RenderContext& rc)
@@ -178,7 +178,7 @@ namespace nsK2EngineLow {
 			m_raytracingEngine.Dispatch(rc);
 		}
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒRƒs[B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã€‚
 		/// </summary>
 		/// <param name="pDst"></param>
 		void CopyToFrameBuffer(RenderContext& rc, ID3D12Resource* pSrc)
@@ -197,7 +197,7 @@ namespace nsK2EngineLow {
 			rc.ResourceBarrier(barrier2);
 		}
 		/// <summary>
-		/// ƒkƒ‹ƒeƒNƒXƒ`ƒƒƒ}ƒbƒv‚ğæ“¾B
+		/// ãƒŒãƒ«ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ—ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		const NullTextureMaps& GetNullTextureMaps() const
@@ -205,7 +205,7 @@ namespace nsK2EngineLow {
 			return m_nullTextureMaps;
 		}
 		/// <summary>
-		/// ƒtƒHƒ“ƒgƒGƒ“ƒWƒ“‚ğæ“¾B
+		/// ãƒ•ã‚©ãƒ³ãƒˆã‚¨ãƒ³ã‚¸ãƒ³ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		FontEngine& GetFontEngine()
@@ -213,7 +213,7 @@ namespace nsK2EngineLow {
 			return m_fontEngine;
 		}
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚É•`‰æ‚·‚é‚Æ‚«‚Ìƒrƒ…[ƒ|[ƒg‚ğæ“¾B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«æç”»ã™ã‚‹ã¨ãã®ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		D3D12_VIEWPORT& GetFrameBufferViewport()
@@ -221,7 +221,7 @@ namespace nsK2EngineLow {
 			return m_frameBuffer.GetViewport();
 		}
 		/// <summary>
-		/// ID3D12Object‚Ì‰ğ•úB
+		/// ID3D12Objectã®è§£æ”¾ã€‚
 		/// </summary>
 		/// <param name="res"></param>
 		void ReleaseD3D12Object(IUnknown* res)
@@ -229,9 +229,9 @@ namespace nsK2EngineLow {
 			if(res == nullptr){
 				return;
 			}
-			// D3DƒIƒuƒWƒFƒNƒg‚Í‰ğ•ú‚Ü‚Å‚É1ƒtƒŒ[ƒ€‚ÌŠÔ‚ğ‚©‚¯‚éB
-			// •`‰æƒRƒ}ƒ“ƒh‚Í‚PƒtƒŒ[ƒ€’x‚ê‚ÄÀs‚³‚ê‚é‚æ‚¤‚ÉÀ‘•‚³‚ê‚Ä‚¢‚é‚½‚ßA‘¦À‚ÉŠJ•ú‚·‚é‚Æ•`‰æ’†‚É
-			// ƒŠƒ\[ƒX‚ª‰ğ•ú‚³‚ê‚Ä‚µ‚Ü‚¤B‚»‚Ì‚½‚ßA‚PƒtƒŒ[ƒ€’x‰„‚µ‚ÄŠJ•ú‚·‚é•K—v‚ª‚ ‚éB
+			// D3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯è§£æ”¾ã¾ã§ã«1ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ™‚é–“ã‚’ã‹ã‘ã‚‹ã€‚
+			// æç”»ã‚³ãƒãƒ³ãƒ‰ã¯ï¼‘ãƒ•ãƒ¬ãƒ¼ãƒ é…ã‚Œã¦å®Ÿè¡Œã•ã‚Œã‚‹ã‚ˆã†ã«å®Ÿè£…ã•ã‚Œã¦ã„ã‚‹ãŸã‚ã€å³åº§ã«é–‹æ”¾ã™ã‚‹ã¨æç”»ä¸­ã«
+			// ãƒªã‚½ãƒ¼ã‚¹ãŒè§£æ”¾ã•ã‚Œã¦ã—ã¾ã†ã€‚ãã®ãŸã‚ã€ï¼‘ãƒ•ãƒ¬ãƒ¼ãƒ é…å»¶ã—ã¦é–‹æ”¾ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 			m_reqDelayRelease3d12ObjectList.push_back({ res, 1 });
 		}
 #ifdef K2_DEBUG
@@ -254,61 +254,61 @@ namespace nsK2EngineLow {
 #endif
 	private:
 		/// <summary>
-		/// D3DƒfƒoƒCƒX‚Ìì¬B
+		/// D3Dãƒ‡ãƒã‚¤ã‚¹ã®ä½œæˆã€‚
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateD3DDevice(IDXGIFactory4* dxgiFactory);
 		/// <summary>
-		/// ƒRƒ}ƒ“ƒhƒLƒ…[‚Ìì¬B
+		/// ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ã®ä½œæˆã€‚
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateCommandQueue();
 		/// <summary>
-		/// DirectX ƒOƒ‰ƒtƒBƒbƒNƒX ƒCƒ“ƒtƒ‰ƒXƒgƒ‰ƒNƒ`ƒƒ[‚Ìì¬B
+		/// DirectX ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ ã‚¤ãƒ³ãƒ•ãƒ©ã‚¹ãƒˆãƒ©ã‚¯ãƒãƒ£ãƒ¼ã®ä½œæˆã€‚
 		/// </summary>
 		/// <remarks>
-		/// DirectX ƒOƒ‰ƒtƒBƒbƒNƒX ƒCƒ“ƒtƒ‰ƒXƒgƒ‰ƒNƒ`ƒƒ[‚Í
-		/// ƒJ[ƒlƒ‹ ƒ‚[ƒh ƒhƒ‰ƒCƒo[‚¨‚æ‚ÑƒVƒXƒeƒ€ ƒn[ƒhƒEƒFƒA‚Æ’ÊM‚·‚é‚½‚ß‚ÌƒCƒ“ƒ^[ƒtƒF[ƒX‚Å‚·B 
+		/// DirectX ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ ã‚¤ãƒ³ãƒ•ãƒ©ã‚¹ãƒˆãƒ©ã‚¯ãƒãƒ£ãƒ¼ã¯
+		/// ã‚«ãƒ¼ãƒãƒ« ãƒ¢ãƒ¼ãƒ‰ ãƒ‰ãƒ©ã‚¤ãƒãƒ¼ãŠã‚ˆã³ã‚·ã‚¹ãƒ†ãƒ  ãƒãƒ¼ãƒ‰ã‚¦ã‚§ã‚¢ã¨é€šä¿¡ã™ã‚‹ãŸã‚ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã§ã™ã€‚ 
 		/// </remarks>
-		/// <returns>ì¬‚³‚ê‚½DXGI</returns>
+		/// <returns>ä½œæˆã•ã‚ŒãŸDXGI</returns>
 		IDXGIFactory4* CreateDXGIFactory();
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@—p‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚ğì¬B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ç”¨ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateDescriptorHeapForFrameBuffer();
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@—p‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒgƒrƒ…[‚ğì¬B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ç”¨ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateRTVForFameBuffer();
 		/// <summary>
-		/// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@—p‚Ì[“xƒXƒeƒ“ƒVƒ‹ƒrƒ…[‚ğì¬B
+		/// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ç”¨ã®æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ“ãƒ¥ãƒ¼ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <param name="frameBufferWidth">ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•</param>
-		/// <param name="frameBufferHeight">ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³</param>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <param name="frameBufferWidth">ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…</param>
+		/// <param name="frameBufferHeight">ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•</param>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateDSVForFrameBuffer(UINT frameBufferWidth, UINT frameBufferHeight);
 		/// <summary>
-		/// ƒRƒ}ƒ“ƒhƒŠƒXƒg‚Ìì¬B
+		/// ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã®ä½œæˆã€‚
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateCommandList();
 		/// <summary>
-		/// GPU‚Æ‚Ì“¯ŠúƒIƒuƒWƒFƒNƒgì¬
+		/// GPUã¨ã®åŒæœŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä½œæˆ
 		/// </summary>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬‚É¬Œ÷B</returns>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆã«æˆåŠŸã€‚</returns>
 		bool CreateSynchronizationWithGPUObject();
 		/// <summary>
-		/// •`‰æ‚ÌŠ®—¹‘Ò‚¿B
+		/// æç”»ã®å®Œäº†å¾…ã¡ã€‚
 		/// </summary>
 		void WaitDraw();
 		/// <summary>
-		/// ID3D12Object‚Ì‰ğ•úƒŠƒNƒGƒXƒg‚ğˆ—‚·‚éB
+		/// ID3D12Objectã®è§£æ”¾ãƒªã‚¯ã‚¨ã‚¹ãƒˆã‚’å‡¦ç†ã™ã‚‹ã€‚
 		/// </summary>
 		void ExecuteRequestReleaseD3D12Object();
 	private:
-		//GPUƒxƒ“ƒ_[’è‹`B
+		//GPUãƒ™ãƒ³ãƒ€ãƒ¼å®šç¾©ã€‚
 		enum GPU_Vender {
 			GPU_VenderNvidia,	//NVIDIA
 			GPU_VenderAMD,		//Intel
@@ -316,47 +316,47 @@ namespace nsK2EngineLow {
 			Num_GPUVender,
 		};
 		/// <summary>
-		/// D3D12ƒIƒuƒWƒFƒNƒg‚Ì’x‰„ƒŠƒŠ[ƒXƒŠƒNƒGƒXƒg
+		/// D3D12ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é…å»¶ãƒªãƒªãƒ¼ã‚¹ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
 		/// </summary>
 		struct RequestDelayReleaseD3D12Object
 		{
-			IUnknown* d3dObject;	// ƒŠƒŠ[ƒX‚·‚éD3DƒIƒuƒWƒFƒNƒg
-			int delayTime;				// ’x‰„ƒtƒŒ[ƒ€B‚±‚Ì’l‚Í–ˆƒtƒŒ[ƒ€ƒfƒNƒŠƒƒ“ƒg‚³‚êA0‚É‚È‚é‚Æ‰ğ•ú‚³‚ê‚Ü‚·B
+			IUnknown* d3dObject;	// ãƒªãƒªãƒ¼ã‚¹ã™ã‚‹D3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+			int delayTime;				// é…å»¶ãƒ•ãƒ¬ãƒ¼ãƒ ã€‚ã“ã®å€¤ã¯æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã•ã‚Œã€0ã«ãªã‚‹ã¨è§£æ”¾ã•ã‚Œã¾ã™ã€‚
 		};
-		ID3D12Device5* m_d3dDevice = nullptr;							//D3DƒfƒoƒCƒXB
-		ID3D12CommandQueue* m_commandQueue = nullptr;					// ƒRƒ}ƒ“ƒhƒLƒ…[B
-		ID3D12CommandAllocator* m_commandAllocator[2] = { nullptr };	//ƒRƒ}ƒ“ƒhƒAƒƒP[ƒ^B
-		ID3D12GraphicsCommandList4* m_commandList[2] = { nullptr };		//ƒRƒ}ƒ“ƒhƒŠƒXƒgB
-		ID3D12PipelineState* m_pipelineState = nullptr;					//ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgB
-		UINT m_cbrSrvDescriptorSize = 0;								//CBR_SRV‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ÌƒTƒCƒYB
-		UINT m_samplerDescriptorSize = 0;								//ƒTƒ“ƒvƒ‰‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ÌƒTƒCƒYB			
-		RenderContext m_renderContext;									//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒeƒLƒXƒgB
-		FrameBuffer m_frameBuffer;										//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@
+		ID3D12Device5* m_d3dDevice = nullptr;							//D3Dãƒ‡ãƒã‚¤ã‚¹ã€‚
+		ID3D12CommandQueue* m_commandQueue = nullptr;					// ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ã€‚
+		ID3D12CommandAllocator* m_commandAllocator[2] = { nullptr };	//ã‚³ãƒãƒ³ãƒ‰ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ã€‚
+		ID3D12GraphicsCommandList4* m_commandList[2] = { nullptr };		//ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã€‚
+		ID3D12PipelineState* m_pipelineState = nullptr;					//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã€‚
+		UINT m_cbrSrvDescriptorSize = 0;								//CBR_SRVã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®ã‚µã‚¤ã‚ºã€‚
+		UINT m_samplerDescriptorSize = 0;								//ã‚µãƒ³ãƒ—ãƒ©ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®ã‚µã‚¤ã‚ºã€‚			
+		RenderContext m_renderContext;									//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã€‚
+		FrameBuffer m_frameBuffer;										//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
 		
-		// GPU‚Æ‚Ì“¯Šú‚Åg—p‚·‚é•Ï”B
+		// GPUã¨ã®åŒæœŸã§ä½¿ç”¨ã™ã‚‹å¤‰æ•°ã€‚
 		UINT m_frameIndex = 0;
 		HANDLE m_fenceEvent = nullptr;
 		ID3D12Fence* m_fence = nullptr;
 		UINT64 m_fenceValue = 0;
-		UINT m_frameBufferWidth = 0;				//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•B
-		UINT m_frameBufferHeight = 0;				//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³B
-		Camera m_camera2D;							//2DƒJƒƒ‰B
-		Camera m_camera3D;							//3DƒJƒƒ‰B
-		raytracing::Engine m_raytracingEngine;		//ƒŒƒCƒgƒŒƒGƒ“ƒWƒ“B
-		NullTextureMaps m_nullTextureMaps;			//ƒkƒ‹ƒeƒNƒXƒ`ƒƒƒ}ƒbƒvB
-		FontEngine m_fontEngine;					//ƒtƒHƒ“ƒgƒGƒ“ƒWƒ“B
-		std::unique_ptr<DirectX::GraphicsMemory> m_directXTKGfxMemroy;					//DirectXTK‚ÌƒOƒ‰ƒtƒBƒbƒNƒƒ‚ƒŠƒVƒXƒeƒ€B
-		bool m_isExecuteCommandList = false;											//ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğGPU‚É—¬‚µ‚½H
-		std::list< RequestDelayReleaseD3D12Object > m_reqDelayRelease3d12ObjectList;	// D3D12ƒIƒuƒWƒFƒNƒg‚Ì’x‰„‰ğ•úƒŠƒNƒGƒXƒg‚ÌƒŠƒXƒgB
+		UINT m_frameBufferWidth = 0;				//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®å¹…ã€‚
+		UINT m_frameBufferHeight = 0;				//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•ã€‚
+		Camera m_camera2D;							//2Dã‚«ãƒ¡ãƒ©ã€‚
+		Camera m_camera3D;							//3Dã‚«ãƒ¡ãƒ©ã€‚
+		raytracing::Engine m_raytracingEngine;		//ãƒ¬ã‚¤ãƒˆãƒ¬ã‚¨ãƒ³ã‚¸ãƒ³ã€‚
+		NullTextureMaps m_nullTextureMaps;			//ãƒŒãƒ«ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ—ã€‚
+		FontEngine m_fontEngine;					//ãƒ•ã‚©ãƒ³ãƒˆã‚¨ãƒ³ã‚¸ãƒ³ã€‚
+		std::unique_ptr<DirectX::GraphicsMemory> m_directXTKGfxMemroy;					//DirectXTKã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¡ãƒ¢ãƒªã‚·ã‚¹ãƒ†ãƒ ã€‚
+		bool m_isExecuteCommandList = false;											//ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’GPUã«æµã—ãŸï¼Ÿ
+		std::list< RequestDelayReleaseD3D12Object > m_reqDelayRelease3d12ObjectList;	// D3D12ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é…å»¶è§£æ”¾ãƒªã‚¯ã‚¨ã‚¹ãƒˆã®ãƒªã‚¹ãƒˆã€‚
 	};
-	extern GraphicsEngine* g_graphicsEngine;	//ƒOƒ‰ƒtƒBƒbƒNƒXƒGƒ“ƒWƒ“
-	extern Camera* g_camera2D;					//2DƒJƒƒ‰B
-	extern Camera* g_camera3D;					//3DƒJƒƒ‰B
+	extern GraphicsEngine* g_graphicsEngine;	//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚¨ãƒ³ã‚¸ãƒ³
+	extern Camera* g_camera2D;					//2Dã‚«ãƒ¡ãƒ©ã€‚
+	extern Camera* g_camera3D;					//3Dã‚«ãƒ¡ãƒ©ã€‚
 
 	/// <summary>
-	/// D3D12ƒIƒuƒWƒFƒNƒg‚ğ‰ğ•úB
+	/// D3D12ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è§£æ”¾ã€‚
 	/// </summary>
-	/// <param name="obj">ŠJ•ú‚µ‚½‚¢ƒIƒuƒWƒFƒNƒg</param>
+	/// <param name="obj">é–‹æ”¾ã—ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</param>
 	static inline void ReleaseD3D12Object(IUnknown* obj)
 	{
 		if (obj == nullptr) {

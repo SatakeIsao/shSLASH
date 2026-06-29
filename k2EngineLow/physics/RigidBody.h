@@ -1,29 +1,29 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	class ICollider;
-	//„‘Ì‰Šú‰»î•ñB
+	//å‰›ä½“åˆæœŸåŒ–æƒ…å ±ã€‚
 	struct RigidBodyInitData {
-		Vector3 pos;						//À•WB
-		Quaternion rot;					//‰ñ“]B
-		ICollider* collider = nullptr;	//ƒRƒ‰ƒCƒ_[B
-		float mass = 0;					//¿—ÊB
-		float restitution = 0.0f;			//”½”­—ÍA(”’l‚ğã‚°‚ê‚ÎA•¨‘Ì‚ª’µ‚Ë•Ô‚é‚æ‚¤‚É‚È‚é)B
+		Vector3 pos;						//åº§æ¨™ã€‚
+		Quaternion rot;					//å›è»¢ã€‚
+		ICollider* collider = nullptr;	//ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã€‚
+		float mass = 0;					//è³ªé‡ã€‚
+		float restitution = 0.0f;			//åç™ºåŠ›ã€(æ•°å€¤ã‚’ä¸Šã’ã‚Œã°ã€ç‰©ä½“ãŒè·³ã­è¿”ã‚‹ã‚ˆã†ã«ãªã‚‹)ã€‚
 	};
 
 	/// <summary>
-	/// „‘ÌƒNƒ‰ƒXB
+	/// å‰›ä½“ã‚¯ãƒ©ã‚¹ã€‚
 	/// </summary>
 	class RigidBody : public Noncopyable {
 	public:
 		~RigidBody();
 		/// <summary>
-		/// „‘Ì‚ğ‰Šú‰»B
+		/// å‰›ä½“ã‚’åˆæœŸåŒ–ã€‚
 		/// </summary>
-		/// <param name="rbInfo">‰Šú‰»ƒf[ƒ^‚Ìî•ñ</param>
+		/// <param name="rbInfo">åˆæœŸåŒ–ãƒ‡ãƒ¼ã‚¿ã®æƒ…å ±</param>
 		void Init(RigidBodyInitData& initData);
 		/// <summary>
-		/// bulletPhysics‚Ì„‘Ì‚ğæ“¾B
+		/// bulletPhysicsã®å‰›ä½“ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		btRigidBody* GetBody()
@@ -31,9 +31,9 @@ namespace nsK2EngineLow {
 			return m_rigidBody.get();
 		}
 		/*!
-		* @brief	•¨—ƒIƒuƒWƒFƒNƒg‚ÌÀ•W‚Æ‰ñ“]‚ğæ“¾
-		*@param[out]	pos			À•WB
-		*@param[out]	rot			‰ñ“]B
+		* @brief	ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åº§æ¨™ã¨å›è»¢ã‚’å–å¾—
+		*@param[out]	pos			åº§æ¨™ã€‚
+		*@param[out]	rot			å›è»¢ã€‚
 		*/
 		void GetPositionAndRotation(Vector3& pos, Quaternion& rot) const
 		{
@@ -45,9 +45,9 @@ namespace nsK2EngineLow {
 			rot.Set(btRot.x(), btRot.y(), btRot.z(), btRot.w());
 		}
 		/*!
-		* @brief	•¨—ƒIƒuƒWƒFƒNƒg‚ÌÀ•W‚Æ‰ñ“]‚ğİ’è
-		*@param[in]	pos			À•WB
-		*@param[in]	rot			‰ñ“]B
+		* @brief	ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åº§æ¨™ã¨å›è»¢ã‚’è¨­å®š
+		*@param[in]	pos			åº§æ¨™ã€‚
+		*@param[in]	rot			å›è»¢ã€‚
 		*/
 		void SetPositionAndRotation(const Vector3& pos, const Quaternion& rot)
 		{
@@ -63,9 +63,9 @@ namespace nsK2EngineLow {
 
 
 		/*!
-		* @brief	—Í‚ğ‰Á‚¦‚éB
-		*@param[out]	force		—ÍB
-		*@param[out]	relPos		—Í‚ğ‰Á‚¦‚éÀ•WB
+		* @brief	åŠ›ã‚’åŠ ãˆã‚‹ã€‚
+		*@param[out]	force		åŠ›ã€‚
+		*@param[out]	relPos		åŠ›ã‚’åŠ ãˆã‚‹åº§æ¨™ã€‚
 		*/
 		void AddForce(const Vector3& force, const Vector3& relPos)
 		{
@@ -77,7 +77,7 @@ namespace nsK2EngineLow {
 			m_rigidBody->activate();
 		}
 		/// <summary>
-		/// ‘¬“x‚ğİ’èB
+		/// é€Ÿåº¦ã‚’è¨­å®šã€‚
 		/// </summary>
 		/// <param name="vel"></param>
 		void SetLinearVelocity(const Vector3& vel)
@@ -88,7 +88,7 @@ namespace nsK2EngineLow {
 			m_rigidBody->activate();
 		}
 		/// <summary>
-		/// Œ»İ‚Ì‘¬“x‚ğæ“¾B
+		/// ç¾åœ¨ã®é€Ÿåº¦ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		Vector3 GetLinearVelocity() const
@@ -99,7 +99,7 @@ namespace nsK2EngineLow {
 			return vel;
 		}
 		/// <summary>
-		/// –€C—Í‚ğİ’è‚·‚éB
+		/// æ‘©æ“¦åŠ›ã‚’è¨­å®šã™ã‚‹ã€‚
 		/// </summary>
 		/// <param name="friction"></param>
 		void SetFriction(float friction)
@@ -108,7 +108,7 @@ namespace nsK2EngineLow {
 			m_rigidBody->setRollingFriction(friction);
 		}
 		/// <summary>
-		/// ˆÚ“®‰Â”\‚È²‚ğİ’èB
+		/// ç§»å‹•å¯èƒ½ãªè»¸ã‚’è¨­å®šã€‚
 		/// </summary>
 		/// <param name="linearFactor"></param>
 		void SetLinearFactor(float x, float y, float z)
@@ -123,7 +123,7 @@ namespace nsK2EngineLow {
 			m_rigidBody->setLinearFactor(v);
 		}
 		/// <summary>
-		/// Šp‘¬“x‚ğİ’è‚·‚é
+		/// è§’é€Ÿåº¦ã‚’è¨­å®šã™ã‚‹
 		/// </summary>
 		/// <param name="vel"></param>
 		void SetAngularVelocity(Vector3 vel)
@@ -134,7 +134,7 @@ namespace nsK2EngineLow {
 			m_rigidBody->activate();
 		}
 		/// <summary>
-		/// ‰ñ“]‰Â”\‚È²‚ğİ’è‚·‚éB
+		/// å›è»¢å¯èƒ½ãªè»¸ã‚’è¨­å®šã™ã‚‹ã€‚
 		/// </summary>
 		/// <param name="angluarFactor"></param>
 		void SetAngularFactor(Vector3 angluarFactor)
@@ -149,7 +149,7 @@ namespace nsK2EngineLow {
 		}
 		void Release();
 	private:
-		std::unique_ptr<btRigidBody>			m_rigidBody;		//„‘ÌB
-		std::unique_ptr<btDefaultMotionState>	m_myMotionState;	//ƒ‚[ƒVƒ‡ƒ“ƒXƒe[ƒgB
+		std::unique_ptr<btRigidBody>			m_rigidBody;		//å‰›ä½“ã€‚
+		std::unique_ptr<btDefaultMotionState>	m_myMotionState;	//ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã€‚
 	};
 }

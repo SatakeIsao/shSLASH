@@ -1,6 +1,6 @@
-/**
+ï»¿/**
  * CRC32
- * QlFhttps://shobomaru.wordpress.com/2014/07/20/constexpr/
+ * å‚è€ƒï¼šhttps://shobomaru.wordpress.com/2014/07/20/constexpr/
  */
 #pragma once
 #include <cstdint>
@@ -16,10 +16,10 @@ namespace app
 {
 	namespace util
 	{
-		// NOTEF‚±‚Ìnamespace“à‚ÍŠO•”‚©‚çƒAƒNƒZƒX‚µ‚È‚¢‚Å
+		// NOTEï¼šã“ã®namespaceå†…ã¯å¤–éƒ¨ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã—ãªã„ã§
 		namespace _internal
 		{
-			// CRC32‚Ìƒe[ƒuƒ‹î•ñ
+			// CRC32ã®ãƒ†ãƒ¼ãƒ–ãƒ«æƒ…å ±
 			static constexpr uint32_t CRC32_TABLE[256] =
 			{
 				0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,
@@ -89,7 +89,7 @@ namespace app
 			};
 
 
-			// CRC32ƒR[ƒh‚ğŒvZ
+			// CRC32ã‚³ãƒ¼ãƒ‰ã‚’è¨ˆç®—
 			constexpr uint32_t ComputeCrc32Step(unsigned int crc, const char* p, int index, size_t len)
 			{
 				return index >= len ? crc : ComputeCrc32Step(((crc >> 8) & 0x00FFFFFF) ^ CRC32_TABLE[(crc ^ (*(p + index))) & 0xFF], p, index + 1, len);
@@ -98,7 +98,7 @@ namespace app
 
 		constexpr uint32_t ComputeCrc32(const char* str)
 		{
-			// strlen‚ªconstexpr‚Åg‚¦‚È‚¢‚Ì‚Åstd::char_traits‚ğg‚¤
+			// strlenãŒconstexprã§ä½¿ãˆãªã„ã®ã§std::char_traitsã‚’ä½¿ã†
 			return _internal::ComputeCrc32Step(0xFFFFFFFF, str, 0, std::char_traits<char>::length(str)) ^ 0xFFFFFFFF;
 		}
 	}
