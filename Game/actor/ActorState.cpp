@@ -1527,5 +1527,69 @@ namespace app
 			// 遷移条件は呼び出し元のStateMachine::Update()側で制御する
 			return true;
 		}
+
+
+		/*************************************/
+
+
+		MushroomPoisonCastState::MushroomPoisonCastState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{
+		}
+
+
+		void MushroomPoisonCastState::Enter()
+		{
+			castTimer_       = 0.0f;
+			castEffectTimer_ = 0.0f;
+
+			// 詠唱に入るたびに通知済みフラグをリセットし、BattleManagerへの多重通知を防ぐ
+			if (auto* sm = owner_->As<MushroomEventCharacterStateMachine>())
+			{
+				sm->ResetPoisonNotified();
+			}
+
+			// 詠唱中はアイドルアニメーション（低速）で立ち止まる
+			auto* sm = owner_->As<CharacterStateMachine>();
+			sm->GetModelRender()->PlayAnimation(
+				static_cast<uint8_t>(app::actor::MushroomAnimationKind::Idle), 0.2f);
+			sm->GetModelRender()->SetAnimationSpeed(0.5f);
+			sm->SetMoveDirection(Vector3::Zero);
+		}
+
+
+		void MushroomPoisonCastState::Update()
+		{
+			float dt = g_gameTime->GetFrameDeltaTime();
+			castTimer_       += dt;
+			castEffectTimer_ += dt;
+
+			// 詠唱完了後は胞子待機中のため予告エフェクトを出さない
+			if (castTimer_ >= CAST_DURATION) return;
+
+			// 詠唱中は一定間隔でキノコ自身の位置に予告エフェクトを再生
+			if (castEffectTimer_ >= EFFECT_INTERVAL && EffectManager::IsAvailable())
+			{
+				castEffectTimer_ -= EFFECT_INTERVAL;
+
+				auto* sm = owner_->As<CharacterStateMachine>();
+				if (sm)
+				{
+					EffectManager::Get().PlayEffect(
+						enEffectKind_MushroomPoisonCast,
+						sm->transform.position,
+						Quaternion::Identity,
+						Vector3::One
+					);
+				}
+			}
+		}
+
+
+		void MushroomPoisonCastState::Exit()
+		{
+			auto* sm = owner_->As<CharacterStateMachine>();
+			sm->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
 	}
 }

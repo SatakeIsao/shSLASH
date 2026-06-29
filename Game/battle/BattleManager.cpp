@@ -555,7 +555,17 @@ namespace app
 								stone->GetStatus()->SetGravity(stageParam->gravity);
 								stone->GetCharacterController()->SetGravity(stageParam->gravity);
 								if (isTutorialMode_)
+								{
 									stone->GetStateMachine()->SetAIEnabled(false);
+									const auto* sp = app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>();
+									if (sp)
+									{
+										stone->GetStatus()->SetHp(sp->tutorialHp);
+										stone->GetStatus()->SetCurrentHp(sp->tutorialHp);
+										stone->SyncCurrentHPFromStatus();
+										stone->GetStatus()->SetAttackPower(sp->tutorialAttackPower);
+									}
+								}
 								if (effectManagerObject_)
 								{
 									static Vector3 spawnEffectPos = result.spawnPosition;
@@ -624,12 +634,23 @@ namespace app
 									mushroom->AddState<app::actor::WaitingAttackCharacterState>();
 									mushroom->AddState<app::actor::DeadCharacterState>();
 									mushroom->AddState <app::actor::KnockBackCharacterState>();
+									mushroom->AddState<app::actor::MushroomPoisonCastState>();
 								}
 								mushroom->GetStatus()->SetFriction(stageParam->friction);
 								mushroom->GetStatus()->SetGravity(stageParam->gravity);
 								mushroom->GetCharacterController()->SetGravity(stageParam->gravity);
 								if (isTutorialMode_)
+								{
 									mushroom->GetStateMachine()->SetAIEnabled(false);
+									const auto* mp = app::core::ParameterManager::Get().GetParameter<app::core::MasterMushroomEventCharacterParameter>();
+									if (mp)
+									{
+										mushroom->GetStatus()->SetHp(mp->tutorialHp);
+										mushroom->GetStatus()->SetCurrentHp(mp->tutorialHp);
+										mushroom->SyncCurrentHPFromStatus();
+										mushroom->GetStatus()->SetAttackPower(mp->tutorialAttackPower);
+									}
+								}
 								if (effectManagerObject_)
 								{
 									static Vector3 spawnEffectPos = result.spawnPosition;
@@ -1409,8 +1430,21 @@ namespace app
 							}
 						}
 					}
-				}
+					// 毒雲詠唱完了通知を受け取り、雲を設置する
+					for (auto* mushroom : mushroomEventCharacters_)
+					{
+						if (!mushroom) continue;
+						if (mushroom->GetStateMachine()->CheckAndConsumePoisonCastComplete())
+						{
+							PlacePoisonCloud(mushroom, mushroom->transform.position);
+						}
+					}
+				} // if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
 
+				// 毒雲の更新・ダメージ処理（チュートリアル中も継続）
+				UpdatePoisonClouds();
+
+				// 衝突後の処理
 				/** 衝突後の処理 */
 				{
 					for (auto& notify : notifyList_) {
@@ -1554,6 +1588,7 @@ namespace app
 						gameCamera->OnCharging(playerSM->GetCurrentChargingLevel());
 
 					auto cameraData = gameCamera->GetCameraData();
+					cameraSteering_->SetInputEnabled(playerInputEnabled_);
 					cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
 					gameCamera->SetState(cameraData);
 				}
@@ -1657,6 +1692,145 @@ namespace app
 		{
 			return battleSequenceObject_ && battleSequenceObject_->IsTimeUpFinished();
 		}
+
+		void BattleManager::PlacePoisonCloud(app::actor::MushroomEventCharacter* mushroom, const Vector3& position)
+		{
+			// 最大設置数を超えたら最も古いものを削除（煙エフェクトを明示的に停止）
+			if (static_cast<int>(activePoisonClouds_.size()) >= PoisonCloud::MAX_COUNT)
+			{
+				auto& oldest = activePoisonClouds_.front();
+				if (EffectManager::IsAvailable())
+				{
+					if (oldest.sporeHandle != INVALID_EFFECT_HANDLE)
+					{
+						EffectManager::Get().StopEffect(oldest.sporeHandle);
+					}
+					if (oldest.smokeHandle != INVALID_EFFECT_HANDLE)
+					{
+						EffectManager::Get().StopEffect(oldest.smokeHandle);
+					}
+				}
+				activePoisonClouds_.pop_front();
+			}
+
+			PoisonCloud cloud;
+			cloud.position      = position;
+			cloud.remainingTime = PoisonCloud::DURATION;
+			cloud.tickTimer     = 0.0f;
+			cloud.mushroomOwner = mushroom;
+
+			if (EffectManager::IsAvailable())
+			{
+				// 胞子散布エフェクト（spore2：1再生で2回出る）を開始する
+				// 煙フィールドは UpdatePoisonClouds で spore2 終了後に開始する
+				Vector3 sporePos = position;
+				sporePos.y += PoisonCloud::EFFECT_Y_OFFSET;
+				cloud.sporeHandle = EffectManager::Get().PlayEffect(
+					enEffectKind_MushroomPoisonSpore2,
+					sporePos,
+					Quaternion::Identity,
+					Vector3::One
+				);
+			}
+
+			activePoisonClouds_.push_back(cloud);
+		}
+
+
+		void BattleManager::UpdatePoisonClouds()
+		{
+			if (!battleCharacter_) return;
+
+			float dt = g_gameTime->GetFrameDeltaTime();
+
+			for (auto it = activePoisonClouds_.begin(); it != activePoisonClouds_.end(); )
+			{
+				// spore2 の1回目パーティクル消失後に smoke2 を開始する
+				// SMOKE_START_DELAY 秒経過したら smoke2 を再生（spore2 の2回目は引き続き再生中）
+				if (!it->smokeStarted)
+				{
+					it->sporeElapsedTime += dt;
+					if (it->sporeElapsedTime >= PoisonCloud::SMOKE_START_DELAY)
+					{
+						it->smokeStarted  = true;
+						it->remainingTime = PoisonCloud::DURATION;
+
+						if (EffectManager::IsAvailable())
+						{
+							Vector3 smokePos = it->position;
+							smokePos.y += 1.0f;
+							it->smokeHandle = EffectManager::Get().PlayEffect(
+								enEffectKind_MushroomPoisonSmoke2,
+								smokePos,
+								Quaternion::Identity,
+								Vector3::One
+							);
+						}
+					}
+				}
+
+				// spore2 の再生が完全に終わってからキノコの移動ロックを解除する
+				// smoke2 開始後も spore2 の2回目が続くため、IsEffectPlaying で終了を検知する
+				if (it->smokeStarted && it->mushroomOwner)
+				{
+					const bool sporeFinished = (it->sporeHandle == INVALID_EFFECT_HANDLE)
+						|| !EffectManager::IsAvailable()
+						|| !EffectManager::Get().IsEffectPlaying(it->sporeHandle);
+					if (sporeFinished)
+					{
+						it->mushroomOwner->GetStateMachine()->SetPoisonSporeActive(false);
+						it->mushroomOwner = nullptr;
+					}
+				}
+
+				// 煙が始まるまではカウントダウンしない
+				if (!it->smokeStarted)
+				{
+					++it;
+					continue;
+				}
+
+				it->remainingTime -= dt;
+
+				if (it->remainingTime <= 0.0f)
+				{
+					// 期限切れ → 持続煙エフェクトを明示的に停止
+					if (EffectManager::IsAvailable() && it->smokeHandle != INVALID_EFFECT_HANDLE)
+					{
+						EffectManager::Get().StopEffect(it->smokeHandle);
+					}
+					it = activePoisonClouds_.erase(it);
+					continue;
+				}
+
+				it->tickTimer += dt;
+				if (it->tickTimer >= PoisonCloud::TICK_INTERVAL)
+				{
+					it->tickTimer -= PoisonCloud::TICK_INTERVAL;
+
+					// プレイヤーが雲の範囲内にいるかチェック（Y方向は無視）
+					Vector3 diff = battleCharacter_->transform.position - it->position;
+					diff.y = 0.0f;
+					if (diff.Length() <= PoisonCloud::RADIUS && !tutorialNoDamage_)
+					{
+						// 毎秒 最大HP×3% のダメージ（ノックバック・無敵なし）
+						float maxHp = battleCharacter_->GetStatus()->GetMaxHp();
+						float damage = maxHp * PoisonCloud::DAMAGE_PER_TICK_RATE;
+						float newHp = battleCharacter_->GetStatus()->GetCurrentHp() - damage;
+						newHp = max(newHp, 0.0f);
+						battleCharacter_->GetStatus()->SetCurrentHp(newHp);
+
+						if (newHp <= 0.0f)
+						{
+							battleCharacter_->GetStateMachine()->OnDead();
+						}
+					}
+				}
+
+				++it;
+			}
+		}
+
 
 		int BattleManager::CalcDamage(const app::actor::BattleCharacter* attacker, const app::actor::Character* defender, int chargeLevel, bool* outIsCritical) const
 		{
@@ -1915,6 +2089,8 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
+					p.tutorialHp = json.value("tutorialHp", p.hp);
+					p.tutorialAttackPower = json.value("tutorialAttackPower", 0.0f);
 					p.hitStopDurationSmall  = json["hitStopDurationSmall"].get<float>();
 					p.hitStopDurationMedium = json["hitStopDurationMedium"].get<float>();
 					p.hitStopDurationLarge  = json["hitStopDurationLarge"].get<float>();
@@ -1939,6 +2115,8 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 					p.hp = json["hp"].get<float>();
+					p.tutorialHp = json.value("tutorialHp", p.hp);
+					p.tutorialAttackPower = json.value("tutorialAttackPower", 0.0f);
 					p.hitStopDurationSmall  = json["hitStopDurationSmall"].get<float>();
 					p.hitStopDurationMedium = json["hitStopDurationMedium"].get<float>();
 					p.hitStopDurationLarge  = json["hitStopDurationLarge"].get<float>();

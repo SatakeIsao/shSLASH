@@ -7,6 +7,8 @@
         "radius": 15,
         "height": 1,
         "hp": 50,
+        "tutorialHp": 25,
+        "tutorialAttackPower": 1.0,
         "hitStopDurationSmall": 0.25,
         "hitStopDurationMedium": 0.35,
         "hitStopDurationLarge": 0.45,
