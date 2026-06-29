@@ -18,6 +18,7 @@ namespace app
             bool IsAllMessagesShown()     const;
             bool IsPlayerInputAllowed()   const;
             bool IsPracticePhaseReached() const;
+            int  GetCurrentMessageIndex() const;
             void SetTimerProgress(float elapsed);
             void TriggerFinalClear();
             bool IsFinalClearDone()       const;

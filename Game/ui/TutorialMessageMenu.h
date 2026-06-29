@@ -150,8 +150,11 @@ namespace app
             bool isAllShown_           = false;
             bool practicePhaseReached_ = false;
 
-            float   timerElapsed_   = 0.0f;
-            int     counterElapsed_ = 0;
+            static int s_retryIndex_;
+
+            float   timerElapsed_      = 0.0f;
+            float   timerResetGrace_  = 0.0f;
+            int     counterElapsed_   = 0;
 
             // layout-level defaults (updated by messageWindowTitle/Timer in JSON)
             Vector3 defaultTitlePosition_ = Vector3(-200.0f, -110.0f, 0.0f);
@@ -201,6 +204,7 @@ namespace app
             SlideAnim slideAnim_      = SlideAnim::None;
             float     slideAnimTimer_ = 0.0f;
 
+            static constexpr float kTimerResetGraceDur  = 0.3f;
             static constexpr float kSlideDur            = 0.1f;
             static constexpr float kSlideOffset         = 15.0f;
             static constexpr float kWinAnimInitialRatio  = 0.7f;
@@ -255,6 +259,9 @@ namespace app
             void SetTimerProgress(float elapsed);
             void TriggerFinalClear();
             bool IsFinalClearDone()    const { return finalClearDone_; }
+            int  GetCurrentMessageIndex() const { return currentIndex_; }
+
+            static void SetRetryIndex(int index) { s_retryIndex_ = index; }
 
         private:
             void UpdateLogic();
