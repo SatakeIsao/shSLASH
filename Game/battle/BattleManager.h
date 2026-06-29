@@ -252,6 +252,8 @@ namespace app
             bool isPause_                  = false;
             /** 現在チュートリアルモードとして実行中か */
             bool isTutorialMode_           = false;
+            /** バトルシーケンス完了を検知するためのエッジ検出フラグ */
+            bool wasOpeningSequenceDone_   = false;
             /** ゲームオーバー時にゲーム処理を凍結させるか */
             bool gameOverFreeze_           = false;
             /** チュートリアル中に敵の移動・AIを許可するか */

@@ -901,6 +901,15 @@ namespace app
              * （生成直後に SetPause するとアニメが走らず T ポーズになるため）
              * チュートリアル用：EffectManager の初期化完了後に敵を固定配置
              */
+			/** バトルシーケンス完了の瞬間にスポーンマネージャーを解放する */
+			const bool isOpeningDoneNow = IsOpeningSequenceDone();
+			if (!wasOpeningSequenceDone_ && isOpeningDoneNow)
+			{
+				if (eventCharacterSpawnManagerObject_)
+					eventCharacterSpawnManagerObject_->GetManager().SetOpeningSequenceDone(true);
+			}
+			wasOpeningSequenceDone_ = isOpeningDoneNow;
+
 			if (tutorialNeedsSpawn_ && EffectManager::IsAvailable() && IsOpeningSequenceDone())
 			{
 				tutorialNeedsSpawn_ = false;
@@ -1453,6 +1462,14 @@ namespace app
 							auto* dmg = static_cast<DamageNotify*>(notify.get());
 							/** defender がプレイヤー自身の場合はスキップ */
 							if (dmg->defender == battleCharacter_) continue;
+
+							/** ヒット判定が無効なきのこ敵はスキップ */
+							if (dmg->enemyType == DamageNotify::EnemyType::Mushroom)
+							{
+								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
+								if (!enemy->GetStateMachine()->IsReceiveDamageEnabled())
+									continue;
+							}
 
 							/** ダメージ計算と適用 */
 							bool isCriticalHit = false;
