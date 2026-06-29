@@ -33,15 +33,15 @@ namespace nsK2EngineLow
 	bool SkyCube::Start()
 	{
 		ModelInitData initData;
-		//tkm�t�@�C���̃t�@�C���p�X���w�肷��
+		// tkmファイルのファイルパスを指定。
 		initData.m_tkmFilePath = "Assets/ModelData/preset/sky.tkm";
-		//�V�F�[�_�[�t�@�C���̃t�@�C���p�X���w�肷��
+		// シェーダーファイルのファイルパスを指定。
 		initData.m_fxFilePath = "Assets/Shader/skyCube.fx";
 		initData.m_vsEntryPointFunc = "VSMain";
 		initData.m_psEntryPointFunc = "PSMain";
 
-		// Only load the texture that is actually used.
-		// (Previously all enSkyCubeType_Num textures were loaded, causing a long freeze.)
+		// 実際に使用されるテクスチャのみをロード。
+		// （以前は enSkyCubeType_Num すべてのテクスチャをロードしていたため、長時間のフリーズが発生。）
 		m_texture[m_type].InitFromDDSFile(m_textureFilePaths[m_type]);
 
 		initData.m_expandShaderResoruceView[0] = &m_texture[m_type];
