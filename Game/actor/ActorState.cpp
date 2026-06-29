@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Actorファイル
  */
 #include "stdafx.h"
@@ -349,7 +349,7 @@ namespace app
 
 			const auto param = GetComboParam();
 			auto* csm = owner_->As<CharacterStateMachine>();
-			csm->GetModelRender()->PlayAnimation(static_cast<uint8_t>(param.animKind), 0.5f);
+			csm->GetModelRender()->PlayAnimation(static_cast<uint8_t>(param.animKind), 0.25f);
 			csm->GetModelRender()->SetAnimationSpeed(param.animSpeed);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::AtkWeak), false);
 

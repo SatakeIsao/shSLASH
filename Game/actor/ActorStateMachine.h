@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ActorStateMachineファイル
  */
 #pragma once
@@ -332,6 +332,10 @@ namespace app
 			bool wasRecentlyKnockedBack_ = false;
 			/** 無敵時間中か（ジャスト回避を封じる用） */
 			bool isInvincible_ = false;
+			/** 通常攻撃1段目の再使用クールダウン（秒） */
+			float slashFirstCooldownTimer_ = 0.0f;
+			/** 攻撃キャンセルからの回避か（ブレンド時間を長くする用） */
+			bool isAvoidanceCancelFromAttack_ = false;
 
 
 		public:
@@ -870,6 +874,8 @@ namespace app
 			static constexpr float kPoisonMaxDist  = 150.0f;
 			/** 毒雲詠唱クールタイム（秒） */
 			static constexpr float kPoisonCoolTime = 8.0f;
+			/** プレイヤーの攻撃ヒット判定を受け付けるか */
+			bool isReceiveDamageEnabled_ = true;
 
 		public:
 			MushroomEventCharacterStateMachine();
@@ -931,6 +937,9 @@ namespace app
 
 			/** AIの自律移動（パトロール等）を有効/無効にする */
 			void SetAIEnabled(bool enabled) { isAIEnabled_ = enabled; }
+			/** プレイヤーの攻撃ヒット判定を有効/無効にする */
+			void SetReceiveDamageEnabled(bool enabled) { isReceiveDamageEnabled_ = enabled; }
+			bool IsReceiveDamageEnabled() const { return isReceiveDamageEnabled_; }
 
 			/**
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装

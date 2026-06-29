@@ -317,7 +317,9 @@ namespace app
 				Vector3::One
 			);
 
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance), 0.1f);
+			const float blendTime = isAvoidanceCancelFromAttack_ ? 0.2f : 0.1f;
+			isAvoidanceCancelFromAttack_ = false;
+			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Avoidance), blendTime);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Avoidance));
 
 			// 前フェーズウィンドウ（ノックバックキャンセル）消費
@@ -450,6 +452,13 @@ namespace app
 			{
 				preJustDodgeWindowTimer_ -= g_gameTime->GetFrameDeltaTime();
 				if (preJustDodgeWindowTimer_ < 0.0f) preJustDodgeWindowTimer_ = 0.0f;
+			}
+
+			// 通常攻撃1段目クールダウン更新
+			if (slashFirstCooldownTimer_ > 0.0f)
+			{
+				slashFirstCooldownTimer_ -= g_gameTime->GetFrameDeltaTime();
+				if (slashFirstCooldownTimer_ < 0.0f) slashFirstCooldownTimer_ = 0.0f;
 			}
 
 			// ジャスト回避スローモーションのフレームカウントダウン
@@ -593,7 +602,18 @@ namespace app
 			}
 			// 攻撃
 			{
-				if (IsActionB()) {
+				// 攻撃中に回避入力があれば攻撃をキャンセルして回避へ
+				if (IsTriggerY()
+					&& (IsEqualCurrentState(SlashFirstCharacterState::ID())
+						|| IsEqualCurrentState(SlashSecondCharacterState::ID())
+						|| IsEqualCurrentState(SlashThirdCharacterState::ID())))
+				{
+					isAvoidanceCancelFromAttack_ = true;
+					RequestChangeState(AvoidanceCharacterState::ID());
+					return;
+				}
+
+				if (IsActionB() && slashFirstCooldownTimer_ <= 0.0f) {
 					//  コンボ判定を通常Punchへの遷移のみここで行う
 					if (!IsEqualCurrentState(SlashFirstCharacterState::ID())
 						&& !IsEqualCurrentState(SlashSecondCharacterState::ID())
@@ -618,6 +638,8 @@ namespace app
 					if (!CanChangeState()) {
 						return;
 					}
+					// コンボなしで1段目終了 → 再使用クールダウン開始
+					slashFirstCooldownTimer_ = 0.8f;
 				}
 
 				// PunchState内でコンボ入力済みなら PunchSecond へ
@@ -1433,6 +1455,7 @@ namespace app
 			knockBackDirection_ = Vector3::Zero;
 			aiTimer_ = 0.0f;
 			isJustSpawned_ = true;
+			isReceiveDamageEnabled_ = true;
 
 			// スポーン時の向きをランダムに設定
 			randomEngine_.seed(std::random_device{}());

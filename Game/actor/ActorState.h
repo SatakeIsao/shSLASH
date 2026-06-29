@@ -220,10 +220,10 @@ namespace app
 			{
 				ComboParam param;
 				param.animKind = PlayerAnimationKind::SlashFirst;
-				param.animSpeed = 1.5f;
-				param.comboWindowTime = 0.6f;
-				param.attackBodyDelay = 0.3f;
-				param.attackBodyDuration = 0.3f;
+				param.animSpeed = 2.0f;
+				param.comboWindowTime = 0.4f;
+				param.attackBodyDelay = 0.225f;
+				param.attackBodyDuration = 0.225f;
 				param.attackBodyRadius = 45.0f;
 				return param;
 			}
@@ -245,10 +245,10 @@ namespace app
 			{
 				ComboParam param;
 				param.animKind = PlayerAnimationKind::SlashSecond;
-				param.animSpeed = 1.5f;
-				param.comboWindowTime = 0.8f;
-				param.attackBodyDelay = 0.3f;
-				param.attackBodyDuration = 0.3f;
+				param.animSpeed = 1.9f;
+				param.comboWindowTime = 0.63f;
+				param.attackBodyDelay = 0.24f;
+				param.attackBodyDuration = 0.24f;
 				param.attackBodyRadius = 45.0f;
 				return param;
 			}
@@ -272,10 +272,10 @@ namespace app
 			{
 				ComboParam param;
 				param.animKind = PlayerAnimationKind::SlashThird;
-				param.animSpeed = 1.5f;
-				param.comboWindowTime = 0.8f;
-				param.attackBodyDelay = 0.3f;
-				param.attackBodyDuration = 0.3f;
+				param.animSpeed = 2.0f;
+				param.comboWindowTime = 0.60f;
+				param.attackBodyDelay = 0.225f;
+				param.attackBodyDuration = 0.225f;
 				param.attackBodyRadius = 45.0f;
 				return param;
 			}
