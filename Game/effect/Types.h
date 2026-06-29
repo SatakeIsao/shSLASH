@@ -37,6 +37,10 @@ enum enEffectKind
 	enEffectKind_PlayerChargeLevel1,
 	enEffectKind_PlayerChargeLevel2,
 	enEffectKind_PlayerChargeLevel3,
+	enEffectKind_MushroomPoisonCast,    // 毒雲詠唱中の予告エフェクト
+	enEffectKind_MushroomPoisonSpore2,  // 設置時の胞子散布エフェクト（2回再生）
+	enEffectKind_MushroomPoisonSmoke2,  // 持続毒煙エフェクト（ループ・10秒後に StopEffect）
+	enEffectKind_MushroomPoisonSpore,   // 設置時の胞子散布エフェクト（1回再生）
 	enEffectKind_Max,
 	enEffectKind_None = enEffectKind_Max,
 };
@@ -81,6 +85,10 @@ static EffectInformation effectInformation[enEffectKind_Max] =
 	EffectInformation(u"Assets/effect/playerChargeAtk_Level1.efk"),
 	EffectInformation(u"Assets/effect/playerChargeAtk_Level2.efk"),
 	EffectInformation(u"Assets/effect/playerChargeAtk_Level3.efk"),
+	EffectInformation(u"Assets/effect/mushroomPredictionAtk.efk"),  // PoisonCast: 詠唱中予告（暫定流用）
+	EffectInformation(u"Assets/effect/poison_spore2.efk"),           // PoisonSpore2: 胞子散布（2回再生）
+	EffectInformation(u"Assets/effect/poison_smoke2.efk"),           // PoisonSmoke2: 持続毒煙（ループ）
+	EffectInformation(u"Assets/effect/poison_spore.efk"),            // PoisonSpore: 胞子散布（1回再生）
 
 };
 

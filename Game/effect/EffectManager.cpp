@@ -44,6 +44,15 @@ void EffectManager::Update()
 		m_activeEffectList.end()
 	);
 
+	// 再生終了したエフェクトを m_effectList からも除去
+	for (auto it = m_effectList.begin(); it != m_effectList.end(); )
+	{
+		if (it->second == nullptr || !it->second->IsPlay())
+			it = m_effectList.erase(it);
+		else
+			++it;
+	}
+
 	// 追従エフェクトの座標を毎フレーム同期
 	// 終了済みエントリ（K2Engine側で削除済み）は除去する
 	m_followEffectList.erase(
@@ -83,9 +92,10 @@ EffectHandle EffectManager::PlayEffect(const int kind, const Vector3& position, 
 	{
 		m_effect->SetSpeed(speed);
 	}
+	m_effectList[m_effectHandleCount] = m_effect;
 	m_activeEffectList.push_back(m_effect);
 
-	return m_effectHandleCount;
+	return m_effectHandleCount++;
 }
 
 EffectHandle EffectManager::PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale)
@@ -118,11 +128,10 @@ EffectHandle EffectManager::PlayEffectFollow(const int kind, const Vector3* targ
 
 void EffectManager::StopEffect(const EffectHandle handle)
 {
-	auto* effect = FindEffect(handle);
-	if (effect == nullptr) {
-		return;
-	}
-	effect->Stop();
+	auto it = m_effectList.find(handle);
+	if (it == m_effectList.end()) return;
+	if (it->second) it->second->Stop();
+	m_effectList.erase(it);
 }
 
 

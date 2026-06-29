@@ -854,6 +854,22 @@ namespace app
 			bool isReturningToWait_ = false;
 			/** AIの自律移動（パトロール等）を有効にするか */
 			bool isAIEnabled_ = true;
+			/** 毒雲詠唱完了フラグ（BattleManagerが読み取る） */
+			bool isPoisonCastComplete_ = false;
+			/** 胞子エフェクト再生中フラグ（trueの間はキャスト状態を維持） */
+			bool isPoisonSporeActive_ = false;
+			/** 毒雲詠唱通知済みフラグ（BattleManagerに通知を1回だけ送るための制御） */
+			bool hasPoisonNotified_ = false;
+			/** 毒雲詠唱クールタイム */
+			float poisonCoolTimer_ = 0.0f;
+			/** 詠唱時のターゲット位置（プレイヤー座標） */
+			Vector3 poisonCastTargetPos_ = Vector3::Zero;
+
+			/** 毒雲詠唱発動距離（下限：近接攻撃範囲外、上限：中距離） */
+			static constexpr float kPoisonMinDist  = 60.0f;
+			static constexpr float kPoisonMaxDist  = 150.0f;
+			/** 毒雲詠唱クールタイム（秒） */
+			static constexpr float kPoisonCoolTime = 8.0f;
 
 		public:
 			MushroomEventCharacterStateMachine();
@@ -949,6 +965,23 @@ namespace app
 				}
 				return false;
 			}
+
+			/** 毒雲詠唱完了を取得（取得と同時にフラグクリア） */
+			bool CheckAndConsumePoisonCastComplete()
+			{
+				if (isPoisonCastComplete_) {
+					isPoisonCastComplete_ = false;
+					return true;
+				}
+				return false;
+			}
+
+			/** 毒雲詠唱時のターゲット座標を取得 */
+			const Vector3& GetPoisonCastTargetPosition() const { return poisonCastTargetPos_; }
+			/** 胞子エフェクト終了を BattleManager から通知する */
+			void SetPoisonSporeActive(bool v) { isPoisonSporeActive_ = v; }
+			/** 詠唱開始時に通知済みフラグをリセットする（MushroomPoisonCastState::Enter が呼ぶ） */
+			void ResetPoisonNotified() { hasPoisonNotified_ = false; }
 		};
 	}
 }

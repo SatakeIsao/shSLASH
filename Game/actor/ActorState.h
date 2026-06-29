@@ -556,6 +556,33 @@ namespace app
 		};
 
 
+		/**
+		 * キノコ敵の毒雲詠唱ステート
+		 * 3秒間詠唱したあとBattleManagerへ完了を通知する。
+		 * ノックバック優先チェックにより攻撃で中断可能。
+		 */
+		class MushroomPoisonCastState : public ICharacterState
+		{
+			appState(MushroomPoisonCastState);
+
+		private:
+			float castTimer_ = 0.0f;
+			float castEffectTimer_ = 0.0f;
+			static constexpr float CAST_DURATION   = 3.0f;
+			static constexpr float EFFECT_INTERVAL = 0.8f;
+
+		public:
+			MushroomPoisonCastState(IStateMachine* owner);
+			~MushroomPoisonCastState() {}
+
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			bool CanChangeState() const override { return castTimer_ >= CAST_DURATION; }
+		};
+
+
 		class WaitingAttackCharacterState : public ICharacterState
 		{
 			appState(WaitingAttackCharacterState);

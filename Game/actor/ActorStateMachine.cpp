@@ -1440,6 +1440,12 @@ namespace app
 			transform.rotation.SetRotationY(randomYaw);
 
 			isReturningToWait_ = false;
+
+			// 毒雲詠唱フィールドをリセット
+			isPoisonCastComplete_ = false;
+			hasPoisonNotified_    = false;
+			poisonCoolTimer_      = 0.0f;
+			poisonCastTargetPos_  = Vector3::Zero;
 		}
 
 
@@ -1615,6 +1621,11 @@ namespace app
 				attackCoolTimer_ -= g_gameTime->GetFrameDeltaTime();
 			}
 
+			if (poisonCoolTimer_ > 0.0f)
+			{
+				poisonCoolTimer_ -= g_gameTime->GetFrameDeltaTime();
+			}
+
 			// 死亡は最優先（スポーン猶予中でも即処理）
 			if (isDead_)
 			{
@@ -1691,6 +1702,29 @@ namespace app
 					aiTimer_ = 0.0f;
 					isReturningToWait_ = true; // 攻撃後の待機ポイントへ戻るフラグ
 					RequestChangeState(RunCharacterState::ID());
+				}
+				return;
+			}
+
+			// 毒雲詠唱ステートのハンドリング（詠唱中はノックバック以外で中断しない）
+			if (IsEqualCurrentState(MushroomPoisonCastState::ID()))
+			{
+				if (CanChangeState())
+				{
+					// 詠唱タイマー完了時に1回だけ BattleManager へ通知（通知済みフラグで多重送信を防ぐ）
+					if (!hasPoisonNotified_)
+					{
+						hasPoisonNotified_    = true;
+						isPoisonCastComplete_ = true;
+						poisonCoolTimer_      = kPoisonCoolTime;
+						isPoisonSporeActive_  = true;
+					}
+					// 胞子エフェクトが終わるまでキャスト状態を維持（移動しない）
+					if (!isPoisonSporeActive_)
+					{
+						isReturningToWait_ = true;
+						RequestChangeState(RunCharacterState::ID());
+					}
 				}
 				return;
 			}
@@ -1794,6 +1828,13 @@ namespace app
 							}
 							RequestChangeState(RunCharacterState::ID());
 						}
+						return;
+					}
+					else if (distance <= kPoisonMaxDist && poisonCoolTimer_ <= 0.0f)
+					{
+						// 中距離かつクールダウン完了 → 毒雲詠唱を開始
+						poisonCastTargetPos_ = targetPosition_;
+						RequestChangeState(MushroomPoisonCastState::ID());
 						return;
 					}
 					else if (distance <= 400.0f)

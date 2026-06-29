@@ -182,7 +182,7 @@ namespace app
             /** ダメージポップ通知先 */
             IDamagePopListener* damagePopListener_ = nullptr;
             /** スカイキューブのオブジェクト */
-            SkyCube* skyCube_ = nullptr;
+            nsK2EngineLow::SkyCube* skyCube_ = nullptr;
 
             /** スポーンしているストーン敵のリスト */
             std::vector<app::actor::StoneEventCharacter*> stoneEventCharacters_;
@@ -342,6 +342,7 @@ namespace app
             void AddPlayerGauge(int amount);
             /** チュートリアルモードを有効にする（Start()の前に呼ぶこと） */
             void SetTutorialMode(bool isTutorial) { isTutorialMode_ = isTutorial; }
+            bool IsTutorialMode() const { return isTutorialMode_; }
             /** オープニングシーケンス（3/2/1/START）が完了したか */
             bool IsOpeningSequenceDone() const;
             /** チュートリアル中の敵の動きを許可/停止する */
@@ -409,6 +410,37 @@ namespace app
             bool IsTutorialAllEnemiesDefeated() const;
             /** チュートリアル中の現在の生存敵数を返す */
             int GetTutorialActiveEnemyCount() const;
+
+        private:
+            /**
+             * 毒雲エントリ
+             * unique_ptr<Vector3> で座標を安定させ PlayEffectFollow に渡す
+             */
+            struct PoisonCloud
+            {
+                Vector3 position;
+                float remainingTime    = 10.0f;
+                float tickTimer        = 0.0f;
+                float sporeElapsedTime = 0.0f;                     // spore2 開始からの経過時間
+                EffectHandle sporeHandle = INVALID_EFFECT_HANDLE;  // 胞子エフェクトのハンドル
+                EffectHandle smokeHandle = INVALID_EFFECT_HANDLE;  // 持続煙エフェクトのハンドル
+                bool smokeStarted = false;                         // smoke2 を開始済みか
+                app::actor::MushroomEventCharacter* mushroomOwner = nullptr;  // 詠唱したキノコ
+
+                static constexpr float RADIUS               = 67.0f;
+                static constexpr float EFFECT_Y_OFFSET      = 50.0f;   // エフェクト表示をキノコの頭付近に上げるオフセット
+                static constexpr float TICK_INTERVAL        = 1.0f;    // ダメージ間隔(秒)
+                static constexpr float DURATION             = 10.0f;   // 持続時間(秒)
+                static constexpr float DAMAGE_PER_TICK_RATE = 0.03f;   // 最大HP の 3%
+                static constexpr int   MAX_COUNT            = 2;       // 同時最大設置数
+                // spore2 開始から smoke2 を再生するまでの秒数
+                // poison_spore2.efk の1回目パーティクル消失タイミングに合わせて調整する
+                static constexpr float SMOKE_START_DELAY    = 0.8f;
+            };
+            std::deque<PoisonCloud> activePoisonClouds_;
+
+            void PlacePoisonCloud(app::actor::MushroomEventCharacter* mushroom, const Vector3& position);
+            void UpdatePoisonClouds();
 
         private:
             /** 攻撃者・防御者・チャージレベルからダメージ値を計算する */

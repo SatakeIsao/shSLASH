@@ -64,6 +64,11 @@ public:
     void StopEffect(const EffectHandle handle);
 
 
+    bool IsEffectPlaying(const EffectHandle handle) const
+    {
+        return m_effectList.find(handle) != m_effectList.end();
+    }
+
     EffectEmitter* FindEffect(const EffectHandle handle)
     {
         auto it = m_effectList.find(handle);

@@ -136,6 +136,8 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float radius;								// 半径
 			float height;								// 高さ
 			float hp;									// HP
+			float tutorialHp;							// チュートリアル用HP
+			float tutorialAttackPower;					// チュートリアル用攻撃力
 			float hitStopDurationSmall;					// ヒットストップ時間 ~1段階目
 			float hitStopDurationMedium;				// ヒットストップ時間 ~2段階目
 			float hitStopDurationLarge;					// ヒットストップ時間 ~3段階目
@@ -157,6 +159,8 @@ static constexpr uint32_t ID() {return Hash32(#name);}
 			float radius;								// 半径
 			float height;								// 高さ
 			float hp;									// HP
+			float tutorialHp;							// チュートリアル用HP
+			float tutorialAttackPower;					// チュートリアル用攻撃力
 			float hitStopDurationSmall;					// ヒットストップ時間 ~1段階目
 			float hitStopDurationMedium;				// ヒットストップ時間 ~2段階目
 			float hitStopDurationLarge;					// ヒットストップ時間 ~3段階目
