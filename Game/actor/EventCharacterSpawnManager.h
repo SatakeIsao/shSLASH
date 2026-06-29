@@ -99,6 +99,7 @@ namespace app
 
 			/** チュートリアルモードON/OFF（ONにするとUpdate内の自動スポーンを全停止） */
 			void SetTutorialMode(bool v) { isTutorialMode_ = v; }
+			void SetOpeningSequenceDone(bool v) { isOpeningSequenceDone_ = v; }
 
 			/** チュートリアル中に敵を凍結/解除する（全アクティブ敵に即時反映） */
 			void SetTutorialEnemyFrozen(bool frozen);
@@ -153,6 +154,8 @@ namespace app
 			bool isPause_ = false;
 			bool isTutorialMode_ = false;
 			bool tutorialEnemyFrozen_ = false;
+			/** バトルシーケンス（カウントダウン）完了前はスポーンを抑制する */
+			bool isOpeningSequenceDone_ = false;
 
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
 			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック

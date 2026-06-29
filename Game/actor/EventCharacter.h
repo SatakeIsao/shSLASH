@@ -418,6 +418,29 @@ namespace app
 				isPause_ = isPause;
 			}
 
+			void SetVisible(bool v)
+			{
+				isVisible_ = v;
+			}
+
+			bool IsVisible() const
+			{
+				return isVisible_;
+			}
+
+			/** バトルシーケンス開始前に非表示にしていた敵をフェードイン付きで有効化する */
+			void ActivateAsNewSpawn()
+			{
+				isPause_ = false;
+				isVisible_ = true;
+				ghostBody_->SetActive(true);
+				stateMachine_->SetReceiveDamageEnabled(true);
+				cbData_.fadeRatio = 0.0f;
+				fadeTimer_ = 0.0f;
+				isFadingIn_ = true;
+				isFadingOut_ = false;
+			}
+
 			void SetBattleCharacter(app::actor::BattleCharacter* battleCharacter)
 			{
 				battleCharacter_ = battleCharacter;

@@ -146,6 +146,8 @@ namespace app
 			}
 
 			if (isTutorialMode_) { return; }
+			// バトルシーケンス（カウントダウン）終了前はスポーンしない
+			if (!isOpeningSequenceDone_) { return; }
 			// EffectManagerの初期化完了を待つ
 			if (!EffectManager::IsAvailable()) { return; }
 

@@ -701,6 +701,11 @@ namespace app
 			}
 			else if (mushroomTarget_)
 			{
+				if (!mushroomTarget_->IsVisible())
+				{
+					isVisible_ = false;
+					return;
+				}
 				worldPos = mushroomTarget_->transform.position;
 			}
 			else
