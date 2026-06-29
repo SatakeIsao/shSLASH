@@ -62,6 +62,13 @@ namespace app
             return menu->IsPracticePhaseReached();
         }
 
+        int TutorialUIObject::GetCurrentMessageIndex() const
+        {
+            if (!layout_) return 0;
+            auto* menu = dynamic_cast<TutorialMessageMenu*>(layout_->GetMenu());
+            return menu ? menu->GetCurrentMessageIndex() : 0;
+        }
+
         void TutorialUIObject::SetTimerProgress(float elapsed)
         {
             if (!layout_) return;

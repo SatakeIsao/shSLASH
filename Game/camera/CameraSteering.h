@@ -35,10 +35,12 @@ namespace app
 			Config config_;
 			app::actor::Character* targetCharacter_ = nullptr;
 			Vector3 toVector_ = Vector3::Zero;
+			bool inputEnabled_ = true;
 
 
 		public:
 			void Update(CameraData& data, const float deltaTime);
+			void SetInputEnabled(bool enabled) { inputEnabled_ = enabled; }
 
 			void SetConfig(const Config& config)
 			{ 

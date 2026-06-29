@@ -29,8 +29,8 @@ namespace app
 			nextData.position = position;
 			nextData.target = targetPosition;
 
-			float stickX = g_pad[0]->GetRStickXF();
-			float stickY = g_pad[0]->GetRStickYF();
+			float stickX = inputEnabled_ ? g_pad[0]->GetRStickXF() : 0.0f;
+			float stickY = inputEnabled_ ? g_pad[0]->GetRStickYF() : 0.0f;
 
 			// CameraManagerから設定を取得し、trueなら入力を反転
 			if (CameraManager::Get().IsReverseX()) {

@@ -28,6 +28,8 @@ namespace app
 {
     namespace ui
     {
+        int TutorialMessageMenu::s_retryIndex_ = 0;
+
         void TutorialMessageMenu::InitializeLogic()
         {
             messageWindowIcon_         = GetUI<UIIcon>(Hash32("MessageWindow"));
@@ -61,9 +63,11 @@ namespace app
             if (app::battle::BattleManager::IsAvailable())
                 app::battle::BattleManager::Get().SetTutorialFreeze(false);
 
-            const int savedIndex = currentIndex_;
+            const int savedIndex = (s_retryIndex_ > 0) ? s_retryIndex_ : currentIndex_;
+            s_retryIndex_        = 0;
             currentIndex_        = 0;
             isAllShown_          = false;
+            practicePhaseReached_ = false;
             currentTutorialImages_.clear();
             winAnim_ = WinAnim::None;
             winElems_.clear();
@@ -427,7 +431,16 @@ namespace app
             }
 
             if (savedIndex > 0 && savedIndex < static_cast<int>(messages_.size()))
+            {
                 currentIndex_ = savedIndex;
+                for (int i = 0; i < currentIndex_; ++i)
+                {
+                    if (messages_[i].startPracticePhase)
+                        practicePhaseReached_ = true;
+                    if (messages_[i].enableEnemyMove && app::battle::BattleManager::IsAvailable())
+                        app::battle::BattleManager::Get().SetTutorialEnemyMoveEnabled(true);
+                }
+            }
 
             ShowCurrentMessage();
 
@@ -571,13 +584,18 @@ namespace app
                 const float ly = g_pad[0]->GetLStickYF();
                 if (lx * lx + ly * ly > 0.09f)   // deadzone 0.3f^2
                 {
+                    timerResetGrace_ = 0.0f;
                     timerElapsed_ += g_gameTime->GetFrameDeltaTime();
                     UpdateTimerDisplay(timerElapsed_);
                 }
                 else
                 {
-                    timerElapsed_ = 0.0f;
-                    UpdateTimerDisplay(timerElapsed_);
+                    timerResetGrace_ += g_gameTime->GetFrameDeltaTime();
+                    if (timerResetGrace_ >= kTimerResetGraceDur)
+                    {
+                        timerElapsed_ = 0.0f;
+                        UpdateTimerDisplay(timerElapsed_);
+                    }
                 }
                 if (timerElapsed_ >= current.timerRequired)
                 {
@@ -728,7 +746,8 @@ namespace app
                 }
                 else if (entry.hasTimer)
                 {
-                    timerElapsed_ = 0.0f;
+                    timerElapsed_     = 0.0f;
+                    timerResetGrace_  = 0.0f;
                     timerText_->transform.localPosition = entry.hasTimerPosition ? entry.timerPosition : defaultTimerPosition_;
                     timerText_->transform.localScale    = entry.hasTimerScale    ? entry.timerScale    : defaultTimerScale_;
                     UpdateTimerDisplay(0.0f);

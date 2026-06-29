@@ -204,6 +204,9 @@ bool TutorialScene::RequestScene(uint32_t& id, float& waitTime)
         {
             if (gameOverSequence_->IsRetryDecided())
             {
+                if (tutorialUI_)
+                    app::ui::TutorialMessageMenu::SetRetryIndex(
+                        tutorialUI_->GetCurrentMessageIndex());
                 id = TutorialScene::ID();
                 waitTime = 1.0f;
                 return true;
