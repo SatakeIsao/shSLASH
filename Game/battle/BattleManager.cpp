@@ -4,6 +4,7 @@
  */
 #include "stdafx.h"
 #include "BattleManager.h"
+#include <chrono>
 #include "effect/SwordDecalManager.h"
 
 #include "actor/BattleCharacter.h"
@@ -50,13 +51,13 @@ namespace
 	static constexpr float STONE_SPAWN_EFFECT_OFFSET_Y = 180.0f;
 	static constexpr float MUSHROOM_SPAWN_EFFECT_OFFSET_Y = 180.0f;
 
-	/** 溜め攻撃、命中時の視野角 */
+	/** 溜め攻撃命中時の視野角 */
 	struct ChargeHitFovPreset
 	{
 		float fov;
 	};
 
-	/** 溜め攻撃時用のFOVプリセット */
+	/** 溜め攻撃用のFOVプリセット */
 	constexpr ChargeHitFovPreset CHARGE_HIT_FOV_PRESETS[] = {
 		{ 55.0f },
 		{ 55.0f },
@@ -66,12 +67,14 @@ namespace
 	constexpr float CHARGE_HIT_FOV_FADE_IN = 0.15f;
 	/** ヒット時FOV復帰時間（ズームアウト） */
 	constexpr float CHARGE_HIT_FOV_FADE_OUT = 0.12f;
-	/** 待機状態判定のしきい値 */
+	/** 静止状態判定のしきい値 */
 	constexpr float CHARGE_HIT_FOV_IDLE_THRESHOLD = 0.01f;
 	/** プリセットの最大インデックス */
 	constexpr int CHARGE_HIT_FOV_MAX_INDEX = 2;
+    /** タイムアップ時に静止させる合計フレーム数定数 */
+    static constexpr int TIME_UP_FREEZE_FRAME_COUNT = 10;
 
-	// Player
+	/** プレイヤー用 */
 	static app::actor::CharacterInitializeParameter sPlayerInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
 		{
 			parameter->modelName = "Assets/ModelData/player/player.tkm";
@@ -122,7 +125,7 @@ namespace
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp)].filename = "Assets/animData/player/playerKipUp.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp)].loop = false;
 		});
-	// Enemy用
+	/** 敵用 */
 	static app::actor::CharacterInitializeParameter sEnemyInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
 		{
 			parameter->modelName = "Assets/ModelData/enemy/slime/slime.tkm";
@@ -181,7 +184,32 @@ namespace app
 {
 	namespace battle
 	{
-		BattleManager* BattleManager::instance_ = nullptr; //初期化
+		BattleManager* BattleManager::instance_ = nullptr;
+
+
+		void BattleManager::PreloadCharacterAssets(app::actor::CharacterInitializeParameter& param)
+		{
+			param.Load();
+			if (!param.modelName) return;
+
+			auto& rm = app::resource::ResourceManager::GetInstance();
+
+			rm.Load<app::resource::TkmResource>(param.modelName);
+
+			std::string tksPath = param.modelName;
+			const auto pos = tksPath.rfind(".tkm");
+			if (pos != std::string::npos)
+			{
+				tksPath.replace(pos, 4, ".tks");
+				rm.Load<app::resource::TksResource>(tksPath);
+			}
+
+			for (uint32_t i = 0; i < static_cast<uint32_t>(param.animationDataList.size()); ++i)
+			{
+				if (param.animationDataList[i].filename)
+					rm.Load<app::resource::TkaResource>(param.animationDataList[i].filename);
+			}
+		}
 
 
 		BattleManager::BattleManager()
@@ -191,7 +219,7 @@ namespace app
 			app::collision::CollisionHitManager::Initialize();
 			app::collision::GhostBodyManager::Get().RegisterCallback([](app::collision::GhostBody* a, app::collision::GhostBody* b)
 				{
-					// 衝突ペア登録
+					/** 衝突ペア登録 */
 					app::collision::CollisionHitManager::Get().RegisterHitPair(a, b);
 				});
 		}
@@ -199,7 +227,7 @@ namespace app
 
 		BattleManager::~BattleManager()
 		{
-			// リザルト用データを保存（playerHpUIObject_ 削除前に取得する）
+			/** リザルト用データを保存。playerHpUIObject_ 削除前に取得する。 */
 			{
 				auto& result = app::GameResultData::Get();
 				result.Reset();
@@ -208,7 +236,7 @@ namespace app
 				result.mushroomKillCount = mushroomKillCount_;
 			}
 
-			// スポーン済み敵とHPバーを先にクリーンアップ
+			/** スポーン済み敵とHPバーを先にクリーンアップ */
 			if (eventCharacterSpawnManagerObject_)
 			{
 				eventCharacterSpawnManagerObject_->GetManager().CleanUp();
@@ -222,10 +250,8 @@ namespace app
 			DeleteGO(effectManager2DObject_);
 			DeleteGO(pauseManagerObject_);
 			DeleteGO(eventCharacterSpawnManagerObject_);
-			DeleteGO(eventCharacter_);
 			DeleteGO(timerUIObject_);
 			DeleteGO(playerHpUIObject_);
-			DeleteGO(enemyHpUIObject_);
 			DeleteGO(levelUpObject_);
 			DeleteGO(phaseUI_);
 			if (damagePopPool_)
@@ -239,7 +265,7 @@ namespace app
 				DeleteGO(test);
 			}
 
-			// パラメーター解放
+			/** パラメーター解放 */
 			app::core::ParameterManager::Get().UnloadParameter<app::core::MasterBattleParameter>();
 			app::core::ParameterManager::Get().UnloadParameter<app::core::MasterStageParameter>();
 			app::core::ParameterManager::Get().UnloadParameter<app::core::MasterBattleCharacterParameter>();
@@ -252,7 +278,7 @@ namespace app
 
 		void BattleManager::Start()
 		{
-			// DebugScene 用の同期版。BattleScene/TutorialScene は LoadStep() を使う。
+			/** DebugScene 用の同期版。BattleScene/TutorialScene は LoadStep()使用 */
 			while (!LoadStep()) {}
 		}
 
@@ -262,12 +288,229 @@ namespace app
 			switch (loadStep_++)
 			{
 			case 0:
-				// パラメーター読み込み
 				LoadParameter();
+				PreloadCharacterAssets(sPlayerInitializeParameter);
+				PreloadCharacterAssets(sStoneEnemyInitializeParameter);
+				PreloadCharacterAssets(sMushroomEnemyInitializeParameter);
+				{
+					auto& rm = app::resource::ResourceManager::GetInstance();
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/stage/stage.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/stage/moon.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/preset/sky.tkm");
+					/** デカールモデル: SwordDecalManager が初回使用時に同期ロードするのを防ぐ */
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkDefaultDecal.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/stoneDebrisScar.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/mushroomDebrisScar.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv1.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv2.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv3.tkm");
+					/**
+                     * UI用DDSをOSページキャッシュに先読み（ワーカースレッド側）。
+                     * メインスレッドがTexture::InitFromDDSFile()を呼ぶ時点でRAMから読める。
+                     */ 
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/numbers.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/0.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/1.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/2.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/3.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/4.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/5.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/6.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/7.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/8.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/9.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/word/PHASE.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/timer/clock_hand.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/playerIcon.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/whiteBackGround.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/backGroundHP.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/damageHP.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/LevelUp/currentLevel.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/LevelUp/LvIcon.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/outerBar_Blue.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/innerBar_Blue.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/outerBar_Orange.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/innerBar_Orange.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/ATK POWER UP_Default.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/ATK POWER UP_Bloom.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/LEVEL UP_Default.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/LEVEL UP_Bloom.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/preset/skyCubeMapNight_Toon_02.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_diffuse.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_diffuse2.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_normal.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_specular.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/brick10.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/brick10_normal.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/Stadium_ground.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/Wall_Red.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/ground_normal.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/lroc_color_poles_4k.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/moon_normal.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/enemy/stone/StoneMonster_1.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/enemy/mushroom/Albedo.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/enemy/mushroom/Metallic-Smoothness.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/decal/atkChargeLv1.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/decal/atkChargeLv2.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/decal/atkChargeLv3.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/decal/mushroomDebrisScar.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/decal/stoneDebrisScar.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/preset/NullAlbedoMap.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/preset/NullNormalMap.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/preset/specMap_None.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/preset/ZeroValueMap.DDS");
+				}
+				/**
+                 * エフェクトマネージャーを先行生成。Start()（efkファイルの同期ロード）が
+                 * 次フレームで走るため、ワーカースレッドの tkm/tka/tks ロードと重なり合う。
+                 */ 
+				effectManagerObject_   = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+				effectManager2DObject_ = NewGO<EffectManager2DObject>(static_cast<uint8_t>(ObjectPriority::Default));
 				return false;
 
 			case 1:
-				// スカイキューブ + 月オブジェクト
+				/**
+                 * ワーカースレッドのロードがすべて完了するまで待機。
+                 * FinalizeCompleted() が毎フレーム呼ばれ、完了済みリソースをエンジンバンクに登録済み。
+                 */ 
+				if (!app::resource::ResourceManager::GetInstance().IsIdle())
+				{
+					loadStep_--;
+					return false;
+				}
+				return false;
+
+			case 2:
+				/**
+                 * バックグラウンドスレッドで全テクスチャのGPUバッチアップロードを開始。
+                 * メインスレッドはブロックされないためロード中もアニメーションが動き続ける。
+                 */
+				if (!texturePreloadFuture_.valid())
+				{
+					const wchar_t* const kAllTextures[] = {
+						/** UIテクスチャ */
+						L"Assets/ui/numbers/numbers.DDS",
+						L"Assets/ui/numbers/0.dds",
+						L"Assets/ui/numbers/1.dds",
+						L"Assets/ui/numbers/2.dds",
+						L"Assets/ui/numbers/3.dds",
+						L"Assets/ui/numbers/4.dds",
+						L"Assets/ui/numbers/5.dds",
+						L"Assets/ui/numbers/6.dds",
+						L"Assets/ui/numbers/7.dds",
+						L"Assets/ui/numbers/8.dds",
+						L"Assets/ui/numbers/9.dds",
+						L"Assets/ui/word/PHASE.DDS",
+						L"Assets/ui/timer/clock_hand.dds",
+						L"Assets/ui/hp/playerIcon.DDS",
+						L"Assets/ui/hp/whiteBackGround.DDS",
+						L"Assets/ui/hp/backGroundHP.DDS",
+						L"Assets/ui/hp/damageHP.DDS",
+						L"Assets/ui/LevelUp/currentLevel.DDS",
+						L"Assets/ui/LevelUp/LvIcon.DDS",
+						L"Assets/ui/levelUp/outerBar_Blue.DDS",
+						L"Assets/ui/levelUp/innerBar_Blue.DDS",
+						L"Assets/ui/levelUp/outerBar_Orange.DDS",
+						L"Assets/ui/levelUp/innerBar_Orange.DDS",
+						L"Assets/ui/levelUp/ATK POWER UP_Default.DDS",
+						L"Assets/ui/levelUp/ATK POWER UP_Bloom.DDS",
+						L"Assets/ui/levelUp/LEVEL UP_Default.DDS",
+						L"Assets/ui/levelUp/LEVEL UP_Bloom.DDS",
+						/** 3Dモデル・スカイ・デカールテクスチャ */
+						L"Assets/ModelData/preset/skyCubeMapNight_Toon_02.dds",
+						L"Assets/ModelData/player/maria_diffuse.DDS",
+						L"Assets/ModelData/player/maria_diffuse2.DDS",
+						L"Assets/ModelData/player/maria_normal.DDS",
+						L"Assets/ModelData/player/maria_specular.DDS",
+						L"Assets/ModelData/stage/brick10.DDS",
+						L"Assets/ModelData/stage/brick10_normal.DDS",
+						L"Assets/ModelData/stage/Stadium_ground.DDS",
+						L"Assets/ModelData/stage/Wall_Red.DDS",
+						L"Assets/ModelData/stage/ground_normal.DDS",
+						L"Assets/ModelData/stage/lroc_color_poles_4k.DDS",
+						L"Assets/ModelData/stage/moon_normal.DDS",
+						L"Assets/ModelData/enemy/stone/StoneMonster_1.DDS",
+						L"Assets/ModelData/enemy/mushroom/Albedo.DDS",
+						L"Assets/ModelData/enemy/mushroom/Metallic-Smoothness.DDS",
+						L"Assets/ModelData/decal/atkChargeLv1.DDS",
+						L"Assets/ModelData/decal/atkChargeLv2.DDS",
+						L"Assets/ModelData/decal/atkChargeLv3.DDS",
+						L"Assets/ModelData/decal/mushroomDebrisScar.DDS",
+						L"Assets/ModelData/decal/stoneDebrisScar.DDS",
+						/** 全モデルマテリアルが使用するNull/プリセットテクスチャ（初回モデル初期化時のディスクI/Oを防ぐ） */
+						L"Assets/ModelData/preset/NullAlbedoMap.DDS",
+						L"Assets/ModelData/preset/NullNormalMap.DDS",
+						L"Assets/ModelData/preset/specMap_None.DDS",
+						L"Assets/ModelData/preset/ZeroValueMap.DDS",
+						/** ゲームオーバーUIテクスチャ（遅延生成のGameOverSequenceがキャッシュヒットするよう先読み） */
+						L"Assets/ui/gameOver/gameOver_Fog.DDS",
+						L"Assets/ui/gameOver/gameOver_Word.DDS",
+					};
+					texturePreloadFuture_ = Texture::BatchPreloadToCacheAsync(
+						kAllTextures,
+						static_cast<int>(ARRAYSIZE(kAllTextures))
+					);
+					/**
+                     * ケース3〜10 で使用するシェーダーをバックグラウンドスレッドで事前コンパイル。
+                     * タイトルシーンに3Dモデルがないため、これがないとバトルロード中に
+                     * model.fx 等が初めてコンパイルされてしまう。
+                     */ 
+					shaderPrecompileFuture_ = Shader::PrecompileAsync({
+						/** skyCube.fx（ケース3） */
+						{ "Assets/Shader/skyCube.fx",            "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/skyCube.fx",            "PSMain",              "ps_5_0" },
+						/** model.fx フォワードパス（ケース4-5: プレイヤー + 敵） */
+						{ "Assets/Shader/model.fx",              "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/model.fx",              "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/model.fx",              "PSNormalMain",        "ps_5_0" },
+						{ "Assets/Shader/model.fx",              "PSShadowReceverMain", "ps_5_0" },
+						/** model_gbuffer.fx（G-Buffer、シャドウレシーバー） */
+						{ "Assets/Shader/model_gbuffer.fx",      "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/model_gbuffer.fx",      "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/model_gbuffer.fx",      "PSMain",              "ps_5_0" },
+						/** model_gbuffer_ns.fx（G-Buffer、非シャドウレシーバー） */
+						{ "Assets/Shader/model_gbuffer_ns.fx",   "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/model_gbuffer_ns.fx",   "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/model_gbuffer_ns.fx",   "PSMain",              "ps_5_0" },
+						/** drawShadowMap.fx（シャドウキャスター） */
+						{ "Assets/Shader/drawShadowMap.fx",      "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/drawShadowMap.fx",      "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/drawShadowMap.fx",      "PSMain",              "ps_5_0" },
+						/** modelWall.fx（ケース6: ステージ）— model.fx と同様のPSスプリット */
+						{ "Assets/Shader/modelWall.fx",          "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/modelWall.fx",          "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/modelWall.fx",          "PSNormalMain",        "ps_5_0" },
+						{ "Assets/Shader/modelWall.fx",          "PSShadowReceverMain", "ps_5_0" },
+						/** model_gbuffer_wall.fx（ケース6: ステージG-Buffer） */
+						{ "Assets/Shader/model_gbuffer_wall.fx", "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/model_gbuffer_wall.fx", "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/model_gbuffer_wall.fx", "PSMain",              "ps_5_0" },
+						/** model_enemy_fade.fx（ケース5: 敵、GBufferパス） */
+						{ "Assets/Shader/model_enemy_fade.fx",   "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/model_enemy_fade.fx",   "VSSkinMain",          "vs_5_0" },
+						{ "Assets/Shader/model_enemy_fade.fx",   "PSMain",              "ps_5_0" },
+						/** hpBar.fx（ケース7-8: PlayerHpUI + EnemyHpUIレイアウト） */
+						{ "Assets/Shader/hpBar.fx",              "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/hpBar.fx",              "PSMain",              "ps_5_0" },
+						/** numberSprite.fx（DamagePopPool / UINumberSprite） */
+						{ "Assets/Shader/numberSprite.fx",       "VSMain",              "vs_5_0" },
+						{ "Assets/Shader/numberSprite.fx",       "PSMain",              "ps_5_0" },
+					});
+				}
+				{
+					bool texDone  = texturePreloadFuture_.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+					bool shadDone = !shaderPrecompileFuture_.valid() ||
+					                shaderPrecompileFuture_.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+					if (!texDone || !shadDone)
+					{
+						loadStep_--;
+						return false;
+					}
+				}
+				return false;
+
+			case 3:
+				/** スカイキューブ + 月オブジェクト */
 				{
 					skyCube_ = NewGO<nsK2EngineLow::SkyCube>(0, "skycube");
 					skyCube_->SetLuminance(1.0f);
@@ -283,12 +526,8 @@ namespace app
 				}
 				return false;
 
-			case 2:
-				// エフェクトマネージャー + スポーンマネージャー（コールバックはラムダなので遅延実行）
-				{
-					effectManagerObject_ = NewGO<EffectManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
-					effectManager2DObject_ = NewGO<EffectManager2DObject>(static_cast<uint8_t>(ObjectPriority::Default));
-				}
+			case 4:
+				/** スポーンマネージャー(エフェクトマネージャーは case 0 で作成済み) */
 				{
 					eventCharacterSpawnManagerObject_ = NewGO<app::actor::EventCharacterSpawnManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
 					eventCharacterSpawnManagerObject_->GetManager().SetOnSpawned([this](const app::actor::SpawnResult& result)
@@ -451,8 +690,8 @@ namespace app
 				}
 				return false;
 
-			case 3:
-				// プレイヤー + キャラクターステアリング + スポーンマネージャー起動
+			case 5:
+				/** プレイヤー + キャラクターステアリング + スポーンマネージャー起動 */
 				{
 					characterSteering_ = std::make_unique<app::actor::CharacterSteering>();
 					{
@@ -513,8 +752,8 @@ namespace app
 				}
 				return false;
 
-			case 4:
-				// ステージギミック（stage.tkm はサイズが大きいため単独ステップ）
+			case 6:
+				/** ステージギミック */
 				{
 					testGimmickList_.resize(1);
 					testGimmickList_[0] = NewGO<app::actor::StaticGimmick>(static_cast<uint8_t>(ObjectPriority::Default), "testGimmick");
@@ -524,8 +763,45 @@ namespace app
 				}
 				return false;
 
-			case 5:
-				// カメラ + ポーズ + UI + BGM
+			case 7:
+				/** タイマーUI */
+				if (!isTutorialMode_)
+				{
+					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
+					timerUIObject_->SetTimer(remainTime_);
+				}
+				return false;
+
+			case 8:
+				/** ダメージポップ */
+				damagePopPool_ = new app::ui::DamagePopPool();
+				damagePopPool_->Initialize();
+				SetDamagePopListener(damagePopPool_);
+				return false;
+
+			case 9:
+				/** フェーズUI */
+				if (!isTutorialMode_)
+				{
+					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
+				}
+				return false;
+
+			case 10:
+				/** レベルアップUI */
+				if (!isTutorialMode_)
+				{
+					levelUpObject_ = NewGO<app::ui::LevelUpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
+				}
+				return false;
+
+			case 11:
+				/** プレイヤーHPUI */
+				playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
+				return false;
+
+			case 12:
+				/** カメラ + ポーズ + BGM + UI依存設定 */
 				{
 					auto parameter = app::core::ParameterManager::Get().GetParameter<app::core::MasterBattleCameraParameter>();
 					cameraSteering_ = std::make_unique<app::camera::CameraSteering>();
@@ -548,14 +824,6 @@ namespace app
 				{
 					pauseManagerObject_ = NewGO<app::core::PauseManagerObject>(static_cast<uint8_t>(ObjectPriority::Pause));
 				}
-				if (!isTutorialMode_)
-				{
-					timerUIObject_ = NewGO<app::ui::TimerUIObject>(static_cast<uint8_t>(ObjectPriority::Default));
-					timerUIObject_->SetTimer(remainTime_);
-				}
-				{
-					playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
-				}
 				if (playerHpUIObject_ && battleCharacter_)
 				{
 					playerHpUIObject_->SetPlayer(battleCharacter_);
@@ -567,18 +835,14 @@ namespace app
 				}
 				if (!isTutorialMode_)
 				{
-					levelUpObject_ = NewGO<app::ui::LevelUpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
 					if (playerHpUIObject_ && levelUpObject_)
 					{
 						playerHpUIObject_->SetLevelUpUIObject(levelUpObject_);
 					}
-					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
-					eventCharacterSpawnManagerObject_->GetManager().SetPhaseUI(phaseUI_);
-				}
-				{
-					damagePopPool_ = new app::ui::DamagePopPool();
-					damagePopPool_->Initialize();
-					SetDamagePopListener(damagePopPool_);
+					if (phaseUI_)
+					{
+						eventCharacterSpawnManagerObject_->GetManager().SetPhaseUI(phaseUI_);
+					}
 				}
 				return true;
 
@@ -590,7 +854,7 @@ namespace app
 
 		void BattleManager::Update()
 		{
-			// タイムアップフリーズ更新（ポーズ・シーケンス状態に関係なく常に実行）
+			/** タイムアップフリーズ更新（ポーズ・シーケンス状態に関係なく常に実行） */
 			if (timeUpFreezeFrames_ > 0)
 			{
 				--timeUpFreezeFrames_;
@@ -604,16 +868,18 @@ namespace app
 				}
 			}
 
-			// 剣痕デカールの寿命管理
+			/** 剣痕デカールの寿命管理 */
 			if (app::effect::SwordDecalManager::IsAvailable()) {
 				app::effect::SwordDecalManager::Get().Update();
 			}
 
 			UpdateTBDRSpawnLights();
 
-			// アニメーション初期化フレームを確保してからシーケンスを生成する
-			// （生成直後に SetPause するとアニメが走らず T ポーズになるため）
-			// チュートリアル：EffectManager の初期化完了後に敵を固定配置する
+            /**
+             * アニメーション初期化フレームを確保してからシーケンスを生成する
+             * （生成直後に SetPause するとアニメが走らず T ポーズになるため）
+             * チュートリアル用：EffectManager の初期化完了後に敵を固定配置
+             */
 			if (tutorialNeedsSpawn_ && EffectManager::IsAvailable() && IsOpeningSequenceDone())
 			{
 				tutorialNeedsSpawn_ = false;
@@ -626,7 +892,7 @@ namespace app
 					app::actor::EnemyType::MUSHROOM, tutorialMushroomSpawnPos_, tutorialEnemySpawnRot_);
 			}
 
-			// チュートリアル練習フェーズ前：全滅時にリスポーン
+			/** チュートリアル練習フェーズ前：全滅時にリスポーン */
 			if (tutorialRespawnEnabled_ && IsOpeningSequenceDone() && !tutorialNeedsSpawn_)
 			{
 				if (stoneEventCharacters_.empty())
@@ -637,7 +903,7 @@ namespace app
 						app::actor::EnemyType::MUSHROOM, tutorialMushroomSpawnPos_, tutorialEnemySpawnRot_);
 			}
 
-			// カウントダウン＆スタート演出（チュートリアルでは不要）
+			/** カウントダウン（スタート演出）、チュートリアルでは不要 */
 			if (!isTutorialMode_ && !battleSequenceObject_)
 			{
 				battleSequenceStartTimer_ -= g_gameTime->GetFrameDeltaTime();
@@ -649,9 +915,9 @@ namespace app
 
 			/** 現在のメニューポーズ状態 */
 			bool currentPause = app::core::PauseManager::Get().IsPause();
-			// シーケンスが終了していない間はポーズ・入力をすべて封印
+			/** シーケンスが終わっていない間はポーズ・入力をすべて封印 */
 			bool isSequence = battleSequenceObject_ && !battleSequenceObject_->IsFinished();
-			// キャラクターたちに適用するポーズ状態（手動ポーズ中、シーケンス中、またはチュートリアルフリーズ中ならポーズさせる）
+			/** キャラクターたちに適用するポーズ状態（手動ポーズ中、シーケンス中、またはチュートリアルフリーズ中ならポーズ） */
 			bool targetPauseState = currentPause || isSequence || tutorialFreeze_;
 
 			if (isPause_ != targetPauseState)
@@ -659,7 +925,7 @@ namespace app
 				SetPause(targetPauseState);
 			}
 
-			// シーケンス中は手動ポーズ（メニュー表示）を禁止する
+			/** シーケンス中は手動ポーズ（メニュー表示）を禁止 */
 			app::core::PauseManager::Get().SetCanPause(!isSequence);
 
 			if (currentPause || tutorialFreeze_ || gameOverFreeze_)
@@ -691,7 +957,7 @@ namespace app
 				}
 			}
 
-			// プレイヤースポーン時のスポットライト（シーケンス終了時に発火）
+			/** プレイヤースポーン時のスポットライト（シーケンス終了後に発火） */
 			if (pendingPlayerSpawnLightTimer_ >= 0.0f)
 			{
 				pendingPlayerSpawnLightTimer_ -= g_gameTime->GetFrameDeltaTime();
@@ -710,7 +976,7 @@ namespace app
 			}
 
 #if defined(APP_DEBUG)
-			// デバッグ機能：LB1+Downでプレイヤーに1ダメージ
+			/** デバッグ機能：LB1+Downでプレイヤーに1ダメージ */
 			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonDown))
 			{
 				float newHp = max(battleCharacter_->GetStatus()->GetCurrentHp() - 1.0f, 0.0f);
@@ -725,7 +991,7 @@ namespace app
 				}
 			}
 
-			// デバッグ機能：LB1+UpでタイムアップUIをトグル表示
+			/** デバッグ機能：LB1+UpでタイムアップUIをトグル表示 */
 			if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonUp))
 			{
 				if (battleSequenceObject_ && battleSequenceObject_->IsFinished())
@@ -734,18 +1000,19 @@ namespace app
 				}
 			}
 
-			// デバッグ機能：LB1+RightでタイマーをX秒増加、LB1+Leftで減少
+			/** デバッグ機能：LB1+Rightでタイマーをx秒増加、LB1+Leftで減少 */
 			if (timerUIObject_)
 			{
-				constexpr float kDebugTimerStep = 5.0f;
+				constexpr static float DEBUG_TIMER_STOP = 5.0f;
 				if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonRight))
 				{
-					timerUIObject_->AddTimer(+kDebugTimerStep);
-					lastCountShown_ = -1;  // カウントダウン表示をリセット
+					timerUIObject_->AddTimer(+DEBUG_TIMER_STOP);
+                    /** カウントダウン表示をリセット */
+					lastCountShown_ = -1;
 				}
 				if (g_pad[0]->IsPress(enButtonLB1) && g_pad[0]->IsTrigger(enButtonLeft))
 				{
-					timerUIObject_->AddTimer(-kDebugTimerStep);
+					timerUIObject_->AddTimer(-DEBUG_TIMER_STOP);
 				}
 			}
 #endif // APP_DEBUG
@@ -757,61 +1024,13 @@ namespace app
 				else if (battleCharacter_)
 					battleCharacter_->GetStateMachine()->ClearInput();
 
-				// 衝突判定更新
+				/** 衝突判定更新 */
 				if (app::collision::GhostBodyManager::IsAvailable()) {
 					app::collision::GhostBodyManager::Get().Update();
 				}
-				// 衝突ヒット管理更新
+				/** 衝突ヒット管理更新 */
 				app::collision::CollisionHitManager::Get().Update();
-
-				//// デバッグテスト: 追従の処理
-				Vector3 playerPosition = battleCharacter_->transform.position;
-				////Vector3 slimePosition = eventCharacter_->transform.position;
-				Vector3 stonePosition = playerPosition;
-				Vector3 mushroomPosition = playerPosition;
-				////XとZのベクトルを長さに変換
-				////Vector3 diffXZ_Slime(playerPosition.x - slimePosition.x, 0.0f, playerPosition.z - slimePosition.z);
-				////float diff = diffXZ_Slime.Length();
-				Vector3 diffXZ_Stone = Vector3::Zero;
-				float diffStone = 999999.0f;
-				diffXZ_Stone = Vector3(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
-				diffStone = diffXZ_Stone.Length();
-				//
-				Vector3 diffXZ_Mushroom = Vector3::Zero;
-				float diffMushroom = 999999.0f;
-				diffXZ_Mushroom = Vector3(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
-				diffMushroom = diffXZ_Mushroom.Length();
-				//
-				//
-				//if (diff < 200.0f) {
-				//	//向きだけのベクトル
-				//	Vector3 DirectionToPlayer = diffXZ_Slime;
-				//	DirectionToPlayer.Normalize();
-				//
-				//	Vector3 slimeForward = Vector3(0.0f, 0.0f, 1.0f);
-				//	eventCharacter_->transform.localRotation.Apply(slimeForward);
-				//
-				//	//スライムの前方向
-				//	Vector3 forwardXZ(slimeForward.x, 0.0f, slimeForward.z);
-				//	forwardXZ.Normalize();
-				//
-				//	//向きだけのベクトルとスライムの前方向で内積
-				//	float dot = forwardXZ.Dot(DirectionToPlayer);
-				//
-				//	//角度のしきい値と計算
-				//	float halfFovDegree = 60.0f;
-				//
-				//	float halfFovRadians = halfFovDegree * (Math::PI / 180);
-				//
-				//	//判定用のしきい値となるコサイン値
-				//	float threshold = std::cos(halfFovRadians);
-				//
-				//	if (dot > threshold)
-				//	{
-				//		// 視野角内に入った
-				//		eventCharacter_->GetStateMachine()->OnChase(DirectionToPlayer, playerPosition);
-				//	}
-				//}
+				
 
 				if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
 				{
@@ -819,6 +1038,7 @@ namespace app
 				for (auto* stone : stoneEventCharacters_)
 				{
 					if (!stone) { continue; }
+                    Vector3 playerPosition = battleCharacter_->transform.position;
 					Vector3 stonePosition = stone->transform.position;
 					Vector3 diffXZ_Stone(playerPosition.x - stonePosition.x, 0.0f, playerPosition.z - stonePosition.z);
 					float diffStone = diffXZ_Stone.Length();
@@ -831,17 +1051,17 @@ namespace app
 						Vector3 stoneForward = Vector3(0.0f, 0.0f, 1.0f);
 						stone->transform.localRotation.Apply(stoneForward);
 
-						//ストーンの前方向
+						/** ストーン敵の前方向 */
 						Vector3 forwardXZ(stoneForward.x, 0.0f, stoneForward.z);
 						forwardXZ.Normalize();
 
-						//向きだけのベクトルとストーンの前方向で内積
+						/** 向きだけのベクトルとストーン敵の前方向で内積 */
 						float dot = forwardXZ.Dot(DirectionToPlayer);
 
-						//角度のしきい値と計算
+						/** 角度のしきい値と計算 */
 						float halfFovDegree = 60.0f;
 						float halfFovRadians = halfFovDegree * (Math::PI / 180);
-						//判定用のしきい値となるコサイン値
+						/** 判定用のしきい値となるコサイン値 */
 						float threshold = std::cos(halfFovRadians);
 
 						if (dot > threshold || tutorialEnemyMoveEnabled_)
@@ -855,7 +1075,7 @@ namespace app
 				for (auto* mushroom : mushroomEventCharacters_)
 				{
 					if (!mushroom) { continue; }
-
+                    Vector3 playerPosition = battleCharacter_->transform.position;
 					Vector3 mushroomPosition = mushroom->transform.position;
 					Vector3 diffXZ_Mushroom(playerPosition.x - mushroomPosition.x, 0.0f, playerPosition.z - mushroomPosition.z);
 					float diffMushroom = diffXZ_Mushroom.Length();
@@ -868,18 +1088,18 @@ namespace app
 						Vector3 mushroomForward = Vector3(0.0f, 0.0f, 1.0f);
 						mushroom->transform.localRotation.Apply(mushroomForward);
 
-						//マッシュルームの前方向
+						// マッシュルームの前方向
 						Vector3 forwardXZ(mushroomForward.x, 0.0f, mushroomForward.z);
 						forwardXZ.Normalize();
 
-						//向きだけのベクトルとマッシュルームの前方向で内積
+						// 向きだけのベクトルとマッシュルームの前方向で内積
 						float dot = forwardXZ.Dot(DirectionToPlayer);
 
-						//角度のしきい値と計算
+						// 角度のしきい値と計算
 						float halfFovDegree = 60.0f;
 						float halfFovRadians = halfFovDegree * (Math::PI / 180);
 
-						//判定用のしきい値となるコサイン値
+						// 判定用のしきい値となるコサイン値
 						float threshold = std::cos(halfFovRadians);
 
 						if (dot > threshold || tutorialEnemyMoveEnabled_)
@@ -888,9 +1108,9 @@ namespace app
 						}
 					}
 				}
-				} // if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
+				}
 
-				// 無敵時間の更新
+				/** 無敵時間の更新 */
 				if (isInvincible_)
 				{
 					invincibleTimer_ -= g_gameTime->GetFrameDeltaTime();
@@ -907,29 +1127,29 @@ namespace app
 					guardSuccessCooldown_ -= g_gameTime->GetFrameDeltaTime();
 				}
 
-				//プレイヤーの攻撃アクション
+				/** プレイヤーの攻撃アクション */
 				{
 					if (battleCharacter_->GetStateMachine()->IsSlashEffect()
 						&& !isWaitEffectPlay_)
 					{
-						// プレイヤーのモデルが向いている方向を前方ベクトルとして取得
+						/** プレイヤーのモデルが向いている方向を前方ベクトルとして取得 */
 						Vector3 forward = Vector3(0.0f, 0.0f, 1.0f);
 						battleCharacter_->transform.localRotation.Apply(forward);
 						forward.y = 0.0f;
 						forward.Normalize();
 
-						// 攻撃開始時の向きを固定
+						/** 攻撃開始時の向きを固定 */
 						reservedEffectDir_ = forward;
 
-						// 回転を固定
+						/** 回転を固定 */
 						if (reservedEffectDir_.LengthSq() > 0.0001f)
 						{
 							float yaw = atan2f(reservedEffectDir_.x, reservedEffectDir_.z) + Math::PI / 2.0f;
 							reservedEffectRot_.SetRotationY(yaw);
 
-							// 斬撃モーションに合わせた傾きを追加（角度は要調整）
+							/** 斬撃アニメーションに合わせた傾きを追加 */ 
 							Quaternion tilt;
-							tilt.SetRotationX(Math::DegToRad(-45.0f));  // 45度は要調整
+							tilt.SetRotationX(Math::DegToRad(-45.0f));
 							reservedEffectRot_ = reservedEffectRot_ * tilt;
 						}
 						else
@@ -953,10 +1173,10 @@ namespace app
 						battleCharacter_->GetStateMachine()->SetSlashEffect(false);
 					}
 
-					// エフェクト再生待ち状態ならタイマーを更新
+					/** エフェクトの生成待ち状態ならタイマーを更新 */
 					if (isWaitEffectPlay_)
 					{
-						// 座標はプレイヤーに追従、向きは reservedEffectDir_（固定）でオフセット
+						/** 座標はプレイヤーに追従、向きは reservedEffectDir_（固定）でオフセット */
 						reservedEffectPos_ = battleCharacter_->transform.position
 							+ (reservedEffectDir_ * 30.0f);
 						reservedEffectPos_.y += 30.0f;
@@ -976,7 +1196,7 @@ namespace app
 						}
 					}
 
-					// チャージエフェクトの再生判定
+					/** チャージエフェクトの再生判定 */
 					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeEffectRequest())
 					{
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection());
@@ -990,16 +1210,16 @@ namespace app
 						);
 					}
 
-					// チャージエフェクトの再生判定
+					/** チャージ攻撃エフェクトの再生判定 */
 					if (battleCharacter_->GetStateMachine()->CheckAndConsumeChargeAttackEffectRequest())
 					{
-						// 通常攻撃と同じようにキャラクターの向きを取得
+						/** 通常攻撃と同じようにキャラクターの向きを取得 */
 						Vector3 forward = Vector3(0.0f, 0.0f, 1.0f);
 						battleCharacter_->transform.localRotation.Apply(forward);
 						forward.y = 0.0f;
 						forward.Normalize();
 
-						// 向きに合わせて回転を設定
+						/** 向きに合わせて回転を設定 */
 						Quaternion effectRot = Quaternion::Identity;
 						if (forward.LengthSq() > 0.0001f)
 						{
@@ -1024,7 +1244,7 @@ namespace app
 						}
 
 						{
-							// mixamorig:Spine1 ボーン座標を取得
+							/**  mixamorig:Spine1 ボーン座標を取得 */
 							Vector3 effectPos = battleCharacter_->transform.position;
 							effectPos.y += 30.0f;
 
@@ -1050,7 +1270,7 @@ namespace app
 						}
 					}
 
-					// ノックバックエフェクトの再生判定
+					/** ノックバックエフェクトの再生判定 */
 					if (battleCharacter_->GetStateMachine()->CheckAndConsumeKnockBack())
 					{
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
@@ -1064,7 +1284,7 @@ namespace app
 						);
 					}
 
-					// 防御エフェクトの再生判定
+					/** 防御エフェクトの再生判定 */
 					if (battleCharacter_->GetStateMachine()->OnGuaed())
 					{
 						Vector3 effectPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
@@ -1081,13 +1301,13 @@ namespace app
 						bool hit = stone->GetStateMachine()->CheckAndConsumeAttackGhostCreated();
 						if (hit)
 						{
-							/** 無敵中はダメージを受けない */
+							/** 無敵中はダメージを受けない*/
 							if (isInvincible_)
 							{
 								continue;
 							}
 
-							/** ガード中はダメージを受けない */
+							/** ガード中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
 								if (guardSuccessCooldown_ <= 0.0f)
@@ -1098,7 +1318,7 @@ namespace app
 								continue;
 							}
 
-							/** 回避中はダメージを受けない */
+							/** 回避中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsAvoiding())
 							{
 								continue;
@@ -1146,7 +1366,7 @@ namespace app
 								continue;
 							}
 
-							/** ガード中はダメージを受けない */
+							/** ガード中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
 								if (guardSuccessCooldown_ <= 0.0f)
@@ -1157,7 +1377,7 @@ namespace app
 								continue;
 							}
 
-							/** 回避中はダメージを受けない */
+							/** 回避中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsAvoiding())
 							{
 								continue;
@@ -1189,18 +1409,18 @@ namespace app
 							}
 						}
 					}
-				} // if (!isTutorialMode_ || tutorialEnemyMoveEnabled_)
+				}
 
-				// 衝突後の処理
+				/** 衝突後の処理 */
 				{
 					for (auto& notify : notifyList_) {
 						if (notify->ID() == DamageNotify::StaticID())
 						{
 							auto* dmg = static_cast<DamageNotify*>(notify.get());
-							// defender がプレイヤー自身の場合はスキップ
+							/** defender がプレイヤー自身の場合はスキップ */
 							if (dmg->defender == battleCharacter_) continue;
 
-							/** ダメージ計算・適用 */
+							/** ダメージ計算と適用 */
 							bool isCriticalHit = false;
 							int damage = CalcDamage(dmg->attacker, dmg->defender, dmg->chargeLevel, &isCriticalHit);
 							const float oldHp = dmg->defender->GetStatus()->GetCurrentHp();
@@ -1212,7 +1432,7 @@ namespace app
 								dmg->defender->TakeDamage(damage);
 							}
 
-							/** 溜め攻撃ヒット時：プレイヤー側もヒットストップ（段階0含む） */
+							/** 溜め攻撃でチェック時：プレイヤー側もヒットストップ（段階を含む） */
 							if (dmg->isBlowBack)
 							{
 								float hitStopDuration = 0.0f;
@@ -1225,16 +1445,16 @@ namespace app
 								battleCharacter_->GetStateMachine()->StartHitStop(hitStopDuration);
 							}
 
-							/** カメラシェイク＆FOV */
+							/** カメラシェイクとFOV */
 							if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
 							{
 								if (dmg->chargeLevel > 0)
 								{
-									/** 溜め攻撃：Lv1=Small / Lv2=Medium / Lv3=Large */
+								/** 溜め攻撃でLv1=Small / Lv2=Medium / Lv3=Large */
 									const auto size = static_cast<app::camera::ShakeSize>(min(dmg->chargeLevel - 1, 2));
 									gameCamera->StartShake(size);
 
-									/** 溜め攻撃がヒットすると、すべてのレベルにおいて視野角が55度に */
+								/** 溜め攻撃でヒットすると、すべてのレベルにおいて視野角が55度に */
 									const int fovIndex = min(dmg->chargeLevel - 1, CHARGE_HIT_FOV_MAX_INDEX);
 									const float targetFov = CHARGE_HIT_FOV_PRESETS[fovIndex].fov;
 									gameCamera->OnAttackHit(
@@ -1245,12 +1465,12 @@ namespace app
 								}
 								else if (dmg->comboIndex == 1)
 								{
-									/** 通常2コンボ目：上方向への打ち上げ（Small） */
+								/** 通常2コンボ目（上方向への打ち上げ）（Small） */
 									gameCamera->StartShakeUpward(app::camera::ShakeSize::Small);
 								}
 								else
 								{
-									/** 通常攻撃（1・3コンボ目） */
+								/** 通常攻撃1・3コンボ目 */
 									gameCamera->StartShake(app::camera::ShakeSize::Small);
 								}
 							}
@@ -1263,10 +1483,10 @@ namespace app
 
 							if (dmg->enemyType == DamageNotify::EnemyType::Stone)
 							{
-								// ノックバック
+                                /** ノックバック */
 								auto* enemy = static_cast<app::actor::StoneEventCharacter*>(dmg->defender);
 								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack, dmg->chargeLevel);
-								// 死亡判定
+                                /** 死亡判定 */
 								if (!tutorialNoDamage_ && dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
 									enemy->GetStateMachine()->OnDead();
@@ -1274,22 +1494,22 @@ namespace app
 							}
 							else if (dmg->enemyType == DamageNotify::EnemyType::Mushroom)
 							{
-								// ノックバック
+								/** ノックバック */
 								auto* enemy = static_cast<app::actor::MushroomEventCharacter*>(dmg->defender);
 								enemy->GetStateMachine()->OnKnockBack(dmg->knockBackDirection, dmg->isBlowBack, dmg->chargeLevel);
-								// 死亡判定
+								/** 死亡判定 */
 								if (!tutorialNoDamage_ && dmg->defender->GetStatus()->GetCurrentHp() <= 0)
 								{
 									enemy->GetStateMachine()->OnDead();
 								}
 							}
 						}
-						// 敵→プレイヤーへのダメージ
+						/** 敵→プレイヤーへのダメージ */
 						else if (notify->ID() == PlayerDamageNotify::StaticID())
 						{
 							auto* dmg = static_cast<PlayerDamageNotify*>(notify.get());
 
-							/** ガード中はダメージを受けない */
+							/** ガード中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
 								if (guardSuccessCooldown_ <= 0.0f)
@@ -1300,7 +1520,7 @@ namespace app
 								continue;
 							}
 
-							/** 回避中はダメージを受けない */
+							/** 回避中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsAvoiding())
 							{
 								continue;
@@ -1325,8 +1545,10 @@ namespace app
 
 				if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
 				{
-					// 溜め中（ボタン押下中）のみFOVを狭める。
-					// GetChargeLevel() > 0 は振り下ろし中（End フェーズ）なので呼ばない
+                    /**
+                     * 溜め中のボタン押下中のみ、FOVを狭める
+                     * GetChargeLevel() > 0 は振り下ろし中（End フェーズ）なので呼ばない
+                     */
 					auto* playerSM = battleCharacter_->GetStateMachine();
 					if (playerSM->IsChargeAttacking() && playerSM->GetChargeLevel() == 0)
 						gameCamera->OnCharging(playerSM->GetCurrentChargingLevel());
@@ -1339,10 +1561,10 @@ namespace app
 				/** 制限時間の管理 */
 				{
 					if (!timerUIObject_) return;
-					// 残り時間が必要な取得
+					/** 最新の残り時間を取得 */
 					remainTime_ = timerUIObject_->GetTimer();
 
-					// 残り5〜1秒のカウントダウン表示
+					/** 残り5秒のカウントダウン表示 */
 					if (!timeUpTriggered_ && battleSequenceObject_)
 					{
 						float remaining = timerUIObject_->GetTimer();
@@ -1360,20 +1582,20 @@ namespace app
 					if (timerUIObject_->IsTimeUp() && battleSequenceObject_ && !timeUpTriggered_)
 					{
 						timeUpTriggered_ = true;
-						timeUpFreezeFrames_ = kTimeUpFreezeFrameCount;
+						timeUpFreezeFrames_ = TIME_UP_FREEZE_FRAME_COUNT;
 						g_gameTime->EnableFixedFrameDeltaTime(0.0001f);
 					}
 				}
 
 				/** レベル */
 				{
-					// ゲージ折り返しを検知したらキャラのLv.を上げる
+					/** ゲージ折り返しを検知したらキャラのLv.を上げる */
 					if (playerHpUIObject_ && playerHpUIObject_->IsLevelUp())
 					{
 						if (battleCharacter_) {
 							battleCharacter_->LevelUp();
 							if (isTutorialMode_) NotifyTutorialLevelUp();
-							// レベルアップエフェクト再生
+							/** レベルアップエフェクトの再生 */
 							if (effectManagerObject_)
 							{
 								effectManagerObject_->PlayEffectFollow(
@@ -1385,7 +1607,8 @@ namespace app
 							}
 
 						}
-						playerHpUIObject_->ClearLevelUp();  // フラグをリセット
+                    /** フラグリセット */
+					playerHpUIObject_->ClearLevelUp();
 					}
 				}
 
@@ -1448,7 +1671,7 @@ namespace app
 				else                       atk *= param->chargeAttackMultiplier;
 			}
 
-			// クリティカル判定
+			/** クリティカル判定 */
 			bool isCritical = false;
 			if (param)
 			{
@@ -1484,13 +1707,15 @@ namespace app
 			const float dt = g_gameTime->GetFrameDeltaTime();
 			int idx = 0;
 
-			// ---- 松明ライト（壁沿いに 8本）----
-			// TBDR が無効のときはスキップ（スポーンライトは常に動く）
+			/**
+             * 松明ライト（壁沿い 8本)
+             * TBDR が無効のときはスキップ（スポーンライトは常に動く）
+             */
 			if (torchLightsEnabled_ && g_renderingEngine->IsTBDREnabled() && battleCharacter_ != nullptr)
 			{
-				const float HEIGHT = battleCharacter_->transform.position.y + 80.f;
+				const float HEIGHT = battleCharacter_->transform.position.y + 80.0f;
 				constexpr float RADIUS = 650.f;
-				constexpr float RANGE  = 200.f; // √(80²+250²)≈263 より小 → 中心に届かない
+				constexpr float RANGE  = 200.f;
 				for (int i = 0; i < 16; i++)
 				{
 					if (idx >= MAX_TBDR_POINT_LIGHT) break;
@@ -1502,7 +1727,7 @@ namespace app
 				}
 			}
 
-			// スポーンライト（動的・フェードアウト）
+			/** スポーンライト（動的なフェードアウト） */
 			for (auto it = tbdrSpawnLights_.begin(); it != tbdrSpawnLights_.end(); )
 			{
 				it->timer -= dt;
@@ -1537,10 +1762,6 @@ namespace app
 
 		void BattleManager::Render(RenderContext& rc)
 		{
-			if (layout_)
-			{
-				layout_->Render(rc);
-			}
 			if (app::effect::SwordDecalManager::IsAvailable())
 			{
 				app::effect::SwordDecalManager::Get().Render(rc);
@@ -1593,7 +1814,7 @@ namespace app
 			gameOverFreeze_ = v;
 			playerInputEnabled_ = !v;
 
-			// 敵をポーズ（プレイヤーのDeadアニメは止めない）
+			/** 敵をポーズ（プレイヤーのDeadアニメは止めない） */
 			for (auto* stone : stoneEventCharacters_)
 				if (stone) stone->SetPause(v);
 			for (auto* mushroom : mushroomEventCharacters_)
@@ -1601,7 +1822,7 @@ namespace app
 			if (eventCharacterSpawnManagerObject_)
 				eventCharacterSpawnManagerObject_->SetPause(v);
 
-			// タイマーを止める
+			/** タイマーを止める */
 			if (timerUIObject_)
 			{
 				if (v) timerUIObject_->StopTimer();
@@ -1621,12 +1842,12 @@ namespace app
 
 		void BattleManager::LoadParameter()
 		{
-			// バトル共通パラメーター読み込み
+			/** バトル共通パラメーター読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleParameter>(MASTER_BATTLE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleParameter& p)
 				{
 					p.battleTime = json["battleTime"].get<float>();
 				});
-			// ステージ共通パラメーター読み込み
+			/** ステージ共通パラメーター読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStageParameter>(MASTER_STAGE_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStageParameter& p)
 				{
 					p.gravity = json["gravity"].get<float>();
@@ -1647,7 +1868,7 @@ namespace app
 					p.rotationX = json["rotationX"].get<float>();
 					p.rotationY = json["rotationY"].get<float>();
 				});
-			// バトルキャラクターパラメーター読み込み
+			/** バトルキャラクターパラメーター読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterBattleCharacterParameter>(MASTER_BATTLE_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterBattleCharacterParameter& p)
 				{
 					p.moveSpeed = json["moveSpeed"].get<float>();
@@ -1671,12 +1892,12 @@ namespace app
 					p.spawnLightRange    = json["spawnLightRange"].get<float>();
 					p.spawnLightDuration = json["spawnLightDuration"].get<float>();
 				});
-			// 武器パラメーター読み込み
+			/** 武器パラメーター読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterWeaponParameter>(MASTER_WEAPON_PARAM_PATH,[](const nlohmann::json& json, app::core::MasterWeaponParameter& p)
 				{
 					p.attackPower = json["attackPower"].get<float>();
 				});
-			// イベントキャラクターパラメーター読み込み
+			/** イベントキャラクターパラメーター読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterEventCharacterParameter>(MASTER_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterEventCharacterParameter& p)
 				{
 					p.moveSpeed = json["moveSpeed"].get<float>();
@@ -1685,7 +1906,7 @@ namespace app
 					p.radius = json["radius"].get<float>();
 					p.height = json["height"].get<float>();
 				});
-			// ストーンイベントキャラクターパラメータ読み込み
+			/** ストーンイベントキャラクターパラメータ読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterStoneEventCharacterParameter>(MASTER_STONE_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterStoneEventCharacterParameter& p)
 				{
 					p.moveSpeed = json["moveSpeed"].get<float>();
@@ -1709,7 +1930,7 @@ namespace app
 						p.phases.push_back(pp);
 					}
 				});
-			// マッシュルイベントキャラクターパラメータ読み込み
+			/** マッシュルイベントキャラクターパラメータ読み込み */
 			app::core::ParameterManager::Get().LoadParameter<app::core::MasterMushroomEventCharacterParameter>(MASTER_MUSHROOM_EVENT_CHARACTER_PARAM_PATH, [](const nlohmann::json& json, app::core::MasterMushroomEventCharacterParameter& p)
 				{
 					p.moveSpeed = json["moveSpeed"].get<float>();

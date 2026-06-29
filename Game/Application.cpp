@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Application.cpp
  * アプリケーション制御用クラス群
  * 更新処理やレンダー処理の管理
@@ -53,6 +53,16 @@ namespace app
 		// k2EngineLowの初期化。
 		k2EngineLow_ = new K2EngineLow();
 		k2EngineLow_->Init(hwnd, FRAME_BUFFER_W, FRAME_BUFFER_H);
+
+		// 非同期リソースマネージャーのセットアップ（k2EngineLow 初期化後）
+		{
+			auto& rm = app::resource::ResourceManager::GetInstance();
+			rm.Register<app::resource::TkmResource>(std::make_shared<app::resource::TkmLoader>());
+			rm.Register<app::resource::TkaResource>(std::make_shared<app::resource::TkaLoader>());
+			rm.Register<app::resource::TksResource>(std::make_shared<app::resource::TksLoader>());
+			rm.Register<app::resource::DdsWarmResource>(std::make_shared<app::resource::DdsWarmLoader>());
+			rm.Start();
+		}
 		g_camera3D->SetPosition(Vector3(0.0f, 100.0f, -200.0f));
 		g_camera3D->SetTarget(Vector3(0.0f, 50.0f, 0.0f));
 		g_camera3D->SetNear(0.1f);
@@ -97,11 +107,14 @@ namespace app
 
 	void Application::Update()
 	{
+		// GameObjectManagerより先に実行し、Init()呼び出し前にバンクを埋めておく。
+		app::resource::ResourceManager::GetInstance().FinalizeCompleted();
+
 		for (auto* pad : g_pad) {
 			pad->Update();
 		}
 		g_soundEngine->Update();
-		
+
 		GameObjectManager::GetInstance()->ExecuteUpdate();
 		
 
@@ -174,6 +187,9 @@ namespace app
 
 	void Application::Finalize()
 	{
+		// ワーカースレッドを先に止める（g_engine が破棄される前に）
+		app::resource::ResourceManager::GetInstance().Shutdown();
+
 		PhysicsWorld::Finalize();
 
 		delete k2EngineLow_;

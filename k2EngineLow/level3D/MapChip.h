@@ -1,5 +1,5 @@
-/// <summary>
-/// ƒ}ƒbƒvƒ`ƒbƒvB
+ï»¿/// <summary>
+/// ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã€‚
 /// </summary>
 #pragma once
 
@@ -7,7 +7,7 @@ namespace nsK2EngineLow {
 	struct LevelObjectData;
 
 	/// <summary>
-	/// ƒ}ƒbƒvƒ`ƒbƒvB
+	/// ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã€‚
 	/// </summary>
 	class MapChip : public Noncopyable
 	{
@@ -17,12 +17,12 @@ namespace nsK2EngineLow {
 		{
 		}
 		/// <summary>
-		/// ƒ‚ƒfƒ‹‚ğ•`‰æB
+		/// ãƒ¢ãƒ‡ãƒ«ã‚’æç”»ã€‚
 		/// </summary>
-		/// <param name="rc">ƒŒƒ“ƒ_[ƒRƒ“ƒeƒLƒXƒgB</param>
+		/// <param name="rc">ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã€‚</param>
 		void Draw(RenderContext& rc);
 		/// <summary>
-		/// ƒ‚ƒfƒ‹‚ğæ“¾B
+		/// ãƒ¢ãƒ‡ãƒ«ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		Model& GetSkinModel()
@@ -30,7 +30,7 @@ namespace nsK2EngineLow {
 			return m_model;
 		}
 	private:
-		Model				m_model;						//ƒ‚ƒfƒ‹ƒŒƒ“ƒ_[B
-		PhysicsStaticObject m_physicsStaticObject;			//Ã“I•¨—ƒIƒuƒWƒFƒNƒgB
+		Model				m_model;						//ãƒ¢ãƒ‡ãƒ«ãƒ¬ãƒ³ãƒ€ãƒ¼ã€‚
+		PhysicsStaticObject m_physicsStaticObject;			//é™çš„ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
 	};
 }

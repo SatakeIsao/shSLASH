@@ -1,26 +1,26 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	enum EnSkyCubeType
 	{
-		enSkyCubeType_Day,				// ’‹ŠÔ
-		enSkyCubeType_Night,			// –éŠÔ
-		enSkyCubeType_Snow,				// áR
-		enSkyCubeType_Snow_2,			// áR_2
-		enSkyCubeType_Wild,				// r–ì
-		enSkyCubeType_Wild_2,			// r–ì‚Q
-		enSkyCubeType_Wild_Night,		// r–ì(–éŠÔ)
-		enSkyCubeType_Grass,			// Å¶
-		enSkyCubeType_Euro,				// ‰¢B
-		enSkyCubeType_DayToon,			// ’‹ŠÔ(ƒgƒD[ƒ“’²)
-		enSkyCubeType_DayToon_2,		// ’‹ŠÔ(ƒgƒD[ƒ“’²)‚Q
-		enSkyCubeType_DayToon_3,		// ’‹ŠÔ(ƒgƒD[ƒ“’²)‚R
-		enSkyCubeType_DayToon_4,		// ’‹ŠÔ(ƒgƒD[ƒ“’²)‚S
-		enSkyCubeType_NightToon,		// –éŠÔ(ƒgƒD[ƒ“’²)
-		enSkyCubeType_NightToon_2,		// –éŠÔ(ƒgƒD[ƒ“’²)‚Q
-		enSkyCubeType_SunriseToon,		// –¾‚¯•û(ƒgƒD[ƒ“’²)
-		//enSkyCubeType_SpaceToon,		// ‘å‹CŒ—(ƒgƒD[ƒ“’²)
-		enSkyCubeType_SpaceToon_2,		// ‘å‹CŒ—(ƒgƒD[ƒ“’²)‚Q
+		enSkyCubeType_Day,				// æ˜¼é–“
+		enSkyCubeType_Night,			// å¤œé–“
+		enSkyCubeType_Snow,				// é›ªå±±
+		enSkyCubeType_Snow_2,			// é›ªå±±_2
+		enSkyCubeType_Wild,				// è’é‡
+		enSkyCubeType_Wild_2,			// è’é‡ï¼’
+		enSkyCubeType_Wild_Night,		// è’é‡(å¤œé–“)
+		enSkyCubeType_Grass,			// èŠç”Ÿ
+		enSkyCubeType_Euro,				// æ¬§å·
+		enSkyCubeType_DayToon,			// æ˜¼é–“(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)
+		enSkyCubeType_DayToon_2,		// æ˜¼é–“(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)ï¼’
+		enSkyCubeType_DayToon_3,		// æ˜¼é–“(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)ï¼“
+		enSkyCubeType_DayToon_4,		// æ˜¼é–“(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)ï¼”
+		enSkyCubeType_NightToon,		// å¤œé–“(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)
+		enSkyCubeType_NightToon_2,		// å¤œé–“(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)ï¼’
+		enSkyCubeType_SunriseToon,		// æ˜ã‘æ–¹(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)
+		//enSkyCubeType_SpaceToon,		// å¤§æ°—åœ(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)
+		enSkyCubeType_SpaceToon_2,		// å¤§æ°—åœ(ãƒˆã‚¥ãƒ¼ãƒ³èª¿)ï¼’
 		enSkyCubeType_Num,
 
 	};
@@ -52,7 +52,7 @@ namespace nsK2EngineLow {
 			m_isDirty = true;
 		}
 		/// <summary>
-		/// ƒXƒJƒCƒLƒ…[ƒu‚Ìƒ^ƒCƒv‚ğİ’è
+		/// ã‚¹ã‚«ã‚¤ã‚­ãƒ¥ãƒ¼ãƒ–ã®ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 		/// </summary>
 		/// <param name="type"></param>
 		void SetType(EnSkyCubeType type)

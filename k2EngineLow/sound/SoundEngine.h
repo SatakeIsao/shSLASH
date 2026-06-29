@@ -1,52 +1,52 @@
-/// <summary>
-/// ƒTƒEƒ“ƒhƒGƒ“ƒWƒ“B
+ï»¿/// <summary>
+/// ã‚µã‚¦ãƒ³ãƒ‰ã‚¨ãƒ³ã‚¸ãƒ³ã€‚
 /// </summary>
 #pragma once
 #include "WaveFileBank.h"
 
 namespace nsK2EngineLow {
 #define INPUTCHANNELS 2  // number of source channels
-#define OUTPUTCHANNELS 8	//Å‘åo—Íƒ`ƒƒƒ“ƒlƒ‹”B
+#define OUTPUTCHANNELS 8	//æœ€å¤§å‡ºåŠ›ãƒãƒ£ãƒ³ãƒãƒ«æ•°ã€‚
 
 	class WaveFile;
 	class SoundSource;
 	/// <summary>
-	/// ƒTƒEƒ“ƒhƒGƒ“ƒWƒ“B
+	/// ã‚µã‚¦ãƒ³ãƒ‰ã‚¨ãƒ³ã‚¸ãƒ³ã€‚
 	/// </summary>
 	class SoundEngine : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+		/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		SoundEngine();
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~SoundEngine();
 		/// <summary>
-		/// ‰Šú‰»B
+		/// åˆæœŸåŒ–ã€‚
 		/// </summary>
 		void Init();
 		/// <summary>
-		/// ŠJ•úB
+		/// é–‹æ”¾ã€‚
 		/// </summary>
 		void Release();
 		/// <summary>
-		/// XVB
+		/// æ›´æ–°ã€‚
 		/// </summary>
 		void Update();
 		/// <summary>
-		/// 3DƒTƒEƒ“ƒhƒ\[ƒX‚ğ’Ç‰ÁB
+		/// 3Dã‚µã‚¦ãƒ³ãƒ‰ã‚½ãƒ¼ã‚¹ã‚’è¿½åŠ ã€‚
 		/// </summary>
-		/// <param name="s">3DƒTƒEƒ“ƒhƒ\[ƒXB</param>
+		/// <param name="s">3Dã‚µã‚¦ãƒ³ãƒ‰ã‚½ãƒ¼ã‚¹ã€‚</param>
 		void Add3DSoundSource(SoundSource* s)
 		{
 			m_3dSoundSource.push_back(s);
 		}
 		/// <summary>
-		/// 3DƒTƒEƒ“ƒhƒ\[ƒX‚ğíœB
+		/// 3Dã‚µã‚¦ãƒ³ãƒ‰ã‚½ãƒ¼ã‚¹ã‚’å‰Šé™¤ã€‚
 		/// </summary>
-		/// <param name="s">3DƒTƒEƒ“ƒhƒ\[ƒXB</param>
+		/// <param name="s">3Dã‚µã‚¦ãƒ³ãƒ‰ã‚½ãƒ¼ã‚¹ã€‚</param>
 		void Remove3DSoundSource(SoundSource* s)
 		{
 			auto it = std::find(m_3dSoundSource.begin(), m_3dSoundSource.end(), s);
@@ -55,19 +55,19 @@ namespace nsK2EngineLow {
 			}
 		}
 		/// <summary>
-		/// ƒTƒEƒ“ƒhƒŠƒXƒi[‚ÌÀ•W‚ğİ’èB
-		/// 3D‰¹Œ¹‚ğg‚Á‚Ä‚¢‚é‚ÌŒvZ‚Ég—p‚³‚ê‚Ü‚·B
+		/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®åº§æ¨™ã‚’è¨­å®šã€‚
+		/// 3DéŸ³æºã‚’ä½¿ã£ã¦ã„ã‚‹æ™‚ã®è¨ˆç®—ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
 		/// </summary>
-		/// <param name="pos">ƒTƒEƒ“ƒhƒŠƒXƒi[‚ÌÀ•WB</param>
+		/// <param name="pos">ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®åº§æ¨™ã€‚</param>
 		void SetListenerPosition(const Vector3& pos)
 		{
 			m_listenerPosition = pos;
 		}
 		/// <summary>
-		/// ƒTƒEƒ“ƒhƒŠƒXƒi[‚Ì‘O•ûŒü‚ğİ’èB
-		/// 3D‰¹Œ¹‚ğg‚Á‚Ä‚¢‚é‚ÌŒvZ‚Ég—p‚³‚ê‚Ü‚·B
+		/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®å‰æ–¹å‘ã‚’è¨­å®šã€‚
+		/// 3DéŸ³æºã‚’ä½¿ã£ã¦ã„ã‚‹æ™‚ã®è¨ˆç®—ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
 		/// </summary>
-		/// <param name="front">ƒTƒEƒ“ƒhƒŠƒXƒi[‚Ì‘O•ûŒüB</param>
+		/// <param name="front">ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®å‰æ–¹å‘ã€‚</param>
 		void SetListenerFront(Vector3 front)
 		{
 			m_listener.OrientFront.x = front.x;
@@ -75,10 +75,10 @@ namespace nsK2EngineLow {
 			m_listener.OrientFront.z = front.z;
 		}
 		/// <summary>
-		/// ƒTƒEƒ“ƒhƒŠƒXƒi[‚Ìã•ûŒü‚ğİ’èB
-		/// 3D‰¹Œ¹‚ğg‚Á‚Ä‚¢‚é‚ÌŒvZ‚Ég—p‚³‚ê‚Ü‚·B
+		/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®ä¸Šæ–¹å‘ã‚’è¨­å®šã€‚
+		/// 3DéŸ³æºã‚’ä½¿ã£ã¦ã„ã‚‹æ™‚ã®è¨ˆç®—ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
 		/// </summary>
-		/// <param name="up">ƒTƒEƒ“ƒhƒŠƒXƒi[‚Ìã•ûŒüB</param>
+		/// <param name="up">ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã®ä¸Šæ–¹å‘ã€‚</param>
 		void SetListenerUp(Vector3 up)
 		{
 			m_listener.OrientTop.x = up.x;
@@ -86,11 +86,11 @@ namespace nsK2EngineLow {
 			m_listener.OrientTop.z = up.z;
 		}
 		/// <summary>
-		/// XAudio2‚Ìƒ\[ƒXƒ{ƒCƒX‚ğ’Ç‰ÁB
+		/// XAudio2ã®ã‚½ãƒ¼ã‚¹ãƒœã‚¤ã‚¹ã‚’è¿½åŠ ã€‚
 		/// </summary>
-		/// <param name="waveFile">”gŒ`ƒf[ƒ^B</param>
-		/// <param name="is3DSound">true‚È‚ç3DƒTƒEƒ“ƒhB</param>
-		/// <returns>XAudio2‚Ìƒ\[ƒXƒ{ƒCƒXB</returns>
+		/// <param name="waveFile">æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã€‚</param>
+		/// <param name="is3DSound">trueãªã‚‰3Dã‚µã‚¦ãƒ³ãƒ‰ã€‚</param>
+		/// <returns>XAudio2ã®ã‚½ãƒ¼ã‚¹ãƒœã‚¤ã‚¹ã€‚</returns>
 		IXAudio2SourceVoice* CreateXAudio2SourceVoice(WaveFile* waveFile, bool is3DSound);
 		IXAudio2MasteringVoice* GetMasteringVoice()
 		{
@@ -101,7 +101,7 @@ namespace nsK2EngineLow {
 			return m_submixVoice;
 		}
 		/// <summary>
-		/// o—Íƒ`ƒƒƒ“ƒlƒ‹‚Ì”‚ğæ“¾B
+		/// å‡ºåŠ›ãƒãƒ£ãƒ³ãƒãƒ«ã®æ•°ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		int GetNumChannel() const
@@ -109,7 +109,7 @@ namespace nsK2EngineLow {
 			return m_nChannels;
 		}
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^ƒoƒ“ƒN‚ğæ“¾B
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ãƒãƒ³ã‚¯ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		WaveFileBank& GetWaveFileBank()
@@ -117,7 +117,7 @@ namespace nsK2EngineLow {
 			return m_waveFileBank;
 		}
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ğ“o˜^‚·‚éB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²ã™ã‚‹ã€‚
 		/// </summary>
 		void ResistWaveFileBank(int number, const char* filePath)
 		{
@@ -126,22 +126,22 @@ namespace nsK2EngineLow {
 	private:
 		IXAudio2* m_xAudio2 = nullptr;
 		IXAudio2MasteringVoice* m_masteringVoice = nullptr;
-		X3DAUDIO_HANDLE				m_hx3DAudio;						//3DƒI[ƒfƒBƒI‚Ìƒnƒ“ƒhƒ‹B
-		IUnknown* m_reverbEffect = nullptr;			//ƒŠƒo[ƒvƒGƒtƒFƒNƒgB
-		IXAudio2SubmixVoice* m_submixVoice = nullptr;			//ƒTƒuƒ~ƒbƒNƒXƒ{ƒCƒXB
-		DWORD						m_channelMask = 0;					//ƒI[ƒfƒBƒIƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒNB
-		DWORD						m_nChannels = 0;					//ƒ`ƒƒƒ“ƒlƒ‹”B
-		Vector3						m_listenerPosition = Vector3::Zero;	//ƒŠƒXƒi[‚ÌÀ•WB
+		X3DAUDIO_HANDLE				m_hx3DAudio;						//3Dã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã®ãƒãƒ³ãƒ‰ãƒ«ã€‚
+		IUnknown* m_reverbEffect = nullptr;			//ãƒªãƒãƒ¼ãƒ—ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã€‚
+		IXAudio2SubmixVoice* m_submixVoice = nullptr;			//ã‚µãƒ–ãƒŸãƒƒã‚¯ã‚¹ãƒœã‚¤ã‚¹ã€‚
+		DWORD						m_channelMask = 0;					//ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯ã€‚
+		DWORD						m_nChannels = 0;					//ãƒãƒ£ãƒ³ãƒãƒ«æ•°ã€‚
+		Vector3						m_listenerPosition = Vector3::Zero;	//ãƒªã‚¹ãƒŠãƒ¼ã®åº§æ¨™ã€‚
 		float						m_fListenerAngle = 0.0f;
 		bool						m_UseListenerCone = false;
 		bool						m_fUseInnerRadius = false;
 		bool						m_useRedirectToLFE = false;
 		bool						m_isInited = false;
-		X3DAUDIO_LISTENER			m_listener;							//ƒTƒEƒ“ƒhƒŠƒXƒi[B
-		std::list<SoundSource*>		m_3dSoundSource;					//3DƒTƒEƒ“ƒh‚ÌƒTƒEƒ“ƒhƒ\[ƒXB
+		X3DAUDIO_LISTENER			m_listener;							//ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚¹ãƒŠãƒ¼ã€‚
+		std::list<SoundSource*>		m_3dSoundSource;					//3Dã‚µã‚¦ãƒ³ãƒ‰ã®ã‚µã‚¦ãƒ³ãƒ‰ã‚½ãƒ¼ã‚¹ã€‚
 		X3DAUDIO_CONE				m_emitterCone;
-		WaveFileBank				m_waveFileBank;						//”gŒ`ƒf[ƒ^‚Ìƒoƒ“ƒNB
+		WaveFileBank				m_waveFileBank;						//æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã®ãƒãƒ³ã‚¯ã€‚
 	};
 
-	extern SoundEngine* g_soundEngine;	//TKƒGƒ“ƒWƒ“B
+	extern SoundEngine* g_soundEngine;	//TKã‚¨ãƒ³ã‚¸ãƒ³ã€‚
 }

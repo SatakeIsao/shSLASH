@@ -212,11 +212,38 @@ namespace app
 
         void Layout::Reload()
         {
-            std::ifstream file(filePath_);
-            if (!file.is_open()) return;
+            // パース一回限りのキャッシュ: 同じパスを共有する複数のLayoutインスタンス
+            // （例: 12個のDamagePopUIObjects）がディスクI/OとJSONパースを一度だけ行う。
+            // デバッグビルドではmtimeを使いホットリロード時に古いエントリを無効化する。
+            struct CachedJson { nlohmann::json data; time_t mtime = 0; };
+            static std::unordered_map<std::string, CachedJson> s_cache;
 
-            nlohmann::json j;
-            file >> j;
+            nlohmann::json* pJson = nullptr;
+            auto it = s_cache.find(filePath_);
+
+#ifdef APP_ENABLE_LAYOUT_HOTRELOAD
+            struct stat st;
+            bool statOk = (stat(filePath_.c_str(), &st) == 0);
+            if (it != s_cache.end() && statOk && it->second.mtime != st.st_mtime) {
+                s_cache.erase(it);
+                it = s_cache.end();
+            }
+#endif
+
+            if (it != s_cache.end()) {
+                pJson = &it->second.data;
+            } else {
+                std::ifstream file(filePath_);
+                if (!file.is_open()) return;
+                CachedJson entry;
+                file >> entry.data;
+#ifdef APP_ENABLE_LAYOUT_HOTRELOAD
+                if (statOk) entry.mtime = st.st_mtime;
+#endif
+                pJson = &s_cache.emplace(filePath_, std::move(entry)).first->second.data;
+            }
+
+            auto& j = *pJson;
 
             // すでにMenuやCanvasがある場合は作り直しを行う
             if (menu_->GetCanvas() == nullptr) {

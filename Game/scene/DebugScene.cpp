@@ -1,6 +1,6 @@
-/**
+ï»¿/**
  * DebugScene.cpp
- * ƒfƒoƒbƒO“®ìŠm”F—pƒV[ƒ“
+ * ãƒ‡ãƒãƒƒã‚°å‹•ä½œç¢ºèªç”¨ã‚·ãƒ¼ãƒ³
  */
 
 #include "stdafx.h"
@@ -52,7 +52,7 @@ void DebugScene::Update()
 
 void DebugScene::Render(RenderContext& rc)
 {
-	/** DEBUG: ƒeƒLƒXƒg‚ª•\¦‚³‚ê‚é‚© */
+	/** DEBUG: ãƒ†ã‚­ã‚¹ãƒˆãŒè¡¨ç¤ºã•ã‚Œã‚‹ã‹ */
 	//testLayout->Render(rc);
 }
 

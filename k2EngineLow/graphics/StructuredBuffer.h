@@ -1,36 +1,36 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 
 	/// <summary>
-	/// \‘¢‰»ƒoƒbƒtƒ@
+	/// æ§‹é€ åŒ–ãƒãƒƒãƒ•ã‚¡
 	/// </summary>
 	class StructuredBuffer : public IShaderResource {
 	public:
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~StructuredBuffer();
 		/// <summary>
-		/// \‘¢‰»ƒoƒbƒtƒ@‚ğ‰Šú‰»B
+		/// æ§‹é€ åŒ–ãƒãƒƒãƒ•ã‚¡ã‚’åˆæœŸåŒ–ã€‚
 		/// </summary>
-		/// <param name="sizeOfElement">ƒGƒŒƒƒ“ƒg‚ÌƒTƒCƒYB</param>
-		/// <param name="numElement">ƒGƒŒƒƒ“ƒg‚Ì”B</param>
-		/// <param name="initData">‰Šúƒf[ƒ^B</param>
+		/// <param name="sizeOfElement">ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®ã‚µã‚¤ã‚ºã€‚</param>
+		/// <param name="numElement">ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®æ•°ã€‚</param>
+		/// <param name="initData">åˆæœŸãƒ‡ãƒ¼ã‚¿ã€‚</param>
 		void Init(int sizeOfElement, int numElement, void* initData);
 
 		/// <summary>
-		/// SRV‚É“o˜^B
+		/// SRVã«ç™»éŒ²ã€‚
 		/// </summary>
 		/// <param name="descriptorHandle"></param>
 		void RegistShaderResourceView(D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle, int bufferNo) override;
 		/// <summary>
-		/// \‘¢‰»ƒoƒbƒtƒ@‚Ì“à—e‚ğXVB
+		/// æ§‹é€ åŒ–ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’æ›´æ–°ã€‚
 		/// </summary>
 		/// <param name="data"></param>
 		void Update(void* data);
 		/// <summary>
-		/// ‰Šú‰»‚³‚ê‚Ä‚¢‚é‚©”»’èB
+		/// åˆæœŸåŒ–ã•ã‚Œã¦ã„ã‚‹ã‹åˆ¤å®šã€‚
 		/// </summary>
 		/// <returns></returns>
 		bool IsInited() const
@@ -38,22 +38,22 @@ namespace nsK2EngineLow {
 			return m_isInited;
 		}
 		/// <summary>
-		/// D3DƒŠƒ\[ƒX‚ğæ“¾B
+		/// D3Dãƒªã‚½ãƒ¼ã‚¹ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		ID3D12Resource* GetD3DResoruce();
 	private:
 		/// <summary>
-		/// ‰ğ•úˆ—B
+		/// è§£æ”¾å‡¦ç†ã€‚
 		/// </summary>
 		void Release();
 	private:
 		ID3D12Resource* m_buffersOnGPU[2] = { nullptr };
-		void* m_buffersOnCPU[2] = { nullptr };		//CPU‘¤‚©‚çƒAƒNƒZƒX‚Å‚«‚é‚·‚éƒXƒgƒ‰ƒNƒ`ƒƒƒoƒbƒtƒ@‚ÌƒAƒhƒŒƒXB
-		int m_numElement = 0;						//—v‘f”B
-		int m_sizeOfElement = 0;					//ƒGƒŒƒƒ“ƒg‚ÌƒTƒCƒYB
+		void* m_buffersOnCPU[2] = { nullptr };		//CPUå´ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹ã™ã‚‹ã‚¹ãƒˆãƒ©ã‚¯ãƒãƒ£ãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã€‚
+		int m_numElement = 0;						//è¦ç´ æ•°ã€‚
+		int m_sizeOfElement = 0;					//ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®ã‚µã‚¤ã‚ºã€‚
 		bool m_isInited = false;
 
-		//‰Šú‰»Ï‚İH
+		//åˆæœŸåŒ–æ¸ˆã¿ï¼Ÿ
 	};
 }

@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "MapChip2D.h"
 #include "CaslFile.h"
 
@@ -6,20 +6,20 @@ namespace nsK2EngineLow {
 	void MapChip2D::Init(CaslData* caslData)
 	{
 		SpriteInitData data;
-		//‰¡•Ac•B
+		//æ¨ªå¹…ã€ç¸¦å¹…ã€‚
 		data.m_width = caslData->width;
 		data.m_height = caslData->height;
-		//‰æ‘œ‚ð“Ç‚Ýž‚ÞB
+		//ç”»åƒã‚’èª­ã¿è¾¼ã‚€ã€‚
 		data.m_ddsFilePath[0] = caslData->ddsFilePath.get();
 		data.m_fxFilePath = "Assets/Shader/sprite.fx";
 		m_sprite.Init(data);
-		//À•WB
+		//åº§æ¨™ã€‚
 		m_position.x = caslData->position.x;
 		m_position.y = caslData->position.y;
-		//‘å‚«‚³B
+		//å¤§ãã•ã€‚
 		m_scale.x = caslData->scale.x;
 		m_scale.y = caslData->scale.y;
-		//ƒsƒ{ƒbƒgB
+		//ãƒ”ãƒœãƒƒãƒˆã€‚
 		m_pivot = caslData->pivot;
 	}
 }

@@ -39,14 +39,23 @@ bool BattleScene::Start()
 	if (!app::battle::BattleManager::IsAvailable()) {
 		app::battle::BattleManager::Initialize();
 	}
-	app::battle::BattleManager::Get().Start();
-	gameOverSequence_ = NewGO<app::ui::GameOverSequence>(static_cast<uint8_t>(ObjectPriority::GameOverUI));
 	return true;
 }
 
 
 void BattleScene::Update()
 {
+	if (!isLoaded_)
+	{
+		if (app::battle::BattleManager::Get().LoadStep())
+			isLoaded_ = true;
+		return;
+	}
+
+	// ロード完了後の最初のフレームで生成 — case 2でs_textureCacheにゲームオーバーテクスチャが格納済み。
+	if (!gameOverSequence_)
+		gameOverSequence_ = NewGO<app::ui::GameOverSequence>(static_cast<uint8_t>(ObjectPriority::GameOverUI));
+
 	app::battle::BattleManager::Get().Update();
 
 	if (!isGameOver_ && app::battle::BattleManager::Get().IsPlayerDead())
@@ -60,6 +69,7 @@ void BattleScene::Update()
 
 void BattleScene::Render(RenderContext& rc)
 {
+	if (!isLoaded_) return;
 	if (app::battle::BattleManager::IsAvailable())
 	{
 		app::battle::BattleManager::Get().Render(rc);

@@ -1,18 +1,18 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgB
+	/// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã€‚
 	/// </summary>
 	class PipelineState : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~PipelineState();
 
 		/// <summary>
-		/// ‰Šú‰»B
+		/// åˆæœŸåŒ–ã€‚
 		/// </summary>
 		/// <param name="desc"></param>
 		void Init(D3D12_GRAPHICS_PIPELINE_STATE_DESC desc);
@@ -23,10 +23,10 @@ namespace nsK2EngineLow {
 		}
 	private:
 		/// <summary>
-		/// ‰ğ•úB
+		/// è§£æ”¾ã€‚
 		/// </summary>
 		void Release();
 	private:
-		ID3D12PipelineState* m_pipelineState = nullptr;	//ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgB
+		ID3D12PipelineState* m_pipelineState = nullptr;	//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã€‚
 	};
 }

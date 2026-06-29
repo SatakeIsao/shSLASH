@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "k2EngineLowPreCompile.h"
@@ -6,7 +6,7 @@
 using namespace nsK2EngineLow;
 
 
-// 自信で追加
+// 自身で追加
 #include "Types.h"
 #include "core/TaskSchedulerSystem.h"
 #include "collision/BoundingVolume.h"
@@ -15,3 +15,4 @@ using namespace nsK2EngineLow;
 #include "memory/Memory.h"
 #include "util/util.h"
 #include "util/Curve.h"
+#include "resource/ModelResource.h"

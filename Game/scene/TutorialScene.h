@@ -20,6 +20,7 @@ private:
     app::ui::TutorialUIObject* tutorialUI_ = nullptr;
     app::ui::TutorialPauseHintObject* tutorialPauseHint_ = nullptr;
     bool isGameOver_ = false;
+    bool isLoaded_   = false;
     bool isAllEnemiesDefeated_ = false;
     bool isSkipRequested_ = false;
 
@@ -36,4 +37,5 @@ public:
     virtual void Render(RenderContext& rc) override;
 
     virtual bool RequestScene(uint32_t& id, float& waitTime) override;
+    virtual bool IsReadyToFadeIn() const override { return isLoaded_; }
 };

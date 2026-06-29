@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <memory>
 
@@ -10,7 +10,7 @@ namespace nsK2EngineLow {
 		{
 			auto it = m_resourceMap.find(filePath);
 			if (it != m_resourceMap.end()) {
-				//ƒoƒ“ƒN‚É“o˜^‚³‚ê‚Ä‚¢‚éB
+				//ãƒãƒ³ã‚¯ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã€‚
 				return it->second.get();
 			}
 			return nullptr;
@@ -19,7 +19,7 @@ namespace nsK2EngineLow {
 		{
 			auto it = m_resourceMap.find(filePath);
 			if (it == m_resourceMap.end()) {
-				//–¢“o˜^B
+				//æœªç™»éŒ²ã€‚
 				m_resourceMap.insert(
 					std::pair< std::string, TResourcePtr>(filePath, resource)
 				);

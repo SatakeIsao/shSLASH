@@ -1,5 +1,5 @@
-/*!
- *@brief	CGameObject‚Ìƒ}ƒl[ƒWƒƒ
+ï»¿/*!
+ *@brief	CGameObjectã®ãƒžãƒãƒ¼ã‚¸ãƒ£
  */
 #include "k2EngineLowPreCompile.h"
 #include "GameObjectManager.h"
@@ -10,7 +10,7 @@ namespace nsK2EngineLow {
 	GameObjectManager::GameObjectManager()
 	{
 		if (m_instance != nullptr) {
-			//ƒCƒ“ƒXƒ^ƒ“ƒX‚ª‚·‚Å‚Éì‚ç‚ê‚Ä‚¢‚éB
+			// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒã™ã§ã«ä½œã‚‰ã‚Œã¦ã„ã‚‹ã€‚
 			std::abort();
 		}
 		m_instance = this;
@@ -22,7 +22,7 @@ namespace nsK2EngineLow {
 	}
 	void GameObjectManager::ExecuteUpdate()
 	{
-		//Ž€–Sƒtƒ‰ƒO‚ª‚Â‚¢‚Ä‚¢‚éƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ð”jŠü‚·‚éB
+		// æ­»äº¡ãƒ•ãƒ©ã‚°ãŒã¤ã„ã¦ã„ã‚‹ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç ´æ£„ã™ã‚‹ã€‚
 		for (auto& goList : m_gameObjectListArray) {
 			goList.remove_if([&](IGameObject* go) {
 				if (go->IsDead()) {

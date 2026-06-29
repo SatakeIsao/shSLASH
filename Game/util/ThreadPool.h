@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 #include <queue>
 #include <thread>
@@ -12,12 +12,12 @@
 
 
 // ==========================================
-// ThreadPool ƒNƒ‰ƒX (ƒVƒ“ƒOƒ‹ƒgƒ“)
+// ThreadPool ã‚¯ãƒ©ã‚¹ (ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³)
 // 
-// ThreadPool‚Æ‚Í
-// •¡”‚ÌƒXƒŒƒbƒh‚ğŠÇ—‚µAƒ^ƒXƒN‚ğ•À—ñ‚ÉÀs‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
-// ƒ^ƒXƒN‚ÍŠÖ”ƒIƒuƒWƒFƒNƒg‚Æ‚µ‚ÄƒLƒ…[‚É’Ç‰Á‚³‚êAƒ[ƒJ[ƒXƒŒƒbƒh‚ª‚»‚ê‚ç‚ğæ‚èo‚µ‚ÄÀs‚·‚é
-// ThreadPool‚ÍƒVƒ“ƒOƒ‹ƒgƒ“‚Æ‚µ‚ÄÀ‘•‚³‚ê‚Ä‚¨‚èAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‘S‘Ì‚Å‹¤—L‚³‚ê‚é
+// ThreadPoolã¨ã¯
+// è¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ç®¡ç†ã—ã€ã‚¿ã‚¹ã‚¯ã‚’ä¸¦åˆ—ã«å®Ÿè¡Œã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
+// ã‚¿ã‚¹ã‚¯ã¯é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã—ã¦ã‚­ãƒ¥ãƒ¼ã«è¿½åŠ ã•ã‚Œã€ãƒ¯ãƒ¼ã‚«ãƒ¼ã‚¹ãƒ¬ãƒƒãƒ‰ãŒãã‚Œã‚‰ã‚’å–ã‚Šå‡ºã—ã¦å®Ÿè¡Œã™ã‚‹
+// ThreadPoolã¯ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã¨ã—ã¦å®Ÿè£…ã•ã‚Œã¦ãŠã‚Šã€ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å…¨ä½“ã§å…±æœ‰ã•ã‚Œã‚‹
 // ==========================================
 namespace app
 {
@@ -53,37 +53,37 @@ namespace app
                 }
             }
 
-            // ƒRƒs[‹Ö~
+            // ã‚³ãƒ”ãƒ¼ç¦æ­¢
             ThreadPool(const ThreadPool&) = delete;
             ThreadPool& operator=(const ThreadPool&) = delete;
 
-            // ƒXƒŒƒbƒhƒZƒbƒgƒAƒbƒv
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
             void SetupThreads(size_t threads) {
                 if (threads == 0) threads = 1;
                 for (size_t i = 0; i < threads; ++i)
                 {
-                    // ƒ[ƒJ[ƒXƒŒƒbƒh¶¬
-                    // NOTE: ƒ[ƒJ[ƒXƒŒƒbƒh‚Æ‚Í
-                    //       ƒ^ƒXƒNƒLƒ…[‚©‚çƒ^ƒXƒN‚ğæ‚èo‚µ‚ÄÀs‚·‚éƒXƒŒƒbƒh‚Ì‚±‚Æ
+                    // ãƒ¯ãƒ¼ã‚«ãƒ¼ã‚¹ãƒ¬ãƒƒãƒ‰ç”Ÿæˆ
+                    // NOTE: ãƒ¯ãƒ¼ã‚«ãƒ¼ã‚¹ãƒ¬ãƒƒãƒ‰ã¨ã¯
+                    //       ã‚¿ã‚¹ã‚¯ã‚­ãƒ¥ãƒ¼ã‹ã‚‰ã‚¿ã‚¹ã‚¯ã‚’å–ã‚Šå‡ºã—ã¦å®Ÿè¡Œã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã“ã¨
                     m_workers.emplace_back([this]
                         {
-                            // ƒ[ƒJ[ƒXƒŒƒbƒhƒ‹[ƒv
+                            // ãƒ¯ãƒ¼ã‚«ãƒ¼ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ«ãƒ¼ãƒ—
                             for (;;)
                             {
                                 std::function<void()> task;
                                 {
-                                    // ƒƒbƒN
+                                    // ãƒ­ãƒƒã‚¯
                                     std::unique_lock<std::mutex> lock(this->m_queueMutex);
-                                    // ƒ^ƒXƒN‚ª—ˆ‚é‚Ü‚Å‘Ò‹@
+                                    // ã‚¿ã‚¹ã‚¯ãŒæ¥ã‚‹ã¾ã§å¾…æ©Ÿ
                                     this->m_condition.wait(lock, [this]
                                         {
                                             return this->m_isStop || !this->m_tasks.empty();
                                         });
-                                    // I—¹ğŒ
+                                    // çµ‚äº†æ¡ä»¶
                                     if (this->m_isStop && this->m_tasks.empty()) {
                                         return;
                                     }
-                                    // ƒ^ƒXƒNæ‚èo‚µ
+                                    // ã‚¿ã‚¹ã‚¯å–ã‚Šå‡ºã—
                                     task = std::move(this->m_tasks.front());
                                     this->m_tasks.pop();
                                 }
@@ -93,11 +93,11 @@ namespace app
                 }
             }
 
-            // ƒXƒŒƒbƒh”æ“¾
+            // ã‚¹ãƒ¬ãƒƒãƒ‰æ•°å–å¾—
             size_t GetThreadCount() const { return m_workers.size(); }
 
         public:
-            // NOTE: ‰‰ñÀs‘O‚ÉƒXƒŒƒbƒh”‚ğw’è‚µ‚½‚¢ê‡‚Ég—p‚µ‚Ä‚­‚¾‚³‚¢
+            // NOTE: åˆå›å®Ÿè¡Œå‰ã«ã‚¹ãƒ¬ãƒƒãƒ‰æ•°ã‚’æŒ‡å®šã—ãŸã„å ´åˆã«ä½¿ç”¨ã—ã¦ãã ã•ã„
             void Initialize(const size_t threads)
             {
                 std::unique_lock<std::mutex> lock(m_queueMutex);
@@ -105,13 +105,13 @@ namespace app
                 SetupThreads(threads);
             }
 
-            // ƒ^ƒXƒN“Š“üƒƒ\ƒbƒh
+            // ã‚¿ã‚¹ã‚¯æŠ•å…¥ãƒ¡ã‚½ãƒƒãƒ‰
             template<class F, class... Args>
             auto Enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
             {
                 using return_type = typename std::result_of<F(Args...)>::type;
 
-                // ƒ^ƒXƒN‚ğ‹¤—Lƒ|ƒCƒ“ƒ^‚Å•ï‚ŞiC++14‚Å‚Ì packaged_task ‚ÌˆÚ“®§ŒÀ‚ğ‰ñ”ğj
+                // ã‚¿ã‚¹ã‚¯ã‚’å…±æœ‰ãƒã‚¤ãƒ³ã‚¿ã§åŒ…ã‚€ï¼ˆC++14ã§ã® packaged_task ã®ç§»å‹•åˆ¶é™ã‚’å›é¿ï¼‰
                 auto task = std::make_shared<std::packaged_task<return_type()>>
                     (
                         std::bind(std::forward<F>(f), std::forward<Args>(args)...)
@@ -123,10 +123,10 @@ namespace app
                     if (m_isStop) {
                         throw std::runtime_error("enqueue on stopped ThreadPool");
                     }
-                    // ƒ^ƒXƒNƒLƒ…[‚É’Ç‰Á
+                    // ã‚¿ã‚¹ã‚¯ã‚­ãƒ¥ãƒ¼ã«è¿½åŠ 
                     m_tasks.emplace([task]() { (*task)(); });
                 }
-                // ƒ[ƒJ[ƒXƒŒƒbƒh‚É’Ê’m
+                // ãƒ¯ãƒ¼ã‚«ãƒ¼ã‚¹ãƒ¬ãƒƒãƒ‰ã«é€šçŸ¥
                 m_condition.notify_one();
                 return res;
             }

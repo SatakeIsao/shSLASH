@@ -1,22 +1,22 @@
-#include "k2EngineLowPreCompile.h"
+Ôªø#include "k2EngineLowPreCompile.h"
 
 #include "EffectEngine.h"
 
 namespace nsK2EngineLow {
-	EffectEngine* EffectEngine::m_instance = nullptr;	//óBàÍÇÃÉCÉìÉXÉ^ÉìÉXÅB
+	EffectEngine* EffectEngine::m_instance = nullptr;	// ÂîØ‰∏Ä„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„ÄÇ
 
 	EffectEngine::EffectEngine()
 	{
 		K2_ASSERT(
 			m_instance == nullptr,
-			"EffectEngineÇÃÉCÉìÉXÉ^ÉìÉXÇï°êîçÏÇÈÇ±Ç∆ÇÕÇ≈Ç´Ç‹ÇπÇÒÅB"
+			"EffectEngine„ÅÆ„Ç§„É≥„Çπ„Çø„É≥„Çπ„ÇíË§áÊï∞‰Ωú„Çã„Åì„Å®„ÅØ„Åß„Åç„Åæ„Åõ„Çì„ÄÇ"
 		);
-		//auto format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		// auto format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		auto format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		auto d3dDevice = g_graphicsEngine->GetD3DDevice();
 		auto commandQueue = g_graphicsEngine->GetCommandQueue();
 		for (int i = 0; i < 2; i++) {
-			// ÉåÉìÉ_ÉâÅ[ÇçÏê¨ÅB
+			// „É¨„É≥„ÉÄ„É©„Éº„Çí‰ΩúÊàê„ÄÇ
 			m_renderer[i] = ::EffekseerRendererDX12::Create(
 				d3dDevice,
 				commandQueue,
@@ -27,12 +27,12 @@ namespace nsK2EngineLow {
 				false,
 				8000
 			);
-			//ÉÅÉÇÉäÉvÅ[ÉãÇÃçÏê¨ÅB
+			// „É°„É¢„É™„Éó„Éº„É´„ÅÆ‰ΩúÊàê„ÄÇ
 			m_memoryPool[i] = EffekseerRenderer::CreateSingleFrameMemoryPool(m_renderer[i]->GetGraphicsDevice());
-			// ÉRÉ}ÉìÉhÉäÉXÉgÇÃçÏê¨
+			// „Ç≥„Éû„É≥„Éâ„É™„Çπ„Éà„ÅÆ‰ΩúÊàê
 			m_commandList[i] = EffekseerRenderer::CreateCommandList(m_renderer[i]->GetGraphicsDevice(), m_memoryPool[i]);
 		}
-		// ÉGÉtÉFÉNÉgÉ}ÉlÅ[ÉWÉÉÅ[ÇÃçÏê¨ÅB
+		// „Ç®„Éï„Çß„ÇØ„Éà„Éû„Éç„Éº„Ç∏„É£„Éº„ÅÆ‰ΩúÊàê„ÄÇ
 		m_manager = ::Effekseer::Manager::Create(8000);
 
 		
@@ -43,12 +43,12 @@ namespace nsK2EngineLow {
 		Effekseer::EffectRef effect;
 		auto it = m_effectMap.find(number);
 		if (it != m_effectMap.end()) {
-			//ÉçÅ[ÉhçœÇ›ÅB
+			// „É≠„Éº„ÉâÊ∏à„Åø„ÄÇ
 			effect = it->second;
 		}
 		else {
-			//ÉçÅ[ÉhÇ≈Ç´Ç»Ç¢ÅB
-			//ResistEffectÇ≈ÉGÉtÉFÉNÉgì«Ç›çûÇÒÇ≈ÇÀÅI
+			// „É≠„Éº„Éâ„Åß„Åç„Å™„ÅÑ„ÄÇ
+			// ResistEffect„Åß„Ç®„Éï„Çß„ÇØ„ÉàË™≠„ÅøËæº„Çì„Åß„Å≠ÔºÅ
 			std::abort();
 		}
 		return effect;
@@ -71,15 +71,15 @@ namespace nsK2EngineLow {
 	{
 		int backBufferNo = g_graphicsEngine->GetBackBufferIndex();
 		// Begin a command list
-		// ÉRÉ}ÉìÉhÉäÉXÉgÇäJénÇ∑ÇÈÅB
+		// „Ç≥„Éû„É≥„Éâ„É™„Çπ„Éà„ÇíÈñãÂßã„Åô„Çã„ÄÇ
 		EffekseerRendererDX12::BeginCommandList(m_commandList[backBufferNo], g_graphicsEngine->GetCommandList());
 		m_renderer[backBufferNo]->SetCommandList(m_commandList[backBufferNo]);
 
 		m_manager->Update();
 
-		//ÉåÉìÉ_ÉâÅ[Ç…ÉJÉÅÉâçsóÒÇê›íËÅB
+		// „É¨„É≥„ÉÄ„É©„Éº„Å´„Ç´„É°„É©Ë°åÂàó„ÇíË®≠ÂÆö„ÄÇ
 		m_renderer[backBufferNo]->SetCameraMatrix(*(const Effekseer::Matrix44*)&g_camera3D->GetViewMatrix());
-		//ÉåÉìÉ_ÉâÅ[Ç…ÉvÉçÉWÉFÉNÉVÉáÉìçsóÒÇê›íËÅB
+		// „É¨„É≥„ÉÄ„É©„Éº„Å´„Éó„É≠„Ç∏„Çß„ÇØ„Ç∑„Éß„É≥Ë°åÂàó„ÇíË®≠ÂÆö„ÄÇ
 		m_renderer[backBufferNo]->SetProjectionMatrix(*(const Effekseer::Matrix44*)&g_camera3D->GetProjectionMatrix());
 
 		m_renderer[backBufferNo]->SetTime(deltaTime);
@@ -89,14 +89,14 @@ namespace nsK2EngineLow {
 	{
 		int backBufferNo = g_graphicsEngine->GetBackBufferIndex();
 		m_memoryPool[backBufferNo]->NewFrame();
-		// ï`âÊÉÇÉWÉÖÅ[ÉãÇÃê›íËÅB
+		// ÊèèÁîª„É¢„Ç∏„É•„Éº„É´„ÅÆË®≠ÂÆö„ÄÇ
 		m_manager->SetSpriteRenderer(m_renderer[backBufferNo]->CreateSpriteRenderer());
 		m_manager->SetRibbonRenderer(m_renderer[backBufferNo]->CreateRibbonRenderer());
 		m_manager->SetRingRenderer(m_renderer[backBufferNo]->CreateRingRenderer());
 		m_manager->SetTrackRenderer(m_renderer[backBufferNo]->CreateTrackRenderer());
 		m_manager->SetModelRenderer(m_renderer[backBufferNo]->CreateModelRenderer());
 
-		// ÉçÅ[É_Å[ÇÃê›íËÅB
+		// „É≠„Éº„ÉÄ„Éº„ÅÆË®≠ÂÆö„ÄÇ
 		m_manager->SetTextureLoader(m_renderer[backBufferNo]->CreateTextureLoader());
 		m_manager->SetModelLoader(m_renderer[backBufferNo]->CreateModelLoader());
 		m_manager->SetMaterialLoader(m_renderer[backBufferNo]->CreateMaterialLoader());
@@ -105,19 +105,19 @@ namespace nsK2EngineLow {
 	{
 		int backBufferNo = g_graphicsEngine->GetBackBufferIndex();
 		// Begin to rendering effects
-		// ÉGÉtÉFÉNÉgÇÃï`âÊäJénèàóùÇçsÇ§ÅB
+		// „Ç®„Éï„Çß„ÇØ„Éà„ÅÆÊèèÁîªÈñãÂßãÂá¶ÁêÜ„ÇíË°å„ÅÜ„ÄÇ
 		m_renderer[backBufferNo]->BeginRendering();
 
 		// Render effects
-		// ÉGÉtÉFÉNÉgÇÃï`âÊÇçsÇ§ÅB
+		// „Ç®„Éï„Çß„ÇØ„Éà„ÅÆÊèèÁîª„ÇíË°å„ÅÜ„ÄÇ
 		m_manager->Draw();
 
 		// Finish to rendering effects
-		// ÉGÉtÉFÉNÉgÇÃï`âÊèIóπèàóùÇçsÇ§ÅB
+		// „Ç®„Éï„Çß„ÇØ„Éà„ÅÆÊèèÁîªÁµÇ‰∫ÜÂá¶ÁêÜ„ÇíË°å„ÅÜ„ÄÇ
 		m_renderer[backBufferNo]->EndRendering();
 
 		// Finish a command list
-		// ÉRÉ}ÉìÉhÉäÉXÉgÇèIóπÇ∑ÇÈÅB
+		// „Ç≥„Éû„É≥„Éâ„É™„Çπ„Éà„ÇíÁµÇ‰∫Ü„Åô„Çã„ÄÇ
 		m_renderer[backBufferNo]->SetCommandList(nullptr);
 		EffekseerRendererDX12::EndCommandList(m_commandList[backBufferNo]);
 	}
@@ -127,7 +127,7 @@ namespace nsK2EngineLow {
 		Effekseer::EffectRef effect;
 		auto it = m_effectMap.find(number);
 		if (it == m_effectMap.end()) {
-			//êVãKÅB
+			// Êñ∞Ë¶è„ÄÇ
 			effect = Effekseer::Effect::Create(m_manager, filePath);
 			m_effectMap.insert({ number, effect });
 		}

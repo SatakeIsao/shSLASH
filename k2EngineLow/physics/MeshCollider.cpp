@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "Physics.h"
 #include "MeshCollider.h"
 
@@ -10,26 +10,26 @@ namespace nsK2EngineLow {
 		int numMesh = 0;
 		const auto& tkmFile = model.GetTkmFile();
 		const auto& meshParts = tkmFile.GetMeshParts();
-		//ƒƒbƒVƒ…‚ğˆê‚Â‚Ã‚Â’²‚×‚Ä‚¢‚­B
+		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä¸€ã¤ã¥ã¤èª¿ã¹ã¦ã„ãã€‚
 		for (const auto& mesh : meshParts) {
-			//‚Ü‚¸‚Í’¸“_ƒoƒbƒtƒ@‚ğ\’z‚·‚éB
+			//ã¾ãšã¯é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’æ§‹ç¯‰ã™ã‚‹ã€‚
 			VertexBufferPtr vb = std::make_unique< VertexBuffer>();
 			for (const auto& vertex : mesh.vertexBuffer) {
 				auto pos = vertex.pos;
-				//ƒ[ƒ‹ƒhs—ñ‚ğæZ‚·‚éB
+				//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’ä¹—ç®—ã™ã‚‹ã€‚
 				worldMatrix.Apply(pos);
 				vb->push_back(pos);
 			}
 			m_vertexBufferArray.push_back(std::move(vb));
-			//‘±‚¢‚ÄƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@B
-			//‚Ü‚¸‚Í16ƒrƒbƒg”Å‚©‚çB
+			//ç¶šã„ã¦ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã€‚
+			//ã¾ãšã¯16ãƒ“ãƒƒãƒˆç‰ˆã‹ã‚‰ã€‚
 			for (const auto& indexBuffer : mesh.indexBuffer16Array) {
 				IndexBufferPtr ib = std::make_unique<IndexBuffer>();
 				for (auto index : indexBuffer.indices) {
 					ib->push_back(index);
 				}
 				m_indexBufferArray.push_back(std::move(ib));
-				//ƒCƒ“ƒfƒbƒNƒXƒƒbƒVƒ…‚ğì¬B
+				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã€‚
 				btIndexedMesh indexedMesh;
 				IndexBuffer* pIb = m_indexBufferArray.back().get();
 				VertexBuffer* pVb = m_vertexBufferArray.back().get();
@@ -41,14 +41,14 @@ namespace nsK2EngineLow {
 				indexedMesh.m_vertexStride = sizeof(Vector3);
 				m_stridingMeshInterface->addIndexedMesh(indexedMesh);
 			}
-			//Ÿ‚Í32ƒrƒbƒg”Å
+			//æ¬¡ã¯32ãƒ“ãƒƒãƒˆç‰ˆ
 			for (const auto& indexBuffer : mesh.indexBuffer32Array) {
 				IndexBufferPtr ib = std::make_unique<IndexBuffer>();
 				for (auto index : indexBuffer.indices) {
 					ib->push_back(index);
 				}
 				m_indexBufferArray.push_back(std::move(ib));
-				//ƒCƒ“ƒfƒbƒNƒXƒƒbƒVƒ…‚ğì¬B
+				//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ä½œæˆã€‚
 				btIndexedMesh indexedMesh;
 				IndexBuffer* pIb = m_indexBufferArray.back().get();
 				VertexBuffer* pVb = m_vertexBufferArray.back().get();

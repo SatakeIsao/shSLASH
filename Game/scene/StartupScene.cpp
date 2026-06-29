@@ -1,6 +1,6 @@
-/**
+ï»¿/**
  * StartupScene.cpp
- * ƒXƒ^[ƒgƒAƒbƒvƒV[ƒ“
+ * ã‚¹ã‚¿ãƒ¼ãƒˆã‚¢ãƒƒãƒ—ã‚·ãƒ¼ãƒ³
  */
 #include "stdafx.h"
 #include "StartupScene.h"
@@ -55,7 +55,7 @@ StartupScene::~StartupScene()
 
 bool StartupScene::Start()
 {
-	// ‰ŠúÝ’è
+	// åˆæœŸè¨­å®š
 	Change();
 
 	return true;
@@ -124,11 +124,11 @@ void StartupScene::Change()
 
 bool StartupScene::CanChange() const
 {
-	// Žw’è‚µ‚½Œo‰ßŽžŠÔ‚ð‰ß‚¬‚Ä‚¢‚é‚È‚ç•ÏX‰Â”\
+	// æŒ‡å®šã—ãŸçµŒéŽæ™‚é–“ã‚’éŽãŽã¦ã„ã‚‹ãªã‚‰å¤‰æ›´å¯èƒ½
 	if (m_elapsedTime >= m_changeTime) {
 		return true;
 	}
-	// ˆê’èŽžŠÔ‚ð‰ß‚¬‚Ä‚¢‚Ä‰½‚©ƒ{ƒ^ƒ“‚ð‰Ÿ‚µ‚½‚È‚çØ‚è‘Ö‚¦‰Â”\
+	// ä¸€å®šæ™‚é–“ã‚’éŽãŽã¦ã„ã¦ä½•ã‹ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸãªã‚‰åˆ‡ã‚Šæ›¿ãˆå¯èƒ½
 	if (m_elapsedTime >= m_shortChangeTime) {
 		if (g_pad[0]->IsTrigger(enButtonA)) {
 			return true;

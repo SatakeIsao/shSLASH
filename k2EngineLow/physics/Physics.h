@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <memory>
 #include "DebugWireframe.h"
@@ -7,7 +7,7 @@ namespace nsK2EngineLow {
 	class CharacterController;
 
 
-	/** btVector3‚ğVector3‚ÉƒRƒs[ */
+	/** btVector3ã‚’Vector3ã«ã‚³ãƒ”ãƒ¼ */
 	inline void Vector3CopyFrom(Vector3& vDst, btVector3& vSrc)
 	{
 		vDst.x = vSrc.x();
@@ -15,7 +15,7 @@ namespace nsK2EngineLow {
 		vDst.z = vSrc.z();
 	}
 
-	/** Vector3‚ğbtVector3‚ÉƒRƒs[ */
+	/** Vector3ã‚’btVector3ã«ã‚³ãƒ”ãƒ¼ */
 	inline void Vector3CopyTo(btVector3& vDst, const Vector3& vSrc)
 	{
 		vDst.setX(vSrc.x);
@@ -24,13 +24,13 @@ namespace nsK2EngineLow {
 	}
 
 
-	/** Vector3‚ğbtVector3‚É•ÏŠ· */
+	/** Vector3ã‚’btVector3ã«å¤‰æ› */
 	inline btVector3 ConvertVector3(const Vector3& vSrc)
 	{
 		return btVector3(vSrc.x, vSrc.y, vSrc.z);
 	}
 
-	/** btVector3‚ğVector3‚É•ÏŠ· */
+	/** btVector3ã‚’Vector3ã«å¤‰æ› */
 	inline Vector3 ConvertVector3(const btVector3& vSrc)
 	{
 		return Vector3(vSrc.x(), vSrc.y(), vSrc.z());
@@ -40,19 +40,19 @@ namespace nsK2EngineLow {
 	constexpr uint32_t ALL_COLLISION_ATTRIBUTE_MASK = 0xFFFFFFFF;
 
 
-	/** ƒŒƒCƒLƒƒƒXƒg‚Ìƒqƒbƒgî•ñ */
+	/** ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã®ãƒ’ãƒƒãƒˆæƒ…å ± */
 	struct RaycastHit
 	{
-		Vector3 point;							// Õ“Ë“_
-		Vector3 normal;							// Õ“Ë–Ê–@ü
-		float distance;							// ”­Ë“_‚©‚ç‚Ì‹——£i0.0f - 1.0f ‚ÌŠ„‡‚Å‚Í‚È‚­À‹——£‚ª•K—v‚Èê‡‚Í•Ê“rŒvZ‚à‰Â”\‚¾‚ªABullet‚Ífraction‚ğ•Ô‚·j
-		float fraction;							// 0.0f(n“_) ` 1.0f(I“_) ‚ÌŠ„‡
-		btCollisionObject* colObject = nullptr; // ƒqƒbƒg‚µ‚½BulletƒIƒuƒWƒFƒNƒg
-		void* ptr = nullptr;					// ƒqƒbƒg‚µ‚½ƒIƒuƒWƒFƒNƒg‚Ìƒ|ƒCƒ“ƒ^(UserPointerŒo—R‚Åæ“¾)
+		Vector3 point;							// è¡çªç‚¹
+		Vector3 normal;							// è¡çªé¢æ³•ç·š
+		float distance;							// ç™ºå°„ç‚¹ã‹ã‚‰ã®è·é›¢ï¼ˆ0.0f - 1.0f ã®å‰²åˆã§ã¯ãªãå®Ÿè·é›¢ãŒå¿…è¦ãªå ´åˆã¯åˆ¥é€”è¨ˆç®—ã‚‚å¯èƒ½ã ãŒã€Bulletã¯fractionã‚’è¿”ã™ï¼‰
+		float fraction;							// 0.0f(å§‹ç‚¹) ï½ 1.0f(çµ‚ç‚¹) ã®å‰²åˆ
+		btCollisionObject* colObject = nullptr; // ãƒ’ãƒƒãƒˆã—ãŸBulletã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+		void* ptr = nullptr;					// ãƒ’ãƒƒãƒˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒã‚¤ãƒ³ã‚¿(UserPointerçµŒç”±ã§å–å¾—)
 	};
 
 
-	/** ƒXƒC[ƒvƒeƒXƒg‚Ìƒqƒbƒgî•ñ */
+	/** ã‚¹ã‚¤ãƒ¼ãƒ—ãƒ†ã‚¹ãƒˆã®ãƒ’ãƒƒãƒˆæƒ…å ± */
 	struct SweepHit
 	{
 		Vector3 point;
@@ -63,10 +63,10 @@ namespace nsK2EngineLow {
 	};
 
 
-	/** •¨—‹óŠÔ‘S‘Ì‚ğŠÇ—‚·‚éƒVƒ“ƒOƒ‹ƒgƒ“ƒNƒ‰ƒX */
+	/** ç‰©ç†ç©ºé–“å…¨ä½“ã‚’ç®¡ç†ã™ã‚‹ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¯ãƒ©ã‚¹ */
 	class PhysicsWorld : public Noncopyable
 	{
-		/** Bullet‚ÌƒRƒAƒƒ“ƒo */
+		/** Bulletã®ã‚³ã‚¢ãƒ¡ãƒ³ãƒ */
 		std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig_;
 		std::unique_ptr<btCollisionDispatcher> collisionDispatcher_;
 		std::unique_ptr<btBroadphaseInterface> overlappingPairCache_;
@@ -91,7 +91,7 @@ namespace nsK2EngineLow {
 
 
 		/**
-		 * İ’èEŠÇ—
+		 * è¨­å®šãƒ»ç®¡ç†
 		 */
 		btDiscreteDynamicsWorld* GetDynamicWorld() { return dynamicWorld_.get(); }
 		void SetGravity(const Vector3& gravity);
@@ -106,25 +106,25 @@ namespace nsK2EngineLow {
 
 		/**
 		 * ========================================================================
-		 * Raycast (ƒŒƒCƒLƒƒƒXƒg)
+		 * Raycast (ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆ)
 		 * ========================================================================
 		 */
 
 
 		 /**
-		  * ƒVƒ“ƒvƒ‹‚ÈƒŒƒCƒLƒƒƒXƒg
-		  * NOTE: ƒqƒbƒg‚µ‚½‚©‚Ç‚¤‚©‚¾‚¯‚ğ’m‚è‚½‚¢ê‡‚Ég—p‚·‚é
+		  * ã‚·ãƒ³ãƒ—ãƒ«ãªãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆ
+		  * NOTE: ãƒ’ãƒƒãƒˆã—ãŸã‹ã©ã†ã‹ã ã‘ã‚’çŸ¥ã‚ŠãŸã„å ´åˆã«ä½¿ç”¨ã™ã‚‹
 		  */
 		bool Raycast(const Vector3& start, const Vector3& end, const uint32_t filterMask = ALL_COLLISION_ATTRIBUTE_MASK) const;
 
 		/**
-		 * Ú×‚ÈƒŒƒCƒLƒƒƒXƒgBƒqƒbƒgî•ñ‚ğó‚¯æ‚éB
-		 * @param start n“_
-		 * @param end I“_
-		 * @param result Œ‹‰ÊŠi”[—p\‘¢‘Ì
-		 * @param filterMask Õ“Ë”»’è‚ğs‚¤ƒŒƒCƒ„[ƒ}ƒXƒNiƒrƒbƒg‰‰Zj
-		 * @param filterCallback ‚³‚ç‚É×‚©‚¢œŠOğŒ‚ğw’è‚·‚éƒ‰ƒ€ƒ_®itrue‚ğ•Ô‚·‚Æƒqƒbƒg‘ÎÛj
-		 * @return ƒqƒbƒg‚µ‚½‚çtrue
+		 * è©³ç´°ãªãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã€‚ãƒ’ãƒƒãƒˆæƒ…å ±ã‚’å—ã‘å–ã‚‹ã€‚
+		 * @param start å§‹ç‚¹
+		 * @param end çµ‚ç‚¹
+		 * @param result çµæœæ ¼ç´ç”¨æ§‹é€ ä½“
+		 * @param filterMask è¡çªåˆ¤å®šã‚’è¡Œã†ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒã‚¹ã‚¯ï¼ˆãƒ“ãƒƒãƒˆæ¼”ç®—ï¼‰
+		 * @param filterCallback ã•ã‚‰ã«ç´°ã‹ã„é™¤å¤–æ¡ä»¶ã‚’æŒ‡å®šã™ã‚‹ãƒ©ãƒ ãƒ€å¼ï¼ˆtrueã‚’è¿”ã™ã¨ãƒ’ãƒƒãƒˆå¯¾è±¡ï¼‰
+		 * @return ãƒ’ãƒƒãƒˆã—ãŸã‚‰true
 		 */
 		bool Raycast(const Vector3& start, const Vector3& end, RaycastHit& result, const uint32_t filterMask = ALL_COLLISION_ATTRIBUTE_MASK, std::function<bool(const btCollisionObject&)> filterCallback = nullptr) const;
 
@@ -134,26 +134,26 @@ namespace nsK2EngineLow {
 
 		/**
 		 * ========================================================================
-		 * ConvexSweep(Œ`óƒLƒƒƒXƒg)
+		 * ConvexSweep(å½¢çŠ¶ã‚­ãƒ£ã‚¹ãƒˆ)
 		 * ========================================================================
 		 */
 
 
-		 /** ƒRƒ‰ƒCƒ_[‚ğg‚Á‚½SweepTest */
+		 /** ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’ä½¿ã£ãŸSweepTest */
 		bool ConvexSweepTest(const ICollider& collider, const Vector3& start, const Vector3& end, SweepHit& result, const uint32_t filterMask = ALL_COLLISION_ATTRIBUTE_MASK, std::function<bool(const btCollisionObject&)> filterCallback = nullptr) const;
 		/**
-		 * ¶‚ÌbtConvexShape‚ğg‚Á‚½SweepTest
-		 * NOTE: “à•”—p‚ ‚é‚¢‚Íã‹‰Ò—p
+		 * ç”Ÿã®btConvexShapeã‚’ä½¿ã£ãŸSweepTest
+		 * NOTE: å†…éƒ¨ç”¨ã‚ã‚‹ã„ã¯ä¸Šç´šè€…ç”¨
 		 */
 		bool ConvexSweepTest(const btConvexShape* shape, const Vector3& start, const Vector3& end, SweepHit& result, const uint32_t filterMask = ALL_COLLISION_ATTRIBUTE_MASK, std::function<bool(const btCollisionObject&)> filterCallback = nullptr) const;
 
-		/** ©—R“x‚Ì‚‚¢SweepTest */
+		/** è‡ªç”±åº¦ã®é«˜ã„SweepTest */
 		void ConvexSweepTest(const ICollider& collider, const Vector3& start, const Vector3& end, btCollisionWorld::ConvexResultCallback& resultCallback, btScalar allowedCcdPenetration = 0.0f) const;
 		void ConvexSweepTest(const btConvexShape* shape, const Vector3& start, const Vector3& end, btCollisionWorld::ConvexResultCallback& resultCallback, btScalar allowedCcdPenetration = 0.0f) const;
 
 
 		// ========================================================================
-		//  ContactTest (ÚG”»’è)
+		//  ContactTest (æ¥è§¦åˆ¤å®š)
 		// ========================================================================
 		void ContactTest(btCollisionObject* colObj, std::function<void(const btCollisionObject& contactCollisionObject)> cb);
 		void ContactTest(RigidBody& rb, std::function<void(const btCollisionObject&)> cb);
@@ -163,7 +163,7 @@ namespace nsK2EngineLow {
 
 
 		/**
-		 * ƒfƒoƒbƒO•`‰æŠÖ˜A
+		 * ãƒ‡ãƒãƒƒã‚°æç”»é–¢é€£
 		 */
 #ifdef K2_DEBUG 
 		void DebubDrawWorld(RenderContext& rc);
@@ -179,7 +179,7 @@ namespace nsK2EngineLow {
 
 
 	public:
-		/** Bullet‚ÌƒRƒAƒƒ“ƒoæ“¾—p */
+		/** Bulletã®ã‚³ã‚¢ãƒ¡ãƒ³ãƒå–å¾—ç”¨ */
 		btCollisionDispatcher* GetCollisionDispatcher() { return collisionDispatcher_.get(); }
 		btDispatcherInfo& GetDispatchInfo() { return dynamicWorld_->getDispatchInfo(); }
 
@@ -187,7 +187,7 @@ namespace nsK2EngineLow {
 
 
 		/**
-		 * ƒVƒ“ƒOƒ‹ƒgŠÖ˜A
+		 * ã‚·ãƒ³ã‚°ãƒ«ãƒˆé–¢é€£
 		 */
 	private:
 		static PhysicsWorld* instance_;

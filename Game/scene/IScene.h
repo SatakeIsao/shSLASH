@@ -31,5 +31,13 @@ public:
 	 * trueならば要求成功、falseならば失敗
 	 */
 	virtual bool RequestScene(uint32_t& id, float& waitTime) = 0;
+
+	/**
+	 * フェードイン開始の準備ができているか。
+	 * ローディングが必要なシーンはfalseを返し続け、
+	 * 完了したらtrueを返すよう override する。
+	 * デフォルトはtrue（即座にフェードイン）。
+	 */
+	virtual bool IsReadyToFadeIn() const { return true; }
 };
 

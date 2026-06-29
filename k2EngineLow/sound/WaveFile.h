@@ -1,5 +1,5 @@
-/// <summary>
-/// waveƒtƒ@ƒCƒ‹B
+ï»¿/// <summary>
+/// waveãƒ•ã‚¡ã‚¤ãƒ«ã€‚
 /// </summary>
 #pragma once
 
@@ -7,101 +7,101 @@
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// Waveƒtƒ@ƒCƒ‹‚ğˆµ‚¤‚½‚ß‚ÌƒNƒ‰ƒXB
-	/// Read()‚Å“¯Šú“Ç‚İ‚İAReadAsync()‚Í”ñ“¯Šú“Ç‚İ‚İ‚ªs‚í‚ê‚Ü‚·B
-	/// ReadAsync‚ğ—˜—p‚µ‚½ê‡‚ÍWaveFile::IsReadEnd‚ğ—˜—p‚µ‚Ä“¯Šú‚ğ‚Æ‚Á‚Ä‚­‚¾‚³‚¢B
+	/// Waveãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ‰±ã†ãŸã‚ã®ã‚¯ãƒ©ã‚¹ã€‚
+	/// Read()ã§åŒæœŸèª­ã¿è¾¼ã¿ã€ReadAsync()ã¯éåŒæœŸèª­ã¿è¾¼ã¿ãŒè¡Œã‚ã‚Œã¾ã™ã€‚
+	/// ReadAsyncã‚’åˆ©ç”¨ã—ãŸå ´åˆã¯WaveFile::IsReadEndã‚’åˆ©ç”¨ã—ã¦åŒæœŸã‚’ã¨ã£ã¦ãã ã•ã„ã€‚
 	/// </summary>
 	class WaveFile : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^B
+		/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		WaveFile();
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~WaveFile();
 		/// <summary>
-		/// waveƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“B
+		/// waveãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã€‚
 		/// </summary>
-		/// <param name="fileName">ƒtƒ@ƒCƒ‹–¼B</param>
-		/// <returns>false‚ğ•Ô‚µ‚Ä—ˆ‚½‚çƒI[ƒvƒ“‚É¸”sB</returns>
+		/// <param name="fileName">ãƒ•ã‚¡ã‚¤ãƒ«åã€‚</param>
+		/// <returns>falseã‚’è¿”ã—ã¦æ¥ãŸã‚‰ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã€‚</returns>
 		bool Open(const char* fileName);
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ğ“Ç‚İ‚ŞB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€ã€‚
 		/// </summary>
-		/// <param name="pBuffer">”gŒ`ƒf[ƒ^‚ğ‘‚«‚Şƒoƒbƒtƒ@B</param>
-		/// <param name="sizeToRead">“Ç‚İ‚Şƒf[ƒ^ƒTƒCƒYB</param>
+		/// <param name="pBuffer">æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€ãƒãƒƒãƒ•ã‚¡ã€‚</param>
+		/// <param name="sizeToRead">èª­ã¿è¾¼ã‚€ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã€‚</param>
 		/// <param name="currentReadSize"></param>
 		void Read(char* pBuffer, unsigned int sizeToRead, unsigned int* currentReadSize);
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ğ”ñ“¯Šú“Ç‚İ‚İB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’éåŒæœŸèª­ã¿è¾¼ã¿ã€‚
 		/// </summary>
-		/// <param name="pBuffer">”gŒ`ƒf[ƒ^‚ğ‘‚«‚Şƒoƒbƒtƒ@B</param>
-		/// <param name="sizeToRead">‚æ‚İ‚±‚Şƒf[ƒ^ƒTƒCƒYB</param>
+		/// <param name="pBuffer">æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€ãƒãƒƒãƒ•ã‚¡ã€‚</param>
+		/// <param name="sizeToRead">ã‚ˆã¿ã“ã‚€ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã€‚</param>
 		/// <param name="currentReadSize"></param>
 		void ReadAsync(char* pBuffer, unsigned int sizeToRead, unsigned int* currentReadSize);
 		/// <summary>
-		/// “Ç‚İ‚İI—¹”»’èB
+		/// èª­ã¿è¾¼ã¿çµ‚äº†åˆ¤å®šã€‚
 		/// </summary>
-		/// <returns>true‚Å“Ç‚İ‚İI—¹B</returns>
+		/// <returns>trueã§èª­ã¿è¾¼ã¿çµ‚äº†ã€‚</returns>
 		bool IsReadEnd() const
 		{
 			return m_isReadEnd;
 		}
 		/// <summary>
-		/// ”gŒ`ƒf[ƒ^‚ÌƒV[ƒNˆÊ’u‚ğƒŠƒZƒbƒgB
+		/// æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã®ã‚·ãƒ¼ã‚¯ä½ç½®ã‚’ãƒªã‚»ãƒƒãƒˆã€‚
 		/// </summary>
 		void ResetFile();
 		/// <summary>
-		/// ŠJ•úB
+		/// é–‹æ”¾ã€‚
 		/// </summary>
 		void Release();
 		/// <summary>
-		/// ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğæ“¾B
+		/// ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>ƒtƒ@ƒCƒ‹ƒTƒCƒYB</returns>
+		/// <returns>ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã€‚</returns>
 		DWORD   GetSize() const
 		{
 			return m_dwSize;
 		}
 		/// <summary>
-		/// ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg‚ğæ“¾B
+		/// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒgB</returns>
+		/// <returns>ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã€‚</returns>
 		WAVEFORMATEX* GetFormat() const
 		{
 			return m_pwfx;
 		};
 		/// <summary>
-		/// “Ç‚İ‚İæ‚Ìƒoƒbƒtƒ@‚ğŠm•ÛB
+		/// èª­ã¿è¾¼ã¿å…ˆã®ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã€‚
 		/// </summary>
-		/// <param name="size">ƒTƒCƒYB</param>
+		/// <param name="size">ã‚µã‚¤ã‚ºã€‚</param>
 		void AllocReadBuffer(int size)
 		{
 			m_readBuffer.reset(new char[size]);
 		}
 		/// <summary>
-		/// “Ç‚İ‚İæ‚Ìƒoƒbƒtƒ@‚ğæ“¾B
+		/// èª­ã¿è¾¼ã¿å…ˆã®ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>“Ç‚İ‚İæ‚Ìƒoƒbƒtƒ@B</returns>
+		/// <returns>èª­ã¿è¾¼ã¿å…ˆã®ãƒãƒƒãƒ•ã‚¡ã€‚</returns>
 		char* GetReadBuffer()
 		{
 			return m_readBuffer.get();
 		}
 	private:
-		std::unique_ptr<char[]>	m_readBuffer = nullptr;		//“Ç‚İ‚İæ‚Ìƒoƒbƒtƒ@B
-		HMMIO					m_hmmio = nullptr;			//Waveƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹B
-		WAVEFORMATEX* m_pwfx = nullptr;			//waveƒtƒ@ƒCƒ‹‚ÌƒtƒH[ƒ}ƒbƒg’è‹`B
+		std::unique_ptr<char[]>	m_readBuffer = nullptr;		//èª­ã¿è¾¼ã¿å…ˆã®ãƒãƒƒãƒ•ã‚¡ã€‚
+		HMMIO					m_hmmio = nullptr;			//Waveãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ã€‚
+		WAVEFORMATEX* m_pwfx = nullptr;			//waveãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå®šç¾©ã€‚
 		MMCKINFO 				m_ckRiff;					// Use in opening a WAVE file
 		DWORD					m_dwSize = 0;				// The size of the wave file
 		MMCKINFO				m_ck;						// Multimedia RIFF chunk
 		BYTE* m_pbData = nullptr;
 		BYTE* m_pbDataCur = nullptr;
 		ULONG					m_ulDataSize = 0;
-		volatile bool			m_isReadEnd = true;			//“Ç‚İ‚İI—¹ƒtƒ‰ƒOB
-		std::thread				m_readAsyncThread;			//”ñ“¯Šú“Ç‚İ‚İƒXƒŒƒbƒhB
+		volatile bool			m_isReadEnd = true;			//èª­ã¿è¾¼ã¿çµ‚äº†ãƒ•ãƒ©ã‚°ã€‚
+		std::thread				m_readAsyncThread;			//éåŒæœŸèª­ã¿è¾¼ã¿ã‚¹ãƒ¬ãƒƒãƒ‰ã€‚
 		bool					m_isInvokeReadAsyncThread = false;
-		std::string				m_filePath;					//ƒtƒ@ƒCƒ‹ƒpƒXB
+		std::string				m_filePath;					//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã€‚
 	};
 }

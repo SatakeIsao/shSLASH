@@ -1,5 +1,5 @@
-/*!
-* @brief	ƒtƒHƒ“ƒgB
+ï»¿/*!
+* @brief	ãƒ•ã‚©ãƒ³ãƒˆã€‚
 */
 #include "k2EngineLowPreCompile.h"
 #include "FontEngine.h"
@@ -29,7 +29,7 @@ namespace nsK2EngineLow {
 		}
 		pivot.y = 1.0f - pivot.y;
 		DirectX::XMFLOAT2 tkFloat2Zero(0, 0);
-		//À•WŒn‚ğƒXƒvƒ‰ƒCƒg‚Æ‡‚í‚¹‚éB
+		// åº§æ¨™ç³»ã‚’ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã¨åˆã‚ã›ã‚‹ã€‚
 		Vector2 pos = position;
 		float frameBufferHalfWidth = UI_SPACE_WIDTH * 0.5f;
 		float frameBufferHalfHeight = UI_SPACE_HEIGHT * 0.5f;
@@ -39,7 +39,7 @@ namespace nsK2EngineLow {
 		auto& fontEngine = g_graphicsEngine->GetFontEngine();
 
 		if (m_isDrawShadow) {
-			//‰e‚ğ‘‚­B
+			// å½±ã‚’æ›¸ãã€‚
 			Vector2 offsetTbl[] = {
 				{ m_shadowOffset , 0.0f},
 				{ -m_shadowOffset , 0.0f },

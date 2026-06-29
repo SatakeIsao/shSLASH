@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "RaytracingInstance.h"
 namespace nsK2EngineLow {
 	
@@ -7,21 +7,21 @@ namespace nsK2EngineLow {
 		/// BLASBuffer
 		/// </summary>
 		/// <remark>
-		/// BLAS( Bottom level acceleration structures )‚Æ‚Í
-		/// ƒŒƒCƒgƒŒƒ[ƒ‹ƒh‚É“o˜^‚³‚ê‚Ä‚¢‚éƒWƒIƒƒgƒŠ‚Ìƒf[ƒ^\‘¢‚Å‚·B
-		/// BLAS‚É3Dƒ‚ƒfƒ‹‚Ìƒ|ƒŠƒSƒ“î•ñ‚ª“o˜^‚³‚ê‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
+		/// BLAS( Bottom level acceleration structures )ã¨ã¯
+		/// ãƒ¬ã‚¤ãƒˆãƒ¬ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‚¸ã‚ªãƒ¡ãƒˆãƒªã®ãƒ‡ãƒ¼ã‚¿æ§‹é€ ã§ã™ã€‚
+		/// BLASã«3Dãƒ¢ãƒ‡ãƒ«ã®ãƒãƒªã‚´ãƒ³æƒ…å ±ãŒç™»éŒ²ã•ã‚Œã‚‹ã“ã¨ã«ãªã‚Šã¾ã™ã€‚
 		/// </remark>
 		class BLASBuffer : public Noncopyable
 		{
 		public:
 			/// <summary>
-			/// ‰Šú‰»B
+			/// åˆæœŸåŒ–ã€‚
 			/// </summary>
 			/// <param name="rc"></param>
 			/// <param name="instance"></param>
 			void Init(RenderContext& rc, const std::vector<InstancePtr>& instance);
 			/// <summary>
-			/// BLASBuffer‚ÌƒŠƒXƒg‚ğæ“¾B
+			/// BLASBufferã®ãƒªã‚¹ãƒˆã‚’å–å¾—ã€‚
 			/// </summary>
 			/// <returns></returns>
 			const std::vector< AccelerationStructureBuffers>& Get() const

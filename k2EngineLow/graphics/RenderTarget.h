@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #pragma once
 
 //#include "Texture.h"
@@ -7,24 +7,24 @@ namespace nsK2EngineLow {
 	class GraphicsEngine;
 
 	/// <summary>
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒgB
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã€‚
 	/// </summary>
 	class RenderTarget : public Noncopyable {
 	public:
 		/// <summary>
-		/// ƒfƒXƒgƒ‰ƒNƒ^B
+		/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€‚
 		/// </summary>
 		~RenderTarget();
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ìì¬B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ä½œæˆã€‚
 		/// </summary>
-		/// <param name="w">ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì•</param>
-		/// <param name="h">ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì‚‚³</param>
-		/// <param name="mipLevel">ƒ~ƒbƒvƒ}ƒbƒvƒŒƒxƒ‹B0‚ðŽw’è‚µ‚½ê‡‚Íƒ~ƒbƒvƒ}ƒbƒv‚ªƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚éGPU‚Å‚Í1*1ƒsƒNƒZƒ‹‚Ü‚Å‚Ìƒ~ƒbƒvƒ}ƒbƒv‚ªì¬‚³‚ê‚éB</param>
-		/// <param name="arraySize">ƒeƒNƒXƒ`ƒƒ”z—ñ‚ÌƒTƒCƒY</param>
-		/// <param name="colorFormat">ƒJƒ‰[ƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒgB</param>
-		/// <param name="depthStencilFormat">[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒgB</param>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚çì¬¬Œ÷</returns>
+		/// <param name="w">ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¹…</param>
+		/// <param name="h">ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®é«˜ã•</param>
+		/// <param name="mipLevel">ãƒŸãƒƒãƒ—ãƒžãƒƒãƒ—ãƒ¬ãƒ™ãƒ«ã€‚0ã‚’æŒ‡å®šã—ãŸå ´åˆã¯ãƒŸãƒƒãƒ—ãƒžãƒƒãƒ—ãŒã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã‚‹GPUã§ã¯1*1ãƒ”ã‚¯ã‚»ãƒ«ã¾ã§ã®ãƒŸãƒƒãƒ—ãƒžãƒƒãƒ—ãŒä½œæˆã•ã‚Œã‚‹ã€‚</param>
+		/// <param name="arraySize">ãƒ†ã‚¯ã‚¹ãƒãƒ£é…åˆ—ã®ã‚µã‚¤ã‚º</param>
+		/// <param name="colorFormat">ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã€‚</param>
+		/// <param name="depthStencilFormat">æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã€‚</param>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰ä½œæˆæˆåŠŸ</returns>
 		bool Create(
 			int w,
 			int h,
@@ -35,7 +35,7 @@ namespace nsK2EngineLow {
 			float clearColor[4] = nullptr
 		);
 		/// <summary>
-		/// CPU‘¤‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒnƒ“ƒhƒ‹‚ðŽæ“¾B
+		/// CPUå´ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVCpuDescriptorHandle() const
@@ -43,7 +43,7 @@ namespace nsK2EngineLow {
 			return m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
 		}
 		/// <summary>
-		/// CPU‘¤‚ÌƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒnƒ“ƒhƒ‹‚ðŽæ“¾B
+		/// CPUå´ã®ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDSVCpuDescriptorHandle() const
@@ -51,7 +51,7 @@ namespace nsK2EngineLow {
 			return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
 		}
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Æ‚È‚éƒeƒNƒXƒ`ƒƒ‚ðŽæ“¾B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		Texture& GetRenderTargetTexture()
@@ -59,7 +59,7 @@ namespace nsK2EngineLow {
 			return m_renderTargetTexture;
 		}
 		/// <summary>
-		/// ƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ª‘¶Ý‚µ‚Ä‚¢‚é‚©”»’è
+		/// ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹åˆ¤å®š
 		/// </summary>
 		/// <returns></returns>
 		bool IsExsitDepthStencilBuffer() const
@@ -68,7 +68,7 @@ namespace nsK2EngineLow {
 		}
 
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì•‚ðŽæ“¾B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¹…ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		int GetWidth() const
@@ -76,7 +76,7 @@ namespace nsK2EngineLow {
 			return m_width;
 		}
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì‚‚³‚ðŽæ“¾B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®é«˜ã•ã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		int GetHeight() const
@@ -84,7 +84,7 @@ namespace nsK2EngineLow {
 			return m_height;
 		}
 		/// <summary>
-		/// ƒJƒ‰[ƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒg‚ðŽæ“¾B
+		/// ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã‚’å–å¾—ã€‚
 		/// </summary>
 		/// <returns></returns>
 		DXGI_FORMAT GetColorBufferFormat() const
@@ -101,23 +101,23 @@ namespace nsK2EngineLow {
 		}
 	private:
 		/// <summary>
-		/// ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚ðì¬B
+		/// ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <param name="ge">ƒOƒ‰ƒtƒBƒbƒNƒGƒ“ƒWƒ“</param>
-		/// <param name="d3dDevice">D3DƒfƒoƒCƒX</param>
+		/// <param name="ge">ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¨ãƒ³ã‚¸ãƒ³</param>
+		/// <param name="d3dDevice">D3Dãƒ‡ãƒã‚¤ã‚¹</param>
 		/// <returns></returns>
 		bool CreateDescriptorHeap(GraphicsEngine& ge, ID3D12Device5*& d3dDevice);
 		/// <summary>
-		/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Æ‚È‚éƒeƒNƒXƒ`ƒƒ‚ðì¬B
+		/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <param name="ge">ƒOƒ‰ƒtƒBƒbƒNƒGƒ“ƒWƒ“</param>
-		/// <param name="d3dDevice">D3DƒfƒoƒCƒX</param>
-		/// <param name="w">ƒeƒNƒXƒ`ƒƒ‚Ì•</param>
-		/// <param name="h">ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³</param>
-		/// <param name="mipLevel">ƒ~ƒbƒvƒ}ƒbƒvƒŒƒxƒ‹</param>
-		/// <param name="arraySize">ƒeƒNƒXƒ`ƒƒ”z—ñ‚ÌƒTƒCƒY</param>
-		/// <param name="format">ƒeƒNƒXƒ`ƒƒ‚ÌƒtƒH[ƒ}ƒbƒg</param>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚ç¬Œ÷B</returns>
+		/// <param name="ge">ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¨ãƒ³ã‚¸ãƒ³</param>
+		/// <param name="d3dDevice">D3Dãƒ‡ãƒã‚¤ã‚¹</param>
+		/// <param name="w">ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…</param>
+		/// <param name="h">ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•</param>
+		/// <param name="mipLevel">ãƒŸãƒƒãƒ—ãƒžãƒƒãƒ—ãƒ¬ãƒ™ãƒ«</param>
+		/// <param name="arraySize">ãƒ†ã‚¯ã‚¹ãƒãƒ£é…åˆ—ã®ã‚µã‚¤ã‚º</param>
+		/// <param name="format">ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ</param>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰æˆåŠŸã€‚</returns>
 		bool CreateRenderTargetTexture(
 			GraphicsEngine& ge,
 			ID3D12Device5*& d3dDevice,
@@ -129,14 +129,14 @@ namespace nsK2EngineLow {
 			float clearColor[4]
 		);
 		/// <summary>
-		/// [“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚Æ‚È‚éƒeƒNƒXƒ`ƒƒ‚ðì¬B
+		/// æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <param name="ge">ƒOƒ‰ƒtƒBƒbƒNƒGƒ“ƒWƒ“</param>
-		/// <param name="d3dDevice">D3DƒfƒoƒCƒX</param>
-		/// <param name="w">ƒeƒNƒXƒ`ƒƒ‚Ì•</param>
-		/// <param name="h">ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³</param>
-		/// <param name="format">ƒeƒNƒXƒ`ƒƒ‚ÌƒtƒH[ƒ}ƒbƒg</param>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚«‚½‚ç¬Œ÷</returns>
+		/// <param name="ge">ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¨ãƒ³ã‚¸ãƒ³</param>
+		/// <param name="d3dDevice">D3Dãƒ‡ãƒã‚¤ã‚¹</param>
+		/// <param name="w">ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…</param>
+		/// <param name="h">ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•</param>
+		/// <param name="format">ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ</param>
+		/// <returns>trueãŒè¿”ã£ã¦ããŸã‚‰æˆåŠŸ</returns>
 		bool CreateDepthStencilTexture(
 			GraphicsEngine& ge,
 			ID3D12Device5*& d3dDevice,
@@ -144,27 +144,27 @@ namespace nsK2EngineLow {
 			int h,
 			DXGI_FORMAT format);
 		/// <summary>
-		/// ƒfƒBƒXƒNƒŠƒvƒ^‚Ìì¬B
+		/// ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®ä½œæˆã€‚
 		/// </summary>
-		/// <param name="d3dDevice">D3DƒfƒoƒCƒX</param>
-		/// <returns>true‚ª•Ô‚Á‚Ä‚‹ƒ`ƒA‚ç¬Œ÷B</returns>
+		/// <param name="d3dDevice">D3Dãƒ‡ãƒã‚¤ã‚¹</param>
+		/// <returns>trueãŒè¿”ã£ã¦ï½‹ãƒã‚¢ã‚‰æˆåŠŸã€‚</returns>
 		void CreateDescriptor(ID3D12Device5*& d3dDevice);
 		/// <summary>
-		/// ‰ð•ú
+		/// è§£æ”¾
 		/// </summary>
 		void Release();
 	private:
 		Texture m_renderTargetTexture;
-		ID3D12Resource* m_renderTargetTextureDx12 = nullptr;//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Æ‚È‚éƒeƒNƒXƒ`ƒƒB
-		ID3D12Resource* m_depthStencilTexture = nullptr;	//[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚Æ‚È‚éƒeƒNƒXƒ`ƒƒB
-		ID3D12DescriptorHeap* m_rtvHeap = nullptr;	//RTV—p‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒvB
-		ID3D12DescriptorHeap* m_dsvHeap = nullptr;	//[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@ƒrƒ…[‚ÌƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒvB
-		UINT m_rtvDescriptorSize = 0;						//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ÌƒTƒCƒYB
-		UINT m_dsvDescriptorSize = 0;						//[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ÌƒfƒBƒXƒNƒŠƒvƒ^‚ÌƒTƒCƒYB
-		int m_width = 0;									//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì•B
-		int m_height = 0;									//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì‚‚³B
-		float m_rtvClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒgƒrƒ…[‚ÌƒNƒŠƒAƒJƒ‰[B
-		float m_dsvClearValue = 1.0f;							//DSV‚ÌƒNƒŠƒAƒJƒ‰[B
+		ID3D12Resource* m_renderTargetTextureDx12 = nullptr;//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã€‚
+		ID3D12Resource* m_depthStencilTexture = nullptr;	//æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã€‚
+		ID3D12DescriptorHeap* m_rtvHeap = nullptr;	//RTVç”¨ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã€‚
+		ID3D12DescriptorHeap* m_dsvHeap = nullptr;	//æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã€‚
+		UINT m_rtvDescriptorSize = 0;						//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®ã‚µã‚¤ã‚ºã€‚
+		UINT m_dsvDescriptorSize = 0;						//æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒãƒƒãƒ•ã‚¡ã®ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®ã‚µã‚¤ã‚ºã€‚
+		int m_width = 0;									//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¹…ã€‚
+		int m_height = 0;									//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®é«˜ã•ã€‚
+		float m_rtvClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ“ãƒ¥ãƒ¼ã®ã‚¯ãƒªã‚¢ã‚«ãƒ©ãƒ¼ã€‚
+		float m_dsvClearValue = 1.0f;							//DSVã®ã‚¯ãƒªã‚¢ã‚«ãƒ©ãƒ¼ã€‚
 	};
 }
 

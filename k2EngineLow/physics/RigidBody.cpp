@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "RigidBody.h"
 
 namespace nsK2EngineLow {
@@ -23,7 +23,7 @@ namespace nsK2EngineLow {
 			shape, 
 			btLocalInteria
 		);
-		//”½”­—Í‚ğİ’èB
+		//åç™ºåŠ›ã‚’è¨­å®šã€‚
 		btRbInfo.m_restitution = initData.restitution;
 		m_rigidBody = std::make_unique<btRigidBody>(btRbInfo);
 

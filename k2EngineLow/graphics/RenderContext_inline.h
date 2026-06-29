@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	inline void RenderContext::SetDescriptorHeap(DescriptorHeap& descHeap)
@@ -6,7 +6,7 @@ namespace nsK2EngineLow {
 		m_descriptorHeaps[0] = descHeap.Get();
 		m_commandList->SetDescriptorHeaps(1, m_descriptorHeaps);
 
-		//ƒfƒBƒXƒNƒŠƒvƒ^ƒe[ƒuƒ‹‚É“o˜^‚·‚éB
+		//ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²ã™ã‚‹ã€‚
 		if (descHeap.IsRegistConstantBuffer()) {
 			SetGraphicsRootDescriptorTable(0, descHeap.GetConstantBufferGpuDescritorStartHandle());
 		}
@@ -22,7 +22,7 @@ namespace nsK2EngineLow {
 		m_descriptorHeaps[0] = descHeap.Get();
 		m_commandList->SetDescriptorHeaps(1, m_descriptorHeaps);
 
-		//ƒfƒBƒXƒNƒŠƒvƒ^ƒe[ƒuƒ‹‚É“o˜^‚·‚éB
+		//ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²ã™ã‚‹ã€‚
 		if (descHeap.IsRegistConstantBuffer()) {
 			SetComputeRootDescriptorTable(0, descHeap.GetConstantBufferGpuDescritorStartHandle());
 		}
@@ -62,12 +62,12 @@ namespace nsK2EngineLow {
 			rtDSHandleTbl[rtNo] = renderTargets[rtNo]->GetRTVCpuDescriptorHandle();
 		}
 		if (renderTargets[0]->IsExsitDepthStencilBuffer()) {
-			//[“xƒoƒbƒtƒ@‚ª‚ ‚éB
+			//æ·±åº¦ãƒãƒƒãƒ•ã‚¡ãŒã‚ã‚‹ã€‚
 			D3D12_CPU_DESCRIPTOR_HANDLE dsDS = renderTargets[0]->GetDSVCpuDescriptorHandle();
 			m_commandList->OMSetRenderTargets(numRT, rtDSHandleTbl, FALSE, &dsDS);
 		}
 		else {
-			//[“xƒoƒbƒtƒ@‚ª‚È‚¢B
+			//æ·±åº¦ãƒãƒƒãƒ•ã‚¡ãŒãªã„ã€‚
 			m_commandList->OMSetRenderTargets(numRT, rtDSHandleTbl, FALSE, nullptr);
 		}
 	}
@@ -78,7 +78,7 @@ namespace nsK2EngineLow {
 		for (UINT rtNo = 0; rtNo < numRT; rtNo++) {
 			rtDSHandleTbl[rtNo] = renderTargets[rtNo]->GetRTVCpuDescriptorHandle();
 		}
-		//[“xƒoƒbƒtƒ@‚ðÝ’èB
+		//æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®šã€‚
 		m_commandList->OMSetRenderTargets(numRT, rtDSHandleTbl, FALSE, &dsvHandle);
 	}
 	inline void RenderContext::SetRenderTargetAndViewport(RenderTarget& renderTarget)
@@ -116,7 +116,7 @@ namespace nsK2EngineLow {
 	inline void RenderContext::ClearRenderTargetViews(int numRt, RenderTarget* renderTargets[])
 	{
 		if (renderTargets[0]->IsExsitDepthStencilBuffer()) {
-			//[“xƒoƒbƒtƒ@‚ª‚ ‚éB
+			//æ·±åº¦ãƒãƒƒãƒ•ã‚¡ãŒã‚ã‚‹ã€‚
 			ClearDepthStencilView(renderTargets[0]->GetDSVCpuDescriptorHandle(), renderTargets[0]->GetDSVClearValue());
 		}
 		for (int i = 0; i < numRt; i++) {

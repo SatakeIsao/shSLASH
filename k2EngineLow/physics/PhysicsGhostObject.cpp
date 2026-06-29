@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "PhysicsGhostObject.h"
 
 namespace nsK2EngineLow {
@@ -10,7 +10,7 @@ namespace nsK2EngineLow {
 		btTrans.setRotation({ rot.x, rot.y, rot.z, rot.w });
 		m_ghostObject.setWorldTransform(btTrans);
 
-		//•¨—ƒGƒ“ƒWƒ“‚É“o˜^B
+		//ç‰©ç†ã‚¨ãƒ³ã‚¸ãƒ³ã«ç™»éŒ²ã€‚
 		PhysicsWorld::Get().AddCollisionObject(m_ghostObject);
 		m_isRegistPhysicsWorld = true;
 	}

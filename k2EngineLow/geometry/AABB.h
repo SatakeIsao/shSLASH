@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	/// <summary>
@@ -6,42 +6,42 @@ namespace nsK2EngineLow {
 	/// </summary>
 	class AABB {
 	private:
-		Vector3 m_max;					// AABB‚ğ\¬‚·‚éƒ{ƒbƒNƒX‚ÌÅ‘åÀ•WB
-		Vector3 m_min;					// AABB‚ğ\¬‚·‚éƒ{ƒbƒNƒX‚ÌÅ¬À•WB
-		Vector3 m_centerPos;			// ’†SÀ•WB
-		Vector3 m_vertexPosition[8];	// AABB‚ğ\¬‚·‚é8’¸“_‚ÌÀ•WB
+		Vector3 m_max;					// AABBã‚’æ§‹æˆã™ã‚‹ãƒœãƒƒã‚¯ã‚¹ã®æœ€å¤§åº§æ¨™ã€‚
+		Vector3 m_min;					// AABBã‚’æ§‹æˆã™ã‚‹ãƒœãƒƒã‚¯ã‚¹ã®æœ€å°åº§æ¨™ã€‚
+		Vector3 m_centerPos;			// ä¸­å¿ƒåº§æ¨™ã€‚
+		Vector3 m_vertexPosition[8];	// AABBã‚’æ§‹æˆã™ã‚‹8é ‚ç‚¹ã®åº§æ¨™ã€‚
 	public:
 		/// <summary>
-		/// AABB‚Ìî•ñ‚ğ‰Šú‰»‚·‚éB
+		/// AABBã®æƒ…å ±ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
 		/// </summary>
-		/// <param name="vMax">Å‘å’l</param>
-		/// <param name="vMin">Å¬’l</param>
+		/// <param name="vMax">æœ€å¤§å€¤</param>
+		/// <param name="vMin">æœ€å°å€¤</param>
 		void Init(const Vector3& vMax, const Vector3& vMin);
 		/// <summary>
-		/// AABB‚ğ\¬‚·‚é8’¸“_‚Ìƒ[ƒ‹ƒh‹óŠÔ‚Å‚ÌÀ•W‚ğŒvZ‚·‚éB
+		/// AABBã‚’æ§‹æˆã™ã‚‹8é ‚ç‚¹ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã§ã®åº§æ¨™ã‚’è¨ˆç®—ã™ã‚‹ã€‚
 		/// </summary>
 		/// <param name="pos"></param>
 		/// <param name="mWorld"></param>
 		void CalcVertexPositions(Vector3* pos, const Matrix& mWorld);
 		/// <summary>
-		/// AABB‚ÌÅ‘å’l‚ğæ“¾B
+		/// AABBã®æœ€å¤§å€¤ã‚’å–å¾—ã€‚
 		/// </summary>
 		const Vector3& GetMax() const
 		{
 			return m_max;
 		}
 		/// <summary>
-		/// AABB‚ÌÅ¬’l‚ğæ“¾B
+		/// AABBã®æœ€å°å€¤ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>Å¬’l</returns>
+		/// <returns>æœ€å°å€¤</returns>
 		const Vector3& GetMin() const
 		{
 			return m_min;
 		}
 		/// <summary>
-		/// ’†SÀ•W‚ğæ“¾B
+		/// ä¸­å¿ƒåº§æ¨™ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>’†SÀ•W</returns>
+		/// <returns>ä¸­å¿ƒåº§æ¨™</returns>
 		const Vector3& GetCenter() const
 		{
 			return m_centerPos;

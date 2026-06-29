@@ -1,35 +1,35 @@
-#pragma once
+ï»¿#pragma once
 #include "level3D/Level.h"
 
 namespace nsK2EngineLow {
 	//class MapChipRender;
 	/*!
-	* @brief	ƒIƒuƒWƒFƒNƒg–¼B
+	* @brief	ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåã€‚
 	*/
 	struct LevelObjectData_Render {
-		Vector3 position;		//<À•WB
-		Quaternion rotation;	//!<‰ñ“]B
-		Vector3 scale;			//!<Šg‘å—¦B
-		const wchar_t* name;	//!<–¼‘OB
+		Vector3 position;		//<åº§æ¨™ã€‚
+		Quaternion rotation;	//!<å›è»¢ã€‚
+		Vector3 scale;			//!<æ‹¡å¤§ç‡ã€‚
+		const wchar_t* name;	//!<åå‰ã€‚
 		int number = 0;
 		/*!
-		* @brief	ˆø”‚Å“n‚µ‚½ƒIƒuƒWƒFƒNƒg–¼‚ÌƒIƒuƒWƒFƒNƒg‚©’²‚×‚éB
-		*@param[in]	objName		’²‚×‚é–¼‘OB
-		*@return	–¼‘O‚ª“¯‚¶ê‡‚Étrue‚ğ•Ô‚µ‚Ü‚·B
+		* @brief	å¼•æ•°ã§æ¸¡ã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹èª¿ã¹ã‚‹ã€‚
+		*@param[in]	objName		èª¿ã¹ã‚‹åå‰ã€‚
+		*@return	åå‰ãŒåŒã˜å ´åˆã«trueã‚’è¿”ã—ã¾ã™ã€‚
 		*/
 		bool EqualObjectName(const wchar_t* objName)
 		{
 			return wcscmp(objName, name) == 0;
 		}
 		/*!
-		* @brief	–¼‘O‚ª‘O•ûˆê’v‚·‚é‚©’²‚×‚éB
+		* @brief	åå‰ãŒå‰æ–¹ä¸€è‡´ã™ã‚‹ã‹èª¿ã¹ã‚‹ã€‚
 		*/
 		bool ForwardMatchName(const wchar_t* n)
 		{
 			auto len = wcslen(n);
 			auto namelen = wcslen(name);
 			if (len > namelen) {
-				//–¼‘O‚ª’·‚¢B•sˆê’vB
+				//åå‰ãŒé•·ã„ã€‚ä¸ä¸€è‡´ã€‚
 				return false;
 			}
 			return wcsncmp(n, name, len) == 0;
@@ -37,7 +37,7 @@ namespace nsK2EngineLow {
 	};
 
 	/*!
-	*@brief	ƒŒƒxƒ‹B
+	*@brief	ãƒ¬ãƒ™ãƒ«ã€‚
 	*/
 
 	class LevelRender : public Noncopyable {
@@ -46,42 +46,42 @@ namespace nsK2EngineLow {
 	public:
 		~LevelRender();
 		/*!
-		 * @brief	ƒŒƒxƒ‹‚ğ‰Šú‰»B
-		 *@param[in]	levelDataFilePath		tklƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹ƒpƒXB
-		 *@param[in] hookFunc				ƒIƒuƒWƒFƒNƒg‚ğì¬‚·‚é‚Ìˆ—‚ğƒtƒbƒN‚·‚é‚½‚ß‚ÌŠÖ”ƒIƒuƒWƒFƒNƒgB
-		 *   ƒtƒbƒN‚µ‚È‚¢‚È‚çnullptr‚ğw’è‚·‚ê‚Î‚æ‚¢A
-		 * ‚±‚ÌŠÖ”ƒIƒuƒWƒFƒNƒg‚ªfalse‚ğ•Ô‚·‚ÆAƒIƒuƒWƒFƒNƒg‚Ìî•ñ‚©‚çA
-		 * Ã“IƒIƒuƒWƒFƒNƒg‚ÌMapChipƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª¶¬‚³‚ê‚Ü‚·B
-		 * ƒIƒuƒWƒFƒNƒg‚Ì–¼‘O‚È‚Ç‚ÅAƒhƒA‚âƒWƒƒƒ“ƒv‘äAƒAƒCƒeƒ€‚È‚Ç‚Ì“Áê‚ÈƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬‚µ‚½‚Æ‚«‚ÉA
-		 * ƒfƒtƒHƒ‹ƒg‚Åì¬‚³‚ê‚éMapChipƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª•s—v‚Èê‡‚Ítrue‚ğ•Ô‚µ‚Ä‚­‚¾‚³‚¢B
-		 * —á‚¦‚ÎAƒtƒbƒNŠÖ”‚Ì’†‚ÅA“n‚³‚ê‚½ƒIƒuƒWƒFƒNƒgƒf[ƒ^‚Ì–¼‘O‚Ìƒ‚ƒfƒ‹‚ğ•`‰æ‚·‚éƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ
-		 * ¶¬‚µ‚½‚Æ‚«‚ÉAfalse‚ğ•Ô‚µ‚Ä‚µ‚Ü‚¤‚ÆA“¯‚¶ƒ‚ƒfƒ‹‚ª“ñ‚Â•`‰æ‚³‚ê‚é‚±‚Æ‚É‚È‚è‚Ü‚·B
+		 * @brief	ãƒ¬ãƒ™ãƒ«ã‚’åˆæœŸåŒ–ã€‚
+		 *@param[in]	levelDataFilePath		tklãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã€‚
+		 *@param[in] hookFunc				ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã™ã‚‹æ™‚ã®å‡¦ç†ã‚’ãƒ•ãƒƒã‚¯ã™ã‚‹ãŸã‚ã®é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
+		 *   ãƒ•ãƒƒã‚¯ã—ãªã„ãªã‚‰nullptrã‚’æŒ‡å®šã™ã‚Œã°ã‚ˆã„ã€
+		 * ã“ã®é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒfalseã‚’è¿”ã™ã¨ã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æƒ…å ±ã‹ã‚‰ã€
+		 * é™çš„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®MapChipã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒç”Ÿæˆã•ã‚Œã¾ã™ã€‚
+		 * ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åå‰ãªã©ã§ã€ãƒ‰ã‚¢ã‚„ã‚¸ãƒ£ãƒ³ãƒ—å°ã€ã‚¢ã‚¤ãƒ†ãƒ ãªã©ã®ç‰¹æ®Šãªã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆã—ãŸã¨ãã«ã€
+		 * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ä½œæˆã•ã‚Œã‚‹MapChipã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒä¸è¦ãªå ´åˆã¯trueã‚’è¿”ã—ã¦ãã ã•ã„ã€‚
+		 * ä¾‹ãˆã°ã€ãƒ•ãƒƒã‚¯é–¢æ•°ã®ä¸­ã§ã€æ¸¡ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ‡ãƒ¼ã‚¿ã®åå‰ã®ãƒ¢ãƒ‡ãƒ«ã‚’æç”»ã™ã‚‹ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’
+		 * ç”Ÿæˆã—ãŸã¨ãã«ã€falseã‚’è¿”ã—ã¦ã—ã¾ã†ã¨ã€åŒã˜ãƒ¢ãƒ‡ãƒ«ãŒäºŒã¤æç”»ã•ã‚Œã‚‹ã“ã¨ã«ãªã‚Šã¾ã™ã€‚
 		 */
 		void Init(const char* filePath, std::function<bool(LevelObjectData_Render& objData)> hookFunc);
 		/// <summary>
-		/// XVˆ—B
+		/// æ›´æ–°å‡¦ç†ã€‚
 		/// </summary>
 		void Update();
 		/// <summary>
-		/// ƒ‚ƒfƒ‹‚ğ•`‰æB
+		/// ãƒ¢ãƒ‡ãƒ«ã‚’æç”»ã€‚
 		/// </summary>
-		/// <param name="rc">ƒŒƒ“ƒ_[ƒRƒ“ƒeƒLƒXƒgB</param>
+		/// <param name="rc">ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã€‚</param>
 		void Draw(RenderContext& rc);
 	private:
 		/// <summary>
-		/// ƒ}ƒbƒvƒ`ƒbƒv‚ğì¬B
+		/// ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã‚’ä½œæˆã€‚
 		/// </summary>
-		/// <param name="objData">LevelObjectDataB</param>
+		/// <param name="objData">LevelObjectDataã€‚</param>
 		void CreateMapChipRender(const LevelObjectData_Render& objData, const char* filePath);
 		/// <summary>
-		/// Tklƒtƒ@ƒCƒ‹‚Ìs—ñ‚ğ•ÏŠ·‚·‚éB
+		/// Tklãƒ•ã‚¡ã‚¤ãƒ«ã®è¡Œåˆ—ã‚’å¤‰æ›ã™ã‚‹ã€‚
 		/// </summary>
 		void MatrixTklToLevel();
 	private:
-		using BonePtr = std::unique_ptr<Bone>;								//ƒ{[ƒ“PtrB
-		std::vector<BonePtr> m_bonelist;									//ƒ{[ƒ“‚ÌƒŠƒXƒgB
-		std::unique_ptr<Matrix[]> m_matrixlist;								//s—ñ‚ÌƒŠƒXƒgB
-		//std::map<std::string, MapChipRenderPtr> m_mapChipRenderPtrs;		//ƒ}ƒbƒvƒ`ƒbƒv‚Ì‰Â•Ï’·”z—ñB
+		using BonePtr = std::unique_ptr<Bone>;								//ãƒœãƒ¼ãƒ³Ptrã€‚
+		std::vector<BonePtr> m_bonelist;									//ãƒœãƒ¼ãƒ³ã®ãƒªã‚¹ãƒˆã€‚
+		std::unique_ptr<Matrix[]> m_matrixlist;								//è¡Œåˆ—ã®ãƒªã‚¹ãƒˆã€‚
+		//std::map<std::string, MapChipRenderPtr> m_mapChipRenderPtrs;		//ãƒãƒƒãƒ—ãƒãƒƒãƒ—ã®å¯å¤‰é•·é…åˆ—ã€‚
 		TklFile m_tklFile;
 	};
 	

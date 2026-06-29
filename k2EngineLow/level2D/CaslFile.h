@@ -1,74 +1,74 @@
-#pragma once
+ï»¿#pragma once
 #include <list>
 #include <vector>
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// Caslƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^B
+	/// Caslãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã€‚
 	/// </summary>
 	struct CaslData : public Noncopyable
 	{
 	public:
-		std::unique_ptr<char[]> name;			//–¼‘OB
-		std::unique_ptr<char[]> fileName;		//ƒtƒ@ƒCƒ‹‚ÌƒpƒXB
-		std::unique_ptr<char[]> ddsFileName;	//ddsƒtƒ@ƒCƒ‹B
-		std::unique_ptr<char[]> ddsFilePath;	//ddsƒtƒ@ƒCƒ‹‚ÌƒpƒXB
-		Vector2 position;						//À•WB
-		int width = 0;							//‰¡•B
-		int height = 0;							//c•B
-		int numberLayer = 0;					//ƒŒƒCƒ„[—Dæ“xB
-		Vector2 scale;							//‘å‚«‚³B
-		Vector2 pivot = Sprite::DEFAULT_PIVOT;	//ƒsƒ{ƒbƒgB
+		std::unique_ptr<char[]> name;			//åå‰ã€‚
+		std::unique_ptr<char[]> fileName;		//ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã€‚
+		std::unique_ptr<char[]> ddsFileName;	//ddsãƒ•ã‚¡ã‚¤ãƒ«ã€‚
+		std::unique_ptr<char[]> ddsFilePath;	//ddsãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã€‚
+		Vector2 position;						//åº§æ¨™ã€‚
+		int width = 0;							//æ¨ªå¹…ã€‚
+		int height = 0;							//ç¸¦å¹…ã€‚
+		int numberLayer = 0;					//ãƒ¬ã‚¤ãƒ¤ãƒ¼å„ªå…ˆåº¦ã€‚
+		Vector2 scale;							//å¤§ãã•ã€‚
+		Vector2 pivot = Sprite::DEFAULT_PIVOT;	//ãƒ”ãƒœãƒƒãƒˆã€‚
 	};
 
 	/// <summary>
-	/// caslƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ŞB
+	/// caslãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 	/// </summary>
 	class CaslFile
 	{
 	public:
 		/// <summary>
-		/// caslƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ŞB
+		/// caslãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 		/// </summary>
-		/// <param name="filePath">ƒtƒ@ƒCƒ‹ƒpƒXB</param>
+		/// <param name="filePath">ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã€‚</param>
 		void Load(const char* filePath);
 		/// <summary>
-		/// Caslƒf[ƒ^‚Ì”‚ğæ“¾B
+		/// Caslãƒ‡ãƒ¼ã‚¿ã®æ•°ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <returns>Caslƒf[ƒ^‚Ì”B</returns>
+		/// <returns>Caslãƒ‡ãƒ¼ã‚¿ã®æ•°ã€‚</returns>
 		int GetNumCaslData() const
 		{
 			return static_cast<int>(m_caslDataList.size());
 		}
 		/// <summary>
-		/// Caslƒf[ƒ^‚ğæ“¾B
+		/// Caslãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã€‚
 		/// </summary>
-		/// <param name="number">ƒiƒ“ƒo[B</param>
+		/// <param name="number">ãƒŠãƒ³ãƒãƒ¼ã€‚</param>
 		/// <returns></returns>
 		CaslData* GetCaslData(int number) const
 		{
 			return m_caslDataList[number].get();
 		}
 	private:
-		//1•¶š‚¾‚¯“Ç‚İ‚ŞA(,)‚ğ“Ç‚İ‚Ş‚Ì‚Ég‚¤B
+		//1æ–‡å­—ã ã‘èª­ã¿è¾¼ã‚€ã€(,)ã‚’èª­ã¿è¾¼ã‚€ã®ã«ä½¿ã†ã€‚
 		/// <summary>
-		/// 1•¶š‚¾‚¯“Ç‚İ‚ŞBu , v‚âu \n v‚ğ“Ç‚İ‚Ş‚Ì‚Ég‚¤B
+		/// 1æ–‡å­—ã ã‘èª­ã¿è¾¼ã‚€ã€‚ã€Œ , ã€ã‚„ã€Œ \n ã€ã‚’èª­ã¿è¾¼ã‚€ã®ã«ä½¿ã†ã€‚
 		/// </summary>
-		/// <param name="file">ƒtƒ@ƒCƒ‹B</param>
+		/// <param name="file">ãƒ•ã‚¡ã‚¤ãƒ«ã€‚</param>
 		void ReadOnlyOneCharacter(FILE* file) const;
 		/// <summary>
-		/// intŒ^‚ğ“Ç‚İ‚ŞB
+		/// intå‹ã‚’èª­ã¿è¾¼ã‚€ã€‚
 		/// </summary>
-		/// <param name="file">ƒtƒ@ƒCƒ‹B</param>
-		/// <returns>intŒ^‚Ì’lB</returns>
+		/// <param name="file">ãƒ•ã‚¡ã‚¤ãƒ«ã€‚</param>
+		/// <returns>intå‹ã®å€¤ã€‚</returns>
 		int ReadInteger(FILE* file) const;
 		/// <summary>
-		/// floatŒ^‚ğ“Ç‚İ‚ŞB
+		/// floatå‹ã‚’èª­ã¿è¾¼ã‚€ã€‚
 		/// </summary>
-		/// <param name="file">ƒtƒ@ƒCƒ‹B</param>
-		/// <returns>floatŒ^‚Ì’lB</returns>
+		/// <param name="file">ãƒ•ã‚¡ã‚¤ãƒ«ã€‚</param>
+		/// <returns>floatå‹ã®å€¤ã€‚</returns>
 		float ReadDecimal(FILE* file) const;
 
-		std::vector<std::unique_ptr<CaslData>> m_caslDataList;		//Caslƒf[ƒ^B
+		std::vector<std::unique_ptr<CaslData>> m_caslDataList;		//Caslãƒ‡ãƒ¼ã‚¿ã€‚
 	};
 }

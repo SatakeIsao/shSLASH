@@ -1,5 +1,8 @@
 #include "k2EngineLowPreCompile.h"
 #include "RootSignature.h"
+#include <unordered_map>
+#include <vector>
+#include <cstdint>
 
 namespace nsK2EngineLow {
 	enum {
@@ -8,6 +11,24 @@ namespace nsK2EngineLow {
 		enDescriptorHeap_UAV,
 		enNumDescriptorHeap
 	};
+
+namespace {
+	// シリアライズされたBlobの内容（バイナリ）をキーにしてルートシグネチャをキャッシュする。
+	// 引数が同一であれば、シリアライズされるBlobの内容も同一になり、同じ ID3D12RootSignature* を生成する。
+	// これによりマテリアル間でPSO（パイプライン状態オブジェクト）記述子の比較が可能になり、PSOキャッシュのヒット率が向上する。
+	struct RSKey {
+		std::vector<uint8_t> blob;
+		bool operator==(const RSKey& o) const { return blob == o.blob; }
+	};
+	struct RSKeyHash {
+		size_t operator()(const RSKey& k) const {
+			size_t h = 14695981039346656037ULL;
+			for (auto b : k.blob) { h ^= b; h *= 1099511628211ULL; }
+			return h;
+		}
+	};
+	std::unordered_map<RSKey, ID3D12RootSignature*, RSKeyHash> s_rsCache;
+}
 
 	RootSignature::~RootSignature()
 	{
@@ -43,7 +64,6 @@ namespace nsK2EngineLow {
 		ranges[enDescriptorHeap_UAV].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, maxUavDescritor, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, offsetInDescriptorsFromTableStartUAV);
 		rootParameters[enDescriptorHeap_UAV].InitAsDescriptorTable(1, &ranges[enDescriptorHeap_UAV]);
 
-		// Allow input layout and deny uneccessary access to certain pipeline stages.
 		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
@@ -55,11 +75,24 @@ namespace nsK2EngineLow {
 		Microsoft::WRL::ComPtr<ID3DBlob> signature;
 		Microsoft::WRL::ComPtr<ID3DBlob> error;
 		D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+
+		// シリアライズされたバイトコードをキーにキャッシュを検索：同じパラメータであれば同じバイト列になり、同じポインタを返す
+		RSKey key;
+		const auto* p = static_cast<const uint8_t*>(signature->GetBufferPointer());
+		key.blob.assign(p, p + signature->GetBufferSize());
+		auto it = s_rsCache.find(key);
+		if (it != s_rsCache.end()) {
+			m_rootSignature = it->second;
+			m_rootSignature->AddRef();
+			return true;
+		}
+
 		auto hr = d3dDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
 		if (FAILED(hr)) {
-			//���[�g�V�O�l�`���̍쐬�Ɏ��s�����B
 			return false;
 		}
+		m_rootSignature->AddRef();
+		s_rsCache[key] = m_rootSignature;
 		return true;
 	}
 	bool RootSignature::Init(
@@ -94,13 +127,13 @@ namespace nsK2EngineLow {
 
 	bool RootSignature::Init(Shader& shader)
 	{
-		//�V�F�[�_�[���烋�[�g�V�O�l�`�������擾
+		// シェーダーからルートシグネチャの情報を取得
 		ID3DBlob* sig = nullptr;
 		auto shaderBlob = shader.GetCompiledBlob();
 
 		auto hr = D3DGetBlobPart(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
 			D3D_BLOB_ROOT_SIGNATURE, 0, &sig);
-		//���[�g�V�O�l�`���̐���
+		// ルートシグネチャの生成
 		auto d3dDevice = g_graphicsEngine->GetD3DDevice();
 		hr = d3dDevice->CreateRootSignature(0, sig->GetBufferPointer(), sig->GetBufferSize(),
 			IID_PPV_ARGS(&m_rootSignature));

@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "tkFile/TkaFile.h"
 #include <errno.h>
 
@@ -7,23 +7,23 @@ namespace nsK2EngineLow {
 	{
 		FILE* fp = fopen(filePath, "rb");
 		if (fp == nullptr) {
-			MessageBoxA(nullptr, "tkaƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½B", "ƒGƒ‰[", MB_OK);
+			MessageBoxA(nullptr, "tkaãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸã€‚", "ã‚¨ãƒ©ãƒ¼", MB_OK);
 			return;
 		}
-		//ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ìƒwƒbƒ_[‚ğƒ[ƒhB
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		AnimClipHeader header;
 		fread(&header, sizeof(header), 1, fp);
 
 		if (header.numAnimationEvent > 0) {
-			//ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒxƒ“ƒg‚ª‚ ‚é‚È‚çAƒCƒxƒ“ƒgî•ñ‚ğƒ[ƒh‚·‚éB
+			//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ™ãƒ³ãƒˆãŒã‚ã‚‹ãªã‚‰ã€ã‚¤ãƒ™ãƒ³ãƒˆæƒ…å ±ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã€‚
 			for (auto i = 0; i < (int)header.numAnimationEvent; i++) {
-				//ƒCƒxƒ“ƒg‚ª‹N“®‚·‚éŠÔ‚ğ“Ç‚İ‚ŞB
+				//ã‚¤ãƒ™ãƒ³ãƒˆãŒèµ·å‹•ã™ã‚‹æ™‚é–“ã‚’èª­ã¿è¾¼ã‚€ã€‚
 				float invokeTime = 0.0f;
 				fread(&invokeTime, sizeof(invokeTime), 1, fp);
-				//ƒC‚‚ª‚ÆƒƒC‚Ì’·‚³‚ğ“Ç‚İ‚ŞB
+				//ã‚¤ãƒ™ãƒ³ãƒˆåã®é•·ã•ã‚’èª­ã¿è¾¼ã‚€ã€‚
 				std::uint32_t eventNameLength;
 				fread(&eventNameLength, sizeof(eventNameLength), 1, fp);
-				//ƒCƒxƒ“ƒg–¼‚ğƒ[ƒh‚·‚éB
+				//ã‚¤ãƒ™ãƒ³ãƒˆåã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã€‚
 				static char eventName[256];
 				static wchar_t wEventName[256];
 				fread(eventName, eventNameLength + 1, 1, fp);
@@ -33,7 +33,7 @@ namespace nsK2EngineLow {
 				m_animationEvents.push_back(std::move(animEvent));
 			}
 		}
-		//ƒL[ƒtƒŒ[ƒ€‚Ìî•ñ‚ğ‚²‚»‚Á‚Æƒ[ƒhB
+		//ã‚­ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã®æƒ…å ±ã‚’ã”ãã£ã¨ãƒ­ãƒ¼ãƒ‰ã€‚
 		m_keyFrames.resize(header.numKey);
 
 		fread(&m_keyFrames.front(), sizeof(KeyFrame) * header.numKey, 1, fp);

@@ -1,5 +1,5 @@
-/*!
- *@brief	ƒŒƒxƒ‹B
+ï»¿/*!
+ *@brief	ãƒ¬ãƒ™ãƒ«ã€‚
  */
 
 #include "k2EngineLowPreCompile.h"
@@ -12,7 +12,7 @@ namespace nsK2EngineLow {
 	{
 		auto mapChip2DPtr = std::make_unique<MapChip2D>();
 		mapChip2DPtr.get()->Init(caslData);
-		//std::unique_ptr‚ğˆÚ“®‚³‚¹‚é‚Ístd::move()‚ğg‚¤B
+		//std::unique_ptrã‚’ç§»å‹•ã•ã›ã‚‹æ™‚ã¯std::move()ã‚’ä½¿ã†ã€‚
 		m_mapChip2DPtrList.push_back(std::move(mapChip2DPtr));
 	}
 
@@ -21,11 +21,11 @@ namespace nsK2EngineLow {
 		std::function<bool(Level2DObjectData& objData)> hookFunc
 	)
 	{
-		//Caslƒtƒ@ƒCƒ‹‚ğƒ[ƒh‚·‚éB
+		//Caslãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã€‚
 		CaslFile casl;
 		casl.Load(filePath);
 
-		//\’z\’zB
+		//æ§‹ç¯‰æ§‹ç¯‰ã€‚
 		for (int i = 0; i < casl.GetNumCaslData(); i++)
 		{
 			auto caslData = casl.GetCaslData(i);
@@ -41,7 +41,7 @@ namespace nsK2EngineLow {
 			objData.pivot = caslData->pivot;
 			auto isHook = false;
 			if (hookFunc != nullptr) {
-				//hookŠÖ”‚ªw’è‚³‚ê‚Ä‚¢‚é‚Ì‚ÅhookŠÖ”‚ğŒÄ‚Ño‚·B
+				//hooké–¢æ•°ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹ã®ã§hooké–¢æ•°ã‚’å‘¼ã³å‡ºã™ã€‚
 				isHook = hookFunc(objData);
 				if (!isHook)
 				{

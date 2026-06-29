@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "StructuredBuffer.h"
 
 namespace nsK2EngineLow {
@@ -8,7 +8,7 @@ namespace nsK2EngineLow {
 	}
 	void StructuredBuffer::Release()
 	{
-		//ƒAƒ“ƒ}[ƒbƒv
+		//ã‚¢ãƒ³ãƒžãƒ¼ãƒƒãƒ—
 		CD3DX12_RANGE readRange(0, 0);
 		for (auto& buffer : m_buffersOnGPU) {
 			if (buffer) {
@@ -38,8 +38,8 @@ namespace nsK2EngineLow {
 			);
 
 
-			//\‘¢‰»ƒoƒbƒtƒ@‚ðCPU‚©‚çƒAƒNƒZƒX‰Â”\‚È‰¼‘zƒAƒhƒŒƒX‹óŠÔ‚Éƒ}ƒbƒsƒ“ƒO‚·‚éB
-			//ƒ}ƒbƒvAƒAƒ“ƒ}ƒbƒv‚ÌƒI[ƒo[ƒwƒbƒh‚ðŒyŒ¸‚·‚é‚½‚ß‚É‚Í‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª¶‚«‚Ä‚¢‚éŠÔ‚Ís‚í‚È‚¢B
+			//æ§‹é€ åŒ–ãƒãƒƒãƒ•ã‚¡ã‚’CPUã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½ãªä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ç©ºé–“ã«ãƒžãƒƒãƒ”ãƒ³ã‚°ã™ã‚‹ã€‚
+			//ãƒžãƒƒãƒ—ã€ã‚¢ãƒ³ãƒžãƒƒãƒ—ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ˜ãƒƒãƒ‰ã‚’è»½æ¸›ã™ã‚‹ãŸã‚ã«ã¯ã“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒç”Ÿãã¦ã„ã‚‹é–“ã¯è¡Œã‚ãªã„ã€‚
 			{
 				CD3DX12_RANGE readRange(0, 0);        //     intend to read from this resource on the CPU.
 				buffer->Map(0, &readRange, reinterpret_cast<void**>(&m_buffersOnCPU[bufferNo]));

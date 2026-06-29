@@ -20,6 +20,7 @@ private:
 	// app::ui::Layout gameOverLayout_;
 	app::ui::GameOverSequence* gameOverSequence_ = nullptr;
 	bool isGameOver_ = false;
+	bool isLoaded_   = false;
 
 public:
 	BattleScene();
@@ -30,6 +31,7 @@ public:
 	virtual void Render(RenderContext& rc) override;
 
 	virtual bool RequestScene(uint32_t& id, float& waitTime);
+	virtual bool IsReadyToFadeIn() const override { return isLoaded_; }
 
 
 public:

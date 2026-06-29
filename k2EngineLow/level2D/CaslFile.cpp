@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "CaslFile.h"
 #include <string>
 
@@ -6,92 +6,92 @@ namespace nsK2EngineLow {
 	void CaslFile::Load(const char* filePath)
 	{
 		auto fp = fopen(filePath, "rb");
-		//ƒtƒ@ƒCƒ‹“Ç‚İ‚ß‚È‚©‚Á‚½‚çB
+		//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã‚ãªã‹ã£ãŸã‚‰ã€‚
 		if (fp == nullptr) {
-			MessageBoxA(nullptr, "caslƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½B", "ƒGƒ‰[", MB_OK);
+			MessageBoxA(nullptr, "caslãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸã€‚", "ã‚¨ãƒ©ãƒ¼", MB_OK);
 			return;
 		}
 
-		//.ddsƒtƒHƒ‹ƒ_ƒpƒX‚ğİ’èBB
+		//.ddsãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹ã‚’è¨­å®šã€‚
 		std::string ddsFolderPath = filePath;
 		int pos = (int)ddsFolderPath.rfind("/");
 		ddsFolderPath = ddsFolderPath.substr(0, static_cast<size_t>(pos) + 1);
 		int ddsFolderPathCount = static_cast<int>(ddsFolderPath.length());
 
-		//‰æ‘œ‚Ì”‚ğæ“¾B
+		//ç”»åƒã®æ•°ã‚’å–å¾—ã€‚
 		int numLevel = ReadInteger(fp);
 		for (int i = 0; i < numLevel; i++)
 		{
 
 			auto caslData = std::make_unique<CaslData>();
 			//std::unique_ptr<Level2DObject> levelObject;
-			//ƒŒƒxƒ‹ƒtƒ@ƒCƒ‹‚É•Û‘¶‚µ‚Ä‚ ‚é‚Ì‚ÍB
-			//ˆÈ‰º‘S‚ÄcharŒ^‚Å•Û‘¶‚µ‚Ä‚ ‚éAˆê‚Âˆê‚Â‚É(,)‚Å‹æØ‚è‚ª‚µ‚Ä‚ ‚éB
-			//–¼‘O‚Ì’·‚³(int)A–¼‘O(char)B
-			//ƒtƒ@ƒCƒ‹ƒpƒX‚Ì’·‚³(int)Aƒtƒ@ƒCƒ‹ƒpƒX(char)B
-			//À•Wx,y(float)B
-			//‰æ‘œ‚Ì‘å‚«‚³x,y(int)B
-			//ƒŒƒCƒ„[—Dæ“xx,y(int)B
-			//ƒXƒP[ƒ‹”{—¦x,y(float)B
-			//.ddsƒtƒ@ƒCƒ‹‚Ì–¼‘O‚Ì’·‚³(int)Addsƒtƒ@ƒCƒ‹‚Ì–¼‘OB
+			//ãƒ¬ãƒ™ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã—ã¦ã‚ã‚‹ã®ã¯ã€‚
+			//ä»¥ä¸‹å…¨ã¦charå‹ã§ä¿å­˜ã—ã¦ã‚ã‚‹ã€ä¸€ã¤ä¸€ã¤ã«(,)ã§åŒºåˆ‡ã‚ŠãŒã—ã¦ã‚ã‚‹ã€‚
+			//åå‰ã®é•·ã•(int)ã€åå‰(char)ã€‚
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®é•·ã•(int)ã€ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹(char)ã€‚
+			//åº§æ¨™x,y(float)ã€‚
+			//ç”»åƒã®å¤§ãã•x,y(int)ã€‚
+			//ãƒ¬ã‚¤ãƒ¤ãƒ¼å„ªå…ˆåº¦x,y(int)ã€‚
+			//ã‚¹ã‚±ãƒ¼ãƒ«å€ç‡x,y(float)ã€‚
+			//.ddsãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã®é•·ã•(int)ã€ddsãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã€‚
 
-			//‰æ‘œ‚Ì–¼‘O‚Ì’·‚³‚ğæ“¾B
+			//ç”»åƒã®åå‰ã®é•·ã•ã‚’å–å¾—ã€‚
 			int nameCount = ReadInteger(fp);
-			//‰æ‘œ‚Ì–¼‘O‚ğæ“¾B
+			//ç”»åƒã®åå‰ã‚’å–å¾—ã€‚
 			caslData.get()->name = std::make_unique<char[]>(static_cast<size_t>(nameCount) + 1);
 			fread(caslData.get()->name.get(), nameCount, 1, fp);
 			ReadOnlyOneCharacter(fp);
 
-			//ƒtƒ@ƒCƒ‹ƒpƒX‚Ì–¼‘O‚Ì’·‚³‚ğæ“¾B
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®åå‰ã®é•·ã•ã‚’å–å¾—ã€‚
 			int fileNameCount = ReadInteger(fp);
 
-			//ƒtƒ@ƒCƒ‹ƒpƒX‚ğæ“¾B
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã€‚
 			caslData.get()->fileName = std::make_unique<char[]>(static_cast<size_t>(fileNameCount) + 1);
 			fread(caslData.get()->fileName.get(), fileNameCount, 1, fp);
 			ReadOnlyOneCharacter(fp);
 
-			//À•W‚ğæ“¾B
+			//åº§æ¨™ã‚’å–å¾—ã€‚
 			caslData.get()->position.x = ReadDecimal(fp);
 			caslData.get()->position.y = ReadDecimal(fp);
 
-			//•‚Æ‚‚³‚ğæ“¾B
+			//å¹…ã¨é«˜ã•ã‚’å–å¾—ã€‚
 			caslData.get()->width = ReadInteger(fp);
 			caslData.get()->height = ReadInteger(fp);
 
-			//ƒŒƒCƒ„[—Dæ“x‚ğæ“¾B
+			//ãƒ¬ã‚¤ãƒ¤ãƒ¼å„ªå…ˆåº¦ã‚’å–å¾—ã€‚
 			caslData.get()->numberLayer = ReadInteger(fp);
 
-			//‘å‚«‚³‚Ì”{—¦‚ğæ“¾B
-			//Œ»İ‚Í1.0f‚ÉŒÅ’èB
+			//å¤§ãã•ã®å€ç‡ã‚’å–å¾—ã€‚
+			//ç¾åœ¨ã¯1.0fã«å›ºå®šã€‚
 			ReadDecimal(fp);
 			ReadDecimal(fp);
 			caslData.get()->scale.x = 1.0f;
 			caslData.get()->scale.y = 1.0f;
 
-			//ƒsƒ{ƒbƒg‚ğæ“¾B
+			//ãƒ”ãƒœãƒƒãƒˆã‚’å–å¾—ã€‚
 			caslData.get()->pivot.x = ReadDecimal(fp);
 			caslData.get()->pivot.y = ReadDecimal(fp);
 
-			//ddsƒtƒ@ƒCƒ‹ƒpƒX‚Ì–¼‘O‚Ì’·‚³‚ğæ“¾B
+			//ddsãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®åå‰ã®é•·ã•ã‚’å–å¾—ã€‚
 			int ddsFileNameCount = ReadInteger(fp);
-			//ddsƒtƒ@ƒCƒ‹ƒpƒX‚ğæ“¾B
+			//ddsãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã€‚
 			caslData.get()->ddsFileName = std::make_unique<char[]>(static_cast<size_t>(ddsFileNameCount) + 1);
 			fread(caslData.get()->ddsFileName.get(), ddsFileNameCount, 1, fp);
 
-			//.ddsƒtƒ@ƒCƒ‹ƒpƒX‚ğİ’è‚·‚éB
+			//.ddsãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’è¨­å®šã™ã‚‹ã€‚
 			caslData.get()->ddsFilePath = std::make_unique<char[]>(static_cast<size_t>(ddsFolderPathCount) + static_cast<size_t>(ddsFileNameCount) + 1);
-			//ƒtƒHƒ‹ƒ_ƒpƒX‚Æ.ddsƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğ˜AŒ‹‚·‚éB
+			//ãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹ã¨.ddsãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’é€£çµã™ã‚‹ã€‚
 			std::string ddsFilePath = ddsFolderPath + caslData.get()->ddsFileName.get();
 			std::char_traits<char>::copy(caslData.get()->ddsFilePath.get(), ddsFilePath.c_str(), ddsFilePath.size() + 1);
 
 			//ReadOnlyOneCharacter(fp);
-			//‰üsƒR[ƒh‚ğ“Ç‚İ”ò‚Î‚µB
+			//æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’èª­ã¿é£›ã°ã—ã€‚
 			char dummy[256];
 			fgets(dummy, 256, fp);
 
 			m_caslDataList.push_back(std::move(caslData));
 		}
-		//fopen‚µ‚½‚çfclose‚Å•Â‚¶‚éB
+		//fopenã—ãŸã‚‰fcloseã§é–‰ã˜ã‚‹ã€‚
 		fclose(fp);
 	}
 
@@ -116,7 +116,7 @@ namespace nsK2EngineLow {
 				break;
 			}
 		}
-		//stringŒ^‚ğintŒ^‚É•ÏŠ·‚·‚éB
+		//stringå‹ã‚’intå‹ã«å¤‰æ›ã™ã‚‹ã€‚
 		return atoi(number.c_str());
 	}
 
@@ -135,7 +135,7 @@ namespace nsK2EngineLow {
 				break;
 			}
 		}
-		//stringŒ^‚ğfloatŒ^‚É•ÏŠ·‚·‚éB
+		//stringå‹ã‚’floatå‹ã«å¤‰æ›ã™ã‚‹ã€‚
 		return static_cast<float>(atof(number.c_str()));
 	}
 }

@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "GPUBuffer.h"
 
 namespace nsK2EngineLow {
@@ -14,7 +14,7 @@ namespace nsK2EngineLow {
 	{
 		Release();
 		m_desc = desc;
-		//todo ‚Ü‚Æ‚ß‚½•û‚ª‚¦‚¦‚ÈB
+		//todo ã¾ã¨ã‚ãŸæ–¹ãŒãˆãˆãªã€‚
 		const D3D12_HEAP_PROPERTIES kDefaultHeapProps =
 		{
 			D3D12_HEAP_TYPE_DEFAULT,
@@ -41,7 +41,7 @@ namespace nsK2EngineLow {
 			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 		}
 		else {
-			//–¢‘Î‰žB
+			//æœªå¯¾å¿œã€‚
 			std::abort();
 		}
 		auto d3dDevice = g_graphicsEngine->GetD3DDevice();

@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #include "ICollider.h"
 namespace nsK2EngineLow {
 	/*!
-	* @brief	ƒ{ƒbƒNƒXƒRƒ‰ƒCƒ_[B
+	* @brief	ãƒœãƒƒã‚¯ã‚¹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã€‚
 	*/
 	class BoxCollider : public ICollider
 	{

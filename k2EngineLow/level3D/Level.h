@@ -1,5 +1,5 @@
-/*!
- *@brief	���x���B
+﻿/*!
+ *@brief	レベル。
  */
 
 #pragma once
@@ -8,25 +8,25 @@
 namespace nsK2EngineLow {
 	class MapChip;
 	/// <summary>
-	/// ���x���I�u�W�F�N�g�B
+	/// レベルオブジェクト。
 	/// </summary>
 	struct LevelObjectData : public Noncopyable {
-		Vector3 position;		//���W�B
-		Quaternion rotation;	//��]�B
-		Vector3 scale;			//�g�嗦�B
-		const wchar_t* name;	//���O�B
+		Vector3 position;		//座標。
+		Quaternion rotation;	//回転。
+		Vector3 scale;			//拡大率。
+		const wchar_t* name;	//名前。
 		int number;
 		/// <summary>
-		/// �����œn�����I�u�W�F�N�g���̃I�u�W�F�N�g�����ׂ�B
+		/// 引数で渡したオブジェクト名のオブジェクトか調べる。
 		/// </summary>
-		/// <param name="objName">���ׂ閼�O�B</param>
-		/// <returns>���O�������ꍇ��true��Ԃ��܂��B</returns>
+		/// <param name="objName">調べる名前。</param>
+		/// <returns>名前が同じ場合にtrueを返します。</returns>
 		bool EqualObjectName(const wchar_t* objName)
 		{
 			return wcscmp(objName, name) == 0;
 		}
 		/// <summary>
-		/// ���O���O����v���邩���ׂ�B
+		/// 名前が前方一致するか調べる。
 		/// </summary>
 		/// <param name="n"></param>
 		/// <returns></returns>
@@ -35,7 +35,7 @@ namespace nsK2EngineLow {
 			auto len = wcslen(n);
 			auto namelen = wcslen(name);
 			if (len > namelen) {
-				//���O�������B�s��v�B
+				//名前が長い。不一致。
 				return false;
 			}
 			return wcsncmp(n, name, len) == 0;
@@ -43,7 +43,7 @@ namespace nsK2EngineLow {
 	};
 
 	/// <summary>
-	/// ���x���B
+	/// レベル。
 	/// </summary>
 	class Level {
 	private:
@@ -51,39 +51,39 @@ namespace nsK2EngineLow {
 	public:
 		~Level();
 		/*!
-		 * @brief	���x�����������B
-		 *@param[in]	levelDataFilePath		tkl�t�@�C���̃t�@�C���p�X�B
-		 *@param[in] hookFunc				�I�u�W�F�N�g���쐬���鎞�̏������t�b�N���邽�߂̊֐��I�u�W�F�N�g�B
-		 *   �t�b�N���Ȃ��Ȃ�nullptr���w�肷��΂悢�A
-		 * ���̊֐��I�u�W�F�N�g��false��Ԃ��ƁA�I�u�W�F�N�g�̏�񂩂�A
-		 * �ÓI�I�u�W�F�N�g��MapChip�N���X�̃C���X�^���X����������܂��B
-		 * �I�u�W�F�N�g�̖��O�ȂǂŁA�h�A��W�����v��A�A�C�e���Ȃǂ̓���ȃN���X�̃C���X�^���X�𐶐������Ƃ��ɁA
-		 * �f�t�H���g�ō쐬�����MapChip�N���X�̃C���X�^���X���s�v�ȏꍇ��true��Ԃ��Ă��������B
-		 * �Ⴆ�΁A�t�b�N�֐��̒��ŁA�n���ꂽ�I�u�W�F�N�g�f�[�^�̖��O�̃��f����`�悷��N���X�̃C���X�^���X��
-		 * ���������Ƃ��ɁAfalse��Ԃ��Ă��܂��ƁA�������f������`�悳��邱�ƂɂȂ�܂��B
+		 * @brief	レベルを初期化。
+		 *@param[in]	levelDataFilePath		tklファイルのファイルパス。
+		 *@param[in] hookFunc				オブジェクトを作成する時の処理をフックするための関数オブジェクト。
+		 *   フックしないならnullptrを指定すればよい、
+		 * この関数オブジェクトがfalseを返すと、オブジェクトの情報から、
+		 * 静的オブジェクトのMapChipクラスのインスタンスが生成されます。
+		 * オブジェクトの名前などで、ドアやジャンプ台、アイテムなどの特殊なクラスのインスタンスを生成したときに、
+		 * デフォルトで作成されるMapChipクラスのインスタンスが不要な場合はtrueを返してください。
+		 * 例えば、フック関数の中で、渡されたオブジェクトデータの名前のモデルを描画するクラスのインスタンスを
+		 * 生成したときに、falseを返してしまうと、同じモデルが二つ描画されることになります。
 		 */
 		void Init(const char* filePath, std::function<bool(LevelObjectData& objData)> hookFunc);
 		/// <summary>
-		/// ���f����`��B
+		/// モデルを描画。
 		/// </summary>
-		/// <param name="rc">�����_�[�R���e�L�X�g�B</param>
+		/// <param name="rc">レンダーコンテキスト。</param>
 		void Draw(RenderContext& rc);
 	private:
 		/// <summary>
-		/// �}�b�v�`�b�v���쐬�B
+		/// マップチップを作成。
 		/// </summary>
-		/// <param name="objData">LevelObjectData�B</param>
+		/// <param name="objData">LevelObjectData。</param>
 		void CreateMapChip(const LevelObjectData& objData, const char* filePath);
 		/// <summary>
-		/// Tkl�t�@�C���̍s���ϊ�����B
+		/// Tklファイルの行列を変換する。
 		/// </summary>
 		void MatrixTklToLevel();
 	private:
-		using BonePtr = std::unique_ptr<Bone>;						//�{�[��Ptr�B
-		std::vector<BonePtr> m_bonelist;							//�{�[���̃��X�g�B
-		std::unique_ptr<Matrix[]> m_matrixlist;						//�s��̃��X�g�B
-		std::vector<MapChipPtr> m_mapChipPtrs;						//�}�b�v�`�b�v�̉ϒ��z��B
-		TklFile m_tklFile;											//Tkl�t�@�C���B
+		using BonePtr = std::unique_ptr<Bone>;						//ボーンPtr。
+		std::vector<BonePtr> m_bonelist;							//ボーンのリスト。
+		std::unique_ptr<Matrix[]> m_matrixlist;						//行列のリスト。
+		std::vector<MapChipPtr> m_mapChipPtrs;						//マップチップの可変長配列。
+		TklFile m_tklFile;											//Tklファイル。
 
 
 	};

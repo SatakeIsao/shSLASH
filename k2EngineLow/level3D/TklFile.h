@@ -1,22 +1,22 @@
-#pragma once
+ï»¿#pragma once
 
 namespace nsK2EngineLow {
 	/// <summary>
-	/// tklƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ŞB
+	/// tklãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ã€‚
 	/// </summary>
 	class TklFile : public Noncopyable
 	{
 	public:
-		//ƒIƒuƒWƒFƒNƒgƒf[ƒ^[B
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ‡ãƒ¼ã‚¿ãƒ¼ã€‚
 		struct SObject
 		{
-			std::unique_ptr<char[]> name;	//œ‚Ì–¼‘OB
-			int parentNo;					//e‚Ì”Ô†B
-			float bindPose[4][3];			//ƒoƒCƒ“ƒhƒ|[ƒYB
-			float invBindPose[4][3];		//ƒoƒCƒ“ƒhƒ|[ƒY‚Ì‹t”B
+			std::unique_ptr<char[]> name;	//éª¨ã®åå‰ã€‚
+			int parentNo;					//è¦ªã®ç•ªå·ã€‚
+			float bindPose[4][3];			//ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ¼ã‚ºã€‚
+			float invBindPose[4][3];		//ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ¼ã‚ºã®é€†æ•°ã€‚
 			int no;
 
-			//ƒXƒNƒŠƒvƒg‚Ì•û‚ª‚Ü‚¾–¢À‘•B
+			//ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®æ–¹ãŒã¾ã æœªå®Ÿè£…ã€‚
 			bool shadowcasterflag = false;
 			bool shadowreceiverflag = false;
 			std::vector<int> intData;
@@ -25,11 +25,11 @@ namespace nsK2EngineLow {
 			std::vector<Vector3> Vector3Data;
 		};
 		/// <summary>
-		/// ƒ[ƒhB
+		/// ãƒ­ãƒ¼ãƒ‰ã€‚
 		/// </summary>
-		/// <param name="filepath">ƒtƒ@ƒCƒ‹ƒpƒXB</param>
+		/// <param name="filepath">ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã€‚</param>
 		void Load(const char* filepath);
-		//ƒNƒGƒŠŠÖ”B
+		//ã‚¯ã‚¨ãƒªé–¢æ•°ã€‚
 		void QuaryObject(std::function<void(SObject& obj)> query)
 		{
 			for (auto& obj : m_objectlist) {
@@ -37,7 +37,7 @@ namespace nsK2EngineLow {
 			}
 		}
 	private:
-		//ƒo[ƒWƒ‡ƒ“‚Æœ‚Ì”
+		//ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨éª¨ã®æ•°
 		int m_version = 0;
 		int m_objectCout = 0;
 		std::vector<SObject> m_objectlist;

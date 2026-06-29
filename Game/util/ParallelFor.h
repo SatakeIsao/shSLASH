@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "ThreadPool.h"
 
 
@@ -7,7 +7,7 @@ namespace app
     namespace util
     {
         /**
-         * ƒCƒ“ƒfƒbƒNƒXƒx[ƒX
+         * ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ™ãƒ¼ã‚¹
          */
         template <typename Func>
         inline void ParallelFor(size_t start, size_t end, Func body)
@@ -18,24 +18,24 @@ namespace app
             const size_t total = end - start;
             const size_t numThreads = pool.GetThreadCount();
 
-            // 1ƒXƒŒƒbƒh‚ ‚½‚è‚Ì’S“–Œ”
+            // 1ã‚¹ãƒ¬ãƒƒãƒ‰ã‚ãŸã‚Šã®æ‹…å½“ä»¶æ•°
             size_t chunkSize = (total + numThreads - 1) / numThreads;
-            // Å¬—±“x•ÛØ
+            // æœ€å°ç²’åº¦ä¿è¨¼
             const size_t minGrain = 100;
-            // —±“x’²®
+            // ç²’åº¦èª¿æ•´
             if (chunkSize < minGrain)
             {
                 chunkSize = minGrain;
             }
 
-            // ƒ^ƒXƒN“Š“ü
+            // ã‚¿ã‚¹ã‚¯æŠ•å…¥
             std::vector<std::future<void>> futures;
             for (size_t i = start; i < end; i += chunkSize)
             {
-                // ƒ`ƒƒƒ“ƒN‚ÌŠJn‚ÆI—¹ƒCƒ“ƒfƒbƒNƒX
+                // ãƒãƒ£ãƒ³ã‚¯ã®é–‹å§‹ã¨çµ‚äº†ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
                 size_t chunk_start = i;
                 size_t chunk_end = (std::min)(i + chunkSize, end);
-                // ƒ^ƒXƒN‚ğƒXƒŒƒbƒhƒv[ƒ‹‚É“Š“ü
+                // ã‚¿ã‚¹ã‚¯ã‚’ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ—ãƒ¼ãƒ«ã«æŠ•å…¥
                 futures.emplace_back(pool.Enqueue([chunk_start, chunk_end, body]
                     {
                         for (size_t j = chunk_start; j < chunk_end; ++j) {
@@ -44,7 +44,7 @@ namespace app
                     })
                 );
             }
-            // ‘Sƒ^ƒXƒNŠ®—¹‘Ò‚¿
+            // å…¨ã‚¿ã‚¹ã‚¯å®Œäº†å¾…ã¡
             for (auto& f : futures) {
                 f.get();
             }
@@ -52,11 +52,11 @@ namespace app
 
 
         /**
-         * ’¼—ñ”ÅƒCƒ“ƒfƒbƒNƒX
-         * ’Êí‚ÌFor‚Æ“¯‚¶
-         * ParallelFor‚Æ“¯‚¶\‘¢‚É‚·‚é‚½‚ß‚É—pˆÓ
-         * ParallelFor‚Å‚ÌƒfƒoƒbƒO“™‚Åg—p‚³‚ê‚é
-         * ’Êíg—p‚µ‚Ä‚à–â‘è‚È‚¢
+         * ç›´åˆ—ç‰ˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+         * é€šå¸¸ã®Forã¨åŒã˜
+         * ParallelForã¨åŒã˜æ§‹é€ ã«ã™ã‚‹ãŸã‚ã«ç”¨æ„
+         * ParallelForã§ã®ãƒ‡ãƒãƒƒã‚°ç­‰ã§ä½¿ç”¨ã•ã‚Œã‚‹
+         * é€šå¸¸ä½¿ç”¨ã—ã¦ã‚‚å•é¡Œãªã„
          */
         template <typename Func>
         inline void For(size_t start, size_t end, Func body)
@@ -68,7 +68,7 @@ namespace app
 
 
         /**
-         * ”z—ñ—p(ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p)
+         * é…åˆ—ç”¨(ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨)
          */
         template <typename T, size_t N, typename Func>
         inline void ParallelFor(T(&arr)[N], Func body)
@@ -81,7 +81,7 @@ namespace app
 
 
         /**
-         * ”z—ñ—p(ƒVƒ“ƒOƒ‹ƒXƒŒƒbƒh—p)
+         * é…åˆ—ç”¨(ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ç”¨)
          */
         template <typename T, size_t N, typename Func>
         inline void For(T(&arr)[N], Func body)
@@ -91,8 +91,8 @@ namespace app
 
 
         /**
-         * ƒRƒ“ƒeƒi—p(ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh—p)
-         * std::vector, std::array“™
+         * ã‚³ãƒ³ãƒ†ãƒŠç”¨(ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ç”¨)
+         * std::vector, std::arrayç­‰
          */
         template <typename Container, typename Func>
         inline void ParallelFor(Container& c, Func body)
@@ -105,8 +105,8 @@ namespace app
 
 
         /**
-         * ƒRƒ“ƒeƒi—p(ƒVƒ“ƒOƒ‹ƒXƒŒƒbƒh—p)
-         * std::vector, std::array“™
+         * ã‚³ãƒ³ãƒ†ãƒŠç”¨(ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ç”¨)
+         * std::vector, std::arrayç­‰
          */
         template <typename Container, typename Func>
         inline void For(Container& c, Func body)

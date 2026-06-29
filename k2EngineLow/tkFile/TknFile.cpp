@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "tkFile/TknFile.h"
 
 namespace nsK2EngineLow {
@@ -6,19 +6,19 @@ namespace nsK2EngineLow {
 	{
 		auto fp = fopen(filePath, "rb");
 		if (fp == nullptr) {
-			// ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½B
+			// ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸã€‚
 			return false;
 		}
-		// ƒwƒbƒ_‚ğƒ[ƒhB
+		// ãƒ˜ãƒƒãƒ€ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		fread(&m_header, sizeof(m_header), 1, fp);
 
-		// ƒZƒ‹‚Ì”z—ñ‚ğŠm•Û
+		// ã‚»ãƒ«ã®é…åˆ—ã‚’ç¢ºä¿
 		m_cellArray.resize(m_header.numCell);
 
-		// ƒZƒ‹î•ñ‚ğƒ[ƒhB
+		// ã‚»ãƒ«æƒ…å ±ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		fread(&m_cellArray.front(), sizeof(SCell) * m_header.numCell, 1, fp);
 
-		// ƒ{ƒfƒB‚ğƒ[ƒhB
+		// ãƒœãƒ‡ã‚£ã‚’ãƒ­ãƒ¼ãƒ‰ã€‚
 		fclose(fp);
 		return true;
 	}

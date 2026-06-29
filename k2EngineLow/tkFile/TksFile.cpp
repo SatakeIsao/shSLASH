@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "tkFile/TksFile.h"
 
 namespace nsK2EngineLow {
@@ -8,23 +8,23 @@ namespace nsK2EngineLow {
 		if (fp == nullptr) {
 			return false;
 		}
-		//œ‚Ì”‚ğæ“¾B
+		//éª¨ã®æ•°ã‚’å–å¾—ã€‚
 		fread(&m_numBone, sizeof(m_numBone), 1, fp);
 		m_bones.resize(m_numBone);
 		for (int i = 0; i < m_numBone; i++) {
 			auto& bone = m_bones.at(i);
 			size_t nameCount = 0;
-			//œ‚Ì–¼‘O‚ğæ“¾B
+			//éª¨ã®åå‰ã‚’å–å¾—ã€‚
 			fread(&nameCount, 1, 1, fp);
 			bone.name = std::make_unique<char[]>(nameCount + 1);
 			fread(bone.name.get(), nameCount + 1, 1, fp);
-			//e‚ÌID‚ğæ“¾B
+			//è¦ªã®IDã‚’å–å¾—ã€‚
 			fread(&bone.parentNo, sizeof(bone.parentNo), 1, fp);
-			//ƒoƒCƒ“ƒhƒ|[ƒY‚ğæ“¾B
+			//ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ¼ã‚ºã‚’å–å¾—ã€‚
 			fread(bone.bindPose, sizeof(bone.bindPose), 1, fp);
-			//ƒoƒCƒ“ƒhƒ|[ƒY‚Ì‹t”‚ğæ“¾B
+			//ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ¼ã‚ºã®é€†æ•°ã‚’å–å¾—ã€‚
 			fread(bone.invBindPose, sizeof(bone.invBindPose), 1, fp);
-			//ƒ{[ƒ“‚Ì”Ô†B
+			//ãƒœãƒ¼ãƒ³ã®ç•ªå·ã€‚
 			bone.no = i;
 		}
 

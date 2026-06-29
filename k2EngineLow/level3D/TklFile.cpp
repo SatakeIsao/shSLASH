@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "TklFile.h"
 
 namespace nsK2EngineLow {
@@ -6,35 +6,35 @@ namespace nsK2EngineLow {
 	{
 		FILE* file = fopen(filepath, "rb");
 		if (file == nullptr) {
-			MessageBoxA(nullptr, "ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½B", "error", MB_OK);
+			MessageBoxA(nullptr, "ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸã€‚", "error", MB_OK);
 		}
 		fread(&m_version, sizeof(m_version), 1, file);
 		fread(&m_objectCout, sizeof(m_objectCout), 1, file);
-		//ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ì‘å‚«‚³‚ğƒIƒuƒWƒFƒNƒg‚Ì”•ª‚ÉƒTƒCƒY‚ğ•ÏX‚·‚éB
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆã®å¤§ãã•ã‚’ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ•°åˆ†ã«ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹ã€‚
 		m_objectlist.resize(m_objectCout);
-		//ƒ{[ƒ“î•ñ‚Ìæ“¾B
+		//ãƒœãƒ¼ãƒ³æƒ…å ±ã®å–å¾—ã€‚
 		for (int i = 0; i < m_objectCout; i++) {
-			//ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ìi”Ô–Ú‚ğbone‚É“ü‚ê‚éB
+			//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆã®iç•ªç›®ã‚’boneã«å…¥ã‚Œã‚‹ã€‚
 			//auto& bone = m_objectlist.at[i];
-			//–¼‘O‚Ì”‚Ì“Ç‚İ‚İ
+			//åå‰ã®æ•°ã®èª­ã¿è¾¼ã¿
 			size_t nameCount = 0;
 			fread(&nameCount, 1, 1, file);
-			//ƒ†ƒj[ƒNƒ|ƒCƒ“ƒ^‚ğì¬B
+			//ãƒ¦ãƒ‹ãƒ¼ã‚¯ãƒã‚¤ãƒ³ã‚¿ã‚’ä½œæˆã€‚
 			m_objectlist[i].name = std::make_unique<char[]>(nameCount + 1);
 			fread(m_objectlist[i].name.get(), nameCount + 1, 1, file);
-			//œ‚Ìe”Ô†‚ğ“ü‚ê‚éB
+			//éª¨ã®è¦ªç•ªå·ã‚’å…¥ã‚Œã‚‹ã€‚
 			fread(&m_objectlist[i].parentNo, sizeof(int), 1, file);
-			//œ‚ÌƒoƒCƒ“ƒhƒ|[ƒY
+			//éª¨ã®ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ¼ã‚º
 			fread(&m_objectlist[i].bindPose, sizeof(m_objectlist[i].bindPose), 1, file);
-			//œ‚ÌƒoƒCƒ“ƒhƒ|[ƒY‚Ì‹ts—ñB
+			//éª¨ã®ãƒã‚¤ãƒ³ãƒ‰ãƒãƒ¼ã‚ºã®é€†è¡Œåˆ—ã€‚
 			fread(&m_objectlist[i].invBindPose, sizeof(m_objectlist[i].invBindPose), 1, file);
-			//©•ª‚Ìœ”Ô†
+			//è‡ªåˆ†ã®éª¨ç•ªå·
 			m_objectlist[i].no = i;
-			//ƒVƒƒƒhƒE‚ÉŠÖ‚·‚éƒtƒ‰ƒO‚Ì’²®‚P
+			//ã‚·ãƒ£ãƒ‰ã‚¦ã«é–¢ã™ã‚‹ãƒ•ãƒ©ã‚°ã®èª¿æ•´ï¼‘
 			fread(&m_objectlist[i].shadowcasterflag, sizeof(false), 1, file);
-			//ƒVƒƒƒhƒE‚ÉŠÖ‚·‚éƒtƒ‰ƒO‚Ì’²®‚Q
+			//ã‚·ãƒ£ãƒ‰ã‚¦ã«é–¢ã™ã‚‹ãƒ•ãƒ©ã‚°ã®èª¿æ•´ï¼’
 			fread(&m_objectlist[i].shadowreceiverflag, sizeof(false), 1, file);
-			//intData‚Ìˆ—
+			//intDataã®å‡¦ç†
 			int numInt = 0;
 			fread(&numInt, sizeof(numInt), 1, file);
 			for (int j = 0; j < numInt; i++) {
@@ -44,7 +44,7 @@ namespace nsK2EngineLow {
 			}
 			int numFloat = 0;
 			fread(&numFloat, sizeof(numFloat), 1, file);
-			//floatData‚Ìˆ—
+			//floatDataã®å‡¦ç†
 			for (int j = 0; j < numFloat; i++) {
 				float val = 0;
 				fread(&val, sizeof(val), 1, file);
@@ -52,7 +52,7 @@ namespace nsK2EngineLow {
 			}
 			int numChar = 0;
 			fread(&numChar, sizeof(numChar), 1, file);
-			//charData‚Ìˆ—
+			//charDataã®å‡¦ç†
 			for (int j = 0; j < numChar; i++) {
 				int stringSize = 0;
 				fread(&stringSize, sizeof(stringSize), 1, file);
@@ -60,7 +60,7 @@ namespace nsK2EngineLow {
 			}
 			int numVector3 = 0;
 			fread(&numVector3, sizeof(numVector3), 1, file);
-			//Vector3Data‚Ìˆ—
+			//Vector3Dataã®å‡¦ç†
 			for (int j = 0; j < numVector3; i++) {
 				float x, y, z;
 				fread(&x, sizeof(x), 1, file);
