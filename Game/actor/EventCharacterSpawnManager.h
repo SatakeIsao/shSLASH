@@ -4,18 +4,13 @@
 #include "actor/types.h"
 #include "actor/EnemyPool.h"
 #include "actor/QuadrantManager.h"
-#include "EnemyAttackPointManager.h"
+#include "actor/EnemyAttackPointManager.h"
 #include <functional>
 #include <utility>
 
-namespace
-{
-	constexpr int MAX_EVENT_CHARACTER = 20;
-}
-
 namespace app
 {
-	namespace ui { class EnemyHpUIObject; }
+	namespace ui { class EnemyHpUIObject; class PhaseUI; }
 	namespace actor
 	{
 		class BattleCharacter;
@@ -37,11 +32,8 @@ namespace app
 		struct SpawnResult
 		{
 			EnemyType type = EnemyType::STONE;
-
-			app::actor::StoneEventCharacter* stoneCharacter = nullptr;
+			app::actor::StoneEventCharacter*    stoneCharacter    = nullptr;
 			app::actor::MushroomEventCharacter* mushroomCharacter = nullptr;
-			/** TODO::スケルトンのクラスが出来たら追加 */
-
 			Vector3 spawnPosition = Vector3::Zero;
 
 			bool IsValid() const
@@ -57,7 +49,6 @@ namespace app
 		public:
 			using SpawnCallback = std::function<void(const SpawnResult&)>;
 
-
 		public:
 			EventCharacterSpawnManager();
 			~EventCharacterSpawnManager();
@@ -70,15 +61,22 @@ namespace app
 
 		public:
 			/** プレイヤーレベルを設定する */
-			void SetPlayerLevel(int level) { playerLevel_ = level; }
+			void SetPlayerLevel(int level)             { playerLevel_ = level; }
 
 			/** スポーン時のコールバックを設定する */
-			void SetOnSpawned(SpawnCallback callback) { onSpawned_ = std::move(callback); }
+			void SetOnSpawned(SpawnCallback callback)  { onSpawned_ = std::move(callback); }
 
 			/** スポーン間隔を設定する */
-			void SetSpawnInterval(float interval) { spawnInterval_ = interval; }
+			void SetSpawnInterval(float interval)      { spawnInterval_ = interval; }
 
-			void SetFieldEdge(float edge) { fieldEdge_ = edge; }
+			/** フィールド端までの距離を設定する */
+			void SetFieldEdge(float edge)              { fieldEdge_ = edge; }
+
+			/** スポーン時のY座標を設定する */
+			void SetSpawnPosY(float y)                 { spawnPosY_ = y; }
+
+			/** フェーズUIを設定する */
+			void SetPhaseUI(app::ui::PhaseUI* phaseUI) { phaseUI_ = phaseUI; }
 
 			/** 生存中の全敵とHPバーをDeleteGOする（シーン破棄時に呼ぶ） */
 			void CleanUp();
@@ -86,20 +84,17 @@ namespace app
 			/** ポーズ状態を設定する */
 			void SetPause(bool isPause);
 
-			/** スポーン時のY座標を設定 */
-			void SetSpawnPosY(float y) { spawnPosY_ = y; }
+			/** チュートリアルモードON/OFF（ONにするとUpdate内の自動スポーンを全停止） */
+			void SetTutorialMode(bool v)               { isTutorialMode_ = v; }
 
-			void SetPhaseUI(PhaseUI* phaseUI) { phaseUI_ = phaseUI; }
+			/** オープニングシーケンス完了フラグを設定する */
+			void SetOpeningSequenceDone(bool v)        { isOpeningSequenceDone_ = v; }
 
 			/** チュートリアル用：自動スポーンを停止する */
-			void ResetPendingSpawn() { pendingSpawnCount_ = 0; pendingSpawnTimer_ = 0.0f; }
+			void ResetPendingSpawn()                   { pendingSpawnCount_ = 0; pendingSpawnTimer_ = 0.0f; }
 
 			/** チュートリアル用：指定の種類・座標・向きに1体スポーンする（死亡時に再スポーンしない） */
 			void SpawnFixed(EnemyType type, Vector3 position, Quaternion rotation = Quaternion::Identity);
-
-			/** チュートリアルモードON/OFF（ONにするとUpdate内の自動スポーンを全停止） */
-			void SetTutorialMode(bool v) { isTutorialMode_ = v; }
-			void SetOpeningSequenceDone(bool v) { isOpeningSequenceDone_ = v; }
 
 			/** チュートリアル中に敵を凍結/解除する（全アクティブ敵に即時反映） */
 			void SetTutorialEnemyFrozen(bool frozen);
@@ -108,11 +103,15 @@ namespace app
 			void SetAllHpBarsPreBlurRender(bool v);
 
 			/** 現在アクティブな敵の数を返す */
-			int GetActiveEnemyCount() const { return static_cast<int>(activeEntries_.size()); }
+			int GetActiveEnemyCount() const            { return static_cast<int>(activeEntries_.size()); }
+
+			/** origin から forward 方向・視野角 halfAngleDeg 度以内で最も正面に近い敵の位置を返す */
+			bool FindNearestEnemyInCone(const Vector3& origin, const Vector3& forward, float halfAngleDeg, Vector3& outPos) const;
 
 			/** プレイヤーレベルが上がったときに呼ばれる */
 			void OnPlayerLevelUp(int newLevel);
 
+			/** 攻撃ポイントマネージャーを取得する */
 			EnemyAttackPointManager& GetAttackPointManager() { return attackPointManager_; }
 
 		private:
@@ -128,51 +127,52 @@ namespace app
 			/** 現在スポーンしているイベントキャラクターの数を取得する */
 			int GetCurrentEnemyCount() const;
 
-
 		private:
 			struct EnemyEntry
 			{
-				IGameObject* enemy = nullptr;
-				app::ui::EnemyHpUIObject* hpUI = nullptr;
+				IGameObject*              enemy = nullptr;
+				app::ui::EnemyHpUIObject* hpUI  = nullptr;
 			};
-			std::vector<EnemyEntry> activeEntries_;
 
-			QuadrantManager quadrantManager_;                         // スポーン地点管理
+			/** 外部参照 */
+			app::actor::BattleCharacter* battleCharacter_ = nullptr;
+			app::ui::PhaseUI*            phaseUI_         = nullptr;
+			SpawnCallback                onSpawned_       = nullptr;
 
-			PhaseUI* phaseUI_ = nullptr;							  // フェーズUIへの参照（スポーン間隔の表示に使う）
+			/** スポーン設定 */
+			float fieldEdge_     = 20000.0f;
+			float spawnInterval_ = 5.0f;
+			float spawnPosY_     = 0.0f;
+			int   maxEnemyCount_ = 10;
 
-			float fieldEdge_ = 20000.0f;							  // 原点からスポーン地点までの距離（フィールド端寄り）
+			/** ゲーム進行状態 */
+			int playerLevel_       = 1;
+			int currentPhaseIndex_ = 1;
 
-			int playerLevel_ = 1;
-			int maxEnemyCount_ = 10;                                  // 現在フェーズの最大敵数
-			int currentPhaseIndex_ = 1;                               // 現在のフェーズ番号（1始まり）
-			float spawnInterval_ = 5.0f;                              // スポーン間隔（秒）
-			float spawnTimer_ = 0.0f;                                 // スポーンタイマー
-			int pendingSpawnCount_ = 0;                               // 次フレームでスポーンする残数
-			float pendingSpawnTimer_ = 1.0f;                          // 初期・追加スポーンのインターバルタイマー（初回は即スポーン）
-			float spawnPosY_ = 0.0f;									  // スポーンY座標
-			bool isPause_ = false;
-			bool isTutorialMode_ = false;
-			bool tutorialEnemyFrozen_ = false;
+			/** スポーンタイマー */
+			float spawnTimer_        = 0.0f;
+			int   pendingSpawnCount_ = 0;
+			float pendingSpawnTimer_ = 1.0f;
+
+			/** フラグ */
+			bool isPause_               = false;
+			bool isTutorialMode_        = false;
+			bool tutorialEnemyFrozen_   = false;
 			/** バトルシーケンス（カウントダウン）完了前はスポーンを抑制する */
 			bool isOpeningSequenceDone_ = false;
 
-			app::actor::BattleCharacter* battleCharacter_ = nullptr;  // プレイヤーキャラクターへの参照
-			SpawnCallback onSpawned_ = nullptr;                       // スポーン時のコールバック
+			/** マネージャー・プール */
+			static constexpr int MAX_EVENT_CHARACTER = 20;
 
-			EnemyAttackPointManager attackPointManager_;			  // 敵の攻撃ポイント管理
+			std::vector<EnemyEntry>                                        activeEntries_;
+			QuadrantManager                                                quadrantManager_;
+			EnemyAttackPointManager                                        attackPointManager_;
+			EnemyPool<StoneEventCharacter,            MAX_EVENT_CHARACTER> stonePool_;
+			EnemyPool<MushroomEventCharacter,         MAX_EVENT_CHARACTER> mushroomPool_;
+			EnemyPool<app::ui::EnemyHpUIObject,       MAX_EVENT_CHARACTER> hpUIPool_;
 
-			EnemyPool<StoneEventCharacter, MAX_EVENT_CHARACTER> stonePool_;
-			EnemyPool<MushroomEventCharacter, MAX_EVENT_CHARACTER> mushroomPool_;
-			EnemyPool<app::ui::EnemyHpUIObject, MAX_EVENT_CHARACTER> hpUIPool_;
-
-			/**
-			* シングルトン用
-			*/
+		/** シングルトン */
 		public:
-			/**
-			 * インスタンスを作る
-			 */
 			static void Initialize()
 			{
 				if (instance_ == nullptr)
@@ -181,28 +181,16 @@ namespace app
 				}
 			}
 
-
-			/**
-			 * インスタンスを取得
-			 */
 			static EventCharacterSpawnManager& Get()
 			{
 				return *instance_;
 			}
 
-
-			/**
-			 * インスタンスが有効か
-			 */
 			static bool IsAvailable()
 			{
 				return instance_ != nullptr;
 			}
 
-
-			/**
-			 * インスタンスを破棄
-			 */
 			static void Finalize()
 			{
 				if (instance_ != nullptr)
@@ -213,7 +201,6 @@ namespace app
 			}
 
 		private:
-			/** シングルトンインスタンス */
 			static EventCharacterSpawnManager* instance_;
 		};
 	}

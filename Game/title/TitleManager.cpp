@@ -3,8 +3,8 @@
  */
 #include "stdafx.h"
 #include "TitleManager.h"
-#include "core/TitleMenuManagerObject.h"
-#include "core/TitleMenuManager.h" 
+#include "title/TitleMenuManagerObject.h"
+#include "title/TitleMenuManager.h"
 
 namespace app
 {
@@ -23,17 +23,17 @@ namespace app
 
         bool TitleManager::IsGameStartDecided() const
         {
-            return app::core::TitleMenuManager::Get().IsGameStartDecided();
+            return app::title::TitleMenuManager::Get().IsGameStartDecided();
         }
 
         bool TitleManager::IsTutorialDecided() const
         {
-            return app::core::TitleMenuManager::Get().IsTutorialDecided();
+            return app::title::TitleMenuManager::Get().IsTutorialDecided();
         }
 
         void TitleManager::Start()
         {
-            titleMenuManagerObject_ = NewGO<app::core::TitleMenuManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
+            titleMenuManagerObject_ = NewGO<app::title::TitleMenuManagerObject>(static_cast<uint8_t>(ObjectPriority::Default));
         }
 
         void TitleManager::Update() {}

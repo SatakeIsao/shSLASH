@@ -12,6 +12,7 @@
 #include "effect/SwordDecalManager.h"
 #include "battle/BattleManager.h"
 #include "camera/CameraManager.h"
+#include "actor/EventCharacterSpawnManager.h"
 
 
 namespace app
@@ -975,6 +976,26 @@ namespace app
 						battleMachine->SetChargeLevel(level);
 					}
 
+					// 視野角60度以内の最も正面に近い敵へ自動向き補正
+					if (app::actor::EventCharacterSpawnManager::IsAvailable())
+					{
+						Vector3 fwd = Vector3::Front;
+						characterStateMachine->transform.rotation.Apply(fwd);
+						fwd.y = 0.0f;
+						if (fwd.LengthSq() > 0.0001f)
+						{
+							fwd.Normalize();
+							Vector3 enemyPos;
+							if (app::actor::EventCharacterSpawnManager::Get().FindNearestEnemyInCone(
+								characterStateMachine->transform.position, fwd, 30.0f, enemyPos))
+							{
+								Vector3 toEnemy = enemyPos - characterStateMachine->transform.position;
+								toEnemy.y = 0.0f;
+								characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(toEnemy);
+							}
+						}
+					}
+
 					// フェーズ遷移の瞬間に一度だけ生成
 					attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
 					attackScheduler_->AddTimer(0.1f, [&]()
@@ -984,7 +1005,7 @@ namespace app
 							attackBody_->CreateSphere(
 								csm->GetCharacter(),
 								csm->GetCharacterID(),
-								25.0f,
+								50.0f,
 								app::collision::ghost::CollisionAttribute::Player,
 								app::collision::ghost::CollisionAttributeMask::All);
 

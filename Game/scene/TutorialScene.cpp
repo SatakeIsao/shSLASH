@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TutorialScene.h"
 #include "TitleScene.h"
-#include "TutorialConfirmObject.h"
+#include "ui/TutorialConfirmObject.h"
 #include "battle/BattleManager.h"
 #include "core/PauseManager.h"
 #include "ui/GameOverSequence.h"
@@ -59,7 +59,7 @@ bool TutorialScene::Start()
     confirmLayout_->Initialize<app::ui::TutorialReturnConfirmMenu>(
         "Assets/ui/layout/tutorialReturnConfirmLayout.json");
 
-    confirmObject_ = NewGO<TutorialConfirmObject>(
+    confirmObject_ = NewGO<app::ui::TutorialConfirmObject>(
         static_cast<uint8_t>(ObjectPriority::ConfirmUI));
 
     return true;

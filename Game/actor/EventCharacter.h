@@ -8,7 +8,7 @@
 #include "BattleCharacter.h"
 #include "actor/Types.h"
 #include "actor/EnemyPool.h"
-#include "EnemyAttackPointManager.h"
+#include "actor/EnemyAttackPointManager.h"
 
 namespace app
 {

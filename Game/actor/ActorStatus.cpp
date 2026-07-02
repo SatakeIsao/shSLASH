@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ActorStatus.h"
 #include "core/ParameterManager.h"
-#include "EnemyPhase.h"
+#include "actor/EnemyPhase.h"
 
 
 namespace app

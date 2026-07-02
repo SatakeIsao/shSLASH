@@ -8,7 +8,7 @@
 #include "TitleScene.h"
 #include "BattleScene.h"
 #include "ui/ResultMenu.h"
-#include "GameResultData.h"
+#include "core/GameResultData.h"
 
 namespace
 {

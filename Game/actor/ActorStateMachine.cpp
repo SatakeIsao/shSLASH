@@ -178,6 +178,8 @@ namespace app
 		{
 			SuperClass::Initialize();
 			isUseCameraDirection_ = true;
+			// CharacterSteering が最初に処理するまでは入力ゼロ扱い（Idle を維持するため）
+			inputPower_ = 0.0f;
 		}
 
 
@@ -718,6 +720,16 @@ namespace app
 			const Vector3 direction = moveSpeedVector_;
 			if (direction.LengthSq() >= MOVE_MIN_FLOAT || inputPower_ >= MOVE_MIN_FLOAT)
 			{
+				// オープニングシーケンス（3/2/1/START）が終わるまで走りに遷移しない
+				const bool isOpeningDone =
+					!app::battle::BattleManager::IsAvailable() ||
+					app::battle::BattleManager::Get().IsOpeningSequenceDone();
+				if (!isOpeningDone)
+				{
+					RequestChangeState(IdleCharacterState::ID());
+					return;
+				}
+
 				if (isLB2Pressed || isInjured)
 				{
 					// LB2を押しながら移動入力がある場合：負傷走りへ

@@ -5,7 +5,7 @@
 #include "TitleSubMenu.h"
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
-#include "core/TitleMenuManager.h"
+#include "title/TitleMenuManager.h"
 #include "sound/SoundManager.h"
 
 namespace app {

@@ -5,17 +5,14 @@
 
 namespace app
 {
-    namespace core
-    {
-        class TitleMenuManagerObject;
-    }
-
     namespace title
     {
+        class TitleMenuManagerObject;
+
         class TitleManager : public Noncopyable
         {
         private:
-            app::core::TitleMenuManagerObject* titleMenuManagerObject_ = nullptr;
+            app::title::TitleMenuManagerObject* titleMenuManagerObject_ = nullptr;
 
             TitleManager();
             ~TitleManager();

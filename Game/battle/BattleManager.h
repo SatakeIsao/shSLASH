@@ -50,6 +50,7 @@ namespace app
         class EnemyHpUIObject;
         class LevelUpUIObject;
         class DamagePopPool;
+        class PhaseUI;
     }
 }
 
@@ -157,9 +158,6 @@ namespace app
             app::actor::EventCharacterSpawnManagerObject* eventCharacterSpawnManagerObject_ = nullptr;
             /** 月のオブジェクト */
             app::actor::MoonGimmick* moon_ = nullptr;
-            /** フェーズ表示UIオブジェクト（仮置き）*/
-            /** TODO: actorではなく、uiに変更 */
-            app::actor::PhaseUI* phaseUI_ = nullptr;
             /** カメラの操舵制御オブジェクト */
             app::camera::RefCameraController gameCameraController_ = nullptr;
             /** ポーズ画面管理オブジェクト */
@@ -168,6 +166,8 @@ namespace app
             app::ui::BattleSequence* battleSequenceObject_ = nullptr;
             /** 制限時間UIオブジェクト */
             app::ui::TimerUIObject* timerUIObject_ = nullptr;
+            /** フェーズ表示UIオブジェクト（仮置き）*/
+            app::ui::PhaseUI* phaseUI_ = nullptr;
             /** プレイヤーHPバーUIオブジェクト */
             app::ui::PlayerHpUIObject* playerHpUIObject_ = nullptr;
             /** レベルアップ演出UIオブジェクト */

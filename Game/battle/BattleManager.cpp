@@ -26,9 +26,10 @@
 #include "effect/EffectManager.h"
 #include "core/PauseManager.h"
 #include "core/PauseManagerObject.h"
-#include "EnemyPhase.h"
+#include "actor/EnemyPhase.h"
 #include "sound/SoundManager.h"
-#include "GameResultData.h"
+#include "core/GameResultData.h"
+#include "ui/PhaseUI.h"
 
 
 namespace
@@ -804,7 +805,7 @@ namespace app
 				/** フェーズUI */
 				if (!isTutorialMode_)
 				{
-					phaseUI_ = NewGO<app::actor::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
+					phaseUI_ = NewGO<app::ui::PhaseUI>(static_cast<uint8_t>(ObjectPriority::Default));
 				}
 				return false;
 

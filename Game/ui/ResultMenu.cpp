@@ -3,7 +3,7 @@
 #include "ResultSubMenu.h"
 #include "ui/UIAnimationFactory.h"
 #include "ui/UIAnimation.h"
-#include "GameResultData.h"
+#include "core/GameResultData.h"
 #include "sound/SoundManager.h"
 
 namespace app {
