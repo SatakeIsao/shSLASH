@@ -3,7 +3,7 @@
  * ステータスをまとめたクラス群
  */
 #pragma once
-#include "EnemyPhase.h"
+#include "actor/EnemyPhase.h"
 
 
 namespace app

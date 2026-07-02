@@ -9,7 +9,7 @@
 #include "ui/TutorialUIObject.h"
 #include "ui/TutorialPauseHintObject.h"
 
-class TutorialConfirmObject;
+namespace app { namespace ui { class TutorialConfirmObject; } }
 
 class TutorialScene : public IScene
 {
@@ -25,7 +25,7 @@ private:
     bool isSkipRequested_ = false;
 
     std::unique_ptr<app::ui::Layout> confirmLayout_;
-    TutorialConfirmObject* confirmObject_ = nullptr;
+    app::ui::TutorialConfirmObject* confirmObject_ = nullptr;
     bool isConfirmOpen_ = false;
 
 public:

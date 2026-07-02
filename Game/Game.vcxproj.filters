@@ -110,8 +110,8 @@
     <ClCompile Include="scene\TitleScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
-    <ClCompile Include="scene\TutorialConfirmObject.cpp">
-      <Filter>scene</Filter>
+    <ClCompile Include="ui\TutorialConfirmObject.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="scene\TutorialScene.cpp">
       <Filter>scene</Filter>
@@ -212,13 +212,22 @@
     <ClCompile Include="actor\EquipmentSlotManager.cpp" />
     <ClCompile Include="actor\QuadrantManager.cpp" />
     <ClCompile Include="actor\EventCharacterSpawnManagerObject.cpp" />
-    <ClCompile Include="core\TitleMenuManager.cpp" />
-    <ClCompile Include="core\TitleMenuManagerObject.cpp" />
+    <ClCompile Include="title\TitleMenuManager.cpp">
+      <Filter>title</Filter>
+    </ClCompile>
+    <ClCompile Include="title\TitleMenuManagerObject.cpp">
+      <Filter>title</Filter>
+    </ClCompile>
     <ClCompile Include="ui\TitleMenu.cpp" />
     <ClCompile Include="ui\TitleSubMenu.cpp" />
     <ClCompile Include="title\TitleManager.cpp" />
-    <ClCompile Include="EnemyPhase.cpp" />
+    <ClCompile Include="actor\EnemyPhase.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
     <ClCompile Include="ui\DamagePopUI.cpp" />
+    <ClCompile Include="ui\PhaseUI.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
     <ClCompile Include="ui\GameOverSequence.cpp" />
     <ClCompile Include="ui\ResultMenu.cpp" />
     <ClCompile Include="ui\ResultSubMenu.cpp" />
@@ -226,8 +235,12 @@
     <ClCompile Include="ui\CameraOptionMenu.cpp" />
     <ClCompile Include="ui\OptionMenu.cpp" />
     <ClCompile Include="effect\EffectManager2D.cpp" />
-    <ClCompile Include="EnemyAttackPoint.cpp" />
-    <ClCompile Include="EnemyAttackPointManager.cpp" />
+    <ClCompile Include="actor\EnemyAttackPoint.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="actor\EnemyAttackPointManager.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -314,8 +327,8 @@
     <ClInclude Include="scene\TitleScene.h">
       <Filter>scene</Filter>
     </ClInclude>
-    <ClInclude Include="scene\TutorialConfirmObject.h">
-      <Filter>scene</Filter>
+    <ClInclude Include="ui\TutorialConfirmObject.h">
+      <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="scene\TutorialScene.h">
       <Filter>scene</Filter>
@@ -427,22 +440,38 @@
     <ClInclude Include="actor\EquipmentSlotManager.h" />
     <ClInclude Include="actor\QuadrantManager.h" />
     <ClInclude Include="actor\EventCharacterSpawnManagerObject.h" />
-    <ClInclude Include="core\TitleMenuManager.h" />
-    <ClInclude Include="core\TitleMenuManagerObject.h" />
+    <ClInclude Include="title\TitleMenuManager.h">
+      <Filter>title</Filter>
+    </ClInclude>
+    <ClInclude Include="title\TitleMenuManagerObject.h">
+      <Filter>title</Filter>
+    </ClInclude>
     <ClInclude Include="ui\TitleMenu.h" />
     <ClInclude Include="ui\TitleSubMenu.h" />
     <ClInclude Include="title\TitleManager.h" />
     <ClInclude Include="actor\EnemyPool.h" />
-    <ClInclude Include="EnemyPhase.h" />
+    <ClInclude Include="actor\EnemyPhase.h">
+      <Filter>actor</Filter>
+    </ClInclude>
     <ClInclude Include="ui\DamagePopUI.h" />
+    <ClInclude Include="ui\PhaseUI.h">
+      <Filter>ui</Filter>
+    </ClInclude>
     <ClInclude Include="battle\IDamagePopListener.h" />
     <ClInclude Include="ui\GameOverSequence.h" />
     <ClInclude Include="ui\ResultMenu.h" />
     <ClInclude Include="ui\ResultSubMenu.h" />
     <ClInclude Include="ui\OptionMenu.h" />
     <ClInclude Include="effect\EffectManager2D.h" />
-    <ClInclude Include="EnemyAttackPointManager.h" />
-    <ClInclude Include="EnemyAttackPoint.h" />
+    <ClInclude Include="actor\EnemyAttackPointManager.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="actor\EnemyAttackPoint.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="core\GameResultData.h">
+      <Filter>core</Filter>
+    </ClInclude>
     <ClInclude Include="ui\CameraOptionMenu.h" />
   </ItemGroup>
   <ItemGroup>
