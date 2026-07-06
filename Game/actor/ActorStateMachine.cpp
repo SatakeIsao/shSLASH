@@ -598,6 +598,10 @@ namespace app
 				// パンチ中は他の状態に遷移しない
 				if (IsEqualCurrentState(ChargeAttackCharacterState::ID())) {
 					if (!CanChangeState()) {
+						if (IsTriggerY()) {
+							isAvoidanceCancelFromAttack_ = true;
+							RequestChangeState(AvoidanceCharacterState::ID());
+						}
 						return;
 					}
 				}

@@ -305,6 +305,9 @@ namespace app
 					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv1.tkm");
 					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv2.tkm");
 					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv3.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv1_Floor.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv2_Floor.tkm");
+					rm.Load<app::resource::TkmResource>("Assets/ModelData/decal/atkChargeLv3_Floor.tkm");
 					/**
                      * UI用DDSをOSページキャッシュに先読み（ワーカースレッド側）。
                      * メインスレッドがTexture::InitFromDDSFile()を呼ぶ時点でRAMから読める。

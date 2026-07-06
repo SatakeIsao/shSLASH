@@ -28,6 +28,12 @@ namespace
         constexpr const char* CHARGE_LV2_TKM_PATH = "Assets/ModelData/decal/atkChargeLv2.tkm";
         /** 溜め攻撃Lv3の壁用デカールモデル */
         constexpr const char* CHARGE_LV3_TKM_PATH = "Assets/ModelData/decal/atkChargeLv3.tkm";
+        /** 溜め攻撃Lv1の床用デカールモデル */
+        constexpr const char* CHARGE_FLOOR_LV1_TKM_PATH = "Assets/ModelData/decal/atkChargeLv1_Floor.tkm";
+        /** 溜め攻撃Lv2の床用デカールモデル */
+        constexpr const char* CHARGE_FLOOR_LV2_TKM_PATH = "Assets/ModelData/decal/atkChargeLv2_Floor.tkm";
+        /** 溜め攻撃Lv3の床用デカールモデル */
+        constexpr const char* CHARGE_FLOOR_LV3_TKM_PATH = "Assets/ModelData/decal/atkChargeLv3_Floor.tkm";
 
         /** 床と判定する法線Y成分のしきい値 */
         constexpr float FLOOR_DOT_THRESHOLD = 0.999f;
@@ -43,6 +49,8 @@ namespace
         constexpr float WALL_SCALE = 50.0f;
         /** 寿命の何割を過ぎたらフェードを開始するか */
         constexpr float FADE_START_RATIO = 0.6f;
+        /** 地響きデカール Level1 の基準スケール（要調整） */
+        constexpr float QUAKE_FLOOR_BASE_SCALE = 2.5f;
     }
 }
 
@@ -208,7 +216,35 @@ namespace app
                 tkm = sword_decal::CHARGE_LV2_TKM_PATH;
             }
 
-            SpawnDecalInternal(hitPos, surfaceNormal, slashDir, tkm, sword_decal::FLOOR_SCALE);
+            SpawnDecalInternal(hitPos, surfaceNormal, slashDir, tkm, 1.0f);
+        }
+
+
+        void SwordDecalManager::SpawnChargeFloorDecal(const Vector3& hitPos,
+                                                     const Vector3& surfaceNormal,
+                                                     const Vector3& slashDir,
+                                                     int chargeLevel)
+        {
+            const float scale = sword_decal::QUAKE_FLOOR_BASE_SCALE
+                * (chargeLevel >= 3 ? 2.0f : chargeLevel == 2 ? 1.5f : 1.0f);
+
+            const char* tkm = sword_decal::CHARGE_FLOOR_LV1_TKM_PATH;
+            if (chargeLevel >= 3)     tkm = sword_decal::CHARGE_FLOOR_LV3_TKM_PATH;
+            else if (chargeLevel == 2) tkm = sword_decal::CHARGE_FLOOR_LV2_TKM_PATH;
+
+            ModelRender* model = AllocModel(tkm);
+            if (!model) return;
+
+            int lastSlot = (nextSlot_ - 1 + sword_decal::MAX_DECALS) % sword_decal::MAX_DECALS;
+            pool_[lastSlot].lifetime = sword_decal::LIFETIME;
+
+            Vector3 decalPos = hitPos;
+            decalPos.y -= 13.5f;
+
+            model->SetPosition(decalPos);
+            model->SetRotation(CalcDecalRotation(Vector3::Up, slashDir));
+            model->SetScale({ scale, 1.0f, scale });
+            model->Update();
         }
 
 

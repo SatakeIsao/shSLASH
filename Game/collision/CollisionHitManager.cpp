@@ -103,11 +103,19 @@ namespace app
 
 		void CollisionHitManager::UpdateEventCharacterPair(Pair& hitPair)
 		{
+			// ペアのGhostBodyを直接確認（GetOwner経由のダングリングポインタ防止）
+			app::collision::GhostBody* stoneBody =
+				(hitPair.a->GetOwnerId() == app::actor::StoneEventCharacter::ID()) ? hitPair.a : hitPair.b;
+			if (!stoneBody->IsActive()) return;
+
 			auto* battleCharacter = GetHitObject<app::actor::BattleCharacter>(hitPair);
 			auto* eventCharacter = GetHitObject <app::actor::StoneEventCharacter>(hitPair);
 
-			// ポインタ取得失敗または敵が死亡中（メインゴーストが非アクティブ）ならスキップ
+			// ポインタ取得失敗ならスキップ
 			if (!battleCharacter || !eventCharacter) return;
+			// owner_がダングリングポインタの場合、有効なプールインスタンスか確認してから仮想メソッドを呼ぶ
+			if (!app::battle::BattleManager::Get().IsValidStoneEventCharacter(eventCharacter)) return;
+			// 石のメインゴーストが非アクティブ（死亡中）ならスキップ
 			if (!eventCharacter->GetGhostBody() || !eventCharacter->GetGhostBody()->IsActive()) return;
 
 			Vector3 playerPos = battleCharacter->transform.position;
@@ -238,11 +246,19 @@ namespace app
 
 		void CollisionHitManager::UpdateMushroomEventCharacterPair(Pair& hitPair)
 		{
+			// ペアのGhostBodyを直接確認（GetOwner経由のダングリングポインタ防止）
+			app::collision::GhostBody* mushroomBody =
+				(hitPair.a->GetOwnerId() == app::actor::MushroomEventCharacter::ID()) ? hitPair.a : hitPair.b;
+			if (!mushroomBody->IsActive()) return;
+
 			auto* battleCharacter = GetHitObject<app::actor::BattleCharacter>(hitPair);
 			auto* eventCharacter = GetHitObject <app::actor::MushroomEventCharacter>(hitPair);
 
-			// ポインタ取得失敗または敵が死亡中（メインゴーストが非アクティブ）ならスキップ
+			// ポインタ取得失敗ならスキップ
 			if (!battleCharacter || !eventCharacter) return;
+			// owner_がダングリングポインタの場合、有効なプールインスタンスか確認してから仮想メソッドを呼ぶ
+			if (!app::battle::BattleManager::Get().IsValidMushroomEventCharacter(eventCharacter)) return;
+			// キノコのメインゴーストが非アクティブ（死亡中）ならスキップ
 			if (!eventCharacter->GetGhostBody() || !eventCharacter->GetGhostBody()->IsActive()) return;
 
 			Vector3 playerPos = battleCharacter->transform.position;

@@ -28,7 +28,7 @@ namespace app
 {
 	Application::Application()
 	{
-		constexpr size_t HEAP_ALLOCATOR_SIZE = static_cast<size_t>(1024) * 1024 * 1024 * 2; // 2GB
+		constexpr size_t HEAP_ALLOCATOR_SIZE = static_cast<size_t>(1024) * 1024 * 1024 * 1; // 1GB
 		app::memory::Allocator::Get().Initialize(HEAP_ALLOCATOR_SIZE);
 
 		app::collision::GhostBodyManager::Initialize();
