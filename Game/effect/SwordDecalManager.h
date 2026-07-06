@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 剣痕デカール管理
  */
 #pragma once
@@ -66,6 +66,12 @@ namespace app
                                   const Vector3& surfaceNormal,
                                   const Vector3& slashDir,
                                   int chargeLevel);
+
+            /** 溜め攻撃の地響き床デカール */
+            void SpawnChargeFloorDecal(const Vector3& hitPos,
+                                       const Vector3& surfaceNormal,
+                                       const Vector3& slashDir,
+                                       int chargeLevel);
 
             void Update();
             void Render(RenderContext& rc);

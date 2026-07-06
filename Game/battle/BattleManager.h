@@ -315,6 +315,22 @@ namespace app
             {
                 notifyList_.push_back(std::move(std::unique_ptr<INotify>(notify)));
             }
+            /** ptr がプールされた有効な石インスタンスか確認（ダングリングポインタ防止） */
+            bool IsValidStoneEventCharacter(const app::actor::StoneEventCharacter* ptr) const
+            {
+                for (auto* stone : stoneEventCharacters_) {
+                    if (stone == ptr) return true;
+                }
+                return false;
+            }
+            /** ptr がプールされた有効なキノコインスタンスか確認（ダングリングポインタ防止） */
+            bool IsValidMushroomEventCharacter(const app::actor::MushroomEventCharacter* ptr) const
+            {
+                for (auto* mushroom : mushroomEventCharacters_) {
+                    if (mushroom == ptr) return true;
+                }
+                return false;
+            }
             /**
              * ダメージポップリスナーを登録
              * BattleManager はリスナーの所有権を持たない
@@ -322,6 +338,11 @@ namespace app
             void SetDamagePopListener(IDamagePopListener* listener)
             {
                 damagePopListener_ = listener;
+            }
+
+            IDamagePopListener* GetDamagePopListener() const
+            {
+                return damagePopListener_;
             }
 
             /** プレイヤーが死亡しているか */

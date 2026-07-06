@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Actorファイル
  */
 #include "stdafx.h"
@@ -13,6 +13,7 @@
 #include "battle/BattleManager.h"
 #include "camera/CameraManager.h"
 #include "actor/EventCharacterSpawnManager.h"
+#include "actor/EventCharacter.h"
 
 
 namespace app
@@ -696,10 +697,26 @@ namespace app
 				hitStopTimer_    = hitStopDuration_;
 				vibrationElapsed_ = 0.0f;
 				jumpPending_ = true;
+				isBlowBack_ = true;
+				blowBackSpeed_   = chargeLevel >= 3 ? BLOW_BACK_SPEED_LV3
+				                 : chargeLevel == 2 ? BLOW_BACK_SPEED_LV2
+				                                   : BLOW_BACK_SPEED_LV1;
+				blowBackJumpPow_ = chargeLevel >= 3 ? BLOW_BACK_JUMP_LV3
+				                 : chargeLevel == 2 ? BLOW_BACK_JUMP_LV2
+				                                   : BLOW_BACK_JUMP_LV1;
+				chargeLevel_  = chargeLevel;
+				hitWall_      = false;
+				pendingDead_  = false;
+				savedGravity_ = 0.0f;
 				// ノックバック方向の XZ 平面 90° 回転（横揺れ）を振動軸にする
 				const Vector3 kbDir = characterStateMachine->GetMoveDirection();
 				vibrationAxis_ = Vector3(-kbDir.z, 0.0f, kbDir.x);
 				characterStateMachine->GetModelRender()->SetAnimationSpeed(0.0f);
+			}
+
+			if (!isBlowBack)
+			{
+				isBlowBack_ = false;
 			}
 
 			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
@@ -729,7 +746,7 @@ namespace app
 					if (jumpPending_)
 					{
 						jumpPending_ = false;
-						characterStateMachine->Jump(BLOW_BACK_JUMP_POWER);
+						characterStateMachine->Jump(blowBackJumpPow_);
 					}
 				}
 				else if (VIBRATION_ENABLED)
@@ -754,17 +771,79 @@ namespace app
 				isLanded = characterStateMachine->GetCharacterController()->IsOnGround();
 			}
 
-			if (!isLanded)
+			// 壁ダメージ致死落下中：着地で OnDead（isBlowBack_ とは独立して判定）
+			if (pendingDead_ && isLanded)
 			{
-				//時間経過で徐々に減衰させる
-				float deceleration = 1.0f - timer_;
-				if (deceleration < 0.0f) {
-					deceleration = 0.0f;
-				}
-				//スピード調整
-				float currentSpeed = 300.0f * deceleration;
+				pendingDead_ = false;
+				characterStateMachine->GetStatus()->SetGravity(savedGravity_);
+				characterStateMachine->GetCharacterController()->SetGravity(savedGravity_);
+				if (auto* stoneSM = owner_->As<StoneEventCharacterStateMachine>())
+					stoneSM->OnDead();
+				else if (auto* mushroomSM = owner_->As<MushroomEventCharacterStateMachine>())
+					mushroomSM->OnDead();
+				return;
+			}
 
-				characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
+			// 着地したらブローバックの水平移動を終了（放物線着地）
+			if (isBlowBack_ && isLanded)
+			{
+				isBlowBack_ = false;
+			}
+
+			if (isBlowBack_ || !isLanded)
+			{
+				// 致死落下中は水平移動しない（重力だけで落下）
+				if (!pendingDead_)
+				{
+					float currentSpeed;
+					if (isBlowBack_)
+					{
+						// 放物線: 水平速度は一定のまま飛ばす（垂直は Jump + 重力に任せる）
+						currentSpeed = blowBackSpeed_;
+					}
+					else
+					{
+						// 通常ノックバック: 時間経過で徐々に減衰
+						float deceleration = 1.0f - timer_;
+						if (deceleration < 0.0f) deceleration = 0.0f;
+						currentSpeed = 300.0f * deceleration;
+					}
+					characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
+				}
+
+				// 壁衝突ダメージ（ブローバック中のみ、一度だけ）
+				if (isBlowBack_ && !hitWall_ && timer_ > 0.2f)
+				{
+					const float radius = characterStateMachine->GetStatus()->GetRadius();
+					const Vector3 dir  = characterStateMachine->GetMoveDirection();
+					const Vector3 pos  = characterStateMachine->transform.position + Vector3(0.0f, radius, 0.0f);
+					RaycastHit wallHit{};
+					auto wallOnly = [](const btCollisionObject& obj) {
+						return obj.getUserIndex() != enCollisionAttr_Character;
+					};
+					if (PhysicsWorld::Get().Raycast(pos, pos + dir * (radius * 1.5f), wallHit, ALL_COLLISION_ATTRIBUTE_MASK, wallOnly)
+						&& fabsf(wallHit.normal.y) < 0.7f)
+					{
+						hitWall_ = true;
+						const float oldHp = characterStateMachine->GetStatus()->GetCurrentHp();
+						// 壁激突は常に致死：残りHPをすべて奪う
+						characterStateMachine->GetStatus()->SetCurrentHp(0.0f);
+						if (auto* pop = app::battle::BattleManager::Get().GetDamagePopListener())
+							if (oldHp > 0.0f)
+								pop->OnDamageDealt(static_cast<int>(oldHp), characterStateMachine->transform.position);
+						if (auto* stoneSM = owner_->As<StoneEventCharacterStateMachine>())
+							static_cast<StoneEventCharacter*>(characterStateMachine->GetCharacter())->TakeDamage(static_cast<int>(oldHp));
+						else if (auto* mushroomSM = owner_->As<MushroomEventCharacterStateMachine>())
+							static_cast<MushroomEventCharacter*>(characterStateMachine->GetCharacter())->TakeDamage(static_cast<int>(oldHp));
+
+						// 水平移動を止め、重力を強化して素早く落下させる
+						pendingDead_  = true;
+						isBlowBack_   = false;
+						savedGravity_ = characterStateMachine->GetStatus()->GetGravity();
+						characterStateMachine->GetStatus()->SetGravity(savedGravity_ * 5.0f);
+						characterStateMachine->GetCharacterController()->SetGravity(savedGravity_ * 5.0f);
+					}
+				}
 			}
 		}
 
@@ -779,6 +858,9 @@ namespace app
 
 		bool KnockBackCharacterState::CanChangeState() const
 		{
+			// 致死落下中は着地＆OnDead呼び出しが完了するまでステート遷移を禁止
+			if (pendingDead_) return false;
+
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
 			bool isAnimFinished = !characterStateMachine->GetModelRender()->IsPlayingAnimation();
@@ -995,6 +1077,45 @@ namespace app
 							}
 						}
 					}
+					// 地響き床デカール
+					if (app::effect::SwordDecalManager::IsAvailable())
+					{
+						Vector3 fwd = Vector3::Front;
+						characterStateMachine->transform.rotation.Apply(fwd);
+						const float radius = characterStateMachine->GetStatus()->GetRadius();
+						// 真下にレイキャストして床のY座標を取得
+						Vector3 floorRayStart = characterStateMachine->transform.position + Vector3(0.0f, 50.0f, 0.0f);
+						Vector3 floorRayEnd   = characterStateMachine->transform.position + Vector3(0.0f, -300.0f, 0.0f);
+						RaycastHit floorHit{};
+						auto noCharFilter = [](const btCollisionObject& obj) {
+							return obj.getUserIndex() != enCollisionAttr_Character;
+						};
+						if (PhysicsWorld::Get().Raycast(floorRayStart, floorRayEnd, floorHit,
+							ALL_COLLISION_ATTRIBUTE_MASK, noCharFilter))
+						{
+							// XZはプレイヤー前方、YはレイキャストのY（床面の高さ）
+							Vector3 decalPos = characterStateMachine->transform.position + fwd * (radius * 5.0f);
+							decalPos.y = floorHit.point.y;
+							int lv = chargeLevelEffectPlayed_[2] ? 3
+							       : chargeLevelEffectPlayed_[1] ? 2 : 1;
+							app::effect::SwordDecalManager::Get().SpawnChargeFloorDecal(
+								decalPos, floorHit.normal, fwd, lv);
+							if (EffectManager::IsAvailable())
+							{
+								const float effectScale = lv >= 3 ? 4.0f : lv == 2 ? 3.0f : 2.0f;
+								EffectManager::Get().PlayEffect(
+									enEffectKind_PlayerChargeAtkLightPiller_Lv1,
+									decalPos,
+									Quaternion::Identity,
+									Vector3(effectScale, effectScale, effectScale));
+								EffectManager::Get().PlayEffect(
+									enEffectKind_StoneDead,
+									decalPos,
+									Quaternion::Identity,
+									Vector3(effectScale, effectScale, effectScale));
+							}
+						}
+					}
 
 					// フェーズ遷移の瞬間に一度だけ生成
 					attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
@@ -1040,11 +1161,31 @@ namespace app
 											hit.point, hit.normal, forward, lv);
 									}
 							}
+							// 地響き衝撃波：チャージレベルに応じた球体判定＋床デカール
+							{
+								static constexpr float QUAKE_BASE_RADIUS = 80.0f;
+								const int lv = chargeLevelEffectPlayed_[2] ? 3
+								             : chargeLevelEffectPlayed_[1] ? 2 : 1;
+								const float quakeRadius = QUAKE_BASE_RADIUS
+									* (lv >= 3 ? 2.0f : lv == 2 ? 1.5f : 1.0f);
+								Vector3 quakePos = csm->transform.position
+									+ forward * (radius * 6.0f)
+									+ Vector3(0.0f, quakeRadius * 0.3f, 0.0f);
+								shockwaveBody_ = new app::collision::GhostBody();
+								shockwaveBody_->CreateSphere(
+									csm->GetCharacter(), csm->GetCharacterID(),
+									quakeRadius,
+									app::collision::ghost::CollisionAttribute::Player,
+									app::collision::ghost::CollisionAttributeMask::All);
+								shockwaveBody_->SetPosition(quakePos);
+							}
 						}, false);
 					attackScheduler_->AddTimer(0.1f, [&]()
 						{
 							delete attackBody_;
 							attackBody_ = nullptr;
+							delete shockwaveBody_;
+							shockwaveBody_ = nullptr;
 						}, true);
 				}
 				break;
@@ -1099,6 +1240,10 @@ namespace app
 			if (attackBody_ != nullptr) {
 				delete attackBody_;
 				attackBody_ = nullptr;
+			}
+			if (shockwaveBody_ != nullptr) {
+				delete shockwaveBody_;
+				shockwaveBody_ = nullptr;
 			}
 
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();

@@ -99,6 +99,7 @@ namespace app
 
 		private:
 			app::collision::GhostBody* attackBody_ = nullptr;
+			app::collision::GhostBody* shockwaveBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float stateTimer_ = 0.0f;
 			bool isAttackBody_ = false;
@@ -172,6 +173,7 @@ namespace app
 		{
 		protected:
 			app::collision::GhostBody* attackBody_ = nullptr;
+			app::collision::GhostBody* shockwaveBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float stateTimer_ = 0.0f;
 			bool isComboInput_ = false;
@@ -301,6 +303,7 @@ namespace app
 		private:
 			ChargeAttackPhase chargeAttackPhase_ = ChargeAttackPhase::Start;
 			app::collision::GhostBody* attackBody_ = nullptr;
+			app::collision::GhostBody* shockwaveBody_ = nullptr;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float chargeTimer_ = 0.0f;
 			bool chargeLevelEffectPlayed_[3] = { false, false, false };
@@ -397,14 +400,28 @@ namespace app
 		private:
 			static constexpr float VIBRATION_AMPLITUDE  = 18.0f;
 			static constexpr float VIBRATION_FREQUENCY  = 45.0f;
-			static constexpr float BLOW_BACK_JUMP_POWER = 80.0f;
+			// 奥方向（水平）の吹き飛ばし速度
+			static constexpr float BLOW_BACK_SPEED_LV1 = 300.0f;
+			static constexpr float BLOW_BACK_SPEED_LV2 = 325.0f;
+			static constexpr float BLOW_BACK_SPEED_LV3 = 500.0f;
+			// Y方向（垂直）の飛び上がり力
+			static constexpr float BLOW_BACK_JUMP_LV1  =  90.0f;
+			static constexpr float BLOW_BACK_JUMP_LV2  =  77.5f;
+			static constexpr float BLOW_BACK_JUMP_LV3  = 110.0f;
 
 			float timer_ = 0.0f;
 			float hitStopTimer_ = 0.0f;
 			float hitStopDuration_ = 0.0f;
 			float vibrationElapsed_ = 0.0f;
+			float blowBackSpeed_    = BLOW_BACK_SPEED_LV1;
+			float blowBackJumpPow_  = BLOW_BACK_JUMP_LV1;
 			Vector3 vibrationAxis_ = Vector3::Zero;
 			bool jumpPending_ = false;
+			bool isBlowBack_ = false;
+			bool  hitWall_       = false;
+			bool  pendingDead_   = false;
+			int   chargeLevel_   = 0;
+			float savedGravity_  = 0.0f;
 
 		public:
 			KnockBackCharacterState(IStateMachine* owner);
