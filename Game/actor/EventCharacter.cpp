@@ -188,6 +188,27 @@ namespace app
 
 			stateMachine_->Update();
 
+			// バウンド攻撃終了後、移動しながら描画オフセットを元の高さへ戻す
+			// とびかかり攻撃中（バウンド含む）はステート側が管理するためスキップ
+			// 速度は二段階：めり込み帯（< -5）は素早く抜け、その後はゆっくり戻す
+			{
+				auto* stoneSM = static_cast<StoneEventCharacterStateMachine*>(stateMachine_.get());
+				if (!stoneSM->IsInPounceAttack())
+				{
+					const Vector3& curOffset = GetRenderPositionOffset();
+					if (curOffset.y < 0.0f)
+					{
+						// -5 より低い間は歩行中に下あごが地面にめり込むため素早く通過
+						constexpr float SINK_THRESHOLD =  -5.0f;
+						constexpr float FAST_SPEED     =  30.0f; // めり込み帯を抜ける速度
+						constexpr float SLOW_SPEED     =   8.0f; // 元の高さへ戻る速度
+						const float speed = (curOffset.y < SINK_THRESHOLD) ? FAST_SPEED : SLOW_SPEED;
+						const float newY = (std::min)(curOffset.y + speed * deltaTime, 0.0f);
+						SetRenderPositionOffset(Vector3(curOffset.x, newY, curOffset.z));
+					}
+				}
+			}
+
 			Vector3 nextPosition = stateMachine_->transform.position;
 
 			// 死亡中はRequestTeleport+Executeで地下へ退避（AABBも含めて正しく更新するため）

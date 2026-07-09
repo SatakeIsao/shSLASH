@@ -16,6 +16,7 @@
 namespace nsK2EngineLow
 {
     class SkyCube;
+    class Font;
 }
 namespace app
 {
@@ -183,6 +184,12 @@ namespace app
             IDamagePopListener* damagePopListener_ = nullptr;
             /** スカイキューブのオブジェクト */
             nsK2EngineLow::SkyCube* skyCube_ = nullptr;
+
+#ifdef K2_DEBUG
+            /** デバッグ用：Stoneとびかかり攻撃の視野角ブロック統計を画面表示するためのフォント */
+            std::unique_ptr<nsK2EngineLow::Font> stonePounceDebugFont_ = nullptr;
+            std::unique_ptr<nsK2EngineLow::Font> stonePounceDebugFontShadow_ = nullptr;
+#endif
 
             /** スポーンしているストーン敵のリスト */
             std::vector<app::actor::StoneEventCharacter*> stoneEventCharacters_;
@@ -445,8 +452,10 @@ namespace app
                 float remainingTime    = 10.0f;
                 float tickTimer        = 0.0f;
                 float sporeElapsedTime = 0.0f;                     // spore2 開始からの経過時間
+                float bubbleTimer      = 0.0f;                     // 毒泡の発生間隔カウンタ
                 EffectHandle sporeHandle = INVALID_EFFECT_HANDLE;  // 胞子エフェクトのハンドル
                 EffectHandle smokeHandle = INVALID_EFFECT_HANDLE;  // 持続煙エフェクトのハンドル
+                std::vector<EffectHandle> bubbleHandles;           // 発生中の毒泡エフェクトのハンドル（フィールド終了時に一括停止するため）
                 bool smokeStarted = false;                         // smoke2 を開始済みか
                 app::actor::MushroomEventCharacter* mushroomOwner = nullptr;  // 詠唱したキノコ
 
@@ -459,6 +468,12 @@ namespace app
                 // spore2 開始から smoke2 を再生するまでの秒数
                 // poison_spore2.efk の1回目パーティクル消失タイミングに合わせて調整する
                 static constexpr float SMOKE_START_DELAY    = 0.8f;
+                // 毒泡（poison_bubble）関連
+                static constexpr float BUBBLE_INTERVAL      = 0.6f;    // 毒泡の発生間隔(秒)
+                static constexpr float BUBBLE_SPAWN_RADIUS  = RADIUS * 0.4f; // フィールド中心からの発生範囲（見た目の煙の範囲内に収める）
+                // フィールド終了間際に発生した泡がフィールド消失後まで残らないよう、
+                // 残り時間がこの秒数を切ったら新規の泡発生を止める（poison_bubble.efk 自体の再生+フェード時間に合わせて調整する）
+                static constexpr float BUBBLE_STOP_MARGIN   = 2.0f;
             };
             std::deque<PoisonCloud> activePoisonClouds_;
 

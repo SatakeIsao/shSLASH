@@ -37,6 +37,28 @@ namespace
 	}
 
 
+	/** 対象座標がカメラの視野角内（画面内）にいるかどうかを判定 */
+	bool IsInCameraViewAngle(const Vector3& worldPos)
+	{
+		// カメラ前方チェック（背後にいる場合は視野外）
+		Vector3 toTarget = worldPos - g_camera3D->GetPosition();
+		float dot = toTarget.Dot(g_camera3D->GetForward());
+		if (dot <= 0.0f)
+		{
+			return false;
+		}
+
+		// ワールド座標からスクリーン座標に変換し、画面範囲内かチェック
+		Vector2 screenPos;
+		g_camera3D->CalcScreenPositionFromWorldPosition(screenPos, worldPos);
+
+		const float half_w = static_cast<float>(g_graphicsEngine->GetFrameBufferWidth()) * 0.5f;
+		const float half_h = static_cast<float>(g_graphicsEngine->GetFrameBufferHeight()) * 0.5f;
+
+		return fabsf(screenPos.x) <= half_w && fabsf(screenPos.y) <= half_h;
+	}
+
+
 	Quaternion ComputeRotation(const Vector3& inputDirection)
 	{
 		// スティックの方向
@@ -54,6 +76,12 @@ namespace app
 {
 	namespace actor
 	{
+#ifdef K2_DEBUG
+		int StonePounceDebugStats::triggeredCount = 0;
+		int StonePounceDebugStats::blockedByCameraCount = 0;
+#endif
+
+
 		void IStateMachine::UpdateStateCore()
 		{
 			//次のステートにしてね。という予約があれば
@@ -1160,6 +1188,54 @@ namespace app
 		}
 
 
+		void StoneEventCharacterStateMachine::OnEnterPounceAttack()
+		{
+			// isInPounceAttack_ は Bounce フェーズ開始時に SetBouncingActive(true) でセット
+			// Charge/Leap 中は false のまま（auto-lerp による高さ戻しを継続させる）
+
+			// アタックポイントを確保（二重確保しない）
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (stone && stone->GetCurrentAttackPoint() == nullptr)
+			{
+				auto* manager = stone->GetAttackPointManager();
+				if (manager)
+				{
+					auto* point = manager->AcquireAttackPoint(transform.position, stone);
+					stone->SetCurrentAttackPoint(point);
+				}
+			}
+		}
+
+
+		void StoneEventCharacterStateMachine::OnExitPounceAttack()
+		{
+			isInPounceAttack_ = false;
+
+			// アタックポイントを解放し、近い待機ポイントへの方向をセット
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (stone)
+			{
+				auto* manager = stone->GetAttackPointManager();
+				if (manager && stone->GetCurrentAttackPoint() != nullptr)
+				{
+					manager->ReleaseAttackPoint(stone->GetCurrentAttackPoint(), stone);
+					stone->SetCurrentAttackPoint(nullptr);
+				}
+				if (manager)
+				{
+					auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+					if (waitPoint != nullptr)
+					{
+						Vector3 toWait = waitPoint->position_ - transform.position;
+						toWait.Normalize();
+						SetMoveDirection(toWait);
+					}
+				}
+			}
+			attackCoolTimer_ = kAttackCoolTime;
+		}
+
+
 		uint32_t StoneEventCharacterStateMachine::GetCharacterID() const
 		{
 			return StoneEventCharacter::ID();
@@ -1251,6 +1327,16 @@ namespace app
 				return;
 			}
 
+			if (IsEqualCurrentState(StonePounceAttackState::ID()))
+			{
+				if (CanChangeState()) {
+					aiTimer_ = 0.0f;
+					isReturningToWait_ = true;
+					RequestChangeState(RunCharacterState::ID());
+				}
+				return;
+			}
+
 			if (isReturningToWait_)
 			{
 				auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
@@ -1322,6 +1408,7 @@ namespace app
 
 					if (distance <= 40.0f)
 					{
+						// 近距離：通常の近接攻撃
 						auto* manager = stone->GetAttackPointManager();
 
 						if (attackCoolTimer_ <= 0.0f)
@@ -1343,6 +1430,59 @@ namespace app
 								Vector3 toWait = waitPoint->position_ - transform.position;
 								toWait.Normalize();
 								SetMoveDirection(toWait);
+							}
+							RequestChangeState(RunCharacterState::ID());
+						}
+					}
+					else if (distance > 150.0f && distance <= 350.0f)
+					{
+						// 中遠距離：とびかかり攻撃
+						// 画面外（カメラの視野角外）からの不意打ちを防ぐため、視野角内にいる場合のみ発動可能
+						const bool isInView = IsInCameraViewAngle(transform.position);
+						const bool canPounce = attackCoolTimer_ <= 0.0f && isInView;
+
+#ifdef K2_DEBUG
+						// デバッグ用：視野角外で本当にブロックされ続けているかを確認するトレース
+						// （判定が切り替わった時だけ出力。毎フレーム出すとログが埋まるため）
+						if (attackCoolTimer_ <= 0.0f)
+						{
+							const int decision = isInView ? 1 : 0;
+							if (decision != debugLastPounceDecision_)
+							{
+								debugLastPounceDecision_ = decision;
+								if (isInView)
+								{
+									StonePounceDebugStats::triggeredCount++;
+									K2_LOG("[StonePounce] triggered: dist=%.1f pos=(%.1f, %.1f, %.1f)\n",
+										distance, transform.position.x, transform.position.y, transform.position.z);
+								}
+								else
+								{
+									StonePounceDebugStats::blockedByCameraCount++;
+									K2_LOG("[StonePounce] blocked (out of camera view): dist=%.1f pos=(%.1f, %.1f, %.1f)\n",
+										distance, transform.position.x, transform.position.y, transform.position.z);
+								}
+							}
+						}
+#endif
+
+						if (canPounce)
+						{
+							SetMoveDirection(chaseDirection_);
+							RequestChangeState(StonePounceAttackState::ID());
+						}
+						else
+						{
+							auto* manager = stone->GetAttackPointManager();
+							if (manager)
+							{
+								auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+								if (waitPoint != nullptr)
+								{
+									Vector3 toWait = waitPoint->position_ - transform.position;
+									toWait.Normalize();
+									SetMoveDirection(toWait);
+								}
 							}
 							RequestChangeState(RunCharacterState::ID());
 						}

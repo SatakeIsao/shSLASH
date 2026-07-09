@@ -129,9 +129,43 @@ EffectHandle EffectManager::PlayEffectFollow(const int kind, const Vector3* targ
 void EffectManager::StopEffect(const EffectHandle handle)
 {
 	auto it = m_effectList.find(handle);
-	if (it == m_effectList.end()) return;
-	if (it->second) it->second->Stop();
-	m_effectList.erase(it);
+	if (it != m_effectList.end())
+	{
+		if (it->second) it->second->Stop();
+		m_effectList.erase(it);
+		return;
+	}
+
+	// PlayEffectFollow() で再生したエフェクトは m_followEffectList にのみ登録されるため
+	// こちらも検索して停止する（追従エフェクトを着地などのタイミングで止めるために必要）
+	auto followIt = std::find_if(m_followEffectList.begin(), m_followEffectList.end(),
+		[handle](const FollowEffectEntry& entry) { return entry.handle == handle; });
+	if (followIt != m_followEffectList.end())
+	{
+		if (followIt->emitter) followIt->emitter->Stop();
+		m_followEffectList.erase(followIt);
+	}
+}
+
+
+void EffectManager::StopEffectRoot(const EffectHandle handle)
+{
+	// ルートのみ停止し、既存パーティクルはエフェクト側で管理しているフェードアウトに従って自然に消滅させる
+	auto it = m_effectList.find(handle);
+	if (it != m_effectList.end())
+	{
+		if (it->second) it->second->StopRoot();
+		m_effectList.erase(it);
+		return;
+	}
+
+	auto followIt = std::find_if(m_followEffectList.begin(), m_followEffectList.end(),
+		[handle](const FollowEffectEntry& entry) { return entry.handle == handle; });
+	if (followIt != m_followEffectList.end())
+	{
+		if (followIt->emitter) followIt->emitter->StopRoot();
+		m_followEffectList.erase(followIt);
+	}
 }
 
 

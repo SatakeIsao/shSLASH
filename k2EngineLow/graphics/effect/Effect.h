@@ -38,6 +38,14 @@ namespace nsK2EngineLow {
 			EffectEngine::GetInstance()->Stop(m_handle);
 		}
 
+		/// <summary>
+		/// ルートだけを停止。既存パーティクルはフェードアウトしながら自然に消滅する。
+		/// </summary>
+		void StopRoot()
+		{
+			EffectEngine::GetInstance()->StopRoot(m_handle);
+		}
+
 		void SetSpeed(float speed)
 		{
 			EffectEngine::GetInstance()->SetSpeed(m_handle, speed);

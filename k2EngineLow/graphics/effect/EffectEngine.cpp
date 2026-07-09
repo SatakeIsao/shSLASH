@@ -65,6 +65,11 @@ namespace nsK2EngineLow {
 	{
 		m_manager->StopEffect(effectHandle);
 	}
+	void EffectEngine::StopRoot(int effectHandle)
+	{
+		// ルートのみ停止し、既存パーティクルはエフェクト側のフェードアウトに従って自然に消滅させる
+		m_manager->StopRoot(effectHandle);
+	}
 
 
 	void EffectEngine::Update(float deltaTime)

@@ -40,6 +40,13 @@ namespace nsK2EngineLow {
 			m_effect.Stop();
 		}
 		/// <summary>
+		/// ルートだけを停止する。既存パーティクルはフェードアウトしながら自然に消滅する。
+		/// </summary>
+		void StopRoot()
+		{
+			m_effect.StopRoot();
+		}
+		/// <summary>
 		/// 座標を設定。
 		/// </summary>
 		/// <param name="position">座標。</param>
