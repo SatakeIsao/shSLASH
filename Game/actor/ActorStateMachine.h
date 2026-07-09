@@ -17,6 +17,20 @@ namespace app
 		class Character;
 
 
+#ifdef K2_DEBUG
+		/**
+		 * デバッグ用：Stoneのとびかかり攻撃が視野角外で本当に発動していないかを
+		 * 確認するための統計情報（画面外ブロック回数 / 実発動回数）
+		 * BattleManager の画面表示から参照される
+		 */
+		struct StonePounceDebugStats
+		{
+			static int triggeredCount;
+			static int blockedByCameraCount;
+		};
+#endif
+
+
 		class IStateMachine : public Noncopyable
 		{
 			/** 例外としてpublic */
@@ -38,6 +52,18 @@ namespace app
 
 			virtual void Initialize() = 0;
 			virtual void Update() = 0;
+
+			/**
+			 * 現在のステートを強制的にExitさせる。
+			 * リトライ等でアクターを破棄する直前に呼ぶことで、
+			 * Exit()を経由しない放置エフェクト・攻撃ゴーストのリークを防ぐ。
+			 */
+			void ForceExitCurrentState()
+			{
+				if (currentState_) {
+					currentState_->Exit();
+				}
+			}
 
 
 		public:
@@ -61,9 +87,9 @@ namespace app
 
 			bool CanChangeState() const;
 
-			ICharacterState* GetCurrentState() const 
+			ICharacterState* GetCurrentState() const
 			{
-				return currentState_.get(); 
+				return currentState_.get();
 			}
 
 			void SetCurrentState(const uint32_t stateId)
@@ -191,6 +217,10 @@ namespace app
 			virtual void OnEnterPunchThird() {}
 			/** パンチ3回目ステートに抜ける時の固有処理 */
 			virtual void OnExitPunchThird() {}
+			/** とびかかり攻撃ステートに入った時の固有処理 */
+			virtual void OnEnterPounceAttack() {}
+			/** とびかかり攻撃ステートから抜ける時の固有処理 */
+			virtual void OnExitPounceAttack() {}
 
 			void Move(const float deltaTime, const float moveSpeed);
 			void Jump(const float jumoPower);
@@ -716,6 +746,15 @@ namespace app
 			bool isReturningToWait_ = false;
 			/** AIの自律移動（パトロール等）を有効にするか */
 			bool isAIEnabled_ = true;
+			/** とびかかり攻撃中フラグ（EventCharacter側の描画オフセット戻し制御に使用） */
+			bool isInPounceAttack_ = false;
+			/** とびかかりエフェクトの追従先座標（StonePounceAttackState が毎フレーム更新） */
+			Vector3 pounceEffectFollowPos_ = Vector3::Zero;
+
+#ifdef K2_DEBUG
+			/** デバッグ用：とびかかり攻撃の視野角判定の直近結果（-1=未評価 0=画面外でブロック 1=発動可）。変化した時だけログを出すためのエッジ検出に使う */
+			int debugLastPounceDecision_ = -1;
+#endif
 
 		public:
 			StoneEventCharacterStateMachine();
@@ -732,6 +771,8 @@ namespace app
 			virtual void OnExitDead() override;
 			virtual void OnEnterKnockBack() override;
 			virtual void OnExitKnockBack() override;
+			virtual void OnEnterPounceAttack() override;
+			virtual void OnExitPounceAttack() override;
 
 			/** 顔を突き出すフレームに合わせた遅延秒数（要アニメーション確認で調整） */
 			virtual float GetGhostBodyDelay() const override { return 0.35f; }
@@ -753,6 +794,17 @@ namespace app
 				aiTimer_ = 0.0f;
 			}
 			bool IsSquashed() const { return isSquashed_; }
+
+			/** とびかかり攻撃のターゲット位置を取得（StonePounceAttackState が使用） */
+			const Vector3& GetTargetPosition() const { return targetPosition_; }
+			bool IsInPounceAttack() const { return isInPounceAttack_; }
+			/** Bounce/Landing フェーズ中のみ true にセットする（Charge/Leap 中は false） */
+			void SetBouncingActive(bool active) { isInPounceAttack_ = active; }
+
+			/** とびかかりエフェクトの追従先座標を更新する（StonePounceAttackState が使用） */
+			void SetPounceEffectFollowPos(const Vector3& pos) { pounceEffectFollowPos_ = pos; }
+			/** とびかかりエフェクトの追従先座標へのポインタを取得する（PlayEffectFollow に渡す） */
+			const Vector3* GetPounceEffectFollowPosPtr() const { return &pounceEffectFollowPos_; }
 
 			/** 視野角に入ったことを教える */
 			void OnViewAngle(const Vector3& targetPos) {

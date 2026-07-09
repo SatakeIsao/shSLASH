@@ -243,6 +243,12 @@ namespace app
 				eventCharacterSpawnManagerObject_->GetManager().CleanUp();
 			}
 
+			/** 溜め攻撃中などステート中断で放置される攻撃ゴースト・エフェクトを確実に片付ける */
+			if (battleCharacter_ && battleCharacter_->GetStateMachine())
+			{
+				battleCharacter_->GetStateMachine()->ForceExitCurrentState();
+			}
+
 			DeleteGO(skyCube_);
 			DeleteGO(moon_);
 			DeleteGO(battleCharacter_);
@@ -554,6 +560,7 @@ namespace app
 									stone->AddState<app::actor::WaitingAttackCharacterState>();
 									stone->AddState<app::actor::DeadCharacterState>();
 									stone->AddState <app::actor::KnockBackCharacterState>();
+									stone->AddState<app::actor::StonePounceAttackState>();
 								}
 								stone->GetStatus()->SetFriction(stageParam->friction);
 								stone->GetStatus()->SetGravity(stageParam->gravity);
@@ -1728,7 +1735,11 @@ namespace app
 					}
 					if (oldest.smokeHandle != INVALID_EFFECT_HANDLE)
 					{
-						EffectManager::Get().StopEffect(oldest.smokeHandle);
+						EffectManager::Get().StopEffectRoot(oldest.smokeHandle);
+					}
+					for (EffectHandle bubbleHandle : oldest.bubbleHandles)
+					{
+						EffectManager::Get().StopEffectRoot(bubbleHandle);
 					}
 				}
 				activePoisonClouds_.pop_front();
@@ -1811,14 +1822,52 @@ namespace app
 					continue;
 				}
 
+				// 毒フィールド展開中、一定間隔でフィールド中心付近に毒泡を発生させる
+				// フィールド終了間際（残り時間が BUBBLE_STOP_MARGIN 以下）は新規発生を止め、
+				// 既存の泡がフィールド消失前に再生し終わるようにする
+				it->bubbleTimer += dt;
+				if (it->bubbleTimer >= PoisonCloud::BUBBLE_INTERVAL
+					&& it->remainingTime > PoisonCloud::BUBBLE_STOP_MARGIN
+					&& EffectManager::IsAvailable())
+				{
+					it->bubbleTimer -= PoisonCloud::BUBBLE_INTERVAL;
+
+					const float angle  = (static_cast<float>(rand()) / RAND_MAX) * (3.14159265f * 2.f);
+					const float radius = (static_cast<float>(rand()) / RAND_MAX) * PoisonCloud::BUBBLE_SPAWN_RADIUS;
+					Vector3 bubblePos = it->position;
+					bubblePos.x += cosf(angle) * radius;
+					bubblePos.z += sinf(angle) * radius;
+
+					// poison_bubble1 / poison_bubble2 をランダムに選んで再生する
+					const int bubbleKind = (rand() % 2 == 0)
+						? enEffectKind_MushroomPoisonBubble1
+						: enEffectKind_MushroomPoisonBubble2;
+
+					EffectHandle bubbleHandle = EffectManager::Get().PlayEffect(
+						bubbleKind,
+						bubblePos,
+						Quaternion::Identity,
+						Vector3::One
+					);
+					it->bubbleHandles.push_back(bubbleHandle);
+				}
+
 				it->remainingTime -= dt;
 
 				if (it->remainingTime <= 0.0f)
 				{
-					// 期限切れ → 持続煙エフェクトを明示的に停止
+					// 期限切れ → 持続煙エフェクトのルートを停止（既存パーティクルはエフェクシア側のフェードアウトで自然消滅させる）
 					if (EffectManager::IsAvailable() && it->smokeHandle != INVALID_EFFECT_HANDLE)
 					{
-						EffectManager::Get().StopEffect(it->smokeHandle);
+						EffectManager::Get().StopEffectRoot(it->smokeHandle);
+					}
+					// フィールド終了時、まだ再生中の毒泡も一緒に停止する（フィールド消失後に泡だけ残るのを防ぐ）
+					if (EffectManager::IsAvailable())
+					{
+						for (EffectHandle bubbleHandle : it->bubbleHandles)
+						{
+							EffectManager::Get().StopEffectRoot(bubbleHandle);
+						}
 					}
 					it = activePoisonClouds_.erase(it);
 					continue;
@@ -1961,6 +2010,30 @@ namespace app
 			{
 				app::effect::SwordDecalManager::Get().Render(rc);
 			}
+
+#ifdef K2_DEBUG
+			// デバッグ用：Stoneとびかかり攻撃が視野角外で本当に発動していないかを画面上で確認する
+			{
+				if (!stonePounceDebugFont_)
+				{
+					stonePounceDebugFont_ = std::make_unique<Font>();
+					stonePounceDebugFontShadow_ = std::make_unique<Font>();
+				}
+
+				wchar_t text[128];
+				swprintf(text, L"Pounce Triggered:%d  BlockedByCamera:%d",
+					app::actor::StonePounceDebugStats::triggeredCount,
+					app::actor::StonePounceDebugStats::blockedByCameraCount);
+
+				// 画面左下に表示（pivot(0,0)=左下基準なのでテキストは右上方向へ伸びる）
+				const Vector2 pos = { UI_SPACE_WIDTH * -0.48f, UI_SPACE_HEIGHT * -0.48f };
+
+				stonePounceDebugFont_->Begin(rc);
+				stonePounceDebugFontShadow_->Draw(text, { pos.x + 3.0f, pos.y - 3.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 0.0f });
+				stonePounceDebugFont_->Draw(text, pos, { 1.0f, 0.6f, 0.2f, 1.0f }, 0.0f, 1.0f, { 0.0f, 0.0f });
+				stonePounceDebugFont_->End(rc);
+			}
+#endif
 		}
 
 

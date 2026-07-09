@@ -62,6 +62,8 @@ public:
     EffectHandle PlayEffectFollow(const int kind, const Vector3* targetPosition, const Quaternion& rotation, const Vector3& scale);
     /** エフェクト停止 */
     void StopEffect(const EffectHandle handle);
+    /** エフェクトのルートだけを停止（既存パーティクルはエフェクト側のフェードアウトに従い自然消滅） */
+    void StopEffectRoot(const EffectHandle handle);
 
 
     bool IsEffectPlaying(const EffectHandle handle) const

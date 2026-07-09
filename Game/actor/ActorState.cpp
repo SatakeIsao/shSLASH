@@ -126,11 +126,7 @@ namespace app
 					auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
 					// 既にアタックゴーストがある場合は解放してから再生成
-					if (attackBody_ != nullptr) {
-						delete attackBody_;
-						attackBody_ = nullptr;
-					}
-					attackBody_ = new app::collision::GhostBody();
+					attackBody_ = std::make_unique<app::collision::GhostBody>();
 					attackBody_->CreateSphere(characterStateMachine->GetCharacter(), characterStateMachine->GetCharacterID(), 20.0f, app::collision::ghost::CollisionAttribute::Enemy, app::collision::ghost::CollisionAttributeMask::All);
 					isAttackBody_ = true;
 
@@ -146,8 +142,7 @@ namespace app
 			attackScheduler_->AddTimer(0.1f, [&]()
 				{
 					if (attackBody_ != nullptr) {
-						delete attackBody_;
-						attackBody_ = nullptr;
+						attackBody_.reset();
 						isAttackBody_ = false;
 					}
 				}, true);
@@ -192,8 +187,7 @@ namespace app
 
 			if (attackBody_ != nullptr)
 			{
-				delete attackBody_;
-				attackBody_ = nullptr;
+				attackBody_.reset();
 				isAttackBody_ = false;
 			}
 		}
@@ -343,6 +337,11 @@ namespace app
 		/*************************************/
 
 
+		ComboAttackCharacterState::~ComboAttackCharacterState()
+		{
+		}
+
+
 		void ComboAttackCharacterState::Enter()
 		{
 			stateTimer_ = 0.0f;
@@ -360,7 +359,7 @@ namespace app
 				{
 					const auto p = GetComboParam();
 					auto* csm = owner_->As<CharacterStateMachine>();
-					attackBody_ = new app::collision::GhostBody();
+					attackBody_ = std::make_unique<app::collision::GhostBody>();
 					attackBody_->CreateSphere(
 						csm->GetCharacter(), csm->GetCharacterID(),
 						p.attackBodyRadius,
@@ -397,8 +396,7 @@ namespace app
 				}, false);
 			attackScheduler_->AddTimer(param.attackBodyDuration, [&]()
 				{
-					delete attackBody_;
-					attackBody_ = nullptr;
+					attackBody_.reset();
 				}, true);
 		}
 
@@ -442,11 +440,7 @@ namespace app
 		void ComboAttackCharacterState::Exit()
 		{
 			attackScheduler_.reset(nullptr);
-			if (attackBody_ != nullptr)
-			{
-				delete attackBody_;
-				attackBody_ = nullptr;
-			}
+			attackBody_.reset();
 		}
 
 
@@ -1122,7 +1116,7 @@ namespace app
 					attackScheduler_->AddTimer(0.1f, [&]()
 						{
 							auto* csm = owner_->As<CharacterStateMachine>();
-							attackBody_ = new app::collision::GhostBody();
+							attackBody_ = std::make_unique<app::collision::GhostBody>();
 							attackBody_->CreateSphere(
 								csm->GetCharacter(),
 								csm->GetCharacterID(),
@@ -1171,7 +1165,7 @@ namespace app
 								Vector3 quakePos = csm->transform.position
 									+ forward * (radius * 6.0f)
 									+ Vector3(0.0f, quakeRadius * 0.3f, 0.0f);
-								shockwaveBody_ = new app::collision::GhostBody();
+								shockwaveBody_ = std::make_unique<app::collision::GhostBody>();
 								shockwaveBody_->CreateSphere(
 									csm->GetCharacter(), csm->GetCharacterID(),
 									quakeRadius,
@@ -1182,10 +1176,8 @@ namespace app
 						}, false);
 					attackScheduler_->AddTimer(0.1f, [&]()
 						{
-							delete attackBody_;
-							attackBody_ = nullptr;
-							delete shockwaveBody_;
-							shockwaveBody_ = nullptr;
+							attackBody_.reset();
+							shockwaveBody_.reset();
 						}, true);
 				}
 				break;
@@ -1237,14 +1229,8 @@ namespace app
 			}
 
 			// ゴーストボディが残っていたら確実に削除
-			if (attackBody_ != nullptr) {
-				delete attackBody_;
-				attackBody_ = nullptr;
-			}
-			if (shockwaveBody_ != nullptr) {
-				delete shockwaveBody_;
-				shockwaveBody_ = nullptr;
-			}
+			attackBody_.reset();
+			shockwaveBody_.reset();
 
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.0f);
@@ -1756,6 +1742,376 @@ namespace app
 		{
 			auto* sm = owner_->As<CharacterStateMachine>();
 			sm->GetModelRender()->SetAnimationSpeed(1.0f);
+		}
+
+
+		/*************************************/
+
+
+		StonePounceAttackState::StonePounceAttackState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{
+		}
+
+
+		StonePounceAttackState::~StonePounceAttackState()
+		{
+		}
+
+
+		void StonePounceAttackState::Enter()
+		{
+			phase_ = Phase::Charge;
+			phaseTimer_ = 0.0f;
+			modelYOffset_ = 0.0f;
+			bounceHorizontalSpeed_ = 0.0f;
+			jumpEffectHandle_ = INVALID_EFFECT_HANDLE;
+			chargeEffectHandle_ = INVALID_EFFECT_HANDLE;
+
+			auto* sm = owner_->As<StoneEventCharacterStateMachine>();
+
+			// Bounce フェーズ用フラグをクリア（二重起動対策）
+			// ※ 前回のバウンドからの高さ戻り途中でも即座にリセットしない
+			//   → Charge/Leap 中も auto-lerp が動き続けて高さが戻る
+			sm->SetBouncingActive(false);
+
+			// 溜め時間は1.5秒固定
+			chargeDuration_ = 1.5f;
+
+			// 溜め開始時にプレイヤー位置へ向かうベクトルを固定
+			Vector3 toTarget = sm->GetTargetPosition() - sm->transform.position;
+			toTarget.y = 0.0f;
+			if (toTarget.LengthSq() > 0.001f)
+			{
+				toTarget.Normalize();
+			}
+			leapDirection_ = toTarget;
+
+			// プレイヤー方向へ向かせる
+			sm->SetMoveDirection(leapDirection_);
+			sm->GetModelRender()->PlayAnimation(
+				static_cast<uint8_t>(app::actor::StoneAnimationKind::Idle), 0.1f);
+
+			// 溜め中の予告エフェクト
+			if (EffectManager::IsAvailable())
+			{
+				Quaternion rot = Quaternion::Identity;
+				if (leapDirection_.LengthSq() > 0.001f)
+				{
+					float yaw = atan2f(leapDirection_.x, leapDirection_.z);
+					rot.SetRotationY(yaw);
+				}
+				const Vector3 chargeEffectPos = sm->transform.position
+					+ leapDirection_ * 20.0f
+					+ Vector3(0.0f, sm->GetStatus()->GetHeight(), 0.0f);
+				chargeEffectHandle_ = EffectManager::Get().PlayEffect(
+					enEffectKind_StoneChargeAtk2,
+					chargeEffectPos,
+					rot,
+					Vector3::One * 1.5f,
+					1.5f
+				);
+			}
+
+			sm->OnEnterPounceAttack();
+		}
+
+
+		void StonePounceAttackState::Update()
+		{
+			auto* sm = owner_->As<StoneEventCharacterStateMachine>();
+			const float dt = g_gameTime->GetFrameDeltaTime();
+
+			// とびかかりエフェクトの追従先座標を毎フレーム更新（顔の高さに合わせて上げる）
+			sm->SetPounceEffectFollowPos(sm->transform.position + Vector3(0.0f, JUMP_EFFECT_HEIGHT_OFFSET, 0.0f));
+
+			switch (phase_)
+			{
+			case Phase::Charge:
+			{
+				phaseTimer_ += dt;
+
+				// 溜め中はプレイヤー方向を追従して向きを更新
+				Vector3 toTarget = sm->GetTargetPosition() - sm->transform.position;
+				toTarget.y = 0.0f;
+				if (toTarget.LengthSq() > 0.001f)
+				{
+					toTarget.Normalize();
+					leapDirection_ = toTarget;
+				}
+				sm->SetMoveDirection(leapDirection_);
+
+				// 溜め中の痙攣：Y軸を小さく振動させて踏ん張り感を演出
+				const float baseYaw = atan2f(leapDirection_.x, leapDirection_.z);
+				const float tremorYaw = baseYaw
+					+ sinf(phaseTimer_ * TREMOR_FREQUENCY) * TREMOR_AMP_RAD;
+				sm->transform.rotation.SetRotationY(tremorYaw);
+
+				if (phaseTimer_ >= chargeDuration_)
+				{
+					// 痙攣を止めて正面へ向き直す
+					sm->transform.rotation.SetRotationY(baseYaw);
+
+					// 溜め中の予告エフェクトを停止
+					if (EffectManager::IsAvailable() && chargeEffectHandle_ != INVALID_EFFECT_HANDLE)
+					{
+						EffectManager::Get().StopEffect(chargeEffectHandle_);
+						chargeEffectHandle_ = INVALID_EFFECT_HANDLE;
+					}
+
+					phase_ = Phase::Leap;
+					phaseTimer_ = 0.0f;
+
+					// 跳躍開始時のターゲット位置を固定（通り過ぎ防止）
+					leapTargetPos_ = sm->GetTargetPosition();
+
+					// 飛行中の重力を増加させて放物線を強調
+					originalGravity_ = sm->GetStatus()->GetGravity();
+					const float leapGravity = originalGravity_ * LEAP_GRAVITY_MULT;
+					sm->GetStatus()->SetGravity(leapGravity);
+					sm->GetCharacterController()->SetGravity(leapGravity);
+					isGravityModified_ = true;
+
+					sm->SetMoveDirection(leapDirection_);
+					sm->Jump(LEAP_JUMP_POWER);
+					sm->GetModelRender()->PlayAnimation(
+						static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack), 0.1f);
+
+					// とびかかり開始エフェクト
+					if (EffectManager::IsAvailable())
+					{
+						Quaternion rot = Quaternion::Identity;
+						if (leapDirection_.LengthSq() > 0.001f)
+						{
+							float yaw = atan2f(leapDirection_.x, leapDirection_.z);
+							rot.SetRotationY(yaw);
+						}
+						jumpEffectHandle_ = EffectManager::Get().PlayEffectFollow(
+							enEffectKind_StoneJumpAtk,
+							sm->GetPounceEffectFollowPosPtr(),
+							rot,
+							Vector3::One
+						);
+					}
+				}
+				break;
+			}
+
+			case Phase::Leap:
+			{
+				phaseTimer_ += dt;
+
+				// 跳躍開始時に固定したターゲット位置との水平距離で判定
+				Vector3 toTarget = leapTargetPos_ - sm->transform.position;
+				toTarget.y = 0.0f;
+				const float horizontalDist = toTarget.Length();
+
+				if (horizontalDist > POUNCE_DESCEND_DIST)
+				{
+					// 一定距離より遠い：水平方向へ高速直進
+					sm->Move(dt, LEAP_SPEED);
+					const Vector3& vel = sm->GetMoveSpeedVector();
+					if (vel.LengthSq() > 0.001f)
+					{
+						sm->transform.rotation.SetRotationYFromDirectionXZ(vel);
+					}
+				}
+				else
+				{
+					// 一定距離以内：水平移動を止めて真下へ降下
+					sm->ClearMomveSpeedVector();
+				}
+
+				// ターゲットに近づくほど重力を漸増→手前で引き寄せてぴったり着地
+				if (isGravityModified_ && horizontalDist < DYNAMIC_GRAVITY_START)
+				{
+					float t = 1.0f - (horizontalDist / DYNAMIC_GRAVITY_START); // 0→1
+					t = t * t; // ease-in で急激に引き込む
+					const float gravMult = LEAP_GRAVITY_MULT
+						+ (DYNAMIC_GRAVITY_MAX_MULT - LEAP_GRAVITY_MULT) * t;
+					const float dynGravity = originalGravity_ * gravMult;
+					sm->GetStatus()->SetGravity(dynGravity);
+					sm->GetCharacterController()->SetGravity(dynGravity);
+				}
+
+				// 着地判定（Leap開始から少し経過後に地面チェック）
+				if (phaseTimer_ > 0.15f && sm->GetCharacterController()->IsOnGround())
+				{
+					// 重力を元に戻す
+					if (isGravityModified_)
+					{
+						sm->GetStatus()->SetGravity(originalGravity_);
+						sm->GetCharacterController()->SetGravity(originalGravity_);
+						isGravityModified_ = false;
+					}
+
+					// 着地時の広範囲攻撃判定
+					attackBody_ = std::make_unique<app::collision::GhostBody>();
+					attackBody_->CreateSphere(
+						sm->GetCharacter(),
+						sm->GetCharacterID(),
+						40.0f,
+						app::collision::ghost::CollisionAttribute::Enemy,
+						app::collision::ghost::CollisionAttributeMask::All
+					);
+					attackBody_->SetPosition(sm->transform.position + Vector3(0.0f, 15.0f, 0.0f));
+
+					// 着地エフェクト
+					if (EffectManager::IsAvailable())
+					{
+						EffectManager::Get().PlayEffect(
+							enEffectKind_StoneLand,
+							sm->transform.position,
+							Quaternion::Identity,
+							Vector3(1.5f, 1.5f, 1.5f)
+						);
+					}
+
+					// 0.3秒後に攻撃判定を削除
+					landingScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
+					landingScheduler_->AddTimer(0.3f, [this]()
+						{
+							attackBody_.reset();
+						}, false);
+
+					// バウンドフェーズへ移行：着地を1フレーム視覚表示してからジャンプ
+					// （同フレームでJumpするとExecute()が即座に上昇処理を行い
+					//   モデルが地面に触れないまま跳ねて見えるため、次フレームに遅延）
+					phase_ = Phase::Bounce;
+					phaseTimer_ = 0.0f;
+					bounceCount_ = 1;
+					bounceHorizontalSpeed_ = BOUNCE_INITIAL_HORIZONTAL_SPEED;
+					bounceJumpPower_   = BOUNCE_INITIAL_POWER;
+					// Bounce フェーズ中は auto-lerp をブロック（ステート側がオフセットを管理）
+					sm->SetBouncingActive(true);
+					// bounceJumpPending_ はオフセット補間完了後にセット（補間中は地面に留まる）
+				}
+				break;
+			}
+
+			case Phase::Bounce:
+			{
+				phaseTimer_ += dt;
+				if (landingScheduler_)
+				{
+					landingScheduler_->Update(dt);
+				}
+
+				// 着地の瞬間から -15 へ滑らかに補間して「カクッ」を防ぐ
+				// 補間完了後に bounceJumpPending_ をセットし、モデルが地面に接してから跳ねる
+				// （150 units/sec ≒ 0.1秒で完了）
+				{
+					constexpr float TARGET_Y   = -15.0f;
+					constexpr float LERP_SPEED = 150.0f;
+					if (modelYOffset_ > TARGET_Y)
+					{
+						modelYOffset_ = (std::max)(modelYOffset_ - LERP_SPEED * dt, TARGET_Y);
+						sm->GetCharacter()->SetRenderPositionOffset(Vector3(0.0f, modelYOffset_, 0.0f));
+						if (modelYOffset_ <= TARGET_Y)
+						{
+							bounceJumpPending_ = true;
+						}
+					}
+				}
+
+				// バウンド中の水平慣性：跳躍方向へ継続移動（バウンドごとに減衰）
+				if (bounceHorizontalSpeed_ > 0.1f)
+				{
+					sm->SetMoveDirection(leapDirection_);
+					sm->Move(dt, bounceHorizontalSpeed_);
+				}
+
+				// 前フレームの着地検知で予約されたジャンプをここで適用する。
+				// 着地フレームは Execute() がモデルを地面に留めるため、
+				// 1フレーム遅らせることでモデルが地面に接した瞬間を視覚的に見せられる。
+				if (bounceJumpPending_)
+				{
+					bounceJumpPending_ = false;
+					// CharacterController::Bounce() は isOnGround_ チェックを持たないため、
+					// 遅延後でも確実に上方向の速度を上書きできる
+					sm->GetCharacterController()->Bounce(bounceJumpPower_);
+					break;
+				}
+
+				// 着地を検知したら次のバウンドを予約 or 着地硬直へ
+				if (phaseTimer_ > 0.1f && sm->GetCharacterController()->IsOnGround())
+				{
+					if (bounceCount_ < MAX_BOUNCE_COUNT)
+					{
+						// 減衰バウンド：次フレームで適用（地面接触を1フレーム視覚表示するため）
+						const float power = BOUNCE_INITIAL_POWER
+							* powf(BOUNCE_DECAY, static_cast<float>(bounceCount_));
+						bounceHorizontalSpeed_ *= BOUNCE_DECAY;  // 水平慣性も同率で減衰
+						bounceJumpPending_ = true;
+						bounceJumpPower_   = power;
+						bounceCount_++;
+						phaseTimer_ = 0.0f;
+					}
+					else
+					{
+						// バウンド完了 → 着地硬直へ
+						phase_ = Phase::Landing;
+						phaseTimer_ = 0.0f;
+					}
+				}
+				break;
+			}
+
+			case Phase::Landing:
+			{
+				phaseTimer_ += dt;
+				if (landingScheduler_)
+				{
+					landingScheduler_->Update(dt);
+				}
+				// 着地硬直中はオフセットを維持（移動開始後に StoneEventCharacter 側で補間）
+				break;
+			}
+			}
+		}
+
+
+		void StonePounceAttackState::Exit()
+		{
+			// 着地前に中断された場合に備えてエフェクトを確実に停止する
+			if (EffectManager::IsAvailable() && jumpEffectHandle_ != INVALID_EFFECT_HANDLE)
+			{
+				EffectManager::Get().StopEffect(jumpEffectHandle_);
+				jumpEffectHandle_ = INVALID_EFFECT_HANDLE;
+			}
+
+			// 溜め中に中断された場合に備えてエフェクトを確実に停止する
+			if (EffectManager::IsAvailable() && chargeEffectHandle_ != INVALID_EFFECT_HANDLE)
+			{
+				EffectManager::Get().StopEffect(chargeEffectHandle_);
+				chargeEffectHandle_ = INVALID_EFFECT_HANDLE;
+			}
+
+			attackBody_.reset();
+			landingScheduler_.reset(nullptr);
+
+			auto* sm = owner_->As<StoneEventCharacterStateMachine>();
+
+			// Landing前に中断された場合も重力を必ず復元する
+			if (isGravityModified_)
+			{
+				sm->GetStatus()->SetGravity(originalGravity_);
+				sm->GetCharacterController()->SetGravity(originalGravity_);
+				isGravityModified_ = false;
+			}
+
+			// バウンド終了時に内部状態をリセット（描画オフセットはキャラクター側で徐々に戻す）
+			modelYOffset_ = 0.0f;
+			bounceHorizontalSpeed_ = 0.0f;
+			sm->ClearMomveSpeedVector();
+
+			sm->OnExitPounceAttack();
+		}
+
+
+		bool StonePounceAttackState::CanChangeState() const
+		{
+			return phase_ == Phase::Landing && phaseTimer_ >= LANDING_DURATION;
 		}
 	}
 }

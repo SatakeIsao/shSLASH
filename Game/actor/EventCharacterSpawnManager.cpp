@@ -55,10 +55,18 @@ namespace app
 				}
 				if (auto* stone = dynamic_cast<StoneEventCharacter*>(entry.enemy))
 				{
+					if (stone->GetStateMachine())
+					{
+						stone->GetStateMachine()->ForceExitCurrentState();
+					}
 					stonePool_.Release(stone);
 				}
 				else if (auto* mushroom = dynamic_cast<MushroomEventCharacter*>(entry.enemy))
 				{
+					if (mushroom->GetStateMachine())
+					{
+						mushroom->GetStateMachine()->ForceExitCurrentState();
+					}
 					mushroomPool_.Release(mushroom);
 				}
 			}

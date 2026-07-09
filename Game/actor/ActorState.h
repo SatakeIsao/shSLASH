@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ActorState.h
  * キャラクターステート関連
  */
@@ -98,8 +98,8 @@ namespace app
 
 
 		private:
-			app::collision::GhostBody* attackBody_ = nullptr;
-			app::collision::GhostBody* shockwaveBody_ = nullptr;
+			std::unique_ptr<app::collision::GhostBody> attackBody_;
+			std::unique_ptr<app::collision::GhostBody> shockwaveBody_;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float stateTimer_ = 0.0f;
 			bool isAttackBody_ = false;
@@ -172,8 +172,8 @@ namespace app
 		class ComboAttackCharacterState : public ICharacterState
 		{
 		protected:
-			app::collision::GhostBody* attackBody_ = nullptr;
-			app::collision::GhostBody* shockwaveBody_ = nullptr;
+			std::unique_ptr<app::collision::GhostBody> attackBody_;
+			std::unique_ptr<app::collision::GhostBody> shockwaveBody_;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float stateTimer_ = 0.0f;
 			bool isComboInput_ = false;
@@ -192,7 +192,7 @@ namespace app
 
 		public:
 			ComboAttackCharacterState(IStateMachine* owner) : ICharacterState(owner) {}
-			virtual ~ComboAttackCharacterState() {}
+			virtual ~ComboAttackCharacterState();
 
 			void Enter() override;
 			void Update() override;
@@ -302,8 +302,8 @@ namespace app
 
 		private:
 			ChargeAttackPhase chargeAttackPhase_ = ChargeAttackPhase::Start;
-			app::collision::GhostBody* attackBody_ = nullptr;
-			app::collision::GhostBody* shockwaveBody_ = nullptr;
+			std::unique_ptr<app::collision::GhostBody> attackBody_;
+			std::unique_ptr<app::collision::GhostBody> shockwaveBody_;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float chargeTimer_ = 0.0f;
 			bool chargeLevelEffectPlayed_[3] = { false, false, false };
@@ -636,6 +636,65 @@ namespace app
 			void Exit() override;
 
 			virtual bool CanChangeState() const;
+		};
+
+
+		/**
+		 * Stoneエネミーのとびかかり攻撃ステート
+		 * Charge（溜め）→ Leap（飛びかかり）→ Landing（着地硬直）の3フェーズ
+		 */
+		class StonePounceAttackState : public ICharacterState
+		{
+			appState(StonePounceAttackState);
+
+		private:
+			enum class Phase { Charge, Leap, Bounce, Landing };
+
+			Phase phase_ = Phase::Charge;
+			float phaseTimer_ = 0.0f;
+			float chargeDuration_ = 0.65f;
+
+			static constexpr float LANDING_DURATION     = 1.0f;
+			static constexpr float LEAP_SPEED           = 450.0f;
+			static constexpr float LEAP_JUMP_POWER      = 120.0f;
+			static constexpr float LEAP_GRAVITY_MULT        = 2.5f;   // 飛行中の基本重力倍率
+			static constexpr float POUNCE_DESCEND_DIST      = 20.0f;  // この距離以内で水平移動を止めて降下
+			static constexpr float DYNAMIC_GRAVITY_START    = 160.0f; // この距離から重力を漸増し始める
+			static constexpr float DYNAMIC_GRAVITY_MAX_MULT = 5.0f;   // 最接近時の最大重力倍率
+			static constexpr float TREMOR_FREQUENCY         = 20.0f;  // 痙攣の周波数（rad/s）
+			static constexpr float TREMOR_AMP_RAD           = 0.3f;   // 痙攣の振れ幅（ラジアン）
+			static constexpr float BOUNCE_INITIAL_POWER            = 50.0f;   // 最初のバウンド力
+			static constexpr float BOUNCE_DECAY                    = 0.5f;    // バウンドごとの減衰率
+			static constexpr int   MAX_BOUNCE_COUNT                = 3;       // バウンド回数
+			static constexpr float BOUNCE_INITIAL_HORIZONTAL_SPEED = 60.0f;   // バウンド初速（水平）
+			// 移動中に下あごが地面にめり込まない安全オフセット値
+			// Landing 中にここまで戻し、移動中はここから 0 へ補間する
+			static constexpr float BOUNCE_MOVEMENT_SAFE_OFFSET     = -5.0f;
+
+			static constexpr float JUMP_EFFECT_HEIGHT_OFFSET = 30.0f; // とびかかりエフェクトの追従高さ（顔が炎に入るよう上げる）
+
+			Vector3 leapDirection_ = Vector3::Zero;
+			Vector3 leapTargetPos_ = Vector3::Zero;  // 跳躍開始時のターゲット位置（固定）
+			float originalGravity_ = 0.0f;           // 飛行前の重力を保存
+			bool isGravityModified_ = false;          // 重力変更済みフラグ
+			int bounceCount_ = 0;                    // 現在のバウンド回数
+			bool bounceJumpPending_ = false;          // 着地1フレーム後にジャンプを適用するフラグ
+			float bounceJumpPower_ = 0.0f;            // 保留中のバウンドジャンプ力
+			float modelYOffset_ = 0.0f;               // 着地時の描画Yオフセット補間現在値
+			float bounceHorizontalSpeed_ = 0.0f;      // バウンド中の水平慣性速度
+			std::unique_ptr<app::collision::GhostBody> attackBody_;
+			std::unique_ptr<app::core::TaskSchedulerSystem> landingScheduler_;
+			EffectHandle jumpEffectHandle_ = INVALID_EFFECT_HANDLE;   // とびかかり移動中エフェクトのハンドル（着地時に停止）
+			EffectHandle chargeEffectHandle_ = INVALID_EFFECT_HANDLE; // 溜め中予告エフェクトのハンドル（溜め終了時に停止）
+
+		public:
+			StonePounceAttackState(IStateMachine* owner);
+			~StonePounceAttackState();
+
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+			bool CanChangeState() const override;
 		};
 	}
 }

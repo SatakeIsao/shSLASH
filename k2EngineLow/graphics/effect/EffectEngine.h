@@ -95,6 +95,12 @@ namespace nsK2EngineLow {
 		/// </summary>
 		/// <param name="effectHandle"></param>
 		void Stop(int effectHandle);
+		/// <summary>
+		/// エフェクトのルートだけを停止する。
+		/// 既存のパーティクルはエフェクト側で管理しているフェードアウトに従って自然に消滅する。
+		/// </summary>
+		/// <param name="effectHandle"></param>
+		void StopRoot(int effectHandle);
 		void SetSpeed(int handle, float speed)
 		{
 			m_manager->SetSpeed(handle, speed);

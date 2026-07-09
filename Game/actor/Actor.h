@@ -71,6 +71,9 @@ namespace app
 			/** 見た目のみに適用するオフセット（物理・コリジョン位置には影響しない） */
 			Vector3 renderPositionOffset_ = Vector3::Zero;
 
+		protected:
+			const Vector3& GetRenderPositionOffset() const { return renderPositionOffset_; }
+
 		public:
 			void SetRenderPositionOffset(const Vector3& offset) { renderPositionOffset_ = offset; }
 			Character();

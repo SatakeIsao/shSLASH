@@ -42,6 +42,12 @@ enum enEffectKind
 	enEffectKind_MushroomPoisonSpore2,  // 設置時の胞子散布エフェクト（2回再生）
 	enEffectKind_MushroomPoisonSmoke2,  // 持続毒煙エフェクト（ループ・10秒後に StopEffect）
 	enEffectKind_MushroomPoisonSpore,   // 設置時の胞子散布エフェクト（1回再生）
+	enEffectKind_StoneJumpAtk,          // ストーンのとびかかり攻撃エフェクト
+	enEffectKind_StoneLand,             // ストーンのとびかかり攻撃・着地エフェクト
+	enEffectKind_MushroomPoisonBubble1, // 毒フィールド展開後、一定間隔で発生する毒泡エフェクト（1種）
+	enEffectKind_MushroomPoisonBubble2, // 毒フィールド展開後、一定間隔で発生する毒泡エフェクト（2種）
+	enEffectKind_StoneChargeAtk,        // ストーンの溜め攻撃エフェクト
+	enEffectKind_StoneChargeAtk2,       // ストーンの溜め攻撃エフェクト（差し替え版）
 	enEffectKind_Max,
 	enEffectKind_None = enEffectKind_Max,
 };
@@ -88,9 +94,15 @@ static EffectInformation effectInformation[enEffectKind_Max] =
 	EffectInformation(u"Assets/effect/playerChargeAtk_Level3.efk"),
 	EffectInformation(u"Assets/effect/playerChargeAtkLightPiller_Lv1.efk"),  // 溜め攻撃着地の光柱エフェクト
 	EffectInformation(u"Assets/effect/mushroomPredictionAtk.efk"),  // PoisonCast: 詠唱中予告（暫定流用）
-	EffectInformation(u"Assets/effect/poison_spore2.efk"),           // PoisonSpore2: 胞子散布（2回再生）
-	EffectInformation(u"Assets/effect/poison_smoke2.efk"),           // PoisonSmoke2: 持続毒煙（ループ）
+	EffectInformation(u"Assets/effect/poison_spore.efk"),            // PoisonSpore2: 胞子散布（2回再生）
+	EffectInformation(u"Assets/effect/poison_smoke.efk"),            // PoisonSmoke2: 持続毒煙（ループ）
 	EffectInformation(u"Assets/effect/poison_spore.efk"),            // PoisonSpore: 胞子散布（1回再生）
+	EffectInformation(u"Assets/effect/stoneJumpAtk.efk"),             // StoneJumpAtk: とびかかり攻撃
+	EffectInformation(u"Assets/effect/stoneLand.efk"),                // StoneLand: とびかかり攻撃・着地
+	EffectInformation(u"Assets/effect/poison_bubble1.efk"),           // MushroomPoisonBubble1: 毒フィールド内の毒泡（1種）
+	EffectInformation(u"Assets/effect/poison_bubble2.efk"),           // MushroomPoisonBubble2: 毒フィールド内の毒泡（2種）
+	EffectInformation(u"Assets/effect/stoneChargeAtk.efk"),           // StoneChargeAtk: 溜め攻撃
+	EffectInformation(u"Assets/effect/stoneChargeAtk2.efk"),          // StoneChargeAtk2: 溜め攻撃（差し替え版）
 
 };
 
