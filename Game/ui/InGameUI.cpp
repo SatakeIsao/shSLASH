@@ -69,6 +69,14 @@ namespace {
 	static constexpr float BLINK_INTERVAL = 0.01f;
 	/** HPがこの割合以下で点滅演出を開始 */
 	static constexpr float HP_BLINK_THRESHOLD = 0.3f;
+
+	/** 防御ゲージ定数 */
+	/** 出現にかける時間（秒）：拡大しながら表示する動きが見える程度に保ちつつ、素早く表示する */
+	static constexpr float GUARD_GAUGE_APPEAR_DURATION = 0.15f;
+	/** 消滅にかける時間（秒）：全回復時に縮小しながら消える演出を見せる */
+	static constexpr float GUARD_GAUGE_DISAPPEAR_DURATION = 0.2f;
+	/** 出現起点（お腹～腰の高さ）の微調整用オフセット（ワールド座標） */
+	static constexpr float GUARD_GAUGE_ORIGIN_HEIGHT_ADJUST = 0.0f;
 }
 
 namespace app
@@ -272,6 +280,44 @@ namespace app
 
 			layout_ = std::make_unique<app::ui::Layout>();
 			layout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/hpLayout.json");
+
+			guardLayout_ = std::make_unique<app::ui::Layout>();
+			guardLayout_->Initialize <app::ui::MenuBase>("Assets/ui/layout/guardGaugeLayout.json");
+			/** JSONのpositionをスクリーン座標上のオフセットとして保存（追従計算後に加算する） */
+			{
+				auto guardFrame = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardFrame"));
+				auto guardFrameWhite = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardFrameWhite"));
+				auto guardGauge = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardGauge"));
+				auto guardIcon = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardIcon"));
+				if (guardFrame)
+				{
+					guardFrameOffset_.x = guardFrame->transform.localPosition.x;
+					guardFrameOffset_.y = guardFrame->transform.localPosition.y;
+					guardFrame->isDraw = false;
+					guardFrame->transform.localScale = Vector3(0.001f, 0.001f, 1.0f);
+				}
+				if (guardFrameWhite)
+				{
+					guardFrameWhiteOffset_.x = guardFrameWhite->transform.localPosition.x;
+					guardFrameWhiteOffset_.y = guardFrameWhite->transform.localPosition.y;
+					guardFrameWhite->isDraw = false;
+					guardFrameWhite->transform.localScale = Vector3(0.001f, 0.001f, 1.0f);
+				}
+				if (guardGauge)
+				{
+					guardGaugeOffset_.x = guardGauge->transform.localPosition.x;
+					guardGaugeOffset_.y = guardGauge->transform.localPosition.y;
+					guardGauge->isDraw = false;
+					guardGauge->transform.localScale = Vector3(0.001f, 0.001f, 1.0f);
+				}
+				if (guardIcon)
+				{
+					guardIconOffset_.x = guardIcon->transform.localPosition.x;
+					guardIconOffset_.y = guardIcon->transform.localPosition.y;
+					guardIcon->isDraw = false;
+					guardIcon->transform.localScale = Vector3(0.001f, 0.001f, 1.0f);
+				}
+			}
 			/** レベルバーの初期位置・スケールをJSONパラメータから設定 */
 			{
 				auto currentLevel = layout_->GetMenu()->GetUI<UIIcon>(Hash32("currentLevel"));
@@ -546,6 +592,82 @@ namespace app
 					levelDigit->SetNumber(level_);
 				}
 			}
+			/** 防御ゲージ：防御中のみプレイヤーモデルの横に追従表示 */
+			if (guardLayout_)
+			{
+				auto guardFrame = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardFrame"));
+				auto guardFrameWhite = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardFrameWhite"));
+				auto guardGauge = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardGauge"));
+				auto guardIcon = guardLayout_->GetMenu()->GetUI<UIIcon>(Hash32("guardIcon"));
+
+				// 防御中、または制限時間が満タンに回復しきるまでは表示し続ける
+				const bool showGuardGauge = player_ && player_->GetStateMachine()->IsGuardGaugeVisible();
+
+				// 出現度合い（0=プレイヤーの位置で極小、1=定位置で等倍）を毎フレーム増減させる。
+				// 出現は素早く、消滅（全回復時に縮小しながら消える演出）はゆっくり、と速度を分けるため
+				// 秒数ではなく0~1に正規化した値として増減させる
+				const float dt = g_gameTime->GetFrameDeltaTime();
+				if (showGuardGauge)
+				{
+					guardGaugeRevealTimer_ = min(guardGaugeRevealTimer_ + dt / GUARD_GAUGE_APPEAR_DURATION, 1.0f);
+				}
+				else
+				{
+					guardGaugeRevealTimer_ = max(guardGaugeRevealTimer_ - dt / GUARD_GAUGE_DISAPPEAR_DURATION, 0.0f);
+				}
+
+				const bool guardGaugeOnScreen = guardGaugeRevealTimer_ > 0.0f;
+				if (guardFrame) guardFrame->isDraw = guardGaugeOnScreen;
+				if (guardFrameWhite) guardFrameWhite->isDraw = guardGaugeOnScreen;
+				if (guardGauge) guardGauge->isDraw = guardGaugeOnScreen;
+				if (guardIcon) guardIcon->isDraw = guardGaugeOnScreen;
+
+				if (guardGaugeOnScreen && guardFrame && guardFrameWhite && guardGauge && guardIcon && player_)
+				{
+					// 0~1の出現度合いにイーズアウトをかける（Curve::ApplyEasingInternalのEaseOutと同じ式）
+					const float t = guardGaugeRevealTimer_;
+					const float eased = t * (2.0f - t);
+
+					// プレイヤーのお腹～腰あたりの高さをスクリーン座標に変換（＝UIが出てくる起点）
+					// transform.positionは足元基準のため、GetGuardBlockCenter()と同じ「height*0.5+radius」で
+					// 体の中心付近（腰～お腹の高さ）まで持ち上げる
+					Vector3 worldPos = player_->transform.position;
+					worldPos.y += player_->GetStatus()->GetHeight() * 0.5f + player_->GetStatus()->GetRadius() + GUARD_GAUGE_ORIGIN_HEIGHT_ADJUST;
+
+					Vector2 playerScreenPos;
+					g_camera3D->CalcScreenPositionFromWorldPosition(playerScreenPos, worldPos);
+
+					// guardGaugeLayout.jsonのposition（起動時に保存したオフセット）を足した位置が定位置
+					// → JSON側のpositionを編集するとオフセットとして反映される
+					const Vector2 restPosFrame = playerScreenPos + guardFrameOffset_;
+					const Vector2 restPosFrameWhite = playerScreenPos + guardFrameWhiteOffset_;
+					const Vector2 restPosGauge = playerScreenPos + guardGaugeOffset_;
+					const Vector2 restPosIcon = playerScreenPos + guardIconOffset_;
+
+					// プレイヤーの位置から定位置へ向かって、大きさと位置を同時に補間する
+					// → 見た目としてプレイヤーからゲージが出てくるように見える
+					guardFrame->transform.localPosition.x = playerScreenPos.x + (restPosFrame.x - playerScreenPos.x) * eased;
+					guardFrame->transform.localPosition.y = playerScreenPos.y + (restPosFrame.y - playerScreenPos.y) * eased;
+					guardFrameWhite->transform.localPosition.x = playerScreenPos.x + (restPosFrameWhite.x - playerScreenPos.x) * eased;
+					guardFrameWhite->transform.localPosition.y = playerScreenPos.y + (restPosFrameWhite.y - playerScreenPos.y) * eased;
+					guardGauge->transform.localPosition.x = playerScreenPos.x + (restPosGauge.x - playerScreenPos.x) * eased;
+					guardGauge->transform.localPosition.y = playerScreenPos.y + (restPosGauge.y - playerScreenPos.y) * eased;
+					guardIcon->transform.localPosition.x = playerScreenPos.x + (restPosIcon.x - playerScreenPos.x) * eased;
+					guardIcon->transform.localPosition.y = playerScreenPos.y + (restPosIcon.y - playerScreenPos.y) * eased;
+
+					const float scale = max(eased, 0.001f);
+					guardFrame->transform.localScale = Vector3(scale, scale, 1.0f);
+					guardFrameWhite->transform.localScale = Vector3(scale, scale, 1.0f);
+					guardGauge->transform.localScale = Vector3(scale, scale, 1.0f);
+					guardIcon->transform.localScale = Vector3(scale, scale, 1.0f);
+
+					guardGauge->color.x = player_->GetStateMachine()->GetGuardRemainingRatio();
+					guardGauge->color.w = 1.0f;
+				}
+
+				guardLayout_->Update();
+			}
+
 			layout_->Update();
 
 			bgCircle_.Update();
@@ -633,6 +755,8 @@ namespace app
 				bgCircle_.Draw(rc);
 				hpGauge_.Draw(rc);
 				icon_.Draw(rc);
+
+				if (guardLayout_) guardLayout_->Render(rc);
 
 				if (usePreBlurRender_)
 					g_renderingEngine->SetPreBlurMode(false);

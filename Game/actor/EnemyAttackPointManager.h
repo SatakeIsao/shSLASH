@@ -43,6 +43,12 @@ namespace app
 			EnemyAttackPoint::AttackPoint* GetNearWaitPoint(Vector3 position) { return attackPoint_.GetNearWaitPoint(position); }
 
 
+			/** 空いている待機ポイントを予約する（1点=1体を保証する） */
+			EnemyAttackPoint::AttackPoint* AcquireWaitPoint(Vector3 position, Character* enemy);
+			/** 待機ポイントの解放 */
+			void ReleaseWaitPoint(EnemyAttackPoint::AttackPoint* waitPoint, Character* enemy);
+
+
 			/** 攻撃トークンの要求 */
 			void RequestAttackToken(Character* enemy);
 

@@ -37,6 +37,94 @@ namespace
 	/** 敵スポーンのON/OFF */
 	constexpr bool ENABLE_ENEMY_SPAWN = true;
 
+	/** ガード成功エフェクト(guard_hit)の向き補正（アセット側の正面と実際の向きがズレる場合はここで角度[rad]を調整する） */
+	constexpr float GUARD_HIT_EFFECT_YAW_OFFSET_RAD = 0.0f;
+
+	/** とびかかり攻撃のガード成功エフェクト用レイキャストの起点にかさ上げする高さ */
+	constexpr float POUNCE_GUARD_HIT_RAY_ORIGIN_HEIGHT_OFFSET = 30.0f;
+
+	/** Y軸回転のみのクォータニオンから、水平方向の前方ベクトルを求める（敵は上下方向を向かない仕様のため） */
+	Vector3 GetHorizontalForward(const Quaternion& rotation)
+	{
+		return Vector3(2.0f * rotation.y * rotation.w, 0.0f, rotation.w * rotation.w - rotation.y * rotation.y);
+	}
+
+	/** ガード成功エフェクトの表示位置・向きを求める。
+	 *  「どちらを向いて殴ってきたか」を可視化するため、敵が攻撃時に向いていた方向へ
+	 *  ガード球へ向けてレイキャストし、当たった地点を採用する。
+	 *  useRealHeight が false の場合（水平な攻撃を想定）は、起点の実際の高さを無視し、
+	 *  常にガード球中心の高さで判定・表示する（敵の座標は足元基準で胴体の高さと一致しないため）。
+	 *  true の場合（とびかかり攻撃のようにジャンプで高さが変わる攻撃を想定）は、
+	 *  起点の実際の高さ（ジャンプした分を含む）をそのまま使って3Dレイとして判定する。
+	 *  レイがガード球に当たらない場合（敵がプレイヤーの方を向いていない等）は、
+	 *  従来通り「球中心→攻撃が当たった位置」の方向をフォールバックとして使う。 */
+	void CalcGuardHitEffectByFacingRaycast(
+		const Vector3& enemyPosition,
+		const Vector3& rayDirection,
+		const Vector3& fallbackHitPosition,
+		app::collision::GhostBody* guardBlockBody,
+		bool useRealHeight,
+		Vector3* outPos,
+		Quaternion* outRot)
+	{
+		Vector3 center = guardBlockBody ? guardBlockBody->GetPosition() : fallbackHitPosition;
+		const float radius = app::actor::BattleCharacterStateMachine::kGuardBlockRadius;
+
+		Vector3 rayDir = rayDirection;
+		Vector3 hitPos = center;
+		bool hit = false;
+
+		if (guardBlockBody && rayDir.LengthSq() > 0.0001f)
+		{
+			rayDir.Normalize();
+
+			Vector3 oc = enemyPosition - center;
+			if (!useRealHeight)
+			{
+				oc.y = 0.0f;
+			}
+
+			const float b = 2.0f * oc.Dot(rayDir);
+			const float c = oc.Dot(oc) - radius * radius;
+			const float discriminant = b * b - 4.0f * c;
+
+			if (discriminant >= 0.0f)
+			{
+				const float t = (-b - sqrtf(discriminant)) * 0.5f;
+				if (t >= 0.0f)
+				{
+					hitPos = enemyPosition + rayDir * t;
+					hit = true;
+				}
+			}
+		}
+
+		Vector3 outward = hit ? (hitPos - center) : (fallbackHitPosition - center);
+		if (!useRealHeight || !hit)
+		{
+			outward.y = 0.0f;
+		}
+		if (outward.LengthSq() > 0.0001f)
+		{
+			outward.Normalize();
+		}
+		else
+		{
+			outward = Vector3::Front;
+		}
+
+		Vector3 finalPos = center + outward * radius;
+		if (!useRealHeight || !hit)
+		{
+			finalPos.y = center.y;
+		}
+		*outPos = finalPos;
+
+		Quaternion rot;
+		rot.SetRotationY(atan2f(outward.x, outward.z) + GUARD_HIT_EFFECT_YAW_OFFSET_RAD);
+		*outRot = rot;
+	}
+
 	constexpr const char* MASTER_BATTLE_PARAM_PATH = "Assets/master/battle/MasterBattleParameter.json";
 	constexpr const char* MASTER_STAGE_PARAM_PATH = "Assets/master/battle/MasterStageParameter.json";
 	constexpr const char* MASTER_BATTLE_CAMERA_PARAM_PATH = "Assets/master/battle/MasterBattleCameraParameter.json";
@@ -956,8 +1044,14 @@ namespace app
 
 			/** 現在のメニューポーズ状態 */
 			bool currentPause = app::core::PauseManager::Get().IsPause();
-			/** シーケンスが終わっていない間はポーズ・入力をすべて封印 */
-			bool isSequence = battleSequenceObject_ && !battleSequenceObject_->IsFinished();
+			/**
+			 * シーケンスが終わっていない間はポーズ・入力をすべて封印。
+			 * battleSequenceObject_ 生成前（ロード完了直後の battleSequenceStartTimer_ 待機中）も
+			 * 未生成扱いで入力を通してしまうと、その間に入力したガード等の状態が
+			 * シーケンス開始後もキャンセルされず残り続けるため、非チュートリアル時は
+			 * オブジェクト未生成の間もシーケンス中として扱う。
+			 */
+			bool isSequence = !isTutorialMode_ && (!battleSequenceObject_ || !battleSequenceObject_->IsFinished());
 			/** キャラクターたちに適用するポーズ状態（手動ポーズ中、シーケンス中、またはチュートリアルフリーズ中ならポーズ） */
 			bool targetPauseState = currentPause || isSequence || tutorialFreeze_;
 
@@ -972,6 +1066,29 @@ namespace app
 			if (currentPause || tutorialFreeze_ || gameOverFreeze_)
 			{
 				return;
+			}
+
+			/**
+			 * カメラ追従はシーケンス中（ロード完了直後の待機～3/2/1/START演出）でも止めない。
+			 * ここを isSequence でスキップすると、その間ずっとプレイヤーの初期位置に
+			 * カメラが固定されたままになり、シーケンス終了時にカメラが瞬間移動して
+			 * 「追い切れていない」ように見えてしまうため。
+			 * スティックによる自由視点回転のみ、シーケンス中は入力を無効化する。
+			 */
+			if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
+			{
+				/**
+				 * 溜め中のボタン押下中のみ、FOVを狭める
+				 * GetChargeLevel() > 0 は振り下ろし中（End フェーズ）なので呼ばない
+				 */
+				auto* playerSM = battleCharacter_->GetStateMachine();
+				if (playerSM->IsChargeAttacking() && playerSM->GetChargeLevel() == 0)
+					gameCamera->OnCharging(playerSM->GetCurrentChargingLevel());
+
+				auto cameraData = gameCamera->GetCameraData();
+				cameraSteering_->SetInputEnabled(playerInputEnabled_ && !isSequence);
+				cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
+				gameCamera->SetState(cameraData);
 			}
 
 			/** 遅延再生処理 */
@@ -1342,6 +1459,12 @@ namespace app
 						bool hit = stone->GetStateMachine()->CheckAndConsumeAttackGhostCreated();
 						if (hit)
 						{
+#ifdef K2_DEBUG
+							K2_LOG("[StoneGuardDebug] BattleManager consumed hit: isInvincible=%d isGuarding=%d isInPounceAttack=%d\n",
+								isInvincible_ ? 1 : 0,
+								battleCharacter_->GetStateMachine()->IsGuarding() ? 1 : 0,
+								stone->GetStateMachine()->IsInPounceAttack() ? 1 : 0);
+#endif
 							/** 無敵中はダメージを受けない*/
 							if (isInvincible_)
 							{
@@ -1356,6 +1479,75 @@ namespace app
 									NotifyGuardSucceeded();
 									guardSuccessCooldown_ = 1.0f;
 								}
+								// ガード成功SEは再生中かどうかに関わらず、防いだ回数分だけ毎回鳴らす
+								app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Guard));
+
+								/** ガード成功エフェクト再生（ストーンが攻撃時に向いていた方向へレイキャストし、
+									ガード球に当たった地点にエフェクトを出すことで攻撃方向を可視化する。
+									とびかかり攻撃中は、ジャンプで到達した実際の高さに少しかさ上げした位置をレイの起点に使う） */
+								{
+									const bool isPounceAttack = stone->GetStateMachine()->IsInPounceAttack()
+										|| stone->GetStateMachine()->IsInAerialPounceAttack();
+
+									Vector3 rayOrigin = stone->transform.position;
+									if (isPounceAttack)
+									{
+										rayOrigin.y += POUNCE_GUARD_HIT_RAY_ORIGIN_HEIGHT_OFFSET;
+									}
+
+									Vector3 effectPos;
+									Quaternion effectRot;
+									CalcGuardHitEffectByFacingRaycast(
+										rayOrigin,
+										GetHorizontalForward(stone->transform.rotation),
+										stone->GetStateMachine()->GetLastAttackGhostPosition(),
+										battleCharacter_->GetStateMachine()->GetGuardBlockBody(),
+										/*useRealHeight=*/isPounceAttack,
+										&effectPos, &effectRot);
+#ifdef K2_DEBUG
+									K2_LOG("[StoneGuardDebug] About to PlayEffect(PlayerGuardHit) at (%.1f,%.1f,%.1f)\n",
+										effectPos.x, effectPos.y, effectPos.z);
+#endif
+									effectManagerObject_->PlayEffect(
+										enEffectKind_PlayerGuardHit,
+										effectPos,
+										effectRot,
+										Vector3::One
+									);
+								}
+
+								/** 弾いた感を出すため、攻撃してきた敵を怯ませる */
+								{
+									if (stone->GetStateMachine()->IsInAerialPounceAttack())
+									{
+										// とびかかり攻撃の空中判定をガードで防いだ場合：とびかかってきた方向の逆へ、
+										// 勢いを半減させて反射・弾き返す（moveDirectionはCharge/Leap/Bounce中
+										// 常にleapDirection_と同期されているため、これがとびかかり方向そのもの）
+										Vector3 reflectDirection = stone->GetStateMachine()->GetMoveDirection() * -1.0f;
+										reflectDirection.y = 0.0f;
+										if (reflectDirection.LengthSq() > 0.0001f)
+										{
+											reflectDirection.Normalize();
+										}
+										else
+										{
+											reflectDirection = stone->transform.position - battleCharacter_->transform.position;
+											reflectDirection.y = 0.0f;
+											reflectDirection.Normalize();
+										}
+										const float reflectSpeed = app::actor::StonePounceAttackState::GetLeapSpeed() * 0.25f;
+										stone->GetStateMachine()->OnKnockBack(reflectDirection, true, 0, true, reflectSpeed);
+									}
+									else
+									{
+										Vector3 direction = stone->transform.position - battleCharacter_->transform.position;
+										direction.y = 0.0f;
+										direction.Normalize();
+										// ガードで防いだ時は被弾エフェクトを出さないようフラグを立てる
+										stone->GetStateMachine()->OnKnockBack(direction, false, 0, true);
+									}
+								}
+
 								continue;
 							}
 
@@ -1415,6 +1607,38 @@ namespace app
 									NotifyGuardSucceeded();
 									guardSuccessCooldown_ = 1.0f;
 								}
+								// ガード成功SEは再生中かどうかに関わらず、防いだ回数分だけ毎回鳴らす
+								app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Guard));
+
+								/** ガード成功エフェクト再生（マッシュルームが攻撃時に向いていた方向へレイキャストし、
+									ガード球に当たった地点にエフェクトを出すことで攻撃方向を可視化する） */
+								{
+									Vector3 effectPos;
+									Quaternion effectRot;
+									CalcGuardHitEffectByFacingRaycast(
+										mushroom->transform.position,
+										GetHorizontalForward(mushroom->transform.rotation),
+										mushroom->GetStateMachine()->GetLastAttackGhostPosition(),
+										battleCharacter_->GetStateMachine()->GetGuardBlockBody(),
+										/*useRealHeight=*/false,
+										&effectPos, &effectRot);
+									effectManagerObject_->PlayEffect(
+										enEffectKind_PlayerGuardHit,
+										effectPos,
+										effectRot,
+										Vector3::One
+									);
+								}
+
+								/** 弾いた感を出すため、攻撃してきた敵を怯ませる */
+								{
+									Vector3 direction = mushroom->transform.position - battleCharacter_->transform.position;
+									direction.y = 0.0f;
+									direction.Normalize();
+									// ガードで防いだ時は被弾エフェクトを出さないようフラグを立てる
+									mushroom->GetStateMachine()->OnKnockBack(direction, false, 0, true);
+								}
+
 								continue;
 							}
 
@@ -1579,6 +1803,36 @@ namespace app
 									NotifyGuardSucceeded();
 									guardSuccessCooldown_ = 1.0f;
 								}
+								// ガード成功SEは再生中かどうかに関わらず、防いだ回数分だけ毎回鳴らす
+								app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Guard));
+
+								/** ガード成功エフェクト再生（攻撃者が攻撃時に向いていた方向へレイキャストし、
+									ガード球に当たった地点にエフェクトを出すことで攻撃方向を可視化する） */
+								{
+									Vector3 attackerPos = battleCharacter_->transform.position + (battleCharacter_->GetStateMachine()->GetMoveDirection() * 30.0f);
+									Quaternion attackerRot = Quaternion::Identity;
+									if (dmg->attacker)
+									{
+										attackerPos = dmg->attacker->transform.position;
+										attackerRot = dmg->attacker->transform.rotation;
+									}
+
+									Vector3 effectPos;
+									Quaternion effectRot;
+									CalcGuardHitEffectByFacingRaycast(
+										attackerPos,
+										GetHorizontalForward(attackerRot),
+										attackerPos,
+										battleCharacter_->GetStateMachine()->GetGuardBlockBody(),
+										/*useRealHeight=*/false,
+										&effectPos, &effectRot);
+									effectManagerObject_->PlayEffect(
+										enEffectKind_PlayerGuardHit,
+										effectPos,
+										effectRot,
+										Vector3::One
+									);
+								}
 								continue;
 							}
 
@@ -1604,22 +1858,6 @@ namespace app
 					notifyList_.clear();
 				}
 			}
-
-				if (auto* gameCamera = gameCameraController_->As<app::camera::GameCamera>())
-				{
-                    /**
-                     * 溜め中のボタン押下中のみ、FOVを狭める
-                     * GetChargeLevel() > 0 は振り下ろし中（End フェーズ）なので呼ばない
-                     */
-					auto* playerSM = battleCharacter_->GetStateMachine();
-					if (playerSM->IsChargeAttacking() && playerSM->GetChargeLevel() == 0)
-						gameCamera->OnCharging(playerSM->GetCurrentChargingLevel());
-
-					auto cameraData = gameCamera->GetCameraData();
-					cameraSteering_->SetInputEnabled(playerInputEnabled_);
-					cameraSteering_->Update(cameraData, g_gameTime->GetFrameDeltaTime());
-					gameCamera->SetState(cameraData);
-				}
 
 				/** 制限時間の管理 */
 				{
@@ -2021,9 +2259,11 @@ namespace app
 				}
 
 				wchar_t text[128];
-				swprintf(text, L"Pounce Triggered:%d  BlockedByCamera:%d",
+				swprintf(text, L"Pounce Triggered:%d  BlockedByCamera:%d\nShockwave Attempt:%d  FloorRaycastHit:%d",
 					app::actor::StonePounceDebugStats::triggeredCount,
-					app::actor::StonePounceDebugStats::blockedByCameraCount);
+					app::actor::StonePounceDebugStats::blockedByCameraCount,
+					app::actor::ChargeShockwaveDebugStats::attemptCount,
+					app::actor::ChargeShockwaveDebugStats::raycastHitCount);
 
 				// 画面左下に表示（pivot(0,0)=左下基準なのでテキストは右上方向へ伸びる）
 				const Vector2 pos = { UI_SPACE_WIDTH * -0.48f, UI_SPACE_HEIGHT * -0.48f };

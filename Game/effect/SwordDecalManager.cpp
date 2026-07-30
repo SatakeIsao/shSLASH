@@ -51,6 +51,8 @@ namespace
         constexpr float FADE_START_RATIO = 0.6f;
         /** 地響きデカール Level1 の基準スケール（要調整） */
         constexpr float QUAKE_FLOOR_BASE_SCALE = 2.5f;
+        /** 地響きデカールのY座標補正（地面の高さちょうどだとZファイティングするため僅かに浮かせる） */
+        constexpr float QUAKE_FLOOR_OFFSET_Y = 3.0f;
     }
 }
 
@@ -239,7 +241,7 @@ namespace app
             pool_[lastSlot].lifetime = sword_decal::LIFETIME;
 
             Vector3 decalPos = hitPos;
-            decalPos.y -= 13.5f;
+            decalPos.y += sword_decal::QUAKE_FLOOR_OFFSET_Y;
 
             model->SetPosition(decalPos);
             model->SetRotation(CalcDecalRotation(Vector3::Up, slashDir));

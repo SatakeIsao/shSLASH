@@ -87,6 +87,18 @@
             },
             {
                 "type": "UIIcon",
+                "name": "Img_CriticalExplain",
+                "asset": "Assets/ui/tutorial/critical_explain.DDS",
+                "width": 1280,
+                "height": 640,
+                "position": [-0.0, -150.0, 0.0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "isDraw": false
+            },
+            {
+                "type": "UIIcon",
                 "name": "Img_Lstick",
                 "asset": "Assets/ui/tutorial/Lstick.DDS",
                 "width": 128,

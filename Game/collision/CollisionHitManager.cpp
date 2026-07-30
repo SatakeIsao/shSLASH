@@ -148,6 +148,45 @@ namespace app
 				colliedEnemyBody = hitPair.b;
 			}
 
+			// 防御中の押し返し球に触れた場合
+			if (colliedPlayerBody != nullptr
+				&& colliedPlayerBody == battleCharacter->GetStateMachine()->GetGuardBlockBody())
+			{
+				// 本体ではなく攻撃ゴースト（とびかかりの着地判定など）がガード球に触れた
+				// ＝ガードで攻撃を防いだ、として扱う（本体との押し返しとは無関係に処理する）
+				if (colliedEnemyBody != nullptr
+					&& colliedEnemyBody != eventCharacter->GetGhostBody()
+					&& colliedEnemyBody->IsActive())
+				{
+#ifdef K2_DEBUG
+					K2_LOG("[StoneGuardDebug] AttackGhost hit GUARD SPHERE directly: pos=(%.1f,%.1f,%.1f)\n",
+						colliedEnemyBody->GetPosition().x, colliedEnemyBody->GetPosition().y, colliedEnemyBody->GetPosition().z);
+#endif
+					eventCharacter->GetStateMachine()->NontifyAttackGhostCreated(colliedEnemyBody->GetPosition());
+					// この攻撃ゴーストは一度当たったら以降は判定を出さない（多重ヒット防止）
+					colliedEnemyBody->SetActive(false);
+					return;
+				}
+
+				// 本体がガード球に触れた場合：ダメージ判定はせず、球の外へ押し戻すだけ
+				Vector3 pushDir = enemyPos - playerPos;
+				pushDir.y = 0.0f;
+				if (pushDir.LengthSq() > 0.0001f)
+				{
+					pushDir.Normalize();
+					Vector3 correctedPos = playerPos + pushDir * app::actor::BattleCharacterStateMachine::kGuardBlockRadius;
+					correctedPos.y = enemyPos.y;
+
+					eventCharacter->transform.position = correctedPos;
+					eventCharacter->GetStateMachine()->transform.position = correctedPos;
+					if (auto* controller = eventCharacter->GetCharacterController())
+					{
+						controller->SetPosition(correctedPos);
+					}
+				}
+				return;
+			}
+
 			// パーツの判定処理
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
@@ -221,11 +260,24 @@ namespace app
 					{
 						battleCharacter->GetStateMachine()->StartPreJustDodgeWindow();
 					}
-					battleCharacter->GetStateMachine()->OnKnockBack();
+					/** ガード中はノックバックしない（多重再生防止） */
+					if (!battleCharacter->GetStateMachine()->IsGuarding())
+					{
+						battleCharacter->GetStateMachine()->OnKnockBack();
+					}
 					// 攻撃ゴーストが実際に当たった時だけHPダメージを通知
 					if (colliedEnemyBody != nullptr && colliedEnemyBody != eventCharacter->GetGhostBody())
 					{
-						eventCharacter->GetStateMachine()->NontifyAttackGhostCreated();
+#ifdef K2_DEBUG
+						K2_LOG("[StoneGuardDebug] AttackGhost hit registered: guarding=%d pounce=%d ghostPos=(%.1f,%.1f,%.1f) playerPos=(%.1f,%.1f,%.1f)\n",
+							battleCharacter->GetStateMachine()->IsGuarding() ? 1 : 0,
+							eventCharacter->GetStateMachine()->IsInPounceAttack() ? 1 : 0,
+							colliedEnemyBody->GetPosition().x, colliedEnemyBody->GetPosition().y, colliedEnemyBody->GetPosition().z,
+							playerPos.x, playerPos.y, playerPos.z);
+#endif
+						eventCharacter->GetStateMachine()->NontifyAttackGhostCreated(colliedEnemyBody->GetPosition());
+						// この攻撃ゴーストは一度当たったら以降は判定を出さない（多重ヒット防止）
+						colliedEnemyBody->SetActive(false);
 					}
 				}
 			}
@@ -291,6 +343,28 @@ namespace app
 				colliedEnemyBody = hitPair.b;
 			}
 
+			// 防御中の押し返し球に触れた場合：ダメージ判定はせず、球の外へ押し戻すだけ
+			if (colliedPlayerBody != nullptr
+				&& colliedPlayerBody == battleCharacter->GetStateMachine()->GetGuardBlockBody())
+			{
+				Vector3 pushDir = enemyPos - playerPos;
+				pushDir.y = 0.0f;
+				if (pushDir.LengthSq() > 0.0001f)
+				{
+					pushDir.Normalize();
+					Vector3 correctedPos = playerPos + pushDir * app::actor::BattleCharacterStateMachine::kGuardBlockRadius;
+					correctedPos.y = enemyPos.y;
+
+					eventCharacter->transform.position = correctedPos;
+					eventCharacter->GetStateMachine()->transform.position = correctedPos;
+					if (auto* controller = eventCharacter->GetCharacterController())
+					{
+						controller->SetPosition(correctedPos);
+					}
+				}
+				return;
+			}
+
 			// パーツの判定処理
 			if (colliedPlayerBody != nullptr
 				&& colliedPlayerBody != battleCharacter->GetGhostBody())
@@ -349,11 +423,17 @@ namespace app
 					{
 						battleCharacter->GetStateMachine()->StartPreJustDodgeWindow();
 					}
-					battleCharacter->GetStateMachine()->OnKnockBack();
+					/** ガード中はノックバックしない（多重再生防止） */
+					if (!battleCharacter->GetStateMachine()->IsGuarding())
+					{
+						battleCharacter->GetStateMachine()->OnKnockBack();
+					}
 					// 攻撃ゴーストが実際に当たった時だけHPダメージを通知
 					if (colliedEnemyBody != nullptr && colliedEnemyBody != eventCharacter->GetGhostBody())
 					{
-						eventCharacter->GetStateMachine()->NontifyAttackGhostCreated();
+						eventCharacter->GetStateMachine()->NontifyAttackGhostCreated(colliedEnemyBody->GetPosition());
+						// この攻撃ゴーストは一度当たったら以降は判定を出さない（多重ヒット防止）
+						colliedEnemyBody->SetActive(false);
 					}
 				}
 			}

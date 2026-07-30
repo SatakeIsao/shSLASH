@@ -209,5 +209,42 @@ namespace app
 			}
 			return nearest;
 		}
+
+
+		EnemyAttackPoint::AttackPoint* EnemyAttackPoint::AcquireWaitPoint(Vector3 position, Character* enemy)
+		{
+			float nearestDistance = FLT_MAX;
+			AttackPoint* nearest = nullptr;
+
+			for (AttackPoint& waitPoint : waitPointList_)
+			{
+				if (waitPoint.use_) continue;
+
+				const float distance = (waitPoint.position_ - position).Length();
+				if (distance < nearestDistance)
+				{
+					nearestDistance = distance;
+					nearest = &waitPoint;
+				}
+			}
+
+			if (nearest != nullptr)
+			{
+				nearest->use_ = true;
+				nearest->useEnemy_ = enemy;
+			}
+
+			return nearest;
+		}
+
+
+		void EnemyAttackPoint::ReleaseWaitPoint(int number, Character* enemy)
+		{
+			// ポイントを確保しているエネミーが異なれば何もしない
+			if (waitPointList_[number].useEnemy_ != enemy) { return; }
+
+			waitPointList_[number].use_ = false;
+			waitPointList_[number].useEnemy_ = nullptr;
+		}
 	}
 }

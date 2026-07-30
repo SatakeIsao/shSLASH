@@ -7,6 +7,7 @@
 #include "sound/SoundManager.h"
 #include "effect/EffectManager.h"
 #include "effect/Types.h"
+#include "actor/EnemyAttackPointManager.h"
 
 
 namespace app
@@ -27,6 +28,17 @@ namespace app
 		{
 			static int triggeredCount;
 			static int blockedByCameraCount;
+		};
+
+		/**
+		 * デバッグ用：溜め攻撃の地響き床デカール／衝撃波LightPillerエフェクトが
+		 * 実際にどこで止まっているか（振り下ろし到達回数 / 床レイキャスト成功回数）を
+		 * 確認するための統計情報。BattleManager の画面表示から参照される
+		 */
+		struct ChargeShockwaveDebugStats
+		{
+			static int attemptCount;
+			static int raycastHitCount;
 		};
 #endif
 
@@ -144,6 +156,9 @@ namespace app
 			Vector3 moveSpeedVector_ = Vector3::Zero;
 			float inputPower_ = 1.0f;
 
+			/** 攻撃中、噛みつき等の演出に合わせてゴーストボディを前進させるオフセット（AttackCharacterState が更新） */
+			float currentAttackLungeOffset_ = 0.0f;
+
 			Vector3 warpStartPosition_ = Vector3::Zero;
 			Vector3 warpEndPosition_ = Vector3::Zero;
 			bool isRequestWarp_ = false;
@@ -234,6 +249,27 @@ namespace app
 
 			/** 攻撃アニメーション開始からゴーストボディを生成するまでの遅延秒数 */
 			virtual float GetGhostBodyDelay() const { return 0.1f; }
+
+			/** 攻撃中の経過時間(秒)に応じたゴーストボディの前進オフセットを返す（噛みつき等、演出に合わせてゴーストボディを連動させる用。既定は連動なし） */
+			virtual float GetAttackLungeDistance(float stateTimer) const { return 0.0f; }
+			/** AttackCharacterState が毎フレーム計算した現在の前進オフセットを保持する（キャラクター側のゴーストボディ追従に使用） */
+			float GetCurrentAttackLungeOffset() const { return currentAttackLungeOffset_; }
+			void SetCurrentAttackLungeOffset(float offset) { currentAttackLungeOffset_ = offset; }
+
+			/** 攻撃中、これ以上前進するとまずいか（例：ガード中のプレイヤーの防御球へめり込む）を判定する。既定はfalse（制限なし） */
+			virtual bool IsApproachBlocked() { return false; }
+
+			/**
+			 * 移動状態の各ステートから、目標方向への向き適用を委譲するためのフック。
+			 * 既定は即座に向く（従来通り）。エネミーが密集して目標方向が毎フレーム
+			 * 入れ替わるようなケースでは、派生クラス側で最大回転速度を設けた
+			 * なめらかな追従に差し替えることができる
+			 */
+			virtual void ApplyFacingDirection(const Vector3& direction)
+			{
+				if (direction.LengthSq() < 0.0001f) { return; }
+				transform.rotation.SetRotationYFromDirectionXZ(direction);
+			}
 
 			Character* GetCharacter();
 			app::actor::CharacterStatus* GetStatus();
@@ -338,6 +374,16 @@ namespace app
 			bool isKnockBack_ = false;
 			/** 防御したか */
 			bool isGuard_ = false;
+			/** 防御中エフェクトのハンドル */
+			EffectHandle guardEffectHandle_ = INVALID_EFFECT_HANDLE;
+			/** 防御中、エネミーを押し返すための球判定 */
+			std::unique_ptr<app::collision::GhostBody> guardBlockBody_;
+			/** 防御を継続している時間 */
+			float guardHoldTimer_ = 0.0f;
+			/** 制限時間に達し、ボタンを離すまで再ガード不可の状態か */
+			bool isGuardLocked_ = false;
+			/** 防御可能な連続時間（秒）。試験的に5秒 */
+			static constexpr float kGuardTimeLimit = 5.0f;
 			/** 切り込みエフェクト */
 			bool isSlashEffect_ = false;
 			/** チャージエフェクト */
@@ -407,6 +453,10 @@ namespace app
 		private:
 			void UpdateState();
 
+			/** 防御球（guardBlockBody_）の中心座標を取得する。transform.position は足元基準のため、
+			    体の中心付近まで持ち上げてプレイヤーを囲むようにする */
+			Vector3 GetGuardBlockCenter();
+
 		public:
 			/** 溜め攻撃ヒット時にプレイヤー側のヒットストップを開始する */
 			void StartHitStop(float duration) { hitStopTimer_ = duration; }
@@ -471,6 +521,25 @@ namespace app
 				}
 				return false;
 			}
+
+			/** 防御中の押し返し球判定を取得（防御していない間はnullptr） */
+			app::collision::GhostBody* GetGuardBlockBody() const { return guardBlockBody_.get(); }
+
+			/** 防御の残り時間割合を取得（1.0=満タン、0.0=制限時間切れ）。
+			 *  防御を解いた後も回復し切るまでは1.0未満のままになる */
+			float GetGuardRemainingRatio() const
+			{
+				return max(0.0f, 1.0f - guardHoldTimer_ / kGuardTimeLimit);
+			}
+
+			/** 防御ゲージを画面に表示すべきか（防御中、または回復しきっていない間） */
+			bool IsGuardGaugeVisible() const
+			{
+				return IsGuarding() || guardHoldTimer_ > 0.0f;
+			}
+
+			/** 防御エフェクト（guard.efk）の球サイズに合わせた半径。TODO: 実機で見た目に合わせて要調整 */
+			static constexpr float kGuardBlockRadius = 38.0f;
 			/** 切り込みエフェクトしたことを取得 */
 			bool IsSlashEffect() const 
 			{
@@ -625,6 +694,8 @@ namespace app
 			bool isKnockBack_ = false;
 
 			bool isAttackGhostCreated_ = false;
+			/** 攻撃ゴーストが当たった位置（ガード成功時のエフェクト再生などに使用） */
+			Vector3 lastAttackGhostPosition_ = Vector3::Zero;
 
 		public:
 			EventCharacterStateMachine();
@@ -684,9 +755,10 @@ namespace app
 			}
 
 			//ゴーストが生成されたことを通知
-			void NontifyAttackGhostCreated()
+			void NontifyAttackGhostCreated(const Vector3& hitPosition = Vector3::Zero)
 			{
 				isAttackGhostCreated_ = true;
+				lastAttackGhostPosition_ = hitPosition;
 			}
 
 
@@ -698,6 +770,9 @@ namespace app
 				}
 				return false;
 			}
+
+			/** 直近で攻撃ゴーストが当たった位置を取得（ガード成功エフェクトなどに使用） */
+			const Vector3& GetLastAttackGhostPosition() const { return lastAttackGhostPosition_; }
 		};
 
 
@@ -738,8 +813,14 @@ namespace app
 			bool isBlowBack_ = false;
 			/** ノックバック時のチャージレベル */
 			int knockBackChargeLevel_ = 0;
+			/** ガードで防がれたことによるノックバックか（被弾エフェクトの抑制に使用） */
+			bool isGuardBlockedKnockBack_ = false;
+			/** ガード反射時の吹き飛ばし速度（0以下ならチャージレベル基準の通常テーブルを使う） */
+			float customBlowBackSpeed_ = 0.0f;
 			/** 攻撃用のゴーストボディ生成したか */
 			bool isAttackGhostCreated_ = false;
+			/** 攻撃ゴーストが当たった位置（ガード成功時のエフェクト再生などに使用） */
+			Vector3 lastAttackGhostPosition_ = Vector3::Zero;
 			/** スポーン直後の待機フラグ */
 			bool isJustSpawned_ = true;
 			/** 攻撃後の待機ポイントへ戻るフラグ */
@@ -748,8 +829,19 @@ namespace app
 			bool isAIEnabled_ = true;
 			/** とびかかり攻撃中フラグ（EventCharacter側の描画オフセット戻し制御に使用） */
 			bool isInPounceAttack_ = false;
+			/** とびかかり攻撃の空中（Leap中）攻撃判定がアクティブか。ガードで防いだ時に反射させるかどうかの判定に使用 */
+			bool isInAerialPounceAttack_ = false;
 			/** とびかかりエフェクトの追従先座標（StonePounceAttackState が毎フレーム更新） */
 			Vector3 pounceEffectFollowPos_ = Vector3::Zero;
+
+			/**
+			 * kUseWaitPointReservation が false の場合のフォールバック用キャッシュ。
+			 * 待機ポイントは毎フレーム、プレイヤーを中心とした円状に再配置されるため、
+			 * 自機が2点の境界付近に留まる（ガード等で足止めされている等）と、
+			 * 毎フレーム GetNearWaitPoint() を呼ぶたびに最近傍の点が入れ替わり、
+			 * 向く方向が高速に反転してしまうことがある。それを避けるための簡易策
+			 */
+			app::actor::EnemyAttackPoint::AttackPoint* cachedWaitPoint_ = nullptr;
 
 #ifdef K2_DEBUG
 			/** デバッグ用：とびかかり攻撃の視野角判定の直近結果（-1=未評価 0=画面外でブロック 1=発動可）。変化した時だけログを出すためのエッジ検出に使う */
@@ -776,9 +868,47 @@ namespace app
 
 			/** 顔を突き出すフレームに合わせた遅延秒数（要アニメーション確認で調整） */
 			virtual float GetGhostBodyDelay() const override { return 0.35f; }
+			/** 噛みつき攻撃：顔を突き出す動きに合わせてゴーストボディを前進させるオフセットを返す（要アニメーション確認で調整） */
+			virtual float GetAttackLungeDistance(float stateTimer) const override;
+			/** ガード中のプレイヤーに防御球（kGuardBlockRadius）より近づく移動かどうかを判定する（true の間は前進を止める） */
+			virtual bool IsApproachBlocked() override;
+
+			/**
+			 * 敵同士の密集による押し合いで目標方向が毎フレーム入れ替わっても、
+			 * 見た目が瞬時に反転しないよう、最大回転速度を設けてなめらかに追従する
+			 */
+			virtual void ApplyFacingDirection(const Vector3& direction) override;
+			/** ApplyFacingDirection の最大回転速度（度/秒） */
+			static constexpr float kMaxTurnDegPerSec = 540.0f;
+
+			/**
+			 * コリジョン用の半径(15)よりモデルの見た目の方が大きく、噛みつきモーションで
+			 * 頭部がさらに前へ出るため、ガード時の停止距離にモデル分の余裕を追加する。
+			 * StoneMonster.FBX の頂点バウンディングボックスを実測したところ、
+			 * ピボット(transform.position)から頭部側へ最大 約60 ユニット離れていたが、
+			 * 実機確認の結果 30 に調整（要実機確認でさらに調整可）
+			 */
+			static constexpr float kGuardModelMargin = 30.0f;
+
+			/**
+			 * 待機ポイントの「予約」システム（1点=1体を保証）を使うかどうか。
+			 * 試験導入のためのスイッチ：false にすると、予約なしの単純キャッシュ方式
+			 * （このスイッチを追加する前の動作）に即座に戻る
+			 */
+			static constexpr bool kUseWaitPointReservation = true;
 
 		private:
 			void UpdateState();
+
+			/**
+			 * 待機ポイントを取得する。kUseWaitPointReservation が true の場合は
+			 * EnemyAttackPointManager::AcquireWaitPoint() で予約し、StoneEventCharacter に
+			 * 保持させる（1点=1体を保証）。false の場合は cachedWaitPoint_ に単純キャッシュする
+			 * （ReleaseCachedWaitPoint() で解放するまで使い回す）
+			 */
+			app::actor::EnemyAttackPoint::AttackPoint* GetOrPickWaitPoint(app::actor::EnemyAttackPointManager* manager);
+			/** 保持中の待機ポイントを解放する（攻撃/とびかかり開始時、待機ポイント検索失敗時に呼ぶ） */
+			void ReleaseCachedWaitPoint();
 
 		public:
 			/** 死んだことを教える */
@@ -800,6 +930,11 @@ namespace app
 			bool IsInPounceAttack() const { return isInPounceAttack_; }
 			/** Bounce/Landing フェーズ中のみ true にセットする（Charge/Leap 中は false） */
 			void SetBouncingActive(bool active) { isInPounceAttack_ = active; }
+
+			/** Leap（空中飛行）中の攻撃判定がアクティブか（ガードで防ぐと反射する方の判定） */
+			bool IsInAerialPounceAttack() const { return isInAerialPounceAttack_; }
+			/** Leapフェーズ中のみ true にセットする（着地したら false） */
+			void SetAerialPounceAttackActive(bool active) { isInAerialPounceAttack_ = active; }
 
 			/** とびかかりエフェクトの追従先座標を更新する（StonePounceAttackState が使用） */
 			void SetPounceEffectFollowPos(const Vector3& pos) { pounceEffectFollowPos_ = pos; }
@@ -834,12 +969,14 @@ namespace app
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
 			 * パンチ食らったことを教える⇒ノックバックに変更したい
 			 */
-			void OnKnockBack(const Vector3& direction, bool isBlowBack = false, int chargeLevel = 0)
+			void OnKnockBack(const Vector3& direction, bool isBlowBack = false, int chargeLevel = 0, bool isGuardBlocked = false, float customBlowBackSpeed = 0.0f)
 			{
 				isKnockBack_ = true;
 				knockBackDirection_ = direction;
 				isBlowBack_ = isBlowBack;
 				knockBackChargeLevel_ = chargeLevel;
+				isGuardBlockedKnockBack_ = isGuardBlocked;
+				customBlowBackSpeed_ = customBlowBackSpeed;
 			}
 			bool IsKnockBack()
 			{
@@ -847,11 +984,16 @@ namespace app
 			}
 			bool IsBlowBack() const { return isBlowBack_; }
 			int GetKnockBackChargeLevel() const { return knockBackChargeLevel_; }
+			/** ガードで防がれたことによるノックバックか（被弾エフェクトの抑制に使用） */
+			bool IsGuardBlockedKnockBack() const { return isGuardBlockedKnockBack_; }
+			/** ガード反射時の吹き飛ばし速度（0以下なら未設定＝通常テーブルを使う） */
+			float GetCustomBlowBackSpeed() const { return customBlowBackSpeed_; }
 
 			//ゴーストが生成されたことを通知
-			void NontifyAttackGhostCreated()
+			void NontifyAttackGhostCreated(const Vector3& hitPosition = Vector3::Zero)
 			{
 				isAttackGhostCreated_ = true;
+				lastAttackGhostPosition_ = hitPosition;
 			}
 
 
@@ -863,6 +1005,9 @@ namespace app
 				}
 				return false;
 			}
+
+			/** 直近で攻撃ゴーストが当たった位置を取得（ガード成功エフェクトなどに使用） */
+			const Vector3& GetLastAttackGhostPosition() const { return lastAttackGhostPosition_; }
 		};
 
 
@@ -902,8 +1047,12 @@ namespace app
 			bool isBlowBack_ = false;
 			/** ノックバック時のチャージレベル */
 			int knockBackChargeLevel_ = 0;
+			/** ガードで防がれたことによるノックバックか（被弾エフェクトの抑制に使用） */
+			bool isGuardBlockedKnockBack_ = false;
 			/** 攻撃用のゴーストボディ生成したか */
 			bool isAttackGhostCreated_ = false;
+			/** 攻撃ゴーストが当たった位置（ガード成功時のエフェクト再生などに使用） */
+			Vector3 lastAttackGhostPosition_ = Vector3::Zero;
 			/** スポーン直後の待機フラグ */
 			bool isJustSpawned_ = true;
 			/** 攻撃後の待機ポイントへ戻るフラグ */
@@ -929,6 +1078,9 @@ namespace app
 			/** プレイヤーの攻撃ヒット判定を受け付けるか */
 			bool isReceiveDamageEnabled_ = true;
 
+			/** kUseWaitPointReservation が false の場合のフォールバック用キャッシュ（Stone側と同様の仕組み） */
+			app::actor::EnemyAttackPoint::AttackPoint* cachedWaitPoint_ = nullptr;
+
 		public:
 			MushroomEventCharacterStateMachine();
 			virtual ~MushroomEventCharacterStateMachine();
@@ -948,8 +1100,19 @@ namespace app
 			/** 攻撃アニメーション開始からゴーストボディを生成するまでの遅延秒数（要アニメーション確認で調整） */
 			virtual float GetGhostBodyDelay() const override { return 0.35f; }
 
+			/**
+			 * 待機ポイントの「予約」システム（1点=1体を保証）を使うかどうか。
+			 * Stone側と同じ仕組み。Stoneとは独立して on/off できる
+			 */
+			static constexpr bool kUseWaitPointReservation = true;
+
 		private:
 			void UpdateState();
+
+			/** 待機ポイントを取得する（詳細は StoneEventCharacterStateMachine::GetOrPickWaitPoint と同様） */
+			app::actor::EnemyAttackPoint::AttackPoint* GetOrPickWaitPoint(app::actor::EnemyAttackPointManager* manager);
+			/** 保持中の待機ポイントを解放する */
+			void ReleaseCachedWaitPoint();
 
 		public:
 			/** 死んだことを教える */
@@ -997,12 +1160,13 @@ namespace app
 			 * DEBUG: 書く場所変更予定だが一旦ここで実装
 			 * パンチ食らったことを教える⇒ノックバックに変更したい
 			 */
-			void OnKnockBack(const Vector3& direction, bool isBlowBack = false, int chargeLevel = 0)
+			void OnKnockBack(const Vector3& direction, bool isBlowBack = false, int chargeLevel = 0, bool isGuardBlocked = false)
 			{
 				isKnockBack_ = true;
 				knockBackDirection_ = direction;
 				isBlowBack_ = isBlowBack;
 				knockBackChargeLevel_ = chargeLevel;
+				isGuardBlockedKnockBack_ = isGuardBlocked;
 			}
 			bool IsKnockBack()
 			{
@@ -1010,11 +1174,14 @@ namespace app
 			}
 			bool IsBlowBack() const { return isBlowBack_; }
 			int GetKnockBackChargeLevel() const { return knockBackChargeLevel_; }
+			/** ガードで防がれたことによるノックバックか（被弾エフェクトの抑制に使用） */
+			bool IsGuardBlockedKnockBack() const { return isGuardBlockedKnockBack_; }
 
 			//ゴーストが生成されたことを通知
-			void NontifyAttackGhostCreated()
+			void NontifyAttackGhostCreated(const Vector3& hitPosition = Vector3::Zero)
 			{
 				isAttackGhostCreated_ = true;
+				lastAttackGhostPosition_ = hitPosition;
 			}
 
 
@@ -1026,6 +1193,9 @@ namespace app
 				}
 				return false;
 			}
+
+			/** 直近で攻撃ゴーストが当たった位置を取得（ガード成功エフェクトなどに使用） */
+			const Vector3& GetLastAttackGhostPosition() const { return lastAttackGhostPosition_; }
 
 			/** 毒雲詠唱完了を取得（取得と同時にフラグクリア） */
 			bool CheckAndConsumePoisonCastComplete()

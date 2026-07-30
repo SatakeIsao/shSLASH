@@ -124,6 +124,14 @@ namespace app
 			bulletObject_->setCollisionShape(bulletShape_.get());
 			bulletObject_->setWorldTransform(GetBtTransform());
 			// Bullet側でCollisionのフラグが必要ならここで設定する
+
+			// TRY: GhostBody（攻撃判定・本体判定などのトリガー）は地形ではなくキャラクター関連の判定なので、
+			// userIndexをenCollisionAttr_Characterにしておく。
+			// これがないと壁激突チェック等の「obj.getUserIndex() != enCollisionAttr_Character」という
+			// 除外フィルタ（ActorState.cppのwallOnly/noCharFilter）がGhostBodyを壁と誤認してしまう
+			// （例: ガード反射で吹き飛んでいる最中に他エネミーの攻撃判定球をかすめて壁激突扱いになり即死する）。
+			// 合わないと感じたらこの1行を削除するだけで元に戻る。
+			bulletObject_->setUserIndex(enCollisionAttr_Character);
 		}
 	}
 }

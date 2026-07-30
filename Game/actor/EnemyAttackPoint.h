@@ -70,8 +70,16 @@ namespace app
 			bool IsUsableAttackPoint() const;
 
 
-			/** 近くにある待機ポイントのアドレスを取得する */
+			/** 近くにある待機ポイントのアドレスを取得する（予約はしない） */
 			AttackPoint* GetNearWaitPoint(Vector3 position);
+
+
+			/** 空いている最近傍の待機ポイントを取得し、使用中にする（1点=1体を保証するための予約） */
+			AttackPoint* AcquireWaitPoint(Vector3 position, Character* enemy);
+
+
+			/** 待機ポイントの解放 */
+			void ReleaseWaitPoint(int number, Character* enemy);
 
 
 			static constexpr int GetAttackPointNum() { return kAttackPointNum; }

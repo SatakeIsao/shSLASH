@@ -48,6 +48,8 @@ enum enEffectKind
 	enEffectKind_MushroomPoisonBubble2, // 毒フィールド展開後、一定間隔で発生する毒泡エフェクト（2種）
 	enEffectKind_StoneChargeAtk,        // ストーンの溜め攻撃エフェクト
 	enEffectKind_StoneChargeAtk2,       // ストーンの溜め攻撃エフェクト（差し替え版）
+	enEffectKind_PlayerGuard,           // プレイヤーの防御中エフェクト
+	enEffectKind_PlayerGuardHit,        // 防御中に攻撃を受けた（ガード成功）時のエフェクト
 	enEffectKind_Max,
 	enEffectKind_None = enEffectKind_Max,
 };
@@ -103,6 +105,8 @@ static EffectInformation effectInformation[enEffectKind_Max] =
 	EffectInformation(u"Assets/effect/poison_bubble2.efk"),           // MushroomPoisonBubble2: 毒フィールド内の毒泡（2種）
 	EffectInformation(u"Assets/effect/stoneChargeAtk.efk"),           // StoneChargeAtk: 溜め攻撃
 	EffectInformation(u"Assets/effect/stoneChargeAtk2.efk"),          // StoneChargeAtk2: 溜め攻撃（差し替え版）
+	EffectInformation(u"Assets/effect/guard.efk"),                    // PlayerGuard: 防御中エフェクト
+	EffectInformation(u"Assets/effect/guard_hit.efk"),                // PlayerGuardHit: ガード成功時エフェクト
 
 };
 
