@@ -1,0 +1,52 @@
+{
+  "canvas": {
+    "elements": [
+      {
+        "type": "UIIcon",
+        "name": "guardFrame",
+        "asset": "Assets/ui/guard/guard_frame.DDS",
+        "shader": "Assets/Shader/guardFrame.fx",
+        "width": 34,
+        "height": 150,
+        "position": [175, 0.0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "guardGauge",
+        "asset": "Assets/ui/guard/guard_gauge.DDS",
+        "shader": "Assets/Shader/guardGauge.fx",
+        "width": 32,
+        "height": 145,
+        "position": [175, 0.0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "guardFrameWhite",
+        "asset": "Assets/ui/guard/guard_frame_white.DDS",
+        "width": 32,
+        "height": 144,
+        "position": [175, 0.0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      },
+      {
+        "type": "UIIcon",
+        "name": "guardIcon",
+        "asset": "Assets/ui/guard/guard_icon.DDS",
+        "width": 44,
+        "height": 44,
+        "position": [150, 75.0, 0],
+        "scale": [1, 1, 1],
+        "rotation": 0,
+        "color": [1.0, 1.0, 1.0, 1.0]
+      }
+    ]
+  }
+}

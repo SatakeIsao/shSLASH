@@ -34,6 +34,31 @@ namespace app
 		class IStateMachine;
 
 
+		/**
+		 * 攻撃中にストックする次行動（攻撃 or ガード）。
+		 * 回避は対象外（既存通り押した瞬間に即時遷移する）。
+		 * 常に最新の入力で上書きし、消費時は全クリアする
+		 * （最大3件保持しても最終的に使われるのは最新の1件だけなので、1スロットで仕様上の挙動と同一になる）。
+		 */
+		class AttackInputStock
+		{
+		public:
+			enum class Action { None, Attack, Guard };
+
+		private:
+			Action pending_ = Action::None;
+
+		public:
+			void PushAttack() { pending_ = Action::Attack; }
+			void PushGuard() { pending_ = Action::Guard; }
+			void Clear() { pending_ = Action::None; }
+			bool HasPending() const { return pending_ != Action::None; }
+			Action Get() const { return pending_; }
+		};
+
+
+
+
 		class ICharacterState : public Noncopyable
 		{
 		protected:
@@ -176,7 +201,8 @@ namespace app
 			std::unique_ptr<app::collision::GhostBody> shockwaveBody_;
 			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
 			float stateTimer_ = 0.0f;
-			bool isComboInput_ = false;
+			AttackInputStock followUpBuffer_;
+			bool prevGuardHeld_ = false;
 			bool isFirstFrame_ = true;
 
 			// 派生クラスで設定するパラメータ
@@ -199,7 +225,7 @@ namespace app
 			void Exit() override;
 
 			virtual bool CanChangeState() const override;
-			bool IsComboInput() const { return isComboInput_; }
+			AttackInputStock::Action GetBufferedFollowUp() const { return followUpBuffer_.Get(); }
 
 		protected:
 			// 派生クラスでパラメータを返す
@@ -308,6 +334,9 @@ namespace app
 			float chargeTimer_ = 0.0f;
 			bool chargeLevelEffectPlayed_[3] = { false, false, false };
 			EffectEmitter* chargeLevelEmitters_[3] = { nullptr, nullptr, nullptr };
+			AttackInputStock followUpBuffer_;
+			bool prevGuardHeld_ = false;
+			bool isFirstFrame_ = true;
 
 
 		public:
@@ -318,6 +347,7 @@ namespace app
 			void Exit() override;
 
 			virtual bool CanChangeState() const;
+			AttackInputStock::Action GetBufferedFollowUp() const { return followUpBuffer_.Get(); }
 		};
 
 
@@ -408,6 +438,11 @@ namespace app
 			static constexpr float BLOW_BACK_JUMP_LV1  =  90.0f;
 			static constexpr float BLOW_BACK_JUMP_LV2  =  77.5f;
 			static constexpr float BLOW_BACK_JUMP_LV3  = 110.0f;
+			// ガード反射で着地した後、その場に留まる着地硬直時間（とびかかりの着地硬直と同じ長さ）
+			static constexpr float REFLECT_LANDING_RECOVERY_DURATION = 1.0f;
+			// ガード反射着地後のバウンド回数・減衰率（とびかかりのバウンドと同じ考え方）
+			static constexpr int   REFLECT_MAX_BOUNCE_COUNT = 2;
+			static constexpr float REFLECT_BOUNCE_DECAY     = 0.5f;
 
 			float timer_ = 0.0f;
 			float hitStopTimer_ = 0.0f;
@@ -422,6 +457,10 @@ namespace app
 			bool  pendingDead_   = false;
 			int   chargeLevel_   = 0;
 			float savedGravity_  = 0.0f;
+			bool  isReflect_     = false;   // ガード反射によるノックバックか（着地硬直の付与に使用）
+			float landedTimer_   = 0.0f;    // 反射が着地してからの経過時間（着地硬直の判定に使用）
+			int   reflectBounceCount_ = 0;  // ガード反射着地後、現在何回バウンドしたか
+			float modelYOffset_  = 0.0f;    // ガード反射着地後の描画Yオフセット（とびかかり着地と同様、地面に足がつくよう沈める）
 
 		public:
 			KnockBackCharacterState(IStateMachine* owner);
@@ -682,8 +721,7 @@ namespace app
 			float bounceJumpPower_ = 0.0f;            // 保留中のバウンドジャンプ力
 			float modelYOffset_ = 0.0f;               // 着地時の描画Yオフセット補間現在値
 			float bounceHorizontalSpeed_ = 0.0f;      // バウンド中の水平慣性速度
-			std::unique_ptr<app::collision::GhostBody> attackBody_;
-			std::unique_ptr<app::core::TaskSchedulerSystem> landingScheduler_;
+			std::unique_ptr<app::collision::GhostBody> aerialAttackBody_; // Leap（空中飛行）中の攻撃判定。着地したら破棄する
 			EffectHandle jumpEffectHandle_ = INVALID_EFFECT_HANDLE;   // とびかかり移動中エフェクトのハンドル（着地時に停止）
 			EffectHandle chargeEffectHandle_ = INVALID_EFFECT_HANDLE; // 溜め中予告エフェクトのハンドル（溜め終了時に停止）
 
@@ -695,6 +733,9 @@ namespace app
 			void Update() override;
 			void Exit() override;
 			bool CanChangeState() const override;
+
+			/** とびかかりの水平速度（ガードで反射された時の吹き飛ばし速度計算に使用） */
+			static constexpr float GetLeapSpeed() { return LEAP_SPEED; }
 		};
 	}
 }

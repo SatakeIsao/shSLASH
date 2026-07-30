@@ -243,9 +243,75 @@ namespace app
 			transform.UpdateTransform();
 			stateMachine_->transform.position = nextPosition;
 
+			// ガード中のプレイヤーには、AIステートに関わらず防御球（防御エフェクトの手前）より
+			// 内側へ入り込ませない（噛みつき等でめり込んで見えるのを防ぐ）
+			if (battleCharacter_ && !stateMachine_->IsDeadState()
+				&& battleCharacter_->GetStateMachine()->IsGuarding())
+			{
+				const Vector3& playerPos = battleCharacter_->transform.position;
+				Vector3 toEnemy = transform.position - playerPos;
+				toEnemy.y = 0.0f;
+				const float dist = toEnemy.Length();
+				// コリジョン用の半径だけでなく、モデルの見た目の大きさ分の余裕(kGuardModelMargin)も確保する
+				constexpr float minDist = app::actor::BattleCharacterStateMachine::kGuardBlockRadius
+					+ app::actor::StoneEventCharacterStateMachine::kGuardModelMargin;
+
+				if (dist < minDist)
+				{
+					if (dist > 0.0001f)
+					{
+						toEnemy /= dist;
+					}
+					else
+					{
+						toEnemy = stateMachine_->GetMoveDirection() * -1.0f;
+						toEnemy.y = 0.0f;
+						if (toEnemy.LengthSq() < 0.0001f) { toEnemy = Vector3::Front; }
+						toEnemy.Normalize();
+					}
+
+					Vector3 correctedPos = playerPos + toEnemy * minDist;
+					correctedPos.y = transform.position.y;
+
+					transform.localPosition = correctedPos;
+					transform.UpdateTransform();
+					stateMachine_->transform.position = correctedPos;
+					characterController_->SetPosition(correctedPos);
+				}
+			}
+
 			// ゴーストボディ
 			Vector3 centerPos = transform.position;
 			centerPos.y += status_->GetRadius() * 2.0f;
+
+			// 噛みつき攻撃中は、顔を突き出す動きにゴーストボディを連動させる
+			const float lungeOffset = stateMachine_->GetCurrentAttackLungeOffset();
+			if (lungeOffset != 0.0f)
+			{
+				Vector3 forward = stateMachine_->GetMoveDirection();
+				if (forward.LengthSq() > 0.01f)
+				{
+					centerPos += forward * lungeOffset;
+				}
+
+				// ガード中のプレイヤーの防御球より内側にはゴーストボディを進めない
+				if (battleCharacter_ && battleCharacter_->GetStateMachine()->IsGuarding())
+				{
+					const Vector3& playerPos = battleCharacter_->transform.position;
+					Vector3 toBody = centerPos - playerPos;
+					toBody.y = 0.0f;
+					const float dist = toBody.Length();
+					constexpr float minDist = app::actor::BattleCharacterStateMachine::kGuardBlockRadius;
+					if (dist < minDist && dist > 0.0001f)
+					{
+						toBody /= dist;
+						const float bodyY = centerPos.y;
+						centerPos = playerPos + toBody * minDist;
+						centerPos.y = bodyY;
+					}
+				}
+			}
+
 			ghostBody_->SetPosition(centerPos);
 
 			SuperClass::Update();

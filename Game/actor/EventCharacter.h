@@ -111,6 +111,8 @@ namespace app
 
 			EnemyAttackPointManager* attackPointManager_ = nullptr;
 			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
+			/** 予約中の待機ポイント（1点=1体を保証するための試験的な仕組み。StoneEventCharacterStateMachine が使用） */
+			EnemyAttackPoint::AttackPoint* currentWaitPoint_ = nullptr;
 
 			EnemyFadeCB cbData_;
 			float fadeTimer_  = 0.0f;
@@ -184,6 +186,11 @@ namespace app
 				battleCharacter_ = battleCharacter;
 			}
 
+			app::actor::BattleCharacter* GetBattleCharacter() const
+			{
+				return battleCharacter_;
+			}
+
 			void SetAttckPointManager(EnemyAttackPointManager* manager)
 			{
 				attackPointManager_ = manager;
@@ -202,6 +209,16 @@ namespace app
 			EnemyAttackPoint::AttackPoint* GetCurrentAttackPoint() const
 			{
 				return currentAttackPoint_;
+			}
+
+			void SetCurrentWaitPoint(EnemyAttackPoint::AttackPoint* waitPoint)
+			{
+				currentWaitPoint_ = waitPoint;
+			}
+
+			EnemyAttackPoint::AttackPoint* GetCurrentWaitPoint() const
+			{
+				return currentWaitPoint_;
 			}
 
 			void AddOnDead(std::function<void()> callback)
@@ -276,6 +293,7 @@ namespace app
 				isVisible_ = true;
 
 				currentAttackPoint_ = nullptr;
+				currentWaitPoint_ = nullptr;
 
 				// スポーン時フェードイン開始
 				cbData_.fadeRatio = 0.0f;
@@ -301,6 +319,13 @@ namespace app
 				{
 					attackPointManager_->ReleaseAttackPoint(currentAttackPoint_, this);
 					currentAttackPoint_ = nullptr;
+				}
+
+				// リサイクル時に待機ポイントの予約を解放
+				if (attackPointManager_ != nullptr && currentWaitPoint_ != nullptr)
+				{
+					attackPointManager_->ReleaseWaitPoint(currentWaitPoint_, this);
+					currentWaitPoint_ = nullptr;
 				}
 
 				// 表示OFF・コリジョンOFF（DeleteGOは呼ばない！）
@@ -342,6 +367,8 @@ namespace app
 			app::actor::BattleCharacter* battleCharacter_ = nullptr;
 			EnemyAttackPointManager* attackPointManager_ = nullptr;
 			EnemyAttackPoint::AttackPoint* currentAttackPoint_ = nullptr;
+			/** 予約中の待機ポイント（1点=1体を保証するための仕組み。MushroomEventCharacterStateMachine が使用） */
+			EnemyAttackPoint::AttackPoint* currentWaitPoint_ = nullptr;
 			static int instanceCount_;
 			Vector3 forward_ = g_vec3Front;
 			bool isPause_ = true;
@@ -466,6 +493,16 @@ namespace app
 				return currentAttackPoint_;
 			}
 
+			void SetCurrentWaitPoint(EnemyAttackPoint::AttackPoint* waitPoint)
+			{
+				currentWaitPoint_ = waitPoint;
+			}
+
+			EnemyAttackPoint::AttackPoint* GetCurrentWaitPoint() const
+			{
+				return currentWaitPoint_;
+			}
+
 			void AddOnDead(std::function<void()> callback)
 			{
 				onDeadCallbacks_.push_back(std::move(callback));
@@ -538,6 +575,7 @@ namespace app
 				isVisible_ = true;
 
 				currentAttackPoint_ = nullptr;
+				currentWaitPoint_ = nullptr;
 
 				// スポーン時フェードイン開始
 				cbData_.fadeRatio = 0.0f;
@@ -563,6 +601,13 @@ namespace app
 				{
 					attackPointManager_->ReleaseAttackPoint(currentAttackPoint_, this);
 					currentAttackPoint_ = nullptr;
+				}
+
+				// リサイクル時に待機ポイントの予約を解放
+				if (attackPointManager_ && currentWaitPoint_)
+				{
+					attackPointManager_->ReleaseWaitPoint(currentWaitPoint_, this);
+					currentWaitPoint_ = nullptr;
 				}
 
 				// 表示OFF・コリジョンOFF

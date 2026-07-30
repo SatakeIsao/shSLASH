@@ -110,6 +110,36 @@
                 ]
             },
             {
+                "body":          "",
+                "hideWindow":    true,
+                "freezeGame":    true,
+                "blurBackground": true,
+                "nextButtonHint": {
+                    "iconName":     "Img_AButton",
+                    "iconPosition": [260.0, -470.0, 0.0],
+                    "iconScale":    [0.15,   0.15,    1.0],
+                    "hideText":     true
+                },
+                "images": [
+                    {
+                        "name":     "Img_CriticalExplain",
+                        "position": [-30.0, -300.0, 0.0],
+                        "scale":    [0.35,  0.45,   1.0]
+                    },
+                    {
+                        "name":     "Img_NextHint",
+                        "position": [260.0, -445.0, 0.0],
+                        "scale":    [3.0, 3.0, 1.0]
+                    }
+                ],
+                "windowAnim": {
+                    "scale":       1.625,
+                    "baseScale":   1.3,
+                    "inDuration":  0.2,
+                    "center":      [0.0, 0.0, 0.0]
+                }
+            },
+            {
                 "title":         "敵の攻撃を防いでみよう！",
                 "titlePosition": [-250.0, -250.0, 0.0],
                 "body":          "or      で防御",

@@ -80,7 +80,7 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			auto* characterStatus = characterStateMachine->GetStatus();
 			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed());
-			characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
+			characterStateMachine->ApplyFacingDirection(characterStateMachine->GetMoveSpeedVector());
 		}
 
 
@@ -135,7 +135,9 @@ namespace app
 					if (forward.LengthSq() < 0.01f) {
 						forward = Vector3::Front;
 					}
-					attackBody_->SetPosition(characterStateMachine->transform.position + forward * (radius + radius) + Vector3(0.0f, radius, 0.0f));
+					// 噛みつき等の演出に合わせた前進オフセット（既定は0、エネミーごとに GetAttackLungeDistance で調整）
+					const float lunge = characterStateMachine->GetAttackLungeDistance(characterStateMachine->GetGhostBodyDelay());
+					attackBody_->SetPosition(characterStateMachine->transform.position + forward * (radius + radius + lunge) + Vector3(0.0f, radius, 0.0f));
 				}, false);
 
 			// ゴースト削除タイマー
@@ -156,10 +158,20 @@ namespace app
 
 			//攻撃中も移動を続けるための処理
 			//移動処理とY回転の更新
-			characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed());
-			characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(characterStateMachine->GetMoveSpeedVector());
+			// 敵ごとの制約でこれ以上前進できない場合は移動をスキップする（例：ガード中のプレイヤーへ寄り過ぎない）
+			// 「移動してから押し戻す」方式だと境界上で前進と補正が毎フレーム衝突し、向きが安定しなくなるため、
+			// 前進自体を止める方式にしている
+			if (!characterStateMachine->IsApproachBlocked())
+			{
+				characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), characterStatus->GetMoveSpeed());
+			}
+			characterStateMachine->ApplyFacingDirection(characterStateMachine->GetMoveSpeedVector());
 
 			//  //ゴーストの位置をスライムの現在位置に合わせて追従させる
+			// 噛みつき等の演出に合わせた前進オフセット（既定は0、エネミーごとに GetAttackLungeDistance で調整）
+			const float lunge = characterStateMachine->GetAttackLungeDistance(stateTimer_);
+			characterStateMachine->SetCurrentAttackLungeOffset(lunge);
+
 			if (attackBody_)
 			{
 				const float radius = characterStateMachine->GetStatus()->GetRadius();
@@ -168,7 +180,7 @@ namespace app
 				{
 					forward = Vector3::Front;
 				}
-				attackBody_->SetPosition(characterStateMachine->transform.position + forward * (radius + radius) + Vector3(0.0f, radius, 0.0f));
+				attackBody_->SetPosition(characterStateMachine->transform.position + forward * (radius + radius + lunge) + Vector3(0.0f, radius, 0.0f));
 			}
 
 			stateTimer_ += g_gameTime->GetFrameDeltaTime();
@@ -183,6 +195,7 @@ namespace app
 		{
 			attackScheduler_.reset(nullptr);
 			CharacterStateMachine* sm = owner_->As<CharacterStateMachine>();
+			sm->SetCurrentAttackLungeOffset(0.0f);
 			sm->OnExitAttack();
 
 			if (attackBody_ != nullptr)
@@ -345,7 +358,8 @@ namespace app
 		void ComboAttackCharacterState::Enter()
 		{
 			stateTimer_ = 0.0f;
-			isComboInput_ = false;
+			followUpBuffer_.Clear();
+			prevGuardHeld_ = false;
 			isFirstFrame_ = true;
 
 			const auto param = GetComboParam();
@@ -406,23 +420,33 @@ namespace app
 			stateTimer_ += g_gameTime->GetFrameDeltaTime();
 			attackScheduler_->Update(g_gameTime->GetFrameDeltaTime());
 
+			auto* csm = owner_->As<CharacterStateMachine>();
+			const bool guardHeld = csm->IsActionLB1() || csm->IsActionRB1();
+
 			// Enter と同じフレームは入力を無視
 			if (isFirstFrame_)
 			{
 				isFirstFrame_ = false;
+				// 突入前から押しっぱなしのガードで誤発火しないよう、現在の押下状態を基準にする
+				prevGuardHeld_ = guardHeld;
 			}
 			else
 			{
 				if (g_pad[0]->IsTrigger(enButtonB))
 				{
-					isComboInput_ = true;
+					followUpBuffer_.PushAttack();
 				}
+				// ガードは押した瞬間（エッジ）だけストックする
+				if (guardHeld && !prevGuardHeld_)
+				{
+					followUpBuffer_.PushGuard();
+				}
+				prevGuardHeld_ = guardHeld;
 			}
 
 			// ゴースト追従
 			if (attackBody_)
 			{
-				auto* csm = owner_->As<CharacterStateMachine>();
 				const float radius = csm->GetStatus()->GetRadius();
 				Vector3 forward = csm->GetMoveDirection();
 				// 常にキャラクターの向きを使用
@@ -455,12 +479,12 @@ namespace app
 		bool ComboAttackCharacterState::CanChangeState() const
 		{
 			const auto param = GetComboParam();
-			if (isComboInput_)
+			if (followUpBuffer_.HasPending())
 			{
-				// コンボ入力あり タイマーで早めに遷移許可
+				// 追撃 or ガードの入力あり タイマーで早めに遷移許可
 				return stateTimer_ >= param.comboWindowTime;
 			}
-			// コンボ入力なし アニメ終了で遷移許可
+			// ストックなし アニメ終了で遷移許可
 			auto* csm = owner_->As<CharacterStateMachine>();
 			return !csm->GetModelRender()->IsPlayingAnimation();
 		}
@@ -647,6 +671,11 @@ namespace app
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
+			isReflect_   = false;
+			landedTimer_ = 0.0f;
+			reflectBounceCount_ = 0;
+			modelYOffset_ = 0.0f;
+
 			// OnEnterKnockBack の中で isBlowBack_ がリセットされるため、先にフラグを取得する
 			bool isBlowBack = false;
 			if (auto* stone = owner_->As<StoneEventCharacterStateMachine>())
@@ -667,15 +696,28 @@ namespace app
 			{
 				int chargeLevel = 0;
 				hitStopDuration_ = 0.0f;
+				float customBlowBackSpeed = 0.0f;
 
 				if (auto* stone = owner_->As<StoneEventCharacterStateMachine>())
 				{
 					chargeLevel = stone->GetKnockBackChargeLevel();
-					if (const auto* p = app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>())
+					customBlowBackSpeed = stone->GetCustomBlowBackSpeed();
+					isReflect_ = customBlowBackSpeed > 0.0f;
+					if (isReflect_)
 					{
-						hitStopDuration_ = chargeLevel <= 0 ? p->hitStopDurationSmall
-						                 : chargeLevel == 1 ? p->hitStopDurationMedium
-						                                    : p->hitStopDurationLarge;
+						// 着地時の描画Yオフセット補間はこのステートが管理するため、
+						// EventCharacter側の自動補正（IsInPounceAttack()==falseの間だけ動く）を止めておく
+						stone->SetBouncingActive(true);
+					}
+					// ガード反射はヒットストップなし。溜め攻撃ヒット時のみヒットストップを付ける
+					if (customBlowBackSpeed <= 0.0f)
+					{
+						if (const auto* p = app::core::ParameterManager::Get().GetParameter<app::core::MasterStoneEventCharacterParameter>())
+						{
+							hitStopDuration_ = chargeLevel <= 0 ? p->hitStopDurationSmall
+							                 : chargeLevel == 1 ? p->hitStopDurationMedium
+							                                    : p->hitStopDurationLarge;
+						}
 					}
 				}
 				else if (auto* mushroom = owner_->As<MushroomEventCharacterStateMachine>())
@@ -692,12 +734,21 @@ namespace app
 				vibrationElapsed_ = 0.0f;
 				jumpPending_ = true;
 				isBlowBack_ = true;
-				blowBackSpeed_   = chargeLevel >= 3 ? BLOW_BACK_SPEED_LV3
-				                 : chargeLevel == 2 ? BLOW_BACK_SPEED_LV2
-				                                   : BLOW_BACK_SPEED_LV1;
-				blowBackJumpPow_ = chargeLevel >= 3 ? BLOW_BACK_JUMP_LV3
-				                 : chargeLevel == 2 ? BLOW_BACK_JUMP_LV2
-				                                   : BLOW_BACK_JUMP_LV1;
+				if (customBlowBackSpeed > 0.0f)
+				{
+					// ガード反射：とびかかりの勢いを吹き飛ばし速度に使う
+					blowBackSpeed_   = customBlowBackSpeed;
+					blowBackJumpPow_ = BLOW_BACK_JUMP_LV3 * 0.5f;
+				}
+				else
+				{
+					blowBackSpeed_   = chargeLevel >= 3 ? BLOW_BACK_SPEED_LV3
+					                 : chargeLevel == 2 ? BLOW_BACK_SPEED_LV2
+					                                   : BLOW_BACK_SPEED_LV1;
+					blowBackJumpPow_ = chargeLevel >= 3 ? BLOW_BACK_JUMP_LV3
+					                 : chargeLevel == 2 ? BLOW_BACK_JUMP_LV2
+					                                   : BLOW_BACK_JUMP_LV1;
+				}
 				chargeLevel_  = chargeLevel;
 				hitWall_      = false;
 				pendingDead_  = false;
@@ -705,7 +756,21 @@ namespace app
 				// ノックバック方向の XZ 平面 90° 回転（横揺れ）を振動軸にする
 				const Vector3 kbDir = characterStateMachine->GetMoveDirection();
 				vibrationAxis_ = Vector3(-kbDir.z, 0.0f, kbDir.x);
-				characterStateMachine->GetModelRender()->SetAnimationSpeed(0.0f);
+
+				if (hitStopDuration_ > 0.0f)
+				{
+					characterStateMachine->GetModelRender()->SetAnimationSpeed(0.0f);
+				}
+				else
+				{
+					// ヒットストップなし（ガード反射）：Updateの「ヒットストップ終了時」処理を経由しないため、ここで即座にジャンプを適用する。
+					// 反射はほぼ必ず空中（Leap中）で発生し、Jump()は接地中でないと無効なため、
+					// 接地判定を無視して強制的に上方向の速度を設定できるBounce()を使う
+					// （Jump()だと空中では無視され上方向の勢いが乗らず、着地の瞬間だけ効いて
+					//   不自然に長く吹き飛んで見える不具合があった）
+					jumpPending_ = false;
+					characterStateMachine->GetCharacterController()->Bounce(blowBackJumpPow_);
+				}
 			}
 
 			if (!isBlowBack)
@@ -778,10 +843,44 @@ namespace app
 				return;
 			}
 
-			// 着地したらブローバックの水平移動を終了（放物線着地）
+			// 着地した瞬間の処理
 			if (isBlowBack_ && isLanded)
 			{
-				isBlowBack_ = false;
+				// ガード反射：とびかかりの着地時と同様に、減衰させながら数回バウンドさせる
+				if (isReflect_ && reflectBounceCount_ < REFLECT_MAX_BOUNCE_COUNT)
+				{
+					reflectBounceCount_++;
+					blowBackSpeed_   *= REFLECT_BOUNCE_DECAY;
+					blowBackJumpPow_ *= REFLECT_BOUNCE_DECAY;
+					characterStateMachine->GetCharacterController()->Bounce(blowBackJumpPow_);
+					// isBlowBack_ は true のまま維持し、次フレームからも水平移動+落下を継続する
+				}
+				else
+				{
+					// バウンド終了：水平移動を終了（放物線着地）
+					// ガード反射は怯みモーションに見えないよう、着地時もアニメーションは切り替えない
+					isBlowBack_ = false;
+				}
+			}
+
+			// ガード反射：バウンドが終わりその場に留まっている間、とびかかりの着地硬直と同じ長さ復帰を待つ
+			if (isReflect_ && !isBlowBack_ && isLanded)
+			{
+				landedTimer_ += g_gameTime->GetFrameDeltaTime();
+			}
+
+			// ガード反射：とびかかり着地時と同様に-15へ滑らかに沈め、モデルが宙に浮いて見えないようにする
+			// （とびかかりのBounceフェーズと同じく接地状態に関係なく毎フレーム進め、
+			//   最初の着地から短時間で沈め切ってその後のバウンド中はずっと沈んだ状態を維持する）
+			if (isReflect_)
+			{
+				constexpr float TARGET_Y   = -15.0f;
+				constexpr float LERP_SPEED = 150.0f;
+				if (modelYOffset_ > TARGET_Y)
+				{
+					modelYOffset_ = (std::max)(modelYOffset_ - LERP_SPEED * g_gameTime->GetFrameDeltaTime(), TARGET_Y);
+					characterStateMachine->GetCharacter()->SetRenderPositionOffset(Vector3(0.0f, modelYOffset_, 0.0f));
+				}
 			}
 
 			if (isBlowBack_ || !isLanded)
@@ -805,8 +904,9 @@ namespace app
 					characterStateMachine->Move(g_gameTime->GetFrameDeltaTime(), currentSpeed);
 				}
 
-				// 壁衝突ダメージ（ブローバック中のみ、一度だけ）
-				if (isBlowBack_ && !hitWall_ && timer_ > 0.2f)
+				// 壁衝突ダメージ（溜め攻撃の衝撃波によるブローバック中のみ、一度だけ）
+				// ガード反射（とびかかり攻撃を防いで跳ね返っている最中）はこの即死判定の対象外にする
+				if (isBlowBack_ && !isReflect_ && !hitWall_ && timer_ > 0.2f)
 				{
 					const float radius = characterStateMachine->GetStatus()->GetRadius();
 					const Vector3 dir  = characterStateMachine->GetMoveDirection();
@@ -845,7 +945,22 @@ namespace app
 		void KnockBackCharacterState::Exit()
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
-			characterStateMachine->GetCharacter()->SetRenderPositionOffset(Vector3::Zero);
+
+			if (isReflect_)
+			{
+				// 描画Yオフセットは即座に0へ戻さない。EventCharacter側の自動補正
+				// （歩き出しながら徐々に地面から浮上する処理）に引き継ぐことで
+				// とびかかり着地後と同じ滑らかな復帰にする
+				if (auto* stone = owner_->As<StoneEventCharacterStateMachine>())
+				{
+					stone->SetBouncingActive(false);
+				}
+			}
+			else
+			{
+				characterStateMachine->GetCharacter()->SetRenderPositionOffset(Vector3::Zero);
+			}
+
 			characterStateMachine->OnExitKnockBack();
 		}
 
@@ -863,6 +978,12 @@ namespace app
 			if (timer_ > 0.1f)
 			{
 				isLanded = characterStateMachine->GetCharacterController()->IsOnGround();
+			}
+
+			// ガード反射：着地後、とびかかりの着地硬直と同じ時間その場に留まらせてから復帰する
+			if (isReflect_)
+			{
+				return isLanded && landedTimer_ >= REFLECT_LANDING_RECOVERY_DURATION;
 			}
 
 			return ((isAnimFinished && isLanded) || timer_ > 2.0f);
@@ -972,6 +1093,9 @@ namespace app
 			app::camera::CameraManager::Get().SetScreenEffectActive(true);
 			chargeAttackPhase_ = ChargeAttackPhase::Start;
 			chargeTimer_ = 0.0f;
+			followUpBuffer_.Clear();
+			prevGuardHeld_ = false;
+			isFirstFrame_ = true;
 			for (int i = 0; i < 3; i++)
 			{
 				chargeLevelEffectPlayed_[i] = false;
@@ -999,6 +1123,28 @@ namespace app
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 
 			app::camera::CameraManager::Get().SetScreenEffectFocusWorldPos(owner_->transform.position);
+
+			// 溜め攻撃中の追撃・ガード入力をストック（Enterと同じフレームは無視）
+			const bool guardHeld = characterStateMachine->IsActionLB1() || characterStateMachine->IsActionRB1();
+			if (isFirstFrame_)
+			{
+				isFirstFrame_ = false;
+				// 突入前から押しっぱなしのガードで誤発火しないよう、現在の押下状態を基準にする
+				prevGuardHeld_ = guardHeld;
+			}
+			else
+			{
+				if (characterStateMachine->IsActionB())
+				{
+					followUpBuffer_.PushAttack();
+				}
+				// ガードは押した瞬間（エッジ）だけストックする
+				if (guardHeld && !prevGuardHeld_)
+				{
+					followUpBuffer_.PushGuard();
+				}
+				prevGuardHeld_ = guardHeld;
+			}
 
 			switch (chargeAttackPhase_)
 			{
@@ -1072,6 +1218,9 @@ namespace app
 						}
 					}
 					// 地響き床デカール
+#ifdef K2_DEBUG
+					app::actor::ChargeShockwaveDebugStats::attemptCount++;
+#endif
 					if (app::effect::SwordDecalManager::IsAvailable())
 					{
 						Vector3 fwd = Vector3::Front;
@@ -1087,6 +1236,9 @@ namespace app
 						if (PhysicsWorld::Get().Raycast(floorRayStart, floorRayEnd, floorHit,
 							ALL_COLLISION_ATTRIBUTE_MASK, noCharFilter))
 						{
+#ifdef K2_DEBUG
+							app::actor::ChargeShockwaveDebugStats::raycastHitCount++;
+#endif
 							// XZはプレイヤー前方、YはレイキャストのY（床面の高さ）
 							Vector3 decalPos = characterStateMachine->transform.position + fwd * (radius * 5.0f);
 							decalPos.y = floorHit.point.y;
@@ -1550,7 +1702,7 @@ namespace app
 			auto speedVec = characterStateMachine->GetMoveSpeedVector();
 			if (speedVec.Length() > 0.01f)
 			{
-				characterStateMachine->transform.rotation.SetRotationYFromDirectionXZ(speedVec);
+				characterStateMachine->ApplyFacingDirection(speedVec);
 			}
 
 			timer_ += g_gameTime->GetFrameDeltaTime();
@@ -1774,6 +1926,7 @@ namespace app
 			// ※ 前回のバウンドからの高さ戻り途中でも即座にリセットしない
 			//   → Charge/Leap 中も auto-lerp が動き続けて高さが戻る
 			sm->SetBouncingActive(false);
+			sm->SetAerialPounceAttackActive(false);
 
 			// 溜め時間は1.5秒固定
 			chargeDuration_ = 1.5f;
@@ -1872,10 +2025,27 @@ namespace app
 					sm->GetCharacterController()->SetGravity(leapGravity);
 					isGravityModified_ = true;
 
+					// 高速で突進するため、他キャラクター（他のエネミー等）を壁として
+					// 押し合ってしまわないよう、着地するまで他キャラクターとの物理衝突を無視する
+					// （回避ステートのすり抜けと同様の仕組み。AvoidanceCharacterState::Enter参照）
+					sm->GetCharacterController()->SetIgnoreCharacters(true);
+
 					sm->SetMoveDirection(leapDirection_);
 					sm->Jump(LEAP_JUMP_POWER);
 					sm->GetModelRender()->PlayAnimation(
 						static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack), 0.1f);
+
+					// 空中（Leap中）の攻撃判定を生成。着地判定と同じ半径で、飛行中は毎フレーム追従させる
+					aerialAttackBody_ = std::make_unique<app::collision::GhostBody>();
+					aerialAttackBody_->CreateSphere(
+						sm->GetCharacter(),
+						sm->GetCharacterID(),
+						40.0f,
+						app::collision::ghost::CollisionAttribute::Enemy,
+						app::collision::ghost::CollisionAttributeMask::All
+					);
+					aerialAttackBody_->SetPosition(sm->transform.position + Vector3(0.0f, 15.0f, 0.0f));
+					sm->SetAerialPounceAttackActive(true);
 
 					// とびかかり開始エフェクト
 					if (EffectManager::IsAvailable())
@@ -1901,19 +2071,44 @@ namespace app
 			{
 				phaseTimer_ += dt;
 
+				// 空中判定を毎フレーム本体に追従させる
+				if (aerialAttackBody_)
+				{
+					aerialAttackBody_->SetPosition(sm->transform.position + Vector3(0.0f, 15.0f, 0.0f));
+				}
+
 				// 跳躍開始時に固定したターゲット位置との水平距離で判定
 				Vector3 toTarget = leapTargetPos_ - sm->transform.position;
 				toTarget.y = 0.0f;
 				const float horizontalDist = toTarget.Length();
 
-				if (horizontalDist > POUNCE_DESCEND_DIST)
+				// ガード中は防御球（kGuardBlockRadius）分だけ相手に寄れないため、
+				// 通常の POUNCE_DESCEND_DIST のままだと着地判定に一生入れず、
+				// 攻撃判定・ガード成功エフェクト・反射のいずれも発生しなくなる。
+				// ※ kGuardModelMargin(30) まで足すと着地時の攻撃判定(半径40)が
+				//   プレイヤー本体まで届かない距離で着地してしまうため、
+				//   実際に押し返しで収束する距離(kGuardBlockRadius)ぎりぎりの
+				//   小さいバッファのみ加える
+				float descendDist = POUNCE_DESCEND_DIST;
+				if (auto* stoneChar = dynamic_cast<app::actor::StoneEventCharacter*>(sm->GetCharacter()))
+				{
+					if (auto* battleCharacter = stoneChar->GetBattleCharacter())
+					{
+						if (battleCharacter->GetStateMachine()->IsGuarding())
+						{
+							descendDist = app::actor::BattleCharacterStateMachine::kGuardBlockRadius + 5.0f;
+						}
+					}
+				}
+
+				if (horizontalDist > descendDist)
 				{
 					// 一定距離より遠い：水平方向へ高速直進
 					sm->Move(dt, LEAP_SPEED);
 					const Vector3& vel = sm->GetMoveSpeedVector();
 					if (vel.LengthSq() > 0.001f)
 					{
-						sm->transform.rotation.SetRotationYFromDirectionXZ(vel);
+						sm->ApplyFacingDirection(vel);
 					}
 				}
 				else
@@ -1945,16 +2140,10 @@ namespace app
 						isGravityModified_ = false;
 					}
 
-					// 着地時の広範囲攻撃判定
-					attackBody_ = std::make_unique<app::collision::GhostBody>();
-					attackBody_->CreateSphere(
-						sm->GetCharacter(),
-						sm->GetCharacterID(),
-						40.0f,
-						app::collision::ghost::CollisionAttribute::Enemy,
-						app::collision::ghost::CollisionAttributeMask::All
-					);
-					attackBody_->SetPosition(sm->transform.position + Vector3(0.0f, 15.0f, 0.0f));
+					// 着地したので空中判定は破棄する（着地専用の判定は生成しない。
+					// 空中判定が着地直前まで追従しているため、着地時のヒットもそちらでカバー済み）
+					aerialAttackBody_.reset();
+					sm->SetAerialPounceAttackActive(false);
 
 					// 着地エフェクト
 					if (EffectManager::IsAvailable())
@@ -1966,13 +2155,6 @@ namespace app
 							Vector3(1.5f, 1.5f, 1.5f)
 						);
 					}
-
-					// 0.3秒後に攻撃判定を削除
-					landingScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
-					landingScheduler_->AddTimer(0.3f, [this]()
-						{
-							attackBody_.reset();
-						}, false);
 
 					// バウンドフェーズへ移行：着地を1フレーム視覚表示してからジャンプ
 					// （同フレームでJumpするとExecute()が即座に上昇処理を行い
@@ -1992,10 +2174,6 @@ namespace app
 			case Phase::Bounce:
 			{
 				phaseTimer_ += dt;
-				if (landingScheduler_)
-				{
-					landingScheduler_->Update(dt);
-				}
 
 				// 着地の瞬間から -15 へ滑らかに補間して「カクッ」を防ぐ
 				// 補間完了後に bounceJumpPending_ をセットし、モデルが地面に接してから跳ねる
@@ -2052,6 +2230,9 @@ namespace app
 						// バウンド完了 → 着地硬直へ
 						phase_ = Phase::Landing;
 						phaseTimer_ = 0.0f;
+
+						// 高速移動が終わったので他キャラクターとの物理衝突を元に戻す
+						sm->GetCharacterController()->SetIgnoreCharacters(false);
 					}
 				}
 				break;
@@ -2060,10 +2241,6 @@ namespace app
 			case Phase::Landing:
 			{
 				phaseTimer_ += dt;
-				if (landingScheduler_)
-				{
-					landingScheduler_->Update(dt);
-				}
 				// 着地硬直中はオフセットを維持（移動開始後に StoneEventCharacter 側で補間）
 				break;
 			}
@@ -2087,10 +2264,13 @@ namespace app
 				chargeEffectHandle_ = INVALID_EFFECT_HANDLE;
 			}
 
-			attackBody_.reset();
-			landingScheduler_.reset(nullptr);
+			aerialAttackBody_.reset();
 
 			auto* sm = owner_->As<StoneEventCharacterStateMachine>();
+			sm->SetAerialPounceAttackActive(false);
+
+			// Leap/Bounce中に中断された場合に備えて、他キャラクターとの物理衝突を必ず元に戻す
+			sm->GetCharacterController()->SetIgnoreCharacters(false);
 
 			// Landing前に中断された場合も重力を必ず復元する
 			if (isGravityModified_)

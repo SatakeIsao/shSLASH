@@ -31,6 +31,19 @@ namespace app
 		}
 
 
+		EnemyAttackPoint::AttackPoint* EnemyAttackPointManager::AcquireWaitPoint(Vector3 position, Character* enemy)
+		{
+			return attackPoint_.AcquireWaitPoint(position, enemy);
+		}
+
+
+		void EnemyAttackPointManager::ReleaseWaitPoint(EnemyAttackPoint::AttackPoint* waitPoint, Character* enemy)
+		{
+			if (waitPoint == nullptr) { return; }
+			attackPoint_.ReleaseWaitPoint(waitPoint->number_, enemy);
+		}
+
+
 		bool EnemyAttackPointManager::IsUseable() const
 		{
 			return attackPoint_.IsUsableAttackPoint();

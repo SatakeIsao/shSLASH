@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Allocator.h
  * メモリ確保・解放の処理群
  */
@@ -170,7 +170,7 @@ namespace app
 				if (!ptr) return;
 				std::lock_guard<std::mutex> lock(mutex_);
 
-				BlockHeader* header = reinterpret_cast<BlockHeader*>(static_cast<char*>(ptr) - HEADER_SIZE);
+ 				BlockHeader* header = reinterpret_cast<BlockHeader*>(static_cast<char*>(ptr) - HEADER_SIZE);
 #if defined(APP_ENABLE_DEBUG_ALLOCATOR)
 				K2_ASSERT(header->magic == BlockHeader::MAGIC, "メモリ破損検出\n");
 				K2_ASSERT(header->isUsed == true, "二重解放の可能性があります\n");

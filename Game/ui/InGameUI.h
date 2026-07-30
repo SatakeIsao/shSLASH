@@ -102,6 +102,15 @@ namespace app
 			CircularGaugeRender bgCircle_;
 			SpriteRender icon_;
 			std::unique_ptr<app::ui::Layout> layout_;
+			/** 防御中、プレイヤーモデルの横に追従表示するガードゲージ */
+			std::unique_ptr<app::ui::Layout> guardLayout_;
+			/** guardGaugeLayout.jsonのpositionをスクリーン座標上のオフセットとして保存（追従位置の微調整用） */
+			Vector2 guardFrameOffset_ = Vector2::Zero;
+			Vector2 guardFrameWhiteOffset_ = Vector2::Zero;
+			Vector2 guardGaugeOffset_ = Vector2::Zero;
+			Vector2 guardIconOffset_ = Vector2::Zero;
+			/** 防御ゲージの出現度合い（0=プレイヤー位置で極小、1=定位置で等倍）。出現・消滅で速度が異なるため秒数ではなく0~1の正規化値で保持する */
+			float guardGaugeRevealTimer_ = 0.0f;
 			LevelUpUIObject* levelUpUIObject_ = nullptr;
 			app::actor::BattleCharacter* player_ = nullptr;
 			

@@ -79,6 +79,8 @@ namespace app
 #ifdef K2_DEBUG
 		int StonePounceDebugStats::triggeredCount = 0;
 		int StonePounceDebugStats::blockedByCameraCount = 0;
+		int ChargeShockwaveDebugStats::attemptCount = 0;
+		int ChargeShockwaveDebugStats::raycastHitCount = 0;
 #endif
 
 
@@ -211,8 +213,48 @@ namespace app
 		}
 
 
+		Vector3 BattleCharacterStateMachine::GetGuardBlockCenter()
+		{
+			// transform.position は足元基準のため、身長分持ち上げて体の中心付近に合わせる
+			// （CharacterController::Execute と同じ「足元 + height*0.5 + radius」の考え方）
+			Vector3 center = transform.position;
+			center.y += GetStatus()->GetHeight() * 0.5f + GetStatus()->GetRadius();
+			return center;
+		}
+
+
 		void BattleCharacterStateMachine::Update()
 		{
+			// 防御中の押し返し球判定をプレイヤーに追従させる
+			if (guardBlockBody_)
+			{
+				guardBlockBody_->SetPosition(GetGuardBlockCenter());
+			}
+
+			// 防御継続時間を計測し、制限時間に達したらロック（ボタンを離すまで再ガード不可）
+			// 防御していない間は、減った分と同じペースで徐々に回復させる
+			if (IsGuarding())
+			{
+				guardHoldTimer_ += g_gameTime->GetFrameDeltaTime();
+				if (guardHoldTimer_ >= kGuardTimeLimit)
+				{
+					guardHoldTimer_ = kGuardTimeLimit;
+					isGuardLocked_ = true;
+				}
+			}
+			else if (guardHoldTimer_ > 0.0f)
+			{
+				guardHoldTimer_ -= g_gameTime->GetFrameDeltaTime();
+				if (guardHoldTimer_ < 0.0f)
+				{
+					guardHoldTimer_ = 0.0f;
+				}
+			}
+			if (isGuardLocked_ && !IsActionLB1() && !IsActionRB1())
+			{
+				isGuardLocked_ = false;
+			}
+
 			// ヒットストップ中は入力・ステート遷移をスキップしアニメーションを停止
 			if (hitStopTimer_ > 0.0f)
 			{
@@ -280,11 +322,40 @@ namespace app
 		{
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::Guard), 0.1f);
 			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::Defence));
+
+			// 防御中エフェクトを再生（防御している間だけ表示する追従エフェクト）
+			if (EffectManager::IsAvailable() && guardEffectHandle_ == INVALID_EFFECT_HANDLE)
+			{
+				guardEffectHandle_ = EffectManager::Get().PlayEffectFollow(
+					enEffectKind_PlayerGuard,
+					&transform.position,
+					Quaternion::Identity,
+					Vector3::One
+				);
+			}
+
+			// 防御エフェクトの球サイズに合わせた押し返し判定を生成
+			if (!guardBlockBody_)
+			{
+				guardBlockBody_ = std::make_unique<app::collision::GhostBody>();
+				guardBlockBody_->CreateSphere(
+					GetCharacter(), GetCharacterID(), kGuardBlockRadius,
+					app::collision::ghost::CollisionAttribute::Player,
+					app::collision::ghost::CollisionAttributeMask::All);
+				guardBlockBody_->SetPosition(GetGuardBlockCenter());
+			}
 		}
 
 
 		void BattleCharacterStateMachine::OnExitGuard()
 		{
+			if (EffectManager::IsAvailable() && guardEffectHandle_ != INVALID_EFFECT_HANDLE)
+			{
+				EffectManager::Get().StopEffect(guardEffectHandle_);
+				guardEffectHandle_ = INVALID_EFFECT_HANDLE;
+			}
+
+			guardBlockBody_.reset();
 		}
 
 
@@ -616,20 +687,34 @@ namespace app
 					}
 				}
 			}
-			// ジャンプ
+			// ジャンプ（溜め攻撃）
 			{
 				if (IsActionA()) {
 					RequestChangeState(ChargeAttackCharacterState::ID());
 					//isPressA_ = false;
 					return;
 				}
-				// パンチ中は他の状態に遷移しない
+				// 溜め攻撃中は他の状態に遷移しない
 				if (IsEqualCurrentState(ChargeAttackCharacterState::ID())) {
 					if (!CanChangeState()) {
 						if (IsTriggerY()) {
 							isAvoidanceCancelFromAttack_ = true;
 							RequestChangeState(AvoidanceCharacterState::ID());
 						}
+						return;
+					}
+					// 溜め攻撃終了：ストックされた入力（攻撃 or ガード）があれば優先して遷移
+					auto* state = static_cast<ChargeAttackCharacterState*>(GetCurrentState());
+					const auto followUp = state->GetBufferedFollowUp();
+					if (followUp == AttackInputStock::Action::Guard && !isGuardLocked_)
+					{
+						RequestChangeState(GuardCharacterState::ID());
+						return;
+					}
+					if (followUp == AttackInputStock::Action::Attack && slashFirstCooldownTimer_ <= 0.0f)
+					{
+						RequestChangeState(SlashFirstCharacterState::ID());
+						isSlashEffect_ = true;
 						return;
 					}
 				}
@@ -659,43 +744,60 @@ namespace app
 					}
 				}
 
-				// PunchState内でコンボ入力済みなら PunchSecond へ
+				// SlashFirst中にストックされた入力（攻撃 or ガード）で分岐
 				if (IsEqualCurrentState(SlashFirstCharacterState::ID()))
 				{
+					if (!CanChangeState()) {
+						return;
+					}
 					auto* state = static_cast<SlashFirstCharacterState*>(GetCurrentState());
-					if (state->IsComboInput() && CanChangeState())
+					const auto followUp = state->GetBufferedFollowUp();
+					if (followUp == AttackInputStock::Action::Guard && !isGuardLocked_)
+					{
+						RequestChangeState(GuardCharacterState::ID());
+						return;
+					}
+					if (followUp == AttackInputStock::Action::Attack)
 					{
 						RequestChangeState(SlashSecondCharacterState::ID());
 						isSlashEffect_ = true;
-						return;
-					}
-					if (!CanChangeState()) {
 						return;
 					}
 					// コンボなしで1段目終了 → 再使用クールダウン開始
 					slashFirstCooldownTimer_ = 0.8f;
 				}
 
-				// PunchState内でコンボ入力済みなら PunchSecond へ
+				// SlashSecond中にストックされた入力（攻撃 or ガード）で分岐
 				if (IsEqualCurrentState(SlashSecondCharacterState::ID()))
 				{
+					if (!CanChangeState()) {
+						return;
+					}
 					auto* state = static_cast<SlashSecondCharacterState*>(GetCurrentState());
-					if (state->IsComboInput() && CanChangeState())
+					const auto followUp = state->GetBufferedFollowUp();
+					if (followUp == AttackInputStock::Action::Guard && !isGuardLocked_)
+					{
+						RequestChangeState(GuardCharacterState::ID());
+						return;
+					}
+					if (followUp == AttackInputStock::Action::Attack)
 					{
 						RequestChangeState(SlashThirdCharacterState::ID());
 						isSlashEffect_ = true;
 						return;
 					}
+				}
+
+				// SlashThird中にストックされたガード入力で分岐（4段目は存在しないため攻撃入力は何もしない）
+				if (IsEqualCurrentState(SlashThirdCharacterState::ID()))
+				{
 					if (!CanChangeState()) {
 						return;
 					}
-				}
-
-				// PunchSecond中はアニメーション終了まで何もさせない
-				if (IsEqualCurrentState(SlashSecondCharacterState::ID())
-					|| IsEqualCurrentState(SlashThirdCharacterState::ID()))
-				{
-					if (!CanChangeState()) {
+					auto* state = static_cast<SlashThirdCharacterState*>(GetCurrentState());
+					if (state->GetBufferedFollowUp() == AttackInputStock::Action::Guard && !isGuardLocked_)
+					{
+						RequestChangeState(GuardCharacterState::ID());
 						return;
 					}
 				}
@@ -711,8 +813,9 @@ namespace app
 			}
 			// 防御
 			{
-				if (IsActionLB1()
+				if ((IsActionLB1()
 					|| IsActionRB1())
+					&& !isGuardLocked_)
 				{
 					RequestChangeState(GuardCharacterState::ID());
 					return;
@@ -1033,6 +1136,9 @@ namespace app
 
 		void StoneEventCharacterStateMachine::OnEnterAttack()
 		{
+			// 攻撃を始めるので、確保していた待機ポイントがあれば解放する（他の敵が使えるようにする）
+			ReleaseCachedWaitPoint();
+
 			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::Attack));
 
 			// 攻撃方向を取得（ワールド空間）
@@ -1104,7 +1210,9 @@ namespace app
 
 				if (manager)
 				{
-					auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+					// 攻撃終了直後は新しく待機ポイントを選び直し、以降は同じ点を使い回す
+					ReleaseCachedWaitPoint();
+					auto* waitPoint = GetOrPickWaitPoint(manager);
 					if (waitPoint != nullptr)
 					{
 						Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1115,6 +1223,134 @@ namespace app
 			}
 
 			attackCoolTimer_ = kAttackCoolTime;
+		}
+
+
+		float StoneEventCharacterStateMachine::GetAttackLungeDistance(float stateTimer) const
+		{
+			// 噛みつき攻撃：顔を突き出す動きに合わせてゴーストボディを前進させる
+			// 溜め(〜EXTEND_START) → 突き出し(EXTEND_START〜HOLD_START) → 噛みつき保持(〜HOLD_END) → 引き戻し(〜RETRACT_END)
+			constexpr float EXTEND_START  = 0.35f; // GetGhostBodyDelay() と同じ、顔が動き始めるタイミング
+			constexpr float HOLD_START    = 0.55f;
+			constexpr float HOLD_END      = 0.75f;
+			constexpr float RETRACT_END   = 1.0f;
+			constexpr float PEAK_DISTANCE = 35.0f;
+
+			if (stateTimer < EXTEND_START || stateTimer >= RETRACT_END)
+			{
+				return 0.0f;
+			}
+			if (stateTimer < HOLD_START)
+			{
+				const float t = (stateTimer - EXTEND_START) / (HOLD_START - EXTEND_START);
+				return PEAK_DISTANCE * t;
+			}
+			if (stateTimer < HOLD_END)
+			{
+				return PEAK_DISTANCE;
+			}
+
+			const float t = (stateTimer - HOLD_END) / (RETRACT_END - HOLD_END);
+			return PEAK_DISTANCE * (1.0f - t);
+		}
+
+
+		bool StoneEventCharacterStateMachine::IsApproachBlocked()
+		{
+			// ガード中のプレイヤーへ、防御球+モデル分（kGuardBlockRadius + kGuardModelMargin）より
+			// 内側へは前進させない（顔を突き出す噛みつきモーションが防御エフェクトへめり込むのを防ぐ）。
+			// 「移動してから押し戻す」方式だと境界上で前進と補正が毎フレーム衝突して向きが暴れるため、
+			// 前進自体を止める方式にしている
+			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+			if (!stone) return false;
+
+			auto* battleCharacter = stone->GetBattleCharacter();
+			if (!battleCharacter) return false;
+
+			auto* playerStateMachine = battleCharacter->GetStateMachine();
+			if (!playerStateMachine || !playerStateMachine->IsGuarding()) return false;
+
+			const Vector3& playerPos = battleCharacter->transform.position;
+			Vector3 toEnemy = transform.position - playerPos;
+			toEnemy.y = 0.0f;
+			const float dist = toEnemy.Length();
+
+			constexpr float minDist = app::actor::BattleCharacterStateMachine::kGuardBlockRadius + kGuardModelMargin;
+			return dist <= minDist;
+		}
+
+
+		void StoneEventCharacterStateMachine::ApplyFacingDirection(const Vector3& direction)
+		{
+			if (direction.LengthSq() < 0.0001f) { return; }
+
+			Quaternion target;
+			target.SetRotationYFromDirectionXZ(direction);
+
+			// 現在の向きと目標の向きの角度差を求め、1フレームあたりの最大回転量でクランプする
+			float dot = transform.rotation.x * target.x + transform.rotation.y * target.y
+				+ transform.rotation.z * target.z + transform.rotation.w * target.w;
+			if (dot > 1.0f) { dot = 1.0f; }
+			else if (dot < -1.0f) { dot = -1.0f; }
+			// 符号反転（等価な逆クォータニオン）による見かけ上の180°超えを避けるため絶対値を取る
+			const float angle = 2.0f * acosf(fabsf(dot));
+
+			const float maxStep = Math::DegToRad(kMaxTurnDegPerSec) * g_gameTime->GetFrameDeltaTime();
+			if (angle <= maxStep)
+			{
+				transform.rotation = target;
+			}
+			else
+			{
+				const float t = maxStep / angle;
+				transform.rotation.Slerp(t, transform.rotation, target);
+			}
+		}
+
+
+		app::actor::EnemyAttackPoint::AttackPoint* StoneEventCharacterStateMachine::GetOrPickWaitPoint(app::actor::EnemyAttackPointManager* manager)
+		{
+			if (!manager) { return nullptr; }
+
+			if (kUseWaitPointReservation)
+			{
+				auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+				if (!stone) { return nullptr; }
+
+				if (stone->GetCurrentWaitPoint() == nullptr)
+				{
+					stone->SetCurrentWaitPoint(manager->AcquireWaitPoint(transform.position, stone));
+				}
+				return stone->GetCurrentWaitPoint();
+			}
+			else
+			{
+				if (cachedWaitPoint_ == nullptr)
+				{
+					cachedWaitPoint_ = manager->GetNearWaitPoint(transform.position);
+				}
+				return cachedWaitPoint_;
+			}
+		}
+
+
+		void StoneEventCharacterStateMachine::ReleaseCachedWaitPoint()
+		{
+			if (kUseWaitPointReservation)
+			{
+				auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
+				if (!stone || stone->GetCurrentWaitPoint() == nullptr) { return; }
+
+				if (auto* manager = stone->GetAttackPointManager())
+				{
+					manager->ReleaseWaitPoint(stone->GetCurrentWaitPoint(), stone);
+				}
+				stone->SetCurrentWaitPoint(nullptr);
+			}
+			else
+			{
+				cachedWaitPoint_ = nullptr;
+			}
 		}
 
 
@@ -1156,19 +1392,28 @@ namespace app
 
 		void StoneEventCharacterStateMachine::OnEnterKnockBack()
 		{
-			GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
+			// ガード反射時は「怯み」モーションだと弾き返された勢いに見えないため、
+			// アニメーションは切り替えずそのまま（Leap中の姿勢を保つ）にする
+			if (GetCustomBlowBackSpeed() <= 0.0f)
+			{
+				GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::StoneAnimationKind::KnockBack));
+			}
 			SetMoveDirection(knockBackDirection_);
 			// Jump は KnockBackCharacterState のヒットストップ終了後に呼ばれる
 			isBlowBack_ = false;
-			// エフェクト再生
-			EffectManager::Get().PlayEffectFollow(
-				enEffectKind_StoneKnockBack,
-				&transform.position,
-				Quaternion::Identity,
-				Vector3::One
-			);
-
-			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
+			// ガードで防がれた時は被弾エフェクト・被弾SEを出さない（ガード成功エフェクト/SEのみ再生する）
+			if (!isGuardBlockedKnockBack_)
+			{
+				// エフェクト再生
+				EffectManager::Get().PlayEffectFollow(
+					enEffectKind_StoneKnockBack,
+					&transform.position,
+					Quaternion::Identity,
+					Vector3::One
+				);
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackStone), false);
+			}
+			isGuardBlockedKnockBack_ = false;
 
 			auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
 			if (stone)
@@ -1190,6 +1435,9 @@ namespace app
 
 		void StoneEventCharacterStateMachine::OnEnterPounceAttack()
 		{
+			// とびかかりを始めるので、確保していた待機ポイントがあれば解放する（他の敵が使えるようにする）
+			ReleaseCachedWaitPoint();
+
 			// isInPounceAttack_ は Bounce フェーズ開始時に SetBouncingActive(true) でセット
 			// Charge/Leap 中は false のまま（auto-lerp による高さ戻しを継続させる）
 
@@ -1223,7 +1471,9 @@ namespace app
 				}
 				if (manager)
 				{
-					auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+					// 攻撃終了直後は新しく待機ポイントを選び直し、以降は同じ点を使い回す
+					ReleaseCachedWaitPoint();
+					auto* waitPoint = GetOrPickWaitPoint(manager);
 					if (waitPoint != nullptr)
 					{
 						Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1342,7 +1592,7 @@ namespace app
 				auto* stone = dynamic_cast<app::actor::StoneEventCharacter*>(GetCharacter());
 				if (stone && stone->GetAttackPointManager())
 				{
-					auto* waitPoint = stone->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+					auto* waitPoint = GetOrPickWaitPoint(stone->GetAttackPointManager());
 					if (waitPoint != nullptr)
 					{
 						Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1359,6 +1609,8 @@ namespace app
 						else
 						{
 							// 待機ポイントに到達 → 通常の追跡状態に戻す
+							// （待機ポイントの予約はここでは解放しない。居座っている間、他の敵に
+							//   同じ点を奪われないようにするため。攻撃/とびかかり開始時に解放される）
 							isReturningToWait_ = false;
 							SetMoveDirection(Vector3::Zero);
 							RequestChangeState(IdleCharacterState::ID());
@@ -1388,7 +1640,7 @@ namespace app
 					const bool canAttack = stone->GetAttackPointManager()->IsUseable() && attackCoolTimer_ <= 0.0f;
 					if (!canAttack)
 					{
-						auto* waitPoint = stone->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+						auto* waitPoint = GetOrPickWaitPoint(stone->GetAttackPointManager());
 						if (waitPoint != nullptr)
 						{
 							Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1406,7 +1658,15 @@ namespace app
 					toPlayer.y = 0.0f;
 					float distance = toPlayer.Length();
 
-					if (distance <= 40.0f)
+					// ガード中はガード球+モデル分で寄れる距離が伸びているため、
+					// その分だけ攻撃開始距離も伸ばして棒立ちにならないようにする
+					auto* battleCharacter = stone->GetBattleCharacter();
+					const bool isPlayerGuarding = battleCharacter && battleCharacter->GetStateMachine()->IsGuarding();
+					const float attackTriggerDistance = isPlayerGuarding
+						? (app::actor::BattleCharacterStateMachine::kGuardBlockRadius + kGuardModelMargin + 5.0f)
+						: 40.0f;
+
+					if (distance <= attackTriggerDistance)
 					{
 						// 近距離：通常の近接攻撃
 						auto* manager = stone->GetAttackPointManager();
@@ -1419,12 +1679,13 @@ namespace app
 						const bool isMyTurn = manager->ConsumeAttackToken(stone);
 						if (isMyTurn && manager->IsUseable())
 						{
+							// 待機ポイントの解放は OnEnterAttack() で行う
 							SetMoveDirection(chaseDirection_);
 							RequestChangeState(AttackCharacterState::ID());
 						}
 						else
 						{
-							auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+							auto* waitPoint = GetOrPickWaitPoint(manager);
 							if (waitPoint != nullptr)
 							{
 								Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1468,6 +1729,7 @@ namespace app
 
 						if (canPounce)
 						{
+							// 待機ポイントの解放は OnEnterPounceAttack() で行う
 							SetMoveDirection(chaseDirection_);
 							RequestChangeState(StonePounceAttackState::ID());
 						}
@@ -1476,7 +1738,7 @@ namespace app
 							auto* manager = stone->GetAttackPointManager();
 							if (manager)
 							{
-								auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+								auto* waitPoint = GetOrPickWaitPoint(manager);
 								if (waitPoint != nullptr)
 								{
 									Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1496,13 +1758,14 @@ namespace app
 
 							if (!canAttack)
 							{
-								auto* waitPoint = stone->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+								auto* waitPoint = GetOrPickWaitPoint(stone->GetAttackPointManager());
 								if (waitPoint != nullptr)
 								{
 									Vector3 toWait = waitPoint->position_ - transform.position;
 									const float distanceToWait = toWait.Length();
 									if (distanceToWait < 30.0f)
 									{
+										// 待機ポイントに到達 → 予約は解放せず居座る（攻撃/とびかかり開始時に解放）
 										SetMoveDirection(toWait);
 										RequestChangeState(IdleCharacterState::ID());
 										aiTimer_ = 0.0f;
@@ -1516,6 +1779,7 @@ namespace app
 								return;
 							}
 						}
+						ReleaseCachedWaitPoint();
 						SetMoveDirection(chaseDirection_);
 						RequestChangeState(RunCharacterState::ID());
 						aiTimer_ = 5.0f;
@@ -1686,6 +1950,9 @@ namespace app
 					);
 				}, false);
 
+			// 攻撃を始めるので、確保していた待機ポイントがあれば解放する（他の敵が使えるようにする）
+			ReleaseCachedWaitPoint();
+
 			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
 			if (mushroom && mushroom->GetAttackPointManager())
 			{
@@ -1714,6 +1981,52 @@ namespace app
 			}
 
 			attackCoolTimer_ = kAttackCoolTime;
+		}
+
+
+		app::actor::EnemyAttackPoint::AttackPoint* MushroomEventCharacterStateMachine::GetOrPickWaitPoint(app::actor::EnemyAttackPointManager* manager)
+		{
+			if (!manager) { return nullptr; }
+
+			if (kUseWaitPointReservation)
+			{
+				auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+				if (!mushroom) { return nullptr; }
+
+				if (mushroom->GetCurrentWaitPoint() == nullptr)
+				{
+					mushroom->SetCurrentWaitPoint(manager->AcquireWaitPoint(transform.position, mushroom));
+				}
+				return mushroom->GetCurrentWaitPoint();
+			}
+			else
+			{
+				if (cachedWaitPoint_ == nullptr)
+				{
+					cachedWaitPoint_ = manager->GetNearWaitPoint(transform.position);
+				}
+				return cachedWaitPoint_;
+			}
+		}
+
+
+		void MushroomEventCharacterStateMachine::ReleaseCachedWaitPoint()
+		{
+			if (kUseWaitPointReservation)
+			{
+				auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
+				if (!mushroom || mushroom->GetCurrentWaitPoint() == nullptr) { return; }
+
+				if (auto* manager = mushroom->GetAttackPointManager())
+				{
+					manager->ReleaseWaitPoint(mushroom->GetCurrentWaitPoint(), mushroom);
+				}
+				mushroom->SetCurrentWaitPoint(nullptr);
+			}
+			else
+			{
+				cachedWaitPoint_ = nullptr;
+			}
 		}
 
 
@@ -1759,15 +2072,19 @@ namespace app
 			SetMoveDirection(knockBackDirection_);
 			// Jump は KnockBackCharacterState のヒットストップ終了後に呼ばれる
 			isBlowBack_ = false;
-			// エフェクト再生
-			EffectManager::Get().PlayEffectFollow(
-				enEffectKind_MushroomKnockBack,
-				&transform.position,
-				Quaternion::Identity,
-				Vector3::One
-			);
-
-			app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
+			// ガードで防がれた時は被弾エフェクト・被弾SEを出さない（ガード成功エフェクト/SEのみ再生する）
+			if (!isGuardBlockedKnockBack_)
+			{
+				// エフェクト再生
+				EffectManager::Get().PlayEffectFollow(
+					enEffectKind_MushroomKnockBack,
+					&transform.position,
+					Quaternion::Identity,
+					Vector3::One
+				);
+				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::KnockbackMushroom), false);
+			}
+			isGuardBlockedKnockBack_ = false;
 
 			auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
 			if (mushroom)
@@ -1915,7 +2232,7 @@ namespace app
 				auto* mushroom = dynamic_cast<app::actor::MushroomEventCharacter*>(GetCharacter());
 				if (mushroom && mushroom->GetAttackPointManager())
 				{
-					auto* waitPoint = mushroom->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+					auto* waitPoint = GetOrPickWaitPoint(mushroom->GetAttackPointManager());
 					if (waitPoint != nullptr)
 					{
 						Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1932,6 +2249,8 @@ namespace app
 						else
 						{
 							// 待機ポイントに到達 → 通常の追跡状態に戻す
+							// （待機ポイントの予約はここでは解放しない。居座っている間、他の敵に
+							//   同じ点を奪われないようにするため。攻撃開始時に解放される）
 							isReturningToWait_ = false;
 							SetMoveDirection(Vector3::Zero);
 							RequestChangeState(IdleCharacterState::ID());
@@ -1961,7 +2280,7 @@ namespace app
 					const bool canAttack = mushroom->GetAttackPointManager()->IsUseable() && attackCoolTimer_ <= 0.0f;
 					if (!canAttack)
 					{
-						auto* waitPoint = mushroom->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+						auto* waitPoint = GetOrPickWaitPoint(mushroom->GetAttackPointManager());
 						if (waitPoint != nullptr)
 						{
 							Vector3 toWait = waitPoint->position_ - transform.position;
@@ -1998,7 +2317,7 @@ namespace app
 						else
 						{
 							// 自分の番じゃない → 待機ポイントで待つ
-							auto* waitPoint = manager->GetNearWaitPoint(transform.position);
+							auto* waitPoint = GetOrPickWaitPoint(manager);
 							if (waitPoint != nullptr)
 							{
 								Vector3 toWait = waitPoint->position_ - transform.position;
@@ -2028,7 +2347,7 @@ namespace app
 							if (!canAttack)
 							{
 								// 攻撃できない → 待機ポイントへ向かいながら周回
-								auto* waitPoint = mushroom->GetAttackPointManager()->GetNearWaitPoint(transform.position);
+								auto* waitPoint = GetOrPickWaitPoint(mushroom->GetAttackPointManager());
 
 								if (waitPoint != nullptr)
 								{
@@ -2037,6 +2356,7 @@ namespace app
 
 									if (distanceToWait < 30.0f)
 									{
+										// 待機ポイントに到達 → 予約は解放せず居座る（攻撃開始時に解放）
 										SetMoveDirection(Vector3::Zero);
 										RequestChangeState(IdleCharacterState::ID());
 										aiTimer_ = 0.0f;
@@ -2050,6 +2370,8 @@ namespace app
 								return;
 							}
 						}
+						// 待機ポイントを諦めてプレイヤーを直接追いかけるので、確保していれば解放する
+						ReleaseCachedWaitPoint();
 						SetMoveDirection(chaseDirection_);
 						RequestChangeState(RunCharacterState::ID());
 						aiTimer_ = 5.0f; // 追跡タイマーをリセットしない
