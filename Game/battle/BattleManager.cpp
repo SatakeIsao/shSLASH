@@ -412,7 +412,6 @@ namespace app
                      * メインスレッドがTexture::InitFromDDSFile()を呼ぶ時点でRAMから読める。
                      */ 
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/numbers.DDS");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/numbers_new.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/0.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/1.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/2.dds");
@@ -423,16 +422,6 @@ namespace app
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/7.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/8.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/9.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/0_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/1_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/2_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/3_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/4_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/5_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/6_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/7_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/8_new.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/9_new.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/word/Phase2.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/timer/clock_hand.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/playerIcon.DDS");
@@ -452,7 +441,6 @@ namespace app
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/LEVEL UP_Bloom.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/preset/skyCubeMapNight_Toon_02.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_diffuse.DDS");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_diffuse2.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_normal.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/player/maria_specular.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ModelData/stage/brick10.DDS");
@@ -505,7 +493,6 @@ namespace app
 					const wchar_t* const kAllTextures[] = {
 						/** UIテクスチャ */
 						L"Assets/ui/numbers/numbers.DDS",
-						L"Assets/ui/numbers/numbers_new.DDS",
 						L"Assets/ui/numbers/0.dds",
 						L"Assets/ui/numbers/1.dds",
 						L"Assets/ui/numbers/2.dds",
@@ -516,16 +503,6 @@ namespace app
 						L"Assets/ui/numbers/7.dds",
 						L"Assets/ui/numbers/8.dds",
 						L"Assets/ui/numbers/9.dds",
-						L"Assets/ui/numbers/0_new.dds",
-						L"Assets/ui/numbers/1_new.dds",
-						L"Assets/ui/numbers/2_new.dds",
-						L"Assets/ui/numbers/3_new.dds",
-						L"Assets/ui/numbers/4_new.dds",
-						L"Assets/ui/numbers/5_new.dds",
-						L"Assets/ui/numbers/6_new.dds",
-						L"Assets/ui/numbers/7_new.dds",
-						L"Assets/ui/numbers/8_new.dds",
-						L"Assets/ui/numbers/9_new.dds",
 						L"Assets/ui/word/Phase2.DDS",
 						L"Assets/ui/timer/clock_hand.dds",
 						L"Assets/ui/hp/playerIcon.DDS",
@@ -546,7 +523,6 @@ namespace app
 						/** 3Dモデル・スカイ・デカールテクスチャ */
 						L"Assets/ModelData/preset/skyCubeMapNight_Toon_02.dds",
 						L"Assets/ModelData/player/maria_diffuse.DDS",
-						L"Assets/ModelData/player/maria_diffuse2.DDS",
 						L"Assets/ModelData/player/maria_normal.DDS",
 						L"Assets/ModelData/player/maria_specular.DDS",
 						L"Assets/ModelData/stage/brick10.DDS",

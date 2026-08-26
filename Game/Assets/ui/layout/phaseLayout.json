@@ -15,7 +15,7 @@
       {
         "type": "UINumberSprite",
         "name": "PhaseNumber",
-        "asset": "Assets/ui/numbers/numbers_new.DDS",
+        "asset": "Assets/ui/numbers/numbers.DDS",
         "digit": 1,
         "width": 35.0,
         "height": 35.0,

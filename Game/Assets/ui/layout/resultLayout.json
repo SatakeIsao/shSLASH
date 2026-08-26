@@ -136,7 +136,7 @@
             {
                 "type": "UINumberSprite",
                 "name": "LevelDigit",
-                "asset": "Assets/ui/numbers/numbers_new.DDS",
+                "asset": "Assets/ui/numbers/numbers.DDS",
                 "digit":2,
                 "width": 50.0,
                 "height": 64.0,
@@ -149,7 +149,7 @@
             {
                 "type": "UINumberSprite",
                 "name": "EnemyDigit_1",
-                "asset": "Assets/ui/numbers/numbers_new.DDS",
+                "asset": "Assets/ui/numbers/numbers.DDS",
                 "digit":2,
                 "width": 30.0,
                 "height": 42.0,
@@ -162,7 +162,7 @@
             {
                 "type": "UINumberSprite",
                 "name": "EnemyDigit_2",
-                "asset": "Assets/ui/numbers/numbers_new.DDS",
+                "asset": "Assets/ui/numbers/numbers.DDS",
                 "digit":2,
                 "width": 30.0,
                 "height": 42.0,
@@ -175,7 +175,7 @@
             {
                 "type": "UINumberSprite",
                 "name": "EnemyDigit_3",
-                "asset": "Assets/ui/numbers/numbers_new.DDS",
+                "asset": "Assets/ui/numbers/numbers.DDS",
                 "digit":2,
                 "width": 30.0,
                 "height": 42.0,
@@ -188,7 +188,7 @@
             {
                 "type": "UINumberSprite",
                 "name": "ScoreDigit",
-                "asset": "Assets/ui/numbers/numbers_new.DDS",
+                "asset": "Assets/ui/numbers/numbers.DDS",
                 "digit":4,
                 "width": 50.0,
                 "height": 64.0,
