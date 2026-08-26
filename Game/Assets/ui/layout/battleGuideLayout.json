@@ -1,0 +1,17 @@
+{
+    "canvas": {
+        "elements": [
+            {
+                "type": "UIIcon",
+                "name": "BattleGuide",
+                "asset": "Assets/ui/battle/battle_guide_black.DDS",
+                "width": 320,
+                "height": 569,
+                "position": [700, -300, 0],
+                "scale": [1.0, 1.0, 1.0],
+                "rotation": 0.0,
+                "color": [1.0, 1.0, 1.0, 1.0]
+            }
+        ]
+    }
+}

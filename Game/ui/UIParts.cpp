@@ -261,29 +261,30 @@ namespace app
 		}
 
 
-		void UIDigit::Initialize(const char* assetName, const int digit, const int number, const float widht, const float height, const Vector3& position, const Vector3& scale, const Quaternion& rotation)
+		void UIDigit::Initialize(const char* assetName, const int digit, const int number, const float widht, const float height, const Vector3& position, const Vector3& scale, const Quaternion& rotation, const char* fileSuffix, const float spacing)
 		{
 			assetPath_ = assetName;
-			digit_ = digit;
+			fileSuffix_ = fileSuffix;
 			maxDigit_ = digit;
 			number_ = number;
 			w_ = widht;
 			h_ = height;
+			spacing_ = spacing > 0.0f ? spacing : widht;
 
 			transform.localPosition = position;
 			transform.localScale = scale;
 			transform.localRotation = rotation;
 
-			for (int i = 0; i < digit; i++)
+			// ゼロ埋めしない場合は初期表示も桁数を詰める（例: レベル0を「00」ではなく「0」にする）
+			digit_ = isZeroPadding_ ? maxDigit_ : ComputeDight();
+
+			for (int i = 0; i < digit_; i++)
 			{
-				for (int i = 0; i < digit; i++)
-				{
-					UpdateNumber(i + 1, number_); // 桁なので＋１する
-					auto* spriteRender = renderList_[i];
-					spriteRender->SetPosition(position);
-					spriteRender->SetScale(scale);
-					spriteRender->SetRotation(rotation);
-				}
+				UpdateNumber(i + 1, number_); // 桁なので＋１する
+				auto* spriteRender = renderList_[i];
+				spriteRender->SetPosition(position);
+				spriteRender->SetScale(scale);
+				spriteRender->SetRotation(rotation);
 			}
 		}
 
@@ -309,8 +310,8 @@ namespace app
 				}
 				// 対象の桁の数字
 				const int targetDigitNumber = GetDigit(targetDigit);
-				std::string assetNname = assetPath_ + "/0.dds";
-				assetNname[assetNname.size() - 5] = '0' + targetDigitNumber;
+				std::string assetNname = assetPath_ + "/0" + fileSuffix_ + ".dds";
+				assetNname[assetPath_.size() + 1] = '0' + targetDigitNumber;
 				nextRender->Init(assetNname.c_str(), w_, h_);
 			}
 		}
@@ -320,7 +321,7 @@ namespace app
 		{
 			SpriteRender* render = renderList_[index];
 			Vector3 position = transform.position;
-			position.x -= w_ * index;
+			position.x -= spacing_ * index;
 			render->SetPosition(position);
 		}
 

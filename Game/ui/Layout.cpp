@@ -136,9 +136,11 @@ namespace
         const Vector3 position = ParseVector3(item["position"]);
         const Vector3 scale = ParseVector3(item["scale"]);
         const Quaternion rotation = ParseRotation(item["rotation"].get<float>());
+        const std::string suffix = item.contains("suffix") ? item["suffix"].get<std::string>() : "";
+        const float spacing = item.contains("spacing") ? item["spacing"].get<float>() : 0.0f;
 
         // 初期値の数値は0としておく
-        text->Initialize(assetName.c_str(), digitCount, 0, w, h, position, scale, rotation);
+        text->Initialize(assetName.c_str(), digitCount, 0, w, h, position, scale, rotation, suffix.c_str(), spacing);
     }
     void InitializeUIParts(app::ui::UINumberSprite* sprite, const nlohmann::json& item)
     {

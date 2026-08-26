@@ -141,7 +141,7 @@ namespace app
 
 				if (volumeCursolIndex_ < static_cast<int>(app::SoundManager::SoundVolumeType::Master))
 				{
-					volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::Master);
+					volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::SE);
 				}
 			}
 			else if (g_pad[0]->IsTrigger(enButtonDown))
@@ -152,7 +152,7 @@ namespace app
 
 				if (volumeCursolIndex_ >= static_cast<int>(app::SoundManager::SoundVolumeType::Max))
 				{
-					volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::SE);
+					volumeCursolIndex_ = static_cast<int>(app::SoundManager::SoundVolumeType::Master);
 				}
 			}
 
@@ -170,23 +170,29 @@ namespace app
 			}
 			if (g_pad[0]->IsTrigger(enButtonRight))
 			{
-				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
-				targetVolume += VOLUME_STEP;
-				if (targetVolume > VOLUME_MAX)
+				if (targetVolume < VOLUME_MAX)
 				{
-					targetVolume = VOLUME_MAX;
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
+					targetVolume += VOLUME_STEP;
+					if (targetVolume > VOLUME_MAX)
+					{
+						targetVolume = VOLUME_MAX;
+					}
+					isVolumeChanged = true;
 				}
-				isVolumeChanged = true;
 			}
 			else if (g_pad[0]->IsTrigger(enButtonLeft))
 			{
-				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
-				targetVolume -= VOLUME_STEP;
-				if (targetVolume < VOLUME_MIN)
+				if (targetVolume > VOLUME_MIN)
 				{
-					targetVolume = VOLUME_MIN;
+					app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
+					targetVolume -= VOLUME_STEP;
+					if (targetVolume < VOLUME_MIN)
+					{
+						targetVolume = VOLUME_MIN;
+					}
+					isVolumeChanged = true;
 				}
-				isVolumeChanged = true;
 			}
 
 			if (isVolumeChanged)

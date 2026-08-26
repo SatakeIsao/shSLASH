@@ -554,9 +554,14 @@ namespace app
 					// 落下演出：数字を上に配置してアニメーション開始
 					{
 						auto* levelDigit = layout_->GetMenu()->GetUI<app::ui::UIDigit>(Hash32("levelNumbers"));
+						auto* levelMax   = layout_->GetMenu()->GetUI<UIIcon>(Hash32("levelMax"));
 						if (levelDigit)
 						{
 							levelDigit->transform.localPosition.y = 440.0f;
+						}
+						if (levelMax)
+						{
+							levelMax->transform.localPosition.y = 440.0f;
 						}
 						levelNumAnimTimer_ = 0.0f;
 					}
@@ -584,12 +589,19 @@ namespace app
 #endif // APP_DEBUG
 
 
-			/** レベル数値の表示 */
+			/** レベル数値の表示：Lv.MAX時は数字の代わりにMAXテクスチャを表示 */
 			{
 				auto levelDigit = layout_->GetMenu()->GetUI<app::ui::UIDigit>(Hash32("levelNumbers"));
+				auto levelMax   = layout_->GetMenu()->GetUI<UIIcon>(Hash32("levelMax"));
+				const bool isMaxLevel = (level_ >= MAX_LEVEL);
 				if (levelDigit)
 				{
 					levelDigit->SetNumber(level_);
+					levelDigit->isDraw = !isMaxLevel;
+				}
+				if (levelMax)
+				{
+					levelMax->isDraw = isMaxLevel;
 				}
 			}
 			/** 防御ゲージ：防御中のみプレイヤーモデルの横に追従表示 */
@@ -708,6 +720,7 @@ namespace app
 
 				auto* menu       = layout_->GetMenu();
 				auto* levelDigit = menu->GetUI<app::ui::UIDigit>(Hash32("levelNumbers"));
+				auto* levelMax   = menu->GetUI<UIIcon>(Hash32("levelMax"));
 				auto* lvIcon     = menu->GetUI<app::ui::UIIcon>(Hash32("levelIcon"));
 
 				if (levelNumAnimTimer_ < FALL_DURATION)
@@ -716,6 +729,7 @@ namespace app
 					float t      = levelNumAnimTimer_ / FALL_DURATION;
 					float easedT = t * t * t;
 					if (levelDigit) levelDigit->transform.localPosition.y = FALL_START_Y + (FALL_END_Y - FALL_START_Y) * easedT;
+					if (levelMax)   levelMax->transform.localPosition.y = FALL_START_Y + (FALL_END_Y - FALL_START_Y) * easedT;
 					if (lvIcon)     lvIcon->transform.localPosition.y = LV_BASE_Y;
 				}
 				else
@@ -726,6 +740,7 @@ namespace app
 					// 数字の揺れ
 					float numShake = 8.0f * sinf(SHAKE_FREQ * shakeT) * expf(-SHAKE_DECAY * shakeT);
 					if (levelDigit) levelDigit->transform.localPosition.y = FALL_END_Y + numShake;
+					if (levelMax)   levelMax->transform.localPosition.y = FALL_END_Y + numShake;
 
 					// Lv.アイコンの揺れ（衝撃が伝播：少し遅れる）
 					if (shakeT >= LV_DELAY)
@@ -738,6 +753,7 @@ namespace app
 					if (shakeT >= SHAKE_DURATION)
 					{
 						if (levelDigit) levelDigit->transform.localPosition.y = FALL_END_Y;
+						if (levelMax)   levelMax->transform.localPosition.y = FALL_END_Y;
 						if (lvIcon)     lvIcon->transform.localPosition.y = LV_BASE_Y;
 						levelNumAnimTimer_ = -1.0f;
 					}
