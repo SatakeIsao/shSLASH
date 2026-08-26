@@ -253,6 +253,7 @@
     <ClCompile Include="ui\ScreenOptionMenu.cpp" />
     <ClCompile Include="ui\DamagePopUI.cpp" />
     <ClCompile Include="ui\PhaseUI.cpp" />
+    <ClCompile Include="ui\BattleGuideUIObject.cpp" />
     <ClCompile Include="actor\EnemyPhase.cpp" />
     <ClCompile Include="title\TitleManager.cpp" />
     <ClCompile Include="ui\GameOverSequence.cpp" />
@@ -351,6 +352,7 @@
     <ClInclude Include="ui\ScreenOptionMenu.h" />
     <ClInclude Include="ui\DamagePopUI.h" />
     <ClInclude Include="ui\PhaseUI.h" />
+    <ClInclude Include="ui\BattleGuideUIObject.h" />
     <ClInclude Include="actor\EnemyPhase.h" />
     <ClInclude Include="core\GameResultData.h" />
     <ClInclude Include="title\TitleManager.h" />

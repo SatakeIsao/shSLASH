@@ -441,6 +441,10 @@ namespace app
 				{
 					followUpBuffer_.PushGuard();
 				}
+				if (g_pad[0]->IsTrigger(enButtonX))
+				{
+					followUpBuffer_.PushSpinAttack();
+				}
 				prevGuardHeld_ = guardHeld;
 			}
 
@@ -1644,6 +1648,165 @@ namespace app
 		}
 
 		bool KipUpCharacterState::CanChangeState() const
+		{
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			// アニメーションが再生中なら遷移させない
+			return !characterStateMachine->GetModelRender()->IsPlayingAnimation();
+		}
+
+
+
+		/*************************************/
+
+
+		SpinAttackCharacterState::SpinAttackCharacterState(IStateMachine* owner)
+			: ICharacterState(owner)
+		{
+		}
+
+
+		SpinAttackCharacterState::~SpinAttackCharacterState()
+		{
+		}
+
+
+		void SpinAttackCharacterState::Enter()
+		{
+			followUpBuffer_.Clear();
+			prevGuardHeld_ = false;
+			isFirstFrame_ = true;
+
+			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
+			characterStateMachine->GetModelRender()->PlayAnimation(static_cast<uint8_t>(app::actor::PlayerAnimationKind::SpinAttack), 0.1f);
+			characterStateMachine->GetModelRender()->SetAnimationSpeed(1.5f);
+
+			if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>()) {
+				battleMachine->RequestSpinAttackEffect();
+			}
+
+			// 攻撃開始時の向きを固定保持（スラッシュエフェクトと同じ基準・回転斬り中にキャラの向きが変わっても判定はブレさせない）
+			attackForward_ = Vector3::Front;
+			characterStateMachine->transform.rotation.Apply(attackForward_);
+			attackForward_.y = 0.0f;
+			if (attackForward_.LengthSq() > 0.0001f)
+				attackForward_.Normalize();
+
+			// -90度～+90度（Y軸まわり、計180度）を扇状に覆うSphere群のローカル方向を事前計算
+			static constexpr int SPIN_ATTACK_HIT_SPHERE_COUNT = 7;
+			attackLocalDirs_.clear();
+			attackLocalDirs_.reserve(SPIN_ATTACK_HIT_SPHERE_COUNT);
+			for (int i = 0; i < SPIN_ATTACK_HIT_SPHERE_COUNT; i++)
+			{
+				const float t = static_cast<float>(i) / static_cast<float>(SPIN_ATTACK_HIT_SPHERE_COUNT - 1);
+				const float angle = Math::DegToRad(-90.0f + 180.0f * t);
+				const float cosA = cosf(angle);
+				const float sinA = sinf(angle);
+				attackLocalDirs_.push_back(Vector3(
+					attackForward_.x * cosA + attackForward_.z * sinA,
+					0.0f,
+					-attackForward_.x * sinA + attackForward_.z * cosA));
+			}
+
+			// 攻撃判定の発生タイミングはスラッシュエフェクトと同じ0.5秒後（アニメーションの斬撃タイミングに同期）
+			static constexpr float SPIN_ATTACK_HIT_DELAY = 0.5f;
+			static constexpr float SPIN_ATTACK_HIT_RADIUS = 50.0f;
+
+			attackScheduler_ = std::make_unique<app::core::TaskSchedulerSystem>();
+			attackScheduler_->AddTimer(SPIN_ATTACK_HIT_DELAY, [&]()
+				{
+					auto* csm = owner_->As<CharacterStateMachine>();
+					const float charRadius = csm->GetStatus()->GetRadius();
+					const float distance = charRadius * 4.0f;
+
+					attackBodies_.clear();
+					attackBodies_.reserve(attackLocalDirs_.size());
+					for (const auto& dir : attackLocalDirs_)
+					{
+						auto body = std::make_unique<app::collision::GhostBody>();
+						body->CreateSphere(
+							csm->GetCharacter(), csm->GetCharacterID(),
+							SPIN_ATTACK_HIT_RADIUS,
+							app::collision::ghost::CollisionAttribute::Player,
+							app::collision::ghost::CollisionAttributeMask::All);
+						body->SetPosition(
+							csm->transform.position
+							+ dir * distance
+							+ Vector3(0.0f, charRadius, 0.0f));
+						attackBodies_.push_back(std::move(body));
+					}
+				}, false);
+			attackScheduler_->AddTimer(SPIN_ATTACK_HIT_DELAY, [&]()
+				{
+					attackBodies_.clear();
+				}, true);
+		}
+
+
+		void SpinAttackCharacterState::Update()
+		{
+			auto* csmForInput = owner_->As<CharacterStateMachine>();
+			const bool guardHeld = csmForInput->IsActionLB1() || csmForInput->IsActionRB1();
+
+			// Enter と同じフレームは入力を無視
+			if (isFirstFrame_)
+			{
+				isFirstFrame_ = false;
+				// 突入前から押しっぱなしのガードで誤発火しないよう、現在の押下状態を基準にする
+				prevGuardHeld_ = guardHeld;
+			}
+			else
+			{
+				if (g_pad[0]->IsTrigger(enButtonB))
+				{
+					followUpBuffer_.PushAttack();
+				}
+				// ガードは押した瞬間（エッジ）だけストックする
+				if (guardHeld && !prevGuardHeld_)
+				{
+					followUpBuffer_.PushGuard();
+				}
+				prevGuardHeld_ = guardHeld;
+			}
+
+			if (attackScheduler_)
+			{
+				attackScheduler_->Update(g_gameTime->GetFrameDeltaTime());
+			}
+
+			// ゴースト追従（キャラクターが移動しても扇の向きは固定のまま位置だけ追従させる）
+			if (!attackBodies_.empty())
+			{
+				auto* csm = owner_->As<CharacterStateMachine>();
+				const float charRadius = csm->GetStatus()->GetRadius();
+				const float distance = charRadius * 4.0f;
+
+				for (size_t i = 0; i < attackBodies_.size(); i++)
+				{
+					attackBodies_[i]->SetPosition(
+						csm->transform.position
+						+ attackLocalDirs_[i] * distance
+						+ Vector3(0.0f, charRadius, 0.0f));
+				}
+			}
+		}
+
+
+		void SpinAttackCharacterState::Exit()
+		{
+			// アニメーションが終わる前に他の行動でキャンセルされた場合は、再生待ちのエフェクトも取り消す
+			if (!CanChangeState())
+			{
+				if (auto* battleMachine = owner_->As<BattleCharacterStateMachine>())
+				{
+					battleMachine->CancelSpinAttackEffect();
+				}
+			}
+
+			attackScheduler_.reset(nullptr);
+			attackBodies_.clear();
+		}
+
+		bool SpinAttackCharacterState::CanChangeState() const
 		{
 			auto* characterStateMachine = owner_->As<CharacterStateMachine>();
 			// アニメーションが再生中なら遷移させない

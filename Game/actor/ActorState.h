@@ -35,7 +35,7 @@ namespace app
 
 
 		/**
-		 * 攻撃中にストックする次行動（攻撃 or ガード）。
+		 * 攻撃中にストックする次行動（攻撃 or ガード or 回転斬り）。
 		 * 回避は対象外（既存通り押した瞬間に即時遷移する）。
 		 * 常に最新の入力で上書きし、消費時は全クリアする
 		 * （最大3件保持しても最終的に使われるのは最新の1件だけなので、1スロットで仕様上の挙動と同一になる）。
@@ -43,7 +43,7 @@ namespace app
 		class AttackInputStock
 		{
 		public:
-			enum class Action { None, Attack, Guard };
+			enum class Action { None, Attack, Guard, SpinAttack };
 
 		private:
 			Action pending_ = Action::None;
@@ -51,6 +51,7 @@ namespace app
 		public:
 			void PushAttack() { pending_ = Action::Attack; }
 			void PushGuard() { pending_ = Action::Guard; }
+			void PushSpinAttack() { pending_ = Action::SpinAttack; }
 			void Clear() { pending_ = Action::None; }
 			bool HasPending() const { return pending_ != Action::None; }
 			Action Get() const { return pending_; }
@@ -580,6 +581,38 @@ namespace app
 			void Exit() override;
 
 			virtual bool CanChangeState() const;
+		};
+
+
+
+		/**
+		 * Xボタンで再生する回転攻撃ステート（playerSpinAttack.tkaの動作確認用）
+		 */
+		class SpinAttackCharacterState : public ICharacterState
+		{
+			appState(SpinAttackCharacterState);
+
+		private:
+			// 前方180度（Y軸まわり）を扇状に覆う攻撃判定（Sphereを複数配置して近似）
+			std::vector<std::unique_ptr<app::collision::GhostBody>> attackBodies_;
+			std::vector<Vector3> attackLocalDirs_;
+			std::unique_ptr<app::core::TaskSchedulerSystem> attackScheduler_;
+			Vector3 attackForward_ = Vector3::Front;	// 攻撃開始時の向きで固定（スラッシュエフェクトと同じ基準）
+
+			// 通常攻撃と同様に、回転斬り中の先行入力（攻撃 or ガード）をストックする
+			AttackInputStock followUpBuffer_;
+			bool prevGuardHeld_ = false;
+			bool isFirstFrame_ = true;
+
+		public:
+			SpinAttackCharacterState(IStateMachine* owner);
+			~SpinAttackCharacterState();
+			void Enter() override;
+			void Update() override;
+			void Exit() override;
+
+			virtual bool CanChangeState() const;
+			AttackInputStock::Action GetBufferedFollowUp() const { return followUpBuffer_.Get(); }
 		};
 
 

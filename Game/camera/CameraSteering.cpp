@@ -41,7 +41,7 @@ namespace app
 			}
 
 			// カメラ感度を適用
-			float sensitivityMultiplier = CameraManager::Get().GetSensitivity() * 2.0f;
+			float sensitivityMultiplier = CameraManager::Get().GetSensitivity() * 4.8f;
 			stickX *= sensitivityMultiplier;
 			stickY *= sensitivityMultiplier;
 

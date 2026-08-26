@@ -34,6 +34,7 @@ namespace app
 			InjuredIdle,
 			InjuredRun,
 			KipUp,
+			SpinAttack,
 			Max
 		};
 		enum class SlimeAnimationKind : uint8_t
