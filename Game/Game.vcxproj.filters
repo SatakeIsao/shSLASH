@@ -228,6 +228,9 @@
     <ClCompile Include="ui\PhaseUI.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="ui\BattleGuideUIObject.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
     <ClCompile Include="ui\GameOverSequence.cpp" />
     <ClCompile Include="ui\ResultMenu.cpp" />
     <ClCompile Include="ui\ResultSubMenu.cpp" />
@@ -455,6 +458,9 @@
     </ClInclude>
     <ClInclude Include="ui\DamagePopUI.h" />
     <ClInclude Include="ui\PhaseUI.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\BattleGuideUIObject.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="battle\IDamagePopListener.h" />

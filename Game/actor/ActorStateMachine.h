@@ -183,6 +183,7 @@ namespace app
 			bool isActionRB1_ = false;
 			bool isActionLB1_ = false;
 			bool isTriggerY_ = false;
+			bool isTriggerX_ = false;
 
 
 		public:
@@ -333,6 +334,8 @@ namespace app
 			bool IsActionLB1() const { return isActionLB1_; }
 			void SetTriggerY(const bool isAction) { isTriggerY_ = isAction; }
 			bool IsTriggerY() const { return isTriggerY_; }
+			void SetTriggerX(const bool isAction) { isTriggerX_ = isAction; }
+			bool IsTriggerX() const { return isTriggerX_; }
 
 			void ClearInput()
 			{
@@ -344,6 +347,7 @@ namespace app
 				isActionRB1_ = false;
 				isActionLB1_ = false;
 				isTriggerY_  = false;
+				isTriggerX_  = false;
 			}
 		};
 
@@ -384,12 +388,20 @@ namespace app
 			bool isGuardLocked_ = false;
 			/** 防御可能な連続時間（秒）。試験的に5秒 */
 			static constexpr float kGuardTimeLimit = 5.0f;
+			/** ガードで敵の攻撃を防いだ時に追加で消費する量（秒換算）。試験的な値、後で調整 */
+			static constexpr float kGuardBlockExtraCost = 0.5f;
+			/** ガードで攻撃を防いだ時の追加ゲージ消費処理を有効にするか（オンオフ切り替え用フラグ。試験的にtrue） */
+			static constexpr bool kEnableGuardBlockExtraCost = true;
 			/** 切り込みエフェクト */
 			bool isSlashEffect_ = false;
 			/** チャージエフェクト */
 			bool isChargeEffectRequested_ = false;
 			/** チャージ攻撃エフェクト */
 			bool isChargeAttackEffectRequested_ = false;
+			/** スピン攻撃エフェクト（横に倒した斬撃エフェクト） */
+			bool isSpinAttackEffectRequested_ = false;
+			/** 回転斬りが途中でキャンセルされ、エフェクト再生を中止すべきか */
+			bool isSpinAttackEffectCancelRequested_ = false;
 			/** 現在のチャージレベル (0=未チャージ, 1/2/3) */
 			int chargeLevel_ = 0;
 			/** チャージ溜め中のリアルタイムレベル (0=未到達, 1/2/3) */
@@ -525,6 +537,23 @@ namespace app
 			/** 防御中の押し返し球判定を取得（防御していない間はnullptr） */
 			app::collision::GhostBody* GetGuardBlockBody() const { return guardBlockBody_.get(); }
 
+			/** ガードで敵の攻撃を防いだ時に呼ぶ。通常の時間経過による減りに加えて追加でゲージを消費させる
+			 *  （kEnableGuardBlockExtraCostで処理自体のオンオフを切り替え可能。数値は後で調整予定） */
+			void OnGuardBlockedAttack()
+			{
+				if (!kEnableGuardBlockExtraCost)
+				{
+					return;
+				}
+
+				guardHoldTimer_ += kGuardBlockExtraCost;
+				if (guardHoldTimer_ >= kGuardTimeLimit)
+				{
+					guardHoldTimer_ = kGuardTimeLimit;
+					isGuardLocked_ = true;
+				}
+			}
+
 			/** 防御の残り時間割合を取得（1.0=満タン、0.0=制限時間切れ）。
 			 *  防御を解いた後も回復し切るまでは1.0未満のままになる */
 			float GetGuardRemainingRatio() const
@@ -622,6 +651,36 @@ namespace app
 			{
 				if (isChargeAttackEffectRequested_) {
 					isChargeAttackEffectRequested_ = false;
+					return true;
+				}
+				return false;
+			}
+			/** スピン攻撃エフェクト（横に倒した斬撃エフェクト）の再生リクエストを出す */
+			void RequestSpinAttackEffect()
+			{
+				isSpinAttackEffectRequested_ = true;
+			}
+			/** リクエストが来ているか確認し、確認したら自動でフラグを下ろす（1回だけ再生するため） */
+			bool CheckAndConsumeSpinAttackEffectRequest()
+			{
+				if (isSpinAttackEffectRequested_) {
+					isSpinAttackEffectRequested_ = false;
+					return true;
+				}
+				return false;
+			}
+			/** 回転斬りが途中でキャンセルされた際に呼び、エフェクト再生を中止させる */
+			void CancelSpinAttackEffect()
+			{
+				// まだ消費されていないリクエストがあれば取り消す
+				isSpinAttackEffectRequested_ = false;
+				isSpinAttackEffectCancelRequested_ = true;
+			}
+			/** キャンセル要求が来ているか確認し、確認したら自動でフラグを下ろす */
+			bool CheckAndConsumeSpinAttackEffectCancel()
+			{
+				if (isSpinAttackEffectCancelRequested_) {
+					isSpinAttackEffectCancelRequested_ = false;
 					return true;
 				}
 				return false;

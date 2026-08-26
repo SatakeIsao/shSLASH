@@ -45,6 +45,7 @@ namespace app
 			const bool isPressRB1 = GetPad()->IsPress(enButtonRB1);
 			const bool isPressLB1 = GetPad()->IsPress(enButtonLB1);
 			const bool isTriggerY = GetPad()->IsTrigger(enButtonY);
+			const bool isTriggerX = GetPad()->IsTrigger(enButtonX);
 
 			// BattleCharacter
 			{
@@ -58,6 +59,7 @@ namespace app
 					targetCharacterStateMachine->SetActionRB1(isPressRB1);
 					targetCharacterStateMachine->SetActionLB1(isPressLB1);
 					targetCharacterStateMachine->SetTriggerY(isTriggerY);
+					targetCharacterStateMachine->SetTriggerX(isTriggerX);
 
 					const bool isInput = inputVector.LengthSq() > MOVE_MIN_FLOAT;
 					if (isInput)

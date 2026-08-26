@@ -52,6 +52,7 @@ namespace app
         class LevelUpUIObject;
         class DamagePopPool;
         class PhaseUI;
+        class BattleGuideUIObject;
     }
 }
 
@@ -175,6 +176,8 @@ namespace app
             app::ui::LevelUpUIObject* levelUpObject_ = nullptr;
             /** ダメージ数字のポップアップ表示用プール */
             app::ui::DamagePopPool* damagePopPool_ = nullptr;
+            /** 画面右下の操作ガイドUIオブジェクト */
+            app::ui::BattleGuideUIObject* battleGuideUIObject_ = nullptr;
 
             /** 3Dエフェクト管理オブジェクト */
             EffectManagerObject* effectManagerObject_ = nullptr;
@@ -219,6 +222,8 @@ namespace app
             Vector3 reservedEffectPos_;
             /** 攻撃開始時の向きを固定保持 */
             Vector3 reservedEffectDir_;
+            /** スピン攻撃：エフェクト再生予定の向きを固定保持 */
+            Vector3 reservedSpinAttackEffectDir_;
             /** プレイヤー出現時のエフェクト座標 */
             Vector3 playerSpawnEffectPos_ = Vector3::Zero;
             /** チュートリアル用のストーン敵のスポーン位置 */
@@ -237,6 +242,10 @@ namespace app
             float battleSequenceStartTimer_ = 0.1f;
             /** エフェクトを遅延再生するためのカウントタイマー */
             float effectDelayTimer_ = 0.0f;
+            /** スピン攻撃エフェクトを遅延再生するためのカウントタイマー（回転斬りから0.5秒後に再生） */
+            float spinAttackEffectDelayTimer_ = 0.0f;
+            /** スピン攻撃：180度分の2枚目のエフェクトを遅延再生するためのカウントタイマー（1枚目に続いて見えるよう少し遅らせて再生） */
+            float spinAttackExtendEffectDelayTimer_ = 0.0f;
             /** バトルの残り時間(秒) */
             float remainTime_ = 120.0f;
             /** プレイヤーの被弾時などの無敵時間カウントタイマー */
@@ -293,6 +302,10 @@ namespace app
             bool isInvincible_                = false;
             /** エフェクトの再生遅延を待機中であるか */
             bool isWaitEffectPlay_            = false;
+            /** スピン攻撃エフェクトの再生遅延を待機中であるか */
+            bool isWaitSpinAttackEffectPlay_  = false;
+            /** スピン攻撃：180度分の2枚目のエフェクトの再生遅延を待機中であるか */
+            bool isWaitSpinAttackExtendEffectPlay_ = false;
             /** ステージの松明（トーチ）用のライトが有効化されているか */
             bool torchLightsEnabled_          = false;
 

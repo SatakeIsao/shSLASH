@@ -30,6 +30,7 @@
 #include "sound/SoundManager.h"
 #include "core/GameResultData.h"
 #include "ui/PhaseUI.h"
+#include "ui/BattleGuideUIObject.h"
 
 
 namespace
@@ -213,6 +214,9 @@ namespace
 
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp)].filename = "Assets/animData/player/playerKipUp.tka";
 			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::KipUp)].loop = false;
+
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SpinAttack)].filename = "Assets/animData/player/playerSpinAttack.tka";
+			parameter->animationDataList[static_cast<uint8_t>(app::actor::PlayerAnimationKind::SpinAttack)].loop = false;
 		});
 	/** 敵用 */
 	static app::actor::CharacterInitializeParameter sEnemyInitializeParameter = app::actor::CharacterInitializeParameter([](app::actor::CharacterInitializeParameter* parameter)
@@ -349,6 +353,7 @@ namespace app
 			DeleteGO(playerHpUIObject_);
 			DeleteGO(levelUpObject_);
 			DeleteGO(phaseUI_);
+			DeleteGO(battleGuideUIObject_);
 			if (damagePopPool_)
 			{
 				damagePopPool_->Finalize();
@@ -407,6 +412,7 @@ namespace app
                      * メインスレッドがTexture::InitFromDDSFile()を呼ぶ時点でRAMから読める。
                      */ 
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/numbers.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/numbers_new.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/0.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/1.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/2.dds");
@@ -417,14 +423,25 @@ namespace app
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/7.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/8.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/9.dds");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/word/PHASE.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/0_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/1_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/2_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/3_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/4_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/5_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/6_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/7_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/8_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/numbers/9_new.dds");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/word/Phase2.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/timer/clock_hand.dds");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/playerIcon.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/whiteBackGround.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/backGroundHP.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/hp/damageHP.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/LevelUp/currentLevel.DDS");
-					rm.Load<app::resource::DdsWarmResource>("Assets/ui/LevelUp/LvIcon.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/word/LvIcon1.DDS");
+					rm.Load<app::resource::DdsWarmResource>("Assets/ui/word/MAX.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/outerBar_Blue.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/innerBar_Blue.DDS");
 					rm.Load<app::resource::DdsWarmResource>("Assets/ui/levelUp/outerBar_Orange.DDS");
@@ -488,6 +505,7 @@ namespace app
 					const wchar_t* const kAllTextures[] = {
 						/** UIテクスチャ */
 						L"Assets/ui/numbers/numbers.DDS",
+						L"Assets/ui/numbers/numbers_new.DDS",
 						L"Assets/ui/numbers/0.dds",
 						L"Assets/ui/numbers/1.dds",
 						L"Assets/ui/numbers/2.dds",
@@ -498,14 +516,25 @@ namespace app
 						L"Assets/ui/numbers/7.dds",
 						L"Assets/ui/numbers/8.dds",
 						L"Assets/ui/numbers/9.dds",
-						L"Assets/ui/word/PHASE.DDS",
+						L"Assets/ui/numbers/0_new.dds",
+						L"Assets/ui/numbers/1_new.dds",
+						L"Assets/ui/numbers/2_new.dds",
+						L"Assets/ui/numbers/3_new.dds",
+						L"Assets/ui/numbers/4_new.dds",
+						L"Assets/ui/numbers/5_new.dds",
+						L"Assets/ui/numbers/6_new.dds",
+						L"Assets/ui/numbers/7_new.dds",
+						L"Assets/ui/numbers/8_new.dds",
+						L"Assets/ui/numbers/9_new.dds",
+						L"Assets/ui/word/Phase2.DDS",
 						L"Assets/ui/timer/clock_hand.dds",
 						L"Assets/ui/hp/playerIcon.DDS",
 						L"Assets/ui/hp/whiteBackGround.DDS",
 						L"Assets/ui/hp/backGroundHP.DDS",
 						L"Assets/ui/hp/damageHP.DDS",
 						L"Assets/ui/LevelUp/currentLevel.DDS",
-						L"Assets/ui/LevelUp/LvIcon.DDS",
+						L"Assets/ui/word/LvIcon1.DDS",
+						L"Assets/ui/word/MAX.DDS",
 						L"Assets/ui/levelUp/outerBar_Blue.DDS",
 						L"Assets/ui/levelUp/innerBar_Blue.DDS",
 						L"Assets/ui/levelUp/outerBar_Orange.DDS",
@@ -709,7 +738,8 @@ namespace app
 										std::remove(stoneEventCharacters_.begin(), stoneEventCharacters_.end(), stone),
 										stoneEventCharacters_.end()
 									);
-									if (playerHpUIObject_)
+									/** プレイヤーが死亡判定済みなら経験値は加算しない（ゲームオーバー確定後の見かけ上の回復を防ぐ） */
+									if (playerHpUIObject_ && !IsPlayerDead())
 									{
 										playerHpUIObject_->AddLevelUpGauge(3);
 										app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
@@ -794,7 +824,8 @@ namespace app
 										std::remove(mushroomEventCharacters_.begin(), mushroomEventCharacters_.end(), mushroom),
 										mushroomEventCharacters_.end()
 									);
-									if (playerHpUIObject_)
+									/** プレイヤーが死亡判定済みなら経験値は加算しない（ゲームオーバー確定後の見かけ上の回復を防ぐ） */
+									if (playerHpUIObject_ && !IsPlayerDead())
 									{
 										playerHpUIObject_->AddLevelUpGauge(5);
 										app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));
@@ -834,6 +865,7 @@ namespace app
 							battleCharacter_->AddState<app::actor::InjuredIdleCharacterState>();
 							battleCharacter_->AddState<app::actor::InjuredRunCharacterState>();
 							battleCharacter_->AddState<app::actor::KipUpCharacterState>();
+							battleCharacter_->AddState<app::actor::SpinAttackCharacterState>();
 						}
 						{
 							PendingSpawnEffect entry;
@@ -918,6 +950,8 @@ namespace app
 			case 11:
 				/** プレイヤーHPUI */
 				playerHpUIObject_ = NewGO<app::ui::PlayerHpUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
+				/** 画面右下の操作ガイド */
+				battleGuideUIObject_ = NewGO<app::ui::BattleGuideUIObject>(static_cast<uint8_t>(ObjectPriority::PlayerUI));
 				return false;
 
 			case 12:
@@ -1428,6 +1462,113 @@ namespace app
 						}
 					}
 
+					/** 回転斬りが途中でキャンセルされた場合、再生待ち・再生予約中のスピン攻撃エフェクトを中止する */
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeSpinAttackEffectCancel())
+					{
+						isWaitSpinAttackEffectPlay_ = false;
+						isWaitSpinAttackExtendEffectPlay_ = false;
+					}
+
+					/** スピン攻撃エフェクトの再生リクエスト判定(回転斬りをしてから0.5秒後に再生する) */
+					if (battleCharacter_->GetStateMachine()->CheckAndConsumeSpinAttackEffectRequest())
+					{
+						/** 攻撃開始時のキャラクターの向きを固定保持 */
+						Vector3 forward = Vector3(0.0f, 0.0f, 1.0f);
+						battleCharacter_->transform.localRotation.Apply(forward);
+						forward.y = 0.0f;
+						forward.Normalize();
+
+						reservedSpinAttackEffectDir_ = forward;
+						isWaitSpinAttackEffectPlay_ = true;
+						spinAttackEffectDelayTimer_ = 0.5f;
+					}
+
+					/** スピン攻撃エフェクトの再生待ち状態ならタイマーを更新し、1秒経過したら再生する（通常攻撃の斬撃エフェクトを横に倒した状態で再生する） */
+					if (isWaitSpinAttackEffectPlay_)
+					{
+						spinAttackEffectDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
+						if (spinAttackEffectDelayTimer_ <= 0.0f)
+						{
+							/** 向きに合わせて回転を設定 */
+							Quaternion effectRot = Quaternion::Identity;
+							if (reservedSpinAttackEffectDir_.LengthSq() > 0.0001f)
+							{
+								float yaw = atan2f(reservedSpinAttackEffectDir_.x, reservedSpinAttackEffectDir_.z) + Math::PI / 2.0f;
+								effectRot.SetRotationY(yaw);
+
+								/** 通常斬撃の傾き(-45度)よりさらに倒して横向き（水平）にする。前回と逆向きになるよう符号を反転 */
+								Quaternion tilt;
+								tilt.SetRotationX(Math::DegToRad(90.0f));
+								effectRot = effectRot * tilt;
+							}
+
+							/** 座標はプレイヤーに追従、向きは reservedSpinAttackEffectDir_（固定）でオフセット */
+							Vector3 effectPos = battleCharacter_->transform.position + (reservedSpinAttackEffectDir_ * 30.0f);
+							effectPos.y += 30.0f;
+
+							effectManagerObject_->PlayEffect(
+								enEffectKind_PlayerAttack,
+								effectPos,
+								effectRot,
+								Vector3::One
+							);
+
+							/**
+							 * このエフェクト単体では正面から90度分しか表示できないため、
+							 * 同じ位置・同じ向きから、さらにワールドY軸で90度分だけ回転させたものを重ねて再生し、
+							 * プレイヤー正面を基準に180度分表示されるようにする。
+							 * 同時に再生すると「2枚同時に光る」ように見えてしまうため、1枚目に続く動きに
+							 * 見えるよう少し遅らせて再生する（1枚のエフェクトのように見せるため）
+							 */
+							static constexpr float SPIN_ATTACK_EXTEND_EFFECT_DELAY = 0.1f;
+							isWaitSpinAttackExtendEffectPlay_ = true;
+							spinAttackExtendEffectDelayTimer_ = SPIN_ATTACK_EXTEND_EFFECT_DELAY;
+
+							isWaitSpinAttackEffectPlay_ = false;
+						}
+					}
+
+					/** スピン攻撃：180度分の2枚目のエフェクトの再生待ち状態ならタイマーを更新し、遅延分経過したら再生する */
+					if (isWaitSpinAttackExtendEffectPlay_)
+					{
+						spinAttackExtendEffectDelayTimer_ -= g_gameTime->GetFrameDeltaTime();
+						if (spinAttackExtendEffectDelayTimer_ <= 0.0f)
+						{
+							/** 向きに合わせて回転を設定（1枚目と同じ計算） */
+							Quaternion effectRot = Quaternion::Identity;
+							if (reservedSpinAttackEffectDir_.LengthSq() > 0.0001f)
+							{
+								float yaw = atan2f(reservedSpinAttackEffectDir_.x, reservedSpinAttackEffectDir_.z) + Math::PI / 2.0f;
+								effectRot.SetRotationY(yaw);
+
+								Quaternion tilt;
+								tilt.SetRotationX(Math::DegToRad(90.0f));
+								effectRot = effectRot * tilt;
+							}
+
+							/** 座標は1枚目と同じ（そのまま） */
+							Vector3 effectPos = battleCharacter_->transform.position + (reservedSpinAttackEffectDir_ * 30.0f);
+							effectPos.y += 30.0f;
+
+							/**
+							 * 1枚目は正面から右側90度分を表示しているため、2枚目はワールドY軸で逆方向に90度分
+							 * 回転させて左側に広げる。これにより正面(0度)を中心に180度分がカバーされる
+							 */
+							Quaternion extraYaw;
+							extraYaw.SetRotationY(-Math::PI / 2.0f);
+							Quaternion effectRotExtended = extraYaw * effectRot;
+
+							effectManagerObject_->PlayEffect(
+								enEffectKind_PlayerAttack,
+								effectPos,
+								effectRotExtended,
+								Vector3::One
+							);
+
+							isWaitSpinAttackExtendEffectPlay_ = false;
+						}
+					}
+
 					/** ノックバックエフェクトの再生判定 */
 					if (battleCharacter_->GetStateMachine()->CheckAndConsumeKnockBack())
 					{
@@ -1474,6 +1615,9 @@ namespace app
 							/** ガード中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
+								// 敵の攻撃を防いだので、通常の時間経過分に加えて防御ゲージを追加消費させる
+								battleCharacter_->GetStateMachine()->OnGuardBlockedAttack();
+
 								if (guardSuccessCooldown_ <= 0.0f)
 								{
 									NotifyGuardSucceeded();
@@ -1602,6 +1746,9 @@ namespace app
 							/** ガード中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
+								// 敵の攻撃を防いだので、通常の時間経過分に加えて防御ゲージを追加消費させる
+								battleCharacter_->GetStateMachine()->OnGuardBlockedAttack();
+
 								if (guardSuccessCooldown_ <= 0.0f)
 								{
 									NotifyGuardSucceeded();
@@ -1691,6 +1838,14 @@ namespace app
 				// 衝突後の処理
 				/** 衝突後の処理 */
 				{
+					/**
+					 * 同一フレーム内で既にダメージを適用した敵を記録するリスト。
+					 * 回転斬りのように攻撃判定が複数のGhostBody（扇状のSphere群）に分かれている場合、
+					 * 同じ敵に複数の判定が同時に当たって多重ヒットしてしまうのを防ぐため、
+					 * 1フレームにつき同じ敵への通知は1回だけ適用する
+					 */
+					std::vector<app::actor::Character*> damagedDefendersThisFrame;
+
 					for (auto& notify : notifyList_) {
 						if (notify->ID() == DamageNotify::StaticID())
 						{
@@ -1705,6 +1860,11 @@ namespace app
 								if (!enemy->GetStateMachine()->IsReceiveDamageEnabled())
 									continue;
 							}
+
+							/** 同じ敵への多重ヒット防止：このフレームで既に処理済みならスキップ */
+							if (std::find(damagedDefendersThisFrame.begin(), damagedDefendersThisFrame.end(), dmg->defender) != damagedDefendersThisFrame.end())
+								continue;
+							damagedDefendersThisFrame.push_back(dmg->defender);
 
 							/** ダメージ計算と適用 */
 							bool isCriticalHit = false;
@@ -1798,6 +1958,9 @@ namespace app
 							/** ガード中はダメージを受けない*/
 							if (battleCharacter_->GetStateMachine()->IsGuarding())
 							{
+								// 敵の攻撃を防いだので、通常の時間経過分に加えて防御ゲージを追加消費させる
+								battleCharacter_->GetStateMachine()->OnGuardBlockedAttack();
+
 								if (guardSuccessCooldown_ <= 0.0f)
 								{
 									NotifyGuardSucceeded();
@@ -1890,8 +2053,8 @@ namespace app
 
 				/** レベル */
 				{
-					/** ゲージ折り返しを検知したらキャラのLv.を上げる */
-					if (playerHpUIObject_ && playerHpUIObject_->IsLevelUp())
+					/** ゲージ折り返しを検知したらキャラのLv.を上げる（死亡判定後はゲームオーバーを優先し、見かけ上の回復をさせない） */
+					if (playerHpUIObject_ && playerHpUIObject_->IsLevelUp() && !IsPlayerDead())
 					{
 						if (battleCharacter_) {
 							battleCharacter_->LevelUp();
@@ -2234,7 +2397,8 @@ namespace app
 
 		void BattleManager::AddPlayerGauge(int amount)
 		{
-			if (playerHpUIObject_)
+			/** プレイヤーが死亡判定済みなら経験値は加算しない（ゲームオーバー確定後の見かけ上の回復を防ぐ） */
+			if (playerHpUIObject_ && !IsPlayerDead())
 			{
 				playerHpUIObject_->AddLevelUpGauge(amount);
 				app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::GaugeUp));

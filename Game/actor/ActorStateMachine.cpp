@@ -725,7 +725,8 @@ namespace app
 				if (IsTriggerY()
 					&& (IsEqualCurrentState(SlashFirstCharacterState::ID())
 						|| IsEqualCurrentState(SlashSecondCharacterState::ID())
-						|| IsEqualCurrentState(SlashThirdCharacterState::ID())))
+						|| IsEqualCurrentState(SlashThirdCharacterState::ID())
+						|| IsEqualCurrentState(SpinAttackCharacterState::ID())))
 				{
 					isAvoidanceCancelFromAttack_ = true;
 					RequestChangeState(AvoidanceCharacterState::ID());
@@ -744,7 +745,7 @@ namespace app
 					}
 				}
 
-				// SlashFirst中にストックされた入力（攻撃 or ガード）で分岐
+				// SlashFirst中にストックされた入力（攻撃 or ガード or 回転斬り）で分岐
 				if (IsEqualCurrentState(SlashFirstCharacterState::ID()))
 				{
 					if (!CanChangeState()) {
@@ -757,6 +758,11 @@ namespace app
 						RequestChangeState(GuardCharacterState::ID());
 						return;
 					}
+					if (followUp == AttackInputStock::Action::SpinAttack)
+					{
+						RequestChangeState(SpinAttackCharacterState::ID());
+						return;
+					}
 					if (followUp == AttackInputStock::Action::Attack)
 					{
 						RequestChangeState(SlashSecondCharacterState::ID());
@@ -767,7 +773,7 @@ namespace app
 					slashFirstCooldownTimer_ = 0.8f;
 				}
 
-				// SlashSecond中にストックされた入力（攻撃 or ガード）で分岐
+				// SlashSecond中にストックされた入力（攻撃 or ガード or 回転斬り）で分岐
 				if (IsEqualCurrentState(SlashSecondCharacterState::ID()))
 				{
 					if (!CanChangeState()) {
@@ -780,6 +786,11 @@ namespace app
 						RequestChangeState(GuardCharacterState::ID());
 						return;
 					}
+					if (followUp == AttackInputStock::Action::SpinAttack)
+					{
+						RequestChangeState(SpinAttackCharacterState::ID());
+						return;
+					}
 					if (followUp == AttackInputStock::Action::Attack)
 					{
 						RequestChangeState(SlashThirdCharacterState::ID());
@@ -788,18 +799,66 @@ namespace app
 					}
 				}
 
-				// SlashThird中にストックされたガード入力で分岐（4段目は存在しないため攻撃入力は何もしない）
+				// SlashThird中にストックされた入力（ガード or 回転斬り）で分岐（4段目は存在しないため攻撃入力は何もしない）
 				if (IsEqualCurrentState(SlashThirdCharacterState::ID()))
 				{
 					if (!CanChangeState()) {
 						return;
 					}
 					auto* state = static_cast<SlashThirdCharacterState*>(GetCurrentState());
-					if (state->GetBufferedFollowUp() == AttackInputStock::Action::Guard && !isGuardLocked_)
+					const auto followUp = state->GetBufferedFollowUp();
+					if (followUp == AttackInputStock::Action::Guard && !isGuardLocked_)
 					{
 						RequestChangeState(GuardCharacterState::ID());
 						return;
 					}
+					if (followUp == AttackInputStock::Action::SpinAttack)
+					{
+						RequestChangeState(SpinAttackCharacterState::ID());
+						return;
+					}
+				}
+			}
+			// スピン攻撃（Xボタン、playerSpinAttack.tkaの動作確認用）
+			{
+				if (IsEqualCurrentState(SpinAttackCharacterState::ID()))
+				{
+					// 回転斬り中は通常攻撃・ガードでもアニメーション終了を待たず即座にキャンセルできる
+					// （回避キャンセルは上の「攻撃」ブロックで判定済み）
+					if (IsActionB() && slashFirstCooldownTimer_ <= 0.0f)
+					{
+						RequestChangeState(SlashFirstCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+					if ((IsActionLB1() || IsActionRB1()) && !isGuardLocked_)
+					{
+						RequestChangeState(GuardCharacterState::ID());
+						return;
+					}
+
+					if (!CanChangeState()) {
+						return;
+					}
+					// 回転斬り終了：ストックされた入力（攻撃 or ガード）があれば優先して遷移
+					auto* state = static_cast<SpinAttackCharacterState*>(GetCurrentState());
+					const auto followUp = state->GetBufferedFollowUp();
+					if (followUp == AttackInputStock::Action::Guard && !isGuardLocked_)
+					{
+						RequestChangeState(GuardCharacterState::ID());
+						return;
+					}
+					if (followUp == AttackInputStock::Action::Attack && slashFirstCooldownTimer_ <= 0.0f)
+					{
+						RequestChangeState(SlashFirstCharacterState::ID());
+						isSlashEffect_ = true;
+						return;
+					}
+				}
+				else if (IsTriggerX())
+				{
+					RequestChangeState(SpinAttackCharacterState::ID());
+					return;
 				}
 			}
 			// 落下
