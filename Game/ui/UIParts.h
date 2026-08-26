@@ -287,9 +287,13 @@ namespace app
 			bool isZeroPadding_ = false;
 			/** 数字表示に必要な画像が入った */
 			std::string assetPath_;
+			/** ファイル名に付与するサフィックス（例: "_new"）。差し替え用の別テクスチャを使う場合に指定 */
+			std::string fileSuffix_;
 
 			float w_;
 			float h_;
+			/** 桁同士の間隔（未指定時は w_ を使用） */
+			float spacing_;
 
 
 
@@ -314,7 +318,7 @@ namespace app
 			 * ・大きさ
 			 * ・回転
 			 */
-			void Initialize(const char* assetPath, const int digit, const int number, const float widht, const float height, const Vector3& position, const Vector3& scale, const Quaternion& rotation);
+			void Initialize(const char* assetPath, const int digit, const int number, const float widht, const float height, const Vector3& position, const Vector3& scale, const Quaternion& rotation, const char* fileSuffix = "", const float spacing = 0.0f);
 
 			/** 数字を設定 */
 			void SetNumber(const int number) { requestNumber_ = number; }

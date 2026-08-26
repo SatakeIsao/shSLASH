@@ -210,18 +210,24 @@ namespace app
                 // 感度の調整処理
                 if (g_pad[0]->IsTrigger(enButtonRight))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
-                    currentSensitivity += 0.1f;
-                    if (currentSensitivity > 1.0f) currentSensitivity = 1.0f;
-                    isSettingsChanged = true;
+                    if (currentSensitivity < 1.0f)
+                    {
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
+                        currentSensitivity += 0.1f;
+                        if (currentSensitivity > 1.0f) currentSensitivity = 1.0f;
+                        isSettingsChanged = true;
+                    }
                 }
                 else if (g_pad[0]->IsTrigger(enButtonLeft))
                 {
-                    app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
-                    currentSensitivity -= 0.1f;
-                    // 完全に0になるとカメラが動かなくなるので最低0.1でストップ
-                    if (currentSensitivity < 0.0f) currentSensitivity = 0.0f;
-                    isSettingsChanged = true;
+                    if (currentSensitivity > 0.0f)
+                    {
+                        app::SoundManager::Get().PlaySE(static_cast<int>(app::SoundKind::ButtonMove));
+                        currentSensitivity -= 0.1f;
+                        // 完全に0になるとカメラが動かなくなるので最低0.1でストップ
+                        if (currentSensitivity < 0.0f) currentSensitivity = 0.0f;
+                        isSettingsChanged = true;
+                    }
                 }
             }
 
